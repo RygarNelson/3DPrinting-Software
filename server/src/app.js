@@ -1,12 +1,18 @@
 'use strict'
 
-const express = require('express');
-const helmet = require('helmet');
-const morgan = require('morgan');
-const cors = require('cors');
-var rfs = require('rotating-file-stream');
-var path = require('path');
-const connection = require('./db');
+import express from 'express';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import cors from 'cors';
+import * as rfs from 'rotating-file-stream';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { connectToDatabase, initializeDatabase } from './db.js';
+import authRoute from './routes/auth.js';
+import clientsRoute from './routes/clients.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /* SERVER & PARAMETERS */
 const app = express();
@@ -46,15 +52,14 @@ app.use(express.json({limit: '10000kb'}));
 app.use(express.urlencoded({'extended': true}));
 
 /* DATABASE */
+await connectToDatabase();
+await initializeDatabase();
 
 /* ROUTES */
-const authRoute = require("./routes/auth");
-const clientsRoute = require("./routes/clients");
-
 // Routers
 // Auth API
 app.use('/api/auth', authRoute);
 // Clients API
 app.use('/api/clients', clientsRoute);
 
-module.exports = app
+export default app;

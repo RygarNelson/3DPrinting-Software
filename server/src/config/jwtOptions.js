@@ -1,6 +1,6 @@
-var secret = process.env.JWT_SECRET
-var jwtOptions = {
+const secret = process.env.JWT_SECRET;
+const jwtOptions = {
     expiresIn: process.env.JWT_EXPIRESIN
-}
+};
 
-module.exports = { secret, jwtOptions }
+export { secret, jwtOptions };

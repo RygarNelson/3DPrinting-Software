@@ -1,10 +1,10 @@
-var bcrypt = require('bcrypt')
-var jwt = require('jsonwebtoken')
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
 
-const { secret, jwtOptions } = require('../config/jwtOptions')
-const { encryptionOptions } = require('../config/encryptionOptions')
+import { secret, jwtOptions } from '../config/jwtOptions.js'
+import { encryptionOptions } from '../config/encryptionOptions.js'
 
-module.exports = {
+const authMethods = {
     deleteItemsOnJson: function(array, items) {
         for (let i = 0; i < items.length; i++) {
             delete array[items[i]]
@@ -49,3 +49,5 @@ module.exports = {
         }
     }
 }
+
+export default authMethods

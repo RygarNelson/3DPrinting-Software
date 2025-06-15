@@ -1,12 +1,11 @@
 'use strict'
 
-const express = require('express');
-const { body, validationResult } = require('express-validator');
+import express from 'express';
+import { body, validationResult } from 'express-validator';
+import UsersRepository from '../repositories/users.repository.js';
+import authMethods from '../methods/authMethods.js';
 
 const router = express.Router();
-
-const UsersRepository = require('../repositories/users.repository');
-const authMethods = require('../methods/authMethods');
 
 router.post(
     '/login',
@@ -23,7 +22,6 @@ router.post(
         } else {
             UsersRepository.findOne({email: req.body.email})
                 .then((user) => {
-
                     if (!user) {
                         res.status(400).json({
                             success: false,
@@ -35,6 +33,7 @@ router.post(
                             res.status(200).json({
                                 success: true,
                                 data: {
+                                    id: user.id,
                                     name: user.name,
                                     surname: user.surname,
                                     email: user.email,
@@ -57,8 +56,6 @@ router.post(
                         technical_data: error
                     });
                 });
-
-            
         }
     }
 );
@@ -89,13 +86,13 @@ router.post('/checkToken', async (req, res) => {
         res.send({
             success: true,
             data: "Valid token"
-        })
+        });
     } else {
         res.send({
             success: false,
             error: "Not a valid token"
-        })
+        });
     }
-})
+});
 
-module.exports = router
+export default router;

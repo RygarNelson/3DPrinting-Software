@@ -1,23 +1,17 @@
 'use strict'
 
-const mongoose = require('mongoose');
-const Users = require('../models/users.model');
+import User from '../models/users.model.js';
+import authMethods from '../methods/authMethods.js';
 
-const authMethods = require('../methods/authMethods');
-
-module.exports = {
+const usersRepository = {
     insertOne: function(req, res) {
-        let user = new Users({
-            _id: new mongoose.Types.ObjectId(),
+        User.create({
             name: req.body.name,
             surname: req.body.surname,
             email: req.body.email,
             password: authMethods.encryptPassword(req.body.password),
             role: req.body.role
-        });
-
-        user
-        .save()
+        })
         .then((data) => {
             return res.status(200).json({
                 success: true,
@@ -32,10 +26,12 @@ module.exports = {
                 error: "Errore durante la creazione dell'account",
                 technical_data: error.toString()
             });
-        })
+        });
     },
 
     findOne: function(searchExample) {
-        return Users.findOne(searchExample);
+        return User.findOne({ where: searchExample });
     }
-}
+};
+
+export default usersRepository;

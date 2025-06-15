@@ -21,11 +21,11 @@ export class AppMenuComponent implements OnInit {
                 ]
             },
             {
-                label: 'Anagrafiche',
+                label: 'Magazzino',
                 items: [
                     {
-                        label: 'Clienti',
-                        icon: 'pi pi-fw pi-users',
+                        label: 'Stampanti',
+                        icon: 'pi pi-fw pi-print',
                     }
                 ]
             }

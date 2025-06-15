@@ -1,33 +1,28 @@
 'use strict'
 
-const mongoose = require('mongoose');
-const Clients = require("../models/clients.model");
+import Client from '../models/clients.model.js';
 
-module.exports = {
+const clientsRepository = {
     getAll: function () {
-        return Clients.find();
+        return Client.findAll();
     },
 
     find: function(searchExample) {
-        return Clients.find(searchExample);
+        return Client.findAll({ where: searchExample });
     },
 
     findOne: function(searchExample) {
-        return Clients.findOne(searchExample);
+        return Client.findOne({ where: searchExample });
     },
 
     insertOne: function(req, res) {
-        let client = new Clients({
-            _id: new mongoose.Types.ObjectId(),
+        Client.create({
             firstname: req.body.firstname,
             lastname: req.body.lastname,
             companyname: req.body.companyname,
             phone: req.body.phone,
             email: req.body.email
-        });
-
-        client
-        .save()
+        })
         .then((data) => {
             return res.status(200).json({
                 success: true,
@@ -46,16 +41,15 @@ module.exports = {
     },
 
     updateOne: function(req, res) {
-        let client = new Clients({
+        Client.update({
             firstname: req.body.firstname,
             lastname: req.body.lastname,
             companyname: req.body.companyname,
             phone: req.body.phone,
             email: req.body.email
-        });
-
-        Clients
-        .findByIdAndUpdate(req.body._id, client)
+        }, {
+            where: { id: req.body.id }
+        })
         .then((data) => {
             return res.status(200).json({
                 success: true,
@@ -74,6 +68,8 @@ module.exports = {
     },
 
     deleteOne: function(id) {
-        return Clients.findByIdAndDelete(id);
+        return Client.destroy({ where: { id: id } });
     }
-}
+};
+
+export default clientsRepository;

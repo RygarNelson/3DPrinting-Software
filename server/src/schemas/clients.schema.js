@@ -1,8 +1,8 @@
 'use strict'
 
-const { checkSchema } = require('express-validator');
+import { checkSchema } from 'express-validator';
 
-module.exports = {
+const validationSchema = {
     check: function() {
         return checkSchema({
             firstname: {
@@ -49,6 +49,8 @@ module.exports = {
                     errorMessage: 'Il campo Email non è valido'
                 }
             }
-        })
+        });
     }
-}
+};
+
+export default validationSchema;

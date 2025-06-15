@@ -1,14 +1,12 @@
 'use strict'
 
-const express = require('express');
-const { body, validationResult } = require('express-validator');
+import express from 'express';
+import { body, validationResult } from 'express-validator';
+import { authenticate } from '../middleware/authenticate.js';
+import ClientsRepository from '../repositories/clients.repository.js';
+import validationSchema from '../schemas/clients.schema.js';
 
 const router = express.Router();
-
-const { authenticate } = require('../middleware/authenticate');
-
-const ClientsRepository = require("../repositories/clients.repository");
-const validationSchema = require("../schemas/clients.schema");
 
 /* Authentication middleware */
 router.use(authenticate);
@@ -100,4 +98,4 @@ router.delete(
     }
 );
 
-module.exports = router
+export default router;

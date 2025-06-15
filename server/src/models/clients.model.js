@@ -1,16 +1,36 @@
 'use strict'
 
-const mongoose = require('mongoose');
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../config/database.js';
 
-const ClientsSchema = mongoose.Schema({
-    _id: mongoose.ObjectId,
-    firstname: { type : String },
-    lastname: { type : String },
-    companyname: { type : String },
-    phone: { type : String },
-    email: { type : String },
+const Client = sequelize.define('Client', {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    firstname: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    lastname: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    companyname: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    phone: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    email: {
+        type: DataTypes.STRING,
+        allowNull: true
+    }
 }, {
     timestamps: true
 });
 
-module.exports = mongoose.model('Clients', ClientsSchema);
+export default Client;
