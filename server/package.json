@@ -14,22 +14,21 @@
   "author": "Daniele Moscati",
   "license": "MIT",
   "dependencies": {
-    "bcrypt": "^5.1.0",
-    "better-sqlite3": "^8.7.0",
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
-    "dotenv": "^16.0.3",
-    "express": "^4.18.2",
-    "express-validator": "^6.14.3",
-    "helmet": "^6.0.1",
-    "jsonwebtoken": "^9.0.0",
+    "dotenv": "^16.5.0",
+    "express": "^4.21.2",
+    "express-validator": "^7.2.1",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
-    "nodemailer": "^6.9.1",
-    "nodemon": "^2.0.20",
-    "rotating-file-stream": "^3.0.4",
-    "sequelize": "^6.35.1",
+    "nodemailer": "^7.0.3",
+    "nodemon": "^3.1.10",
+    "rotating-file-stream": "^3.2.6",
+    "sequelize": "^6.37.7",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
-    "eslint": "^8.33.0"
+    "eslint": "^9.29.0"
   }
 }
