@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 
 @Component({
-    templateUrl: './verification.component.html'
+    templateUrl: './verification.component.html',
+    standalone: false
 })
 export class VerificationComponent {
 

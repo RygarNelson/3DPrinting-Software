@@ -5,7 +5,8 @@ import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
     selector: 'app-topbar',
-    templateUrl: './app.topbar.component.html'
+    templateUrl: './app.topbar.component.html',
+    standalone: false
 })
 export class AppTopbarComponent implements OnInit {
 

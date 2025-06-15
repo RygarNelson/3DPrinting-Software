@@ -7,7 +7,8 @@ import { LayoutService } from '../../services/app.layout.service';
 
 @Component({
     selector: 'app-profilemenu',
-    templateUrl: './app.profilesidebar.component.html'
+    templateUrl: './app.profilesidebar.component.html',
+    standalone: false
 })
 export class AppProfileSidebarComponent implements OnInit {
 

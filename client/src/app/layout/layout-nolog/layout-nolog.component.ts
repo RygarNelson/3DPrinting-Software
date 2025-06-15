@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { LayoutService } from 'src/app/services/app.layout.service';
 
 @Component({
-  selector: 'app-layout-nolog',
-  templateUrl: './layout-nolog.component.html',
-  styleUrls: ['./layout-nolog.component.scss']
+    selector: 'app-layout-nolog',
+    templateUrl: './layout-nolog.component.html',
+    styleUrls: ['./layout-nolog.component.scss'],
+    standalone: false
 })
 export class LayoutNologComponent implements OnInit {
 

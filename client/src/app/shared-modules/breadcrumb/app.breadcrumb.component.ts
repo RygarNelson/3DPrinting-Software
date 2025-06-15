@@ -10,7 +10,8 @@ interface Breadcrumb {
 
 @Component({
     selector: 'app-breadcrumb',
-    templateUrl: './app.breadcrumb.component.html'
+    templateUrl: './app.breadcrumb.component.html',
+    standalone: false
 })
 export class AppBreadcrumbComponent {
 

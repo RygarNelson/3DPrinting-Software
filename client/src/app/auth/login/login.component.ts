@@ -4,7 +4,8 @@ import { MessageService } from 'primeng/api';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
-	templateUrl: './login.component.html'
+    templateUrl: './login.component.html',
+    standalone: false
 })
 export class LoginComponent {
 
