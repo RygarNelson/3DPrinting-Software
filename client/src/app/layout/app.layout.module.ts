@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { InputTextModule } from 'primeng/inputtext';
 import { SidebarModule } from 'primeng/sidebar';
@@ -16,15 +16,11 @@ import { SharedModulesModule } from '../shared-modules/shared-modules.module';
 import { LayoutNologComponent } from './layout-nolog/layout-nolog.component';
 import { MessageService } from 'primeng/api';
 
-@NgModule({
-    declarations: [
+@NgModule({ declarations: [
         AppLayoutComponent,
         LayoutNologComponent
-    ],
-    imports: [
-        BrowserModule,
+    ], imports: [BrowserModule,
         FormsModule,
-        HttpClientModule,
         BrowserAnimationsModule,
         InputTextModule,
         SidebarModule,
@@ -34,10 +30,8 @@ import { MessageService } from 'primeng/api';
         RippleModule,
         RouterModule,
         SharedModulesModule,
-        ToastModule
-    ],
-    providers: [
-        MessageService
-    ]
-})
+        ToastModule], providers: [
+        MessageService,
+        provideHttpClient(withInterceptorsFromDi())
+    ] })
 export class AppLayoutModule { }
