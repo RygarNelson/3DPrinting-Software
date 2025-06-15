@@ -75,19 +75,19 @@
 				"serve": {
 					"builder": "@angular-devkit/build-angular:dev-server",
 					"configurations": {
-						"production": {
-							"browserTarget": "apollo-ngx:build:production"
+            "production": {
+              "buildTarget": "apollo-ngx:build:production"
 						},
-						"development": {
-							"browserTarget": "apollo-ngx:build:development"
+            "development": {
+              "buildTarget": "apollo-ngx:build:development"
 						}
 					},
 					"defaultConfiguration": "development"
 				},
 				"extract-i18n": {
 					"builder": "@angular-devkit/build-angular:extract-i18n",
-					"options": {
-						"browserTarget": "apollo-ngx:build"
+          "options": {
+            "buildTarget": "apollo-ngx:build"
 					}
 				},
 				"test": {
