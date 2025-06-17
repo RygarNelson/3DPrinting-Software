@@ -1,4 +1,4 @@
-import { Injectable, effect, signal, computed } from '@angular/core';
+import { Injectable, computed, effect, signal } from '@angular/core';
 import { Subject } from 'rxjs';
 
 export type ColorScheme = 'light' | 'dark' | 'dim';
@@ -38,9 +38,9 @@ interface MenuChangeEvent {
 })
 export class LayoutService {
     _config: layoutConfig = {
-        ripple: false,
-        preset: 'Aura',
-        primary: 'indigo',
+        ripple: true,
+        preset: 'Lara',
+        primary: 'blue',
         inputStyle: 'outlined',
         surface: null,
         darkTheme: false,

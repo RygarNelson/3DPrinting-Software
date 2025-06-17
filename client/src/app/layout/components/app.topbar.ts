@@ -1,13 +1,13 @@
+import { LayoutService } from '@/layout/service/layout.service';
+import { CommonModule } from '@angular/common';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { StyleClassModule } from 'primeng/styleclass';
-import { LayoutService } from '@/layout/service/layout.service';
-import { AppBreadcrumb } from './app.breadcrumb';
-import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
+import { InputTextModule } from 'primeng/inputtext';
+import { StyleClassModule } from 'primeng/styleclass';
+import { AppBreadcrumb } from './app.breadcrumb';
 
 @Component({
     selector: '[app-topbar]',
@@ -34,7 +34,7 @@ import { InputIconModule } from 'primeng/inputicon';
                 </li>
                 <li class="topbar-profile">
                     <button type="button" class="p-link" (click)="onProfileButtonClick()">
-                        <img src="/layout/images/avatar.png" alt="Profile" />
+                        <img src="assets/layout/images/avatar.png" alt="Profile" />
                     </button>
                 </li>
             </ul>
