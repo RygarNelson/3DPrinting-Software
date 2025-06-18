@@ -2,6 +2,7 @@
 
 import cors from 'cors';
 import express from 'express';
+import fs from 'fs';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import path from 'path';
@@ -63,19 +64,44 @@ app.use('/api/auth', authRoute);
 app.use('/api/clients', clientsRoute);
 
 /* STATIC FILES - Angular App */
-// Serve static files from the Angular build directory
+// Check if Angular build directory and index.html exist
 const angularBuildPath = path.join(__dirname, '../../client/dist/apollo-ng/browser');
-app.use(express.static(angularBuildPath));
+const indexPath = path.join(angularBuildPath, 'index.html');
 
-// Handle Angular routing - serve index.html for all non-API routes
-app.get('*', (req, res) => {
-    // Don't interfere with API routes
-    if (req.path.startsWith('/api/')) {
-        return res.status(404).json({ error: 'API endpoint not found' });
-    }
+const angularAppExists = fs.existsSync(angularBuildPath) && fs.existsSync(indexPath);
+
+if (angularAppExists) {
+    console.log('Angular app found, serving static files from:', angularBuildPath);
     
-    // Serve the Angular app's index.html for all other routes
-    res.sendFile(path.join(angularBuildPath, 'index.html'));
-});
+    // Serve static files from the Angular build directory
+    app.use(express.static(angularBuildPath));
+
+    // Handle Angular routing - serve index.html for all non-API routes
+    app.get('*', (req, res) => {
+        // Don't interfere with API routes
+        if (req.path.startsWith('/api/')) {
+            return res.status(404).json({ error: 'API endpoint not found' });
+        }
+        
+        // Serve the Angular app's index.html for all other routes
+        res.sendFile(indexPath);
+    });
+} else {
+    console.log('Angular app not found at:', angularBuildPath);
+    console.log('Make sure to build the Angular app with: ng build');
+    
+    // Provide a helpful message for non-API routes when Angular app is not available
+    app.get('*', (req, res) => {
+        if (req.path.startsWith('/api/')) {
+            return res.status(404).json({ error: 'API endpoint not found' });
+        }
+        
+        res.status(404).json({ 
+            error: 'Angular app not found',
+            message: 'Please build the Angular app first with: ng build',
+            expectedPath: angularBuildPath
+        });
+    });
+}
 
 export default app;
