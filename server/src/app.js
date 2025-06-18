@@ -1,5 +1,6 @@
 'use strict'
 
+import compression from 'compression';
 import cors from 'cors';
 import express from 'express';
 import fs from 'fs';
@@ -17,6 +18,22 @@ const __dirname = path.dirname(__filename);
 
 /* SERVER & PARAMETERS */
 const app = express();
+
+/* COMPRESSION */
+// Enable compression for all responses when browser supports it
+app.use(compression({
+    // Only compress responses larger than 1KB
+    // threshold: 1024,
+    // Compress all content types
+    filter: (req, res) => {
+        if (req.headers['x-no-compression']) {
+            return false;
+        }
+        return compression.filter(req, res);
+    },
+    // Set compression level (0-9, higher = more compression but slower)
+    level: 6
+}));
 
 /* SECURITY */
 app.use(helmet({
