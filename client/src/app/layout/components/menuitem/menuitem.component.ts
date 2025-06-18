@@ -1,79 +1,19 @@
-import {Component, computed, ElementRef, HostBinding, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {NavigationEnd, Router, RouterModule} from '@angular/router';
-import {animate, AnimationEvent, state, style, transition, trigger} from '@angular/animations';
-import {Subscription} from 'rxjs';
-import {filter} from 'rxjs/operators';
-import {DomHandler} from 'primeng/dom';
-import {TooltipModule} from 'primeng/tooltip';
-import {CommonModule} from '@angular/common';
-import {RippleModule} from 'primeng/ripple';
-import {LayoutService} from '@/layout/service/layout.service';
+import { LayoutService } from '@/layout/service/layout.service';
+import { animate, AnimationEvent, state, style, transition, trigger } from '@angular/animations';
+import { CommonModule } from '@angular/common';
+import { Component, computed, ElementRef, HostBinding, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { DomHandler } from 'primeng/dom';
+import { RippleModule } from 'primeng/ripple';
+import { TooltipModule } from 'primeng/tooltip';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 @Component({
     // eslint-disable-next-line @angular-eslint/component-selector
     selector: '[app-menuitem]',
     imports: [CommonModule, RouterModule, RippleModule, TooltipModule],
-    template: `
-        <ng-container>
-            <div *ngIf="root && item.visible !== false" class="layout-menuitem-root-text">
-                {{ item.label }}
-            </div>
-            <a
-                *ngIf="(!item.routerLink || item.items) && item.visible !== false"
-                [attr.href]="item.url"
-                (click)="itemClick($event)"
-                (mouseenter)="onMouseEnter()"
-                [ngClass]="item.class"
-                [attr.target]="item.target"
-                tabindex="0"
-                pRipple
-                [pTooltip]="item.label"
-                [tooltipDisabled]="!(isSlim() && root && !active)"
-            >
-                <i [ngClass]="item.icon" class="layout-menuitem-icon"></i>
-                <span class="layout-menuitem-text">{{ item.label }}</span>
-                <i class="pi pi-fw pi-angle-down layout-submenu-toggler" *ngIf="item.items"></i>
-            </a>
-            <a
-                *ngIf="item.routerLink && !item.items && item.visible !== false"
-                (click)="itemClick($event)"
-                (mouseenter)="onMouseEnter()"
-                [ngClass]="item.class"
-                [routerLink]="item.routerLink"
-                routerLinkActive="active-route"
-                [routerLinkActiveOptions]="
-                    item.routerLinkActiveOptions || {
-                        paths: 'exact',
-                        queryParams: 'ignored',
-                        matrixParams: 'ignored',
-                        fragment: 'ignored'
-                    }
-                "
-                [fragment]="item.fragment"
-                [queryParamsHandling]="item.queryParamsHandling"
-                [preserveFragment]="item.preserveFragment"
-                [skipLocationChange]="item.skipLocationChange"
-                [replaceUrl]="item.replaceUrl"
-                [state]="item.state"
-                [queryParams]="item.queryParams"
-                [attr.target]="item.target"
-                tabindex="0"
-                pRipple
-                [pTooltip]="item.label"
-                [tooltipDisabled]="!(isSlim() && root)"
-            >
-                <i [ngClass]="item.icon" class="layout-menuitem-icon"></i>
-                <span class="layout-menuitem-text">{{ item.label }}</span>
-                <i class="pi pi-fw pi-angle-down layout-submenu-toggler" *ngIf="item.items"></i>
-            </a>
-
-            <ul #submenu *ngIf="item.items && item.visible !== false" [@children]="submenuAnimation" (@children.done)="onSubmenuAnimated($event)">
-                <ng-template ngFor let-child let-i="index" [ngForOf]="item.items">
-                    <li app-menuitem [item]="child" [index]="i" [parentKey]="key" [class]="child['badgeClass']"></li>
-                </ng-template>
-            </ul>
-        </ng-container>
-    `,
+    templateUrl: './menuitem.component.html',
     animations: [
         trigger('children', [
             state(

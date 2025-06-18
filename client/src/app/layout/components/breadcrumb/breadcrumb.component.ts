@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
 import {
     ActivatedRouteSnapshot,
     NavigationEnd,
@@ -18,19 +18,7 @@ interface Breadcrumb {
     selector: '[app-breadcrumb]',
     standalone: true,
     imports: [CommonModule, RouterModule],
-    template: `<nav class="layout-breadcrumb">
-        <ol>
-            <ng-template
-                ngFor
-                let-item
-                let-last="last"
-                [ngForOf]="breadcrumbs$ | async"
-            >
-                <li>{{ item.label }}</li>
-                <li *ngIf="!last" class="layout-breadcrumb-chevron">/</li>
-            </ng-template>
-        </ol>
-    </nav> `,
+    templateUrl: './breadcrumb.component.html'
 })
 export class AppBreadcrumb {
     private readonly _breadcrumbs$ = new BehaviorSubject<Breadcrumb[]>([]);

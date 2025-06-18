@@ -1,0 +1,12 @@
+<div class="layout-container" [ngClass]="containerClass">
+    <div app-sidebar></div>
+    <div class="layout-content-wrapper">
+        <div app-topbar></div>
+        <div class="layout-content">
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+    <div app-profilesidebar></div>
+    <div class="layout-mask animate-fadein"></div>
+</div>
+<app-configurator [simple]="false"></app-configurator>

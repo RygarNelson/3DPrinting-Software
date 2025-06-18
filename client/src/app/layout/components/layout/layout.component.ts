@@ -1,12 +1,12 @@
-import { Component, Renderer2, ViewChild } from '@angular/core';
+import { LayoutService } from '@/layout/service/layout.service';
 import { CommonModule } from '@angular/common';
+import { Component, Renderer2, ViewChild } from '@angular/core';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
-import { AppTopbar } from './app.topbar';
-import { AppSidebar } from './app.sidebar';
-import { LayoutService } from '@/layout/service/layout.service';
-import { AppConfigurator } from './app.configurator';
-import { AppProfileSidebar } from './app.profilesidebar';
+import { AppConfigurator } from '../configurator/configurator.component';
+import { AppProfileSidebar } from '../profilesidebar/profilesidebar.component';
+import { AppSidebar } from '../sidebar/sidebar.component';
+import { AppTopbar } from '../topbar/topbar.component';
 
 @Component({
     selector: 'app-layout',
@@ -16,21 +16,10 @@ import { AppProfileSidebar } from './app.profilesidebar';
         AppTopbar,
         AppSidebar,
         RouterModule,
-        AppConfigurator,
         AppProfileSidebar,
+        AppConfigurator
     ],
-    template: `<div class="layout-container" [ngClass]="containerClass">
-        <div app-sidebar></div>
-        <div class="layout-content-wrapper">
-            <div app-topbar></div>
-            <div class="layout-content">
-                <router-outlet></router-outlet>
-            </div>
-        </div>
-        <div app-profilesidebar></div>
-        <app-configurator></app-configurator>
-        <div class="layout-mask animate-fadein"></div>
-    </div> `,
+    templateUrl: './layout.component.html'
 })
 export class AppLayout {
     overlayMenuOpenSubscription: Subscription;

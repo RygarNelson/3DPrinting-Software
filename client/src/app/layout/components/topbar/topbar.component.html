@@ -1,0 +1,18 @@
+<div class="layout-topbar">
+    <div class="topbar-start">
+        <button #menubutton type="button" class="topbar-menubutton p-link p-trigger" (click)="onMenuButtonClick()">
+            <i class="pi pi-bars"></i>
+        </button>
+        <nav app-breadcrumb class="topbar-breadcrumb"></nav>
+    </div>
+
+    <div class="topbar-end">
+        <ul class="topbar-menu">
+            <li class="topbar-profile">
+                <button type="button" class="p-link" (click)="onProfileButtonClick()">
+                    <img src="assets/layout/images/avatar.png" alt="Profile" />
+                </button>
+            </li>
+        </ul>
+    </div>
+</div> 

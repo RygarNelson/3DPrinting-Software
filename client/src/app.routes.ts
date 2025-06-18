@@ -1,5 +1,5 @@
-import { AppLayout } from '@/layout/components/app.layout';
-import { Notfound } from '@/pages/notfound/notfound';
+import { AppLayout } from '@/layout/components/layout/layout.component';
+import { Notfound } from '@/notfound/notfound';
 import { Routes } from '@angular/router';
 
 export const appRoutes: Routes = [
@@ -9,15 +9,15 @@ export const appRoutes: Routes = [
         children: [
             {
                 path: '',
-                loadComponent: () => import('./app/pages/dashboards/ecommercedashboard').then(c => c.EcommerceDashboard),
-                data: { breadcrumb: 'E-Commerce Dashboard' },
+                loadComponent: () => import('./app/dashboard/dashboard.component').then(c => c.EcommerceDashboard),
+                data: { breadcrumb: 'Dashboard' },
             },
         ],
     },
-    { path: 'notfound', component: Notfound },
     {
         path: 'auth',
-        loadComponent: () => import('./app/pages/auth/login').then(c => c.Login),
+        loadComponent: () => import('./app/auth/auth.component').then(c => c.Login),
     },
+    { path: 'notfound', component: Notfound },
     { path: '**', redirectTo: '/notfound' },
 ];

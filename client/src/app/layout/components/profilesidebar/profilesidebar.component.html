@@ -1,18 +1,4 @@
-import { Component, computed } from '@angular/core';
-import { ButtonModule } from 'primeng/button';
-import { DrawerModule } from 'primeng/drawer';
-import { BadgeModule } from 'primeng/badge';
-import { LayoutService } from '@/layout/service/layout.service';
-
-@Component({
-    selector: '[app-profilesidebar]',
-    imports: [
-        ButtonModule,
-        DrawerModule,
-        BadgeModule,
-    ],
-    template: `
-        <p-drawer
+<p-drawer
             [visible]="visible()"
             (onHide)="onDrawerHide()"
             position="right"
@@ -257,19 +243,3 @@ import { LayoutService } from '@/layout/service/layout.service';
                 </ul>
             </div>
         </p-drawer>
-    `,
-})
-export class AppProfileSidebar {
-    constructor(public layoutService: LayoutService) {}
-
-    visible = computed(
-        () => this.layoutService.layoutState().profileSidebarVisible,
-    );
-
-    onDrawerHide() {
-        this.layoutService.layoutState.update((state) => ({
-            ...state,
-            profileSidebarVisible: false,
-        }));
-    }
-}
