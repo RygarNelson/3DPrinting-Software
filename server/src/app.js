@@ -91,7 +91,11 @@ if (angularAppExists) {
     console.log('Angular app found, serving static files from:', angularBuildPath);
     
     // Serve static files from the Angular build directory
-    app.use(express.static(angularBuildPath));
+    app.use(express.static(angularBuildPath, {
+        setHeaders: (res, path) => {
+            res.setHeader('Cache-Control', 'no-cache');
+        }
+    }));
 
     // Handle Angular routing - serve index.html for all non-API routes
     app.get('*', (req, res) => {
