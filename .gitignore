@@ -1,0 +1,6 @@
+
+/server/database
+client/package-lock.json
+client/node_modules
+client/.angular
+client/dist

@@ -1,0 +1,35 @@
+{
+  "name": "base-nodejs-express-server",
+  "version": "0.0.1",
+  "description": "Base Server",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "test": "nodemon server.js"
+  },
+  "keywords": [
+    "server"
+  ],
+  "author": "Daniele Moscati",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "compression": "^1.8.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^4.21.2",
+    "express-validator": "^7.2.1",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "nodemailer": "^7.0.3",
+    "nodemon": "^3.1.10",
+    "rotating-file-stream": "^3.2.6",
+    "sequelize": "^6.37.7",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "eslint": "^9.29.0"
+  }
+}
