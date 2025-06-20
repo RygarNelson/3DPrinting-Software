@@ -2,12 +2,15 @@ import { AppConfigurator } from '@/layout/components/configurator/configurator.c
 import { LayoutService } from '@/layout/service/layout.service';
 import { Component, computed, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
+import { ToastModule } from 'primeng/toast';
+import { AuthService } from 'src/services/auth.service';
 
 @Component({
     selector: 'app-login',
@@ -20,7 +23,11 @@ import { InputTextModule } from 'primeng/inputtext';
         AppConfigurator,
         IconFieldModule,
         InputIconModule,
-        ButtonModule
+        ButtonModule,
+        ToastModule
+    ],
+    providers: [
+        AuthService
     ],
     template: `
         <svg
@@ -80,6 +87,7 @@ import { InputTextModule } from 'primeng/inputtext';
                             pInputText
                             class="w-full md:w-[25rem]"
                             placeholder="Email"
+                            [(ngModel)]="email"
                         />
                     </p-iconfield>
 
@@ -91,6 +99,7 @@ import { InputTextModule } from 'primeng/inputtext';
                             pInputText
                             class="w-full md:w-[25rem]"
                             placeholder="Password"
+                            [(ngModel)]="password"
                         />
                     </p-iconfield>
                     
@@ -99,19 +108,47 @@ import { InputTextModule } from 'primeng/inputtext';
                         pRipple
                         label="Log In"
                         class="w-full"
-                        
+                        (click)="login()"
                     ></button>
                 </div>
             </div>
         </div>
 
         <app-configurator [simple]="false"/>
+        <p-toast [baseZIndex]="9999"/>
     `,
 })
 export class Login {
-    rememberMe: boolean = false;
+    email: string = '';
+    password: string = '';
 
     LayoutService = inject(LayoutService);
+    authService = inject(AuthService);
+    messageService = inject(MessageService);
+    router = inject(Router);
 
     isDarkTheme = computed(() => this.LayoutService.isDarkTheme());
+
+    login(): void {
+		this.authService.login(this.email, this.password).subscribe({
+			next: (result) => {
+				this.authService.registerLocalStorage(result.data);
+				setTimeout(() => this.messageService.add({
+					severity: 'success',
+					detail: 'Login effettuato con successo!',
+                    life: 3000
+				}), 100);
+				this.router.navigate(['/']);
+			},
+			error: (error) => {
+				this.messageService.add({
+					severity: 'error',
+					summary: 'Errore',
+					detail: error.error.error,
+                    life: undefined,
+                    sticky: true
+				});
+			}
+		});
+	}
 }

@@ -2,6 +2,7 @@ import { LayoutService } from '@/layout/service/layout.service';
 import { CommonModule } from '@angular/common';
 import { Component, Renderer2, ViewChild } from '@angular/core';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { ToastModule } from 'primeng/toast';
 import { filter, Subscription } from 'rxjs';
 import { AppConfigurator } from '../configurator/configurator.component';
 import { AppProfileSidebar } from '../profilesidebar/profilesidebar.component';
@@ -18,8 +19,10 @@ import { AppTopbar } from '../topbar/topbar.component';
         RouterModule,
         AppConfigurator,
         AppProfileSidebar,
+        ToastModule
     ],
-    template: `<div class="layout-container" [ngClass]="containerClass">
+    template: `
+    <div class="layout-container" [ngClass]="containerClass">
         <div app-sidebar></div>
         <div class="layout-content-wrapper">
             <div app-topbar></div>
@@ -30,7 +33,8 @@ import { AppTopbar } from '../topbar/topbar.component';
         <div app-profilesidebar></div>
         <app-configurator></app-configurator>
         <div class="layout-mask animate-fadein"></div>
-    </div> `,
+    </div>
+    <p-toast />`,
 })
 export class AppLayout {
     overlayMenuOpenSubscription: Subscription;
