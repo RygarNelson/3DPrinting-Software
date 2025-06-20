@@ -67,14 +67,9 @@ import { InputTextModule } from 'primeng/inputtext';
             >
                 <div class="mb-6">
                     <div
-                        class="text-surface-900 dark:text-surface-0 text-xl font-bold mb-2"
-                    >
+                        class="text-surface-900 dark:text-surface-0 text-xl font-bold mb-2">
                         Log in
                     </div>
-                    <span
-                        class="text-surface-600 dark:text-surface-200 font-medium"
-                        >Please enter your details</span
-                    >
                 </div>
                 <div class="flex flex-col">
                     <p-iconfield class="w-full mb-6">
@@ -98,40 +93,19 @@ import { InputTextModule } from 'primeng/inputtext';
                             placeholder="Password"
                         />
                     </p-iconfield>
-
-                    <div class="mb-6 flex flex-wrap gap-4">
-                        <div class="flex items-center">
-                            <p-checkbox
-                                name="checkbox"
-                                value="val"
-                                [(ngModel)]="rememberMe"
-                                styleClass="mr-2"
-                                class="flex"
-                                [binary]="true"
-                            ></p-checkbox>
-                            <label
-                                for="checkbox"
-                                class="text-surface-900 dark:text-surface-0 font-medium mr-20"
-                                >Remember Me</label
-                            >
-                        </div>
-                        <a
-                            class="text-surface-600 dark:text-surface-200 cursor-pointer hover:text-primary ml-auto transition-colors duration-300"
-                            >Reset password</a
-                        >
-                    </div>
+                    
                     <button
                         pButton
                         pRipple
                         label="Log In"
                         class="w-full"
-                        [routerLink]="['/']"
+                        
                     ></button>
                 </div>
             </div>
         </div>
 
-        <app-configurator [simple]="true"/>
+        <app-configurator [simple]="false"/>
     `,
 })
 export class Login {
