@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { AppMenuitem } from './app.menuitem';
+import { AppMenuitem } from '../menuitem/menuitem.component';
+
 
 @Component({
     selector: 'app-menu',

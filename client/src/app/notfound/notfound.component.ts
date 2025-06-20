@@ -1,4 +1,4 @@
-import { AppConfigurator } from '@/layout/components/app.configurator';
+import { AppConfigurator } from '@/layout/components/configurator/configurator.component';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';

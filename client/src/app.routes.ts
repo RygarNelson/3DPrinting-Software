@@ -1,5 +1,5 @@
-import { AppLayout } from '@/layout/components/app.layout';
 import { Routes } from '@angular/router';
+import { AppLayout } from './app/layout/components/layout/layout.component';
 
 export const appRoutes: Routes = [
     {
@@ -15,11 +15,11 @@ export const appRoutes: Routes = [
     },
     {
         path: 'login',
-        loadComponent: () => import('./app/login/login').then(c => c.Login),
+        loadComponent: () => import('./app/login/login.component').then(c => c.Login),
     },
     {
         path: 'notfound',
-        loadComponent: () => import('./app/notfound/notfound').then(c => c.Notfound),
+        loadComponent: () => import('./app/notfound/notfound.component').then(c => c.Notfound),
     },
     { path: '**', redirectTo: '/notfound' },
 ];

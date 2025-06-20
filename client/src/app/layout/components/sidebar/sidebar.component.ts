@@ -1,7 +1,7 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
-import { AppMenu } from './app.menu';
 import { LayoutService } from '@/layout/service/layout.service';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { AppMenu } from '../menu/menu.component';
 
 @Component({
     selector: '[app-sidebar]',

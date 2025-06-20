@@ -1,13 +1,13 @@
+import { AppConfigurator } from '@/layout/components/configurator/configurator.component';
+import { LayoutService } from '@/layout/service/layout.service';
 import { Component, computed, inject } from '@angular/core';
-import { CheckboxModule } from 'primeng/checkbox';
-import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { LayoutService } from '@/layout/service/layout.service';
-import { AppConfigurator } from '@/layout/components/app.configurator';
+import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
 
 @Component({
     selector: 'app-login',
