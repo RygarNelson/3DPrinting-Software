@@ -1,12 +1,14 @@
 import { LayoutService } from '@/layout/service/layout.service';
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { StyleClassModule } from 'primeng/styleclass';
+import { User } from 'src/models/User';
+import { AuthService } from 'src/services/auth.service';
 import { AppBreadcrumb } from '../breadcrumb/breadcrumb.component';
 
 
@@ -24,19 +26,30 @@ import { AppBreadcrumb } from '../breadcrumb/breadcrumb.component';
 
         <div class="topbar-end">
             <ul class="topbar-menu">
-                <li class="topbar-profile">
-                    <button type="button" class="p-link" (click)="onProfileButtonClick()">
-                        <img src="/layout/images/avatar.png" alt="Profile" />
+                <li>
+                    <button pButton
+                            type="button" 
+                            class="p-button-rounded p-button-secondary p-button-text"
+                            [label]="user.name + ' ' + user.surname" 
+                            icon="pi pi-user"
+                            iconPos="right"
+                            (click)="onProfileButtonClick()" >
                     </button>
                 </li>
             </ul>
         </div>
     </div>`
 })
-export class AppTopbar {
+export class AppTopbar implements OnInit {
     @ViewChild('menubutton') menuButton!: ElementRef;
 
-    constructor(public layoutService: LayoutService) {}
+    public user: User = new User();
+
+    constructor(public layoutService: LayoutService, private authService: AuthService) {}
+
+    ngOnInit(): void {
+        this.user = this.authService.getUserInformation();
+    }
 
     onMenuButtonClick() {
         this.layoutService.onMenuToggle();
