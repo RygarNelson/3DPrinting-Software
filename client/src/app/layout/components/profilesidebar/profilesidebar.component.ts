@@ -29,14 +29,14 @@ import { AuthService } from 'src/services/auth.service';
                     class="text-surface-500 dark:text-surface-400 font-medium mb-8">{{user.email}}</span>
 
                 <ul class="list-none m-0 p-0">
-                    <li>
+                    <li (click)="logout()">
                         <a
                             class="cursor-pointer flex mb-4 p-4 items-center border border-surface-200 dark:border-surface-700 rounded hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors duration-150">
                             <span>
                         <i class="pi pi-power-off text-xl text-primary"></i>
                     </span>
                     <div class="ml-3">
-                        <span class="mb-2 font-semibold" (click)="logout()">Logout</span>
+                        <span class="mb-2 font-semibold">Logout</span>
                     </div>
                         </a>
                     </li>
@@ -47,13 +47,13 @@ import { AuthService } from 'src/services/auth.service';
 })
 export class AppProfileSidebar implements OnInit {
     public user: User = new User();
-    
+
     constructor(
         public layoutService: LayoutService,
         private router: Router,
         private messageService: MessageService,
         private authService: AuthService
-    ) {}
+    ) { }
 
     ngOnInit(): void {
         this.user = this.authService.getUserInformation();
@@ -71,12 +71,13 @@ export class AppProfileSidebar implements OnInit {
     }
 
     logout(): void {
+        this.onDrawerHide();
         this.authService.removeLocalStorage();
         setTimeout(() => this.messageService.add({
-			severity: 'success',
-			detail: 'Logout effettuato correttamente!',
+            severity: 'success',
+            detail: 'Logout effettuato correttamente!',
             life: 2000
-		}), 100);
+        }), 100);
         this.router.navigate(['/login']);
     }
 }
