@@ -1,6 +1,4 @@
-import { Login } from '@/auth/login';
 import { AppLayout } from '@/layout/components/app.layout';
-import { Notfound } from '@/notfound';
 import { Routes } from '@angular/router';
 
 export const appRoutes: Routes = [
@@ -16,11 +14,12 @@ export const appRoutes: Routes = [
         ]
     },
     {
-        path: 'auth',
-        children: [
-            { path: 'login', component: Login },
-        ]
+        path: 'login',
+        loadComponent: () => import('./app/login/login').then(c => c.Login),
     },
-    { path: 'notfound', component: Notfound },
+    {
+        path: 'notfound',
+        loadComponent: () => import('./app/notfound/notfound').then(c => c.Notfound),
+    },
     { path: '**', redirectTo: '/notfound' },
 ];
