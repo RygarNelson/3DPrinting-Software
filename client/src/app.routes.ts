@@ -1,6 +1,6 @@
+import { Login } from '@/auth/login';
 import { AppLayout } from '@/layout/components/app.layout';
-import { Login } from '@/pages/auth/login';
-import { Notfound } from '@/pages/notfound/notfound';
+import { Notfound } from '@/notfound';
 import { Routes } from '@angular/router';
 
 export const appRoutes: Routes = [
