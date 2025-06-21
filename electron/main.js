@@ -35,7 +35,7 @@ function createLoadingWindow() {
             contextIsolation: true,
             enableRemoteModule: false
         },
-        icon: path.join(__dirname, '../assets/icon.png'),
+        icon: path.join(__dirname, './assets/icon.png'),
         title: 'Loading...'
     });
 
@@ -61,7 +61,7 @@ function createWindow() {
             enableRemoteModule: false,
             preload: path.join(__dirname, 'preload.js')
         },
-        icon: path.join(__dirname, '../assets/icon.png'),
+        icon: path.join(__dirname, './assets/icon.png'),
         title: '3D Printing Software',
         show: false // Don't show until ready
     });

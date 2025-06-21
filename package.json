@@ -6,13 +6,13 @@
   "type": "module",
   "scripts": {
     "start": "electron .",
-    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\" \"wait-on http://localhost:3000 && npm run dev:electron\"",
-    "dev:server": "cd server && npm run test",
-    "dev:client": "cd client && npm start",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\" \"npm run dev:electron\"",
+    "dev:server": "cd server && node server.js",
+    "dev:client": "cd client && ng serve",
     "dev:electron": "cross-env NODE_ENV=development electron electron/dev.js",
     "build": "npm run build:client && npm run copy:angular && npm run build:electron",
-    "build:client": "cd client && npm run build",
-    "copy:angular": "node scripts/copy-angular.js",
+    "build:client": "cd client && ng build --configuration=production",
+    "copy:angular": "node electron/scripts/copy-angular.js",
     "build:electron": "electron-builder",
     "dist": "npm run build && electron-builder --publish=never",
     "postinstall": "electron-builder install-app-deps"

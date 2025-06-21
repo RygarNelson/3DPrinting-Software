@@ -6,8 +6,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Paths
-const sourcePath = path.join(__dirname, '../client/dist/apollo-ng/browser');
-const targetPath = path.join(__dirname, '../server/client_static_files');
+const sourcePath = path.join(__dirname, '../../client/dist/apollo-ng/browser');
+const targetPath = path.join(__dirname, '../../server/client_static_files');
 
 console.log('Copying Angular build files...');
 console.log('From:', sourcePath);
