@@ -81,17 +81,17 @@ app.use('/api/auth', authRoute);
 app.use('/api/stampante', stampanteRoute);
 
 /* STATIC FILES - Angular App */
-// Check if Angular build directory and index.html exist
-const angularBuildPath = path.join(__dirname, '../../client/dist/apollo-ng/browser');
-const indexPath = path.join(angularBuildPath, 'index.html');
+// Check if Angular static files directory exists
+const angularStaticPath = path.join(__dirname, '../client_static_files');
+const indexPath = path.join(angularStaticPath, 'index.html');
 
-const angularAppExists = fs.existsSync(angularBuildPath) && fs.existsSync(indexPath);
+const angularAppExists = fs.existsSync(angularStaticPath) && fs.existsSync(indexPath);
 
 if (angularAppExists) {
-    console.log('Angular app found, serving static files from:', angularBuildPath);
+    console.log('Angular static files found, serving from:', angularStaticPath);
     
-    // Serve static files from the Angular build directory
-    app.use(express.static(angularBuildPath, {
+    // Serve static files from the Angular static files directory
+    app.use(express.static(angularStaticPath, {
         setHeaders: (res, path) => {
             res.setHeader('Cache-Control', 'no-cache');
         }
@@ -107,6 +107,9 @@ if (angularAppExists) {
         // Serve the Angular app's index.html for all other routes
         res.sendFile(indexPath);
     });
+} else {
+    console.log('Angular static files not found at:', angularStaticPath);
+    console.log('Make sure to run the build script to copy Angular files to server/client_static_files');
 }
 
 export default app;

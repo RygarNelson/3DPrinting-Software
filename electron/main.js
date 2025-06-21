@@ -35,7 +35,7 @@ function createWindow() {
         title: '3D Printing Software'
     });
 
-    // Load the Angular app
+    // Load the Angular app from the Express server
     const isDev = process.env.NODE_ENV === 'development';
     
     if (isDev) {
@@ -43,8 +43,8 @@ function createWindow() {
         mainWindow.loadURL('http://localhost:4200');
         mainWindow.webContents.openDevTools();
     } else {
-        // In production, load the built Angular app
-        mainWindow.loadFile(path.join(__dirname, '../client/dist/apollo-ng/browser/index.html'));
+        // In production, load from the Express server
+        mainWindow.loadURL('http://localhost:3000');
     }
 
     // Handle window closed

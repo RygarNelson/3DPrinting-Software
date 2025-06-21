@@ -13,6 +13,9 @@ build/
 *.sqlite3
 server/database/
 
+# Copied Angular static files
+server/client_static_files/
+
 # Logs
 logs/
 *.log
