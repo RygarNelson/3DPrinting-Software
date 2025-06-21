@@ -10,8 +10,8 @@ import path from 'path';
 import * as rfs from 'rotating-file-stream';
 import { fileURLToPath } from 'url';
 import { connectToDatabase, initializeDatabase } from './db.js';
-import authRoute from './routes/auth.js';
-import clientsRoute from './routes/clients.js';
+import authRoute from './routes/auth.route.js';
+import stampanteRoute from './routes/stampante.route.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -78,7 +78,7 @@ await initializeDatabase();
 /* ROUTES */
 // API Routes
 app.use('/api/auth', authRoute);
-app.use('/api/clients', clientsRoute);
+app.use('/api/stampante', stampanteRoute);
 
 /* STATIC FILES - Angular App */
 // Check if Angular build directory and index.html exist
@@ -106,22 +106,6 @@ if (angularAppExists) {
         
         // Serve the Angular app's index.html for all other routes
         res.sendFile(indexPath);
-    });
-} else {
-    console.log('Angular app not found at:', angularBuildPath);
-    console.log('Make sure to build the Angular app with: ng build');
-    
-    // Provide a helpful message for non-API routes when Angular app is not available
-    app.get('*', (req, res) => {
-        if (req.path.startsWith('/api/')) {
-            return res.status(404).json({ error: 'API endpoint not found' });
-        }
-        
-        res.status(404).json({ 
-            error: 'Angular app not found',
-            message: 'Please build the Angular app first with: ng build',
-            expectedPath: angularBuildPath
-        });
     });
 }
 
