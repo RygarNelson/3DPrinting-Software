@@ -7,15 +7,13 @@
     <ng-template pTemplate="content">
       <!-- Table -->
       <p-table 
-        [value]="stampanti" 
-        [loading]="loading"
+        [value]="stampanti"
         [paginator]="true" 
-        [rows]="rows"
+        [rows]="filtri.limit"
         [totalRecords]="totalRecords"
-        [first]="first"
+        [first]="filtri.offset"
         [showCurrentPageReport]="true"
-        currentPageReportTemplate="Mostrando {first} a {last} di {totalRecords} stampanti"
-        [rowsPerPageOptions]="[10]"
+        currentPageReportTemplate="Mostrando da {first} a {last} di {totalRecords} stampanti"
         (onPage)="onPageChange($event)"
         styleClass="p-datatable-sm"
         responsiveLayout="scroll">
@@ -32,8 +30,8 @@
                       type="text" 
                       placeholder="Cerca stampanti..." 
                       class="w-full sm:w-auto"
-                      [value]="searchTerm"
-                      (input)="onSearchChange($event)">
+                      [(ngModel)]="filtri.search"
+                      (ngModelChange)="onSearchChange()">
                 </p-iconfield>
                 <div class="flex items-center gap-2 margin-left-auto">
                   <p-button 
@@ -99,10 +97,14 @@
         <ng-template pTemplate="emptymessage">
           <tr>
             <td colspan="4" class="text-center py-8">
-              <div class="flex flex-col items-center gap-2">
-                <i class="pi pi-inbox text-4xl text-gray-400"></i>
-                <p class="text-gray-500">Nessuna stampante trovata</p>
-              </div>
+                @if (loading) {
+                    <p-skeleton height="100px" width="100%" />
+                } @else {
+                    <div class="flex flex-col items-center gap-2">
+                        <i class="pi pi-inbox text-4xl text-gray-400"></i>
+                        <p class="text-gray-500">Nessuna stampante trovata</p>
+                    </div>
+                }
             </td>
           </tr>
         </ng-template>

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ConfirmationService } from 'primeng/api';
@@ -9,8 +9,9 @@ import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
+import { SkeletonModule } from 'primeng/skeleton';
 import { TableModule } from 'primeng/table';
-import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { StampanteListingModel, StampanteListingResponse } from '../../../models/stampante/stampante-listing';
 import { StampanteListingFiltri } from '../../../models/stampante/stampante-listing-filtri';
 import { StampanteService } from '../../../services/stampante.service';
@@ -26,7 +27,8 @@ import { StampanteService } from '../../../services/stampante.service';
     InputTextModule,
     ConfirmPopupModule,
     IconFieldModule,
-    InputIconModule
+    InputIconModule,
+    SkeletonModule
   ],
   templateUrl: './stampante-listing.component.html',
   styleUrl: './stampante-listing.component.scss',
@@ -35,63 +37,41 @@ import { StampanteService } from '../../../services/stampante.service';
     StampanteService
   ]
 })
-export class StampanteListingComponent implements OnInit {
-  @ViewChild('searchInput') searchInput: any;
-
+export class StampanteListingComponent implements OnInit, OnDestroy {
   // Data properties
   stampanti: StampanteListingModel[] = [];
   totalRecords: number = 0;
   loading: boolean = false;
 
   // Filter properties
-  filtri: StampanteListingFiltri = new StampanteListingFiltri();
-  searchTerm: string = '';
+  filtri: StampanteListingFiltri = {
+    offset: 0,
+    limit: 10,
+    search: ''
+  };
 
-  // Pagination
-  first: number = 0;
-  rows: number = 10;
-
-  // Search debounce
-  private searchSubject = new Subject<string>();
-  private destroy$ = new Subject<void>();
+  private stampantiSubscription?: Subscription;
+  private stampanteDeleteSubscription?: Subscription;
 
   constructor(
     private stampanteService: StampanteService,
     private router: Router,
     private confirmationService: ConfirmationService
-  ) {
-    // Setup search debounce
-    this.searchSubject
-      .pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        takeUntil(this.destroy$)
-      )
-      .subscribe(searchTerm => {
-        this.filtri.search = searchTerm;
-        this.filtri.offset = 0;
-        this.first = 0;
-        this.loadStampanti();
-      });
-  }
+  ) {}
 
   ngOnInit(): void {
     this.loadStampanti();
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this.stampantiSubscription?.unsubscribe();
+    this.stampanteDeleteSubscription?.unsubscribe();
   }
 
-  /**
-   * Load stampanti with current filters
-   */
   loadStampanti(): void {
     this.loading = true;
     
-    this.stampanteService.getListing(this.filtri)
-      .pipe(takeUntil(this.destroy$))
+    this.stampantiSubscription = this.stampanteService.getListing(this.filtri)
       .subscribe({
         next: (response: StampanteListingResponse) => {
           this.stampanti = response.data;
@@ -105,48 +85,29 @@ export class StampanteListingComponent implements OnInit {
       });
   }
 
-  /**
-   * Handle search input changes
-   */
-  onSearchChange(event: any): void {
-    this.searchSubject.next(event.target.value);
+  onSearchChange(): void {
+    this.filtri.offset = 0;
+    this.loadStampanti();
   }
 
-  /**
-   * Handle table pagination
-   */
   onPageChange(event: any): void {
-    this.first = event.first;
-    this.rows = event.rows;
     this.filtri.offset = event.first;
     this.filtri.limit = event.rows;
     this.loadStampanti();
   }
 
-  /**
-   * Refresh the table data
-   */
   refreshTable(): void {
     this.loadStampanti();
   }
 
-  /**
-   * Navigate to add new stampante
-   */
   addNewStampante(): void {
     this.router.navigate(['/stampante/manager']);
   }
 
-  /**
-   * Navigate to edit stampante
-   */
   editStampante(stampante: StampanteListingModel): void {
     this.router.navigate(['/stampante/manager', stampante.id]);
   }
 
-  /**
-   * Show delete confirmation popup
-   */
   confirmDelete(event: Event, stampante: StampanteListingModel): void {
     this.confirmationService.confirm({
       target: event.target as EventTarget,
@@ -161,12 +122,8 @@ export class StampanteListingComponent implements OnInit {
     });
   }
 
-  /**
-   * Delete stampante
-   */
   private deleteStampante(id: number): void {
-    this.stampanteService.delete(id)
-      .pipe(takeUntil(this.destroy$))
+    this.stampanteDeleteSubscription = this.stampanteService.delete(id)
       .subscribe({
         next: () => {
           // Reload the table after successful deletion
