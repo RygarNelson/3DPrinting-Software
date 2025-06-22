@@ -30,14 +30,28 @@ app.use(helmet({
 
 /* LOGGING */
 // Create a rotating write stream
-var accessLogStream = rfs.createStream('access.log', {
-    interval: '1d', // rotate daily
-    path: path.join(__dirname.substring(0, __dirname.length - 4), 'log')
-});
-app.use(morgan('combined', {
-    stream: accessLogStream
-}));
-app.use(morgan('combined'));
+try {
+    var accessLogStream = rfs.createStream('access.log', {
+        interval: '1d', // rotate daily
+        path: path.join(process.cwd(), 'log'), // Use process.cwd() for more reliable path
+        compress: 'gzip', // compress rotated files
+    });
+    
+    // Handle stream errors
+    accessLogStream.on('error', (err) => {
+        console.error('Access log stream error:', err);
+    });
+    
+    app.use(morgan('combined', {
+        stream: accessLogStream
+    }));
+    
+    console.log('Rotating file stream initialized successfully');
+} catch (error) {
+    console.error('Failed to initialize rotating file stream:', error);
+    // Fallback to console logging
+    app.use(morgan('combined'));
+}
 
 /* CORS */
 app.use(cors({credentials: true, origin: true}));
@@ -97,7 +111,6 @@ if (angularAppExists) {
     });
 } else {
     console.log('Angular static files not found at:', angularStaticPath);
-    console.log('Make sure to run the build script to copy Angular files to server/client_static_files');
 }
 
 export default app;

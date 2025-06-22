@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ConfirmationService } from 'primeng/api';
@@ -10,7 +10,7 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { SkeletonModule } from 'primeng/skeleton';
-import { TableModule } from 'primeng/table';
+import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { Subscription } from 'rxjs';
 import { StampanteListingModel, StampanteListingResponse } from '../../../models/stampante/stampante-listing';
 import { StampanteListingFiltri } from '../../../models/stampante/stampante-listing-filtri';
@@ -37,7 +37,7 @@ import { StampanteService } from '../../../services/stampante.service';
     StampanteService
   ]
 })
-export class StampanteListingComponent implements OnInit, OnDestroy {
+export class StampanteListingComponent implements OnDestroy {
   // Data properties
   stampanti: StampanteListingModel[] = [];
   totalRecords: number = 0;
@@ -60,10 +60,6 @@ export class StampanteListingComponent implements OnInit, OnDestroy {
     private confirmationService: ConfirmationService
   ) {}
 
-  ngOnInit(): void {
-    this.loadStampanti();
-  }
-
   ngOnDestroy(): void {
     this.stampantiSubscription?.unsubscribe();
     this.stampanteDeleteSubscription?.unsubscribe();
@@ -71,7 +67,7 @@ export class StampanteListingComponent implements OnInit, OnDestroy {
   }
 
   loadStampanti(): void {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 700);
     
     this.stampantiSubscription = this.stampanteService.getListing(this.filtri)
       .subscribe({
@@ -96,9 +92,18 @@ export class StampanteListingComponent implements OnInit, OnDestroy {
     this.loadStampanti();
   }
 
-  onPageChange(event: any): void {
+  loadData(event: TableLazyLoadEvent): void {
+    console.log(event);
     this.filtri.offset = event.first;
-    this.filtri.limit = event.rows;
+    this.filtri.limit = event.rows ?? 10;
+
+    if (event.sortField) {
+      this.filtri.order = {
+        column: typeof event.sortField === 'string' ? event.sortField : event.sortField[0],
+        direction: event.sortOrder === 1 ? 'ASC' : 'DESC'
+      }
+    }
+
     this.loadStampanti();
   }
 
@@ -135,7 +140,7 @@ export class StampanteListingComponent implements OnInit, OnDestroy {
   }
 
   private deleteStampante(id: number): void {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 700);
 
     this.stampanteDeleteSubscription = this.stampanteService.delete(id)
       .subscribe({

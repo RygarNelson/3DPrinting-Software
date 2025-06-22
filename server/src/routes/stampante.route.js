@@ -76,10 +76,11 @@ router.post(
 
             const projection = ['id', 'nome', 'descrizione'];
 
+            const count = await StampanteRepository.count(whereOptions);
+
             StampanteRepository
             .find(whereOptions, limit, offset, order, projection)
             .then((stampanti) => {
-                const count = StampanteRepository.count(whereOptions);
                 res.status(200).json({
                     success: true,
                     data: stampanti,
