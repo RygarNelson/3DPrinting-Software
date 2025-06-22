@@ -32,6 +32,7 @@ export class StampanteService {
    * Save or update a printer
    */
   save(stampante: StampanteManagerModel): Observable<any> {
+    console.log(`${this.api}/save`);
     return this.http.post(`${this.api}/save`, stampante);
   }
 

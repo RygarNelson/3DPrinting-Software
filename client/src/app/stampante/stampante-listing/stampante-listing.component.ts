@@ -74,6 +74,7 @@ export class StampanteListingComponent implements OnInit, OnDestroy {
     this.stampantiSubscription = this.stampanteService.getListing(this.filtri)
       .subscribe({
         next: (response: StampanteListingResponse) => {
+          console.log(response);
           this.stampanti = response.data;
           this.totalRecords = response.count;
           this.loading = false;

@@ -1,1 +1,42 @@
-<p>stampante-manager works!</p>
+<div class="p-4">
+    <p-card>
+        <ng-template pTemplate="header">
+            <div class="flex items-center flex-wrap gap-2 header-title">
+                <h2 class="text-xl font-semibold text-gray-800">{{stampante.id ? 'Modifica' : 'Nuova'}} Stampante</h2>
+                <div class="flex items-center gap-2 margin-left-auto">
+                    <p-button 
+                        icon="pi pi-arrow-left"
+                        label="Indietro"
+                        (click)="indietro()"
+                        [severity]="'secondary'"
+                    />
+                    <p-button 
+                        icon="pi pi-save"
+                        label="Salva"
+                        (click)="saveStampante()"
+                        [severity]="'primary'"
+                    />
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="content">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="flex flex-col flex-row w-full">
+                    <form-input-text 
+                        [label]="'Nome'"
+                        [property]="'nome'"
+                        [obligatory]="true"
+                        [listaErrori]="listaErrori"
+                        [(ngModel)]="stampante.nome"/>
+                </div>
+                <div class="flex flex-col flex-row w-full">
+                    <form-input-textarea 
+                        [label]="'Descrizione'"
+                        [property]="'descrizione'"
+                        [listaErrori]="listaErrori"
+                        [(ngModel)]="stampante.descrizione"/>
+                </div>
+            </div>
+        </ng-template>
+    </p-card>
+</div>

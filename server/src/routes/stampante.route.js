@@ -1,6 +1,8 @@
 'use strict'
 
 import express from 'express';
+import { validationResult } from 'express-validator';
+import { Op } from 'sequelize';
 import { authenticate } from '../middleware/authenticate.js';
 import StampanteRepository from '../repositories/stampante.repository.js';
 import validationSchema from '../schemas/stampante.schema.js';
@@ -115,12 +117,10 @@ router.post(
             });
         } else {
             try {
-                const stampante = await StampanteRepository.findOne(req.body.id);
-                if (stampante) {
-                    await StampanteRepository.updateOne(req, res);
-                }
-                else {
+                if (req.body.id) {
                     await StampanteRepository.insertOne(req, res);
+                } else {
+                    await StampanteRepository.updateOne(req, res);
                 }
             }
             catch (error) {
@@ -130,6 +130,10 @@ router.post(
                     technical_data: error
                 });
             }
+            return res.status(200).json({
+                success: true,
+                data: 'Stampante salvata con successo!'
+            });
         }
     }
 );

@@ -7,6 +7,7 @@ const validationSchema = {
         return checkSchema({
             nome: {
                 escape: true,
+                optional: false,
                 notEmpty: {
                     errorMessage: 'Il campo Nome non è valido'
                 }

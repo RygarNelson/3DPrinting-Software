@@ -24,12 +24,12 @@
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "nodemailer": "^7.0.3",
-    "nodemon": "^3.1.10",
     "rotating-file-stream": "^3.2.6",
     "sequelize": "^6.37.7",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
-    "eslint": "^9.29.0"
+    "eslint": "^9.29.0",
+    "nodemon": "^3.1.10"
   }
 }

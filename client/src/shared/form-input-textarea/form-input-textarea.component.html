@@ -1,0 +1,27 @@
+<div class="flex align-items-center">
+    <label [htmlFor]="property" class="block">{{label}}</label>
+    @if (obligatory) {
+        <span class="obligatory">*</span>
+    }
+    @if(infoMessage) {
+        <p-inputicon>
+            <i class="pi pi-info-circle ml-2" [pTooltip]="infoMessage"></i>
+        </p-inputicon>
+    }
+</div>
+<textarea 
+    pTextarea 
+    [id]="property"
+    class="w-full"
+    [ngClass]="{'input-error' : property | showError: listaErrori}"
+    [disabled]="disabled"
+    [placeholder]="placeholder"
+    [rows]="rows"
+    [(ngModel)]="value">
+</textarea>
+@if(property | showError: listaErrori) {
+    @for(error of property | errorMessages: listaErrori; track error) {
+        <small id="help" class="message-error block">{{error}}</small>
+    }
+}
+
