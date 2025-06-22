@@ -36,6 +36,17 @@ export class AppMenu {
                         routerLink: ['/'],
                     },
                 ]
+            },
+            {
+                label: 'Magazzino',
+                icon: 'pi pi-fw pi-box',
+                items: [
+                    {
+                        label: 'Stampanti',
+                        icon: 'pi pi-fw pi-print',
+                        routerLink: ['/stampante/listing'],
+                    }
+                ]
             }
         ];
     }

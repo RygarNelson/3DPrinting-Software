@@ -31,6 +31,19 @@ const User = sequelize.define('User', {
         allowNull: false
     }
 }, {
+    tableName: "T_UTENTI",
+    indexes: [
+        {
+            name: 'IX_T_UTENTI_EMAIL',
+            unique: false,
+            fields: ['email']
+        },
+        {
+            name: 'IX_T_UTENTI_PASSWORD',
+            unique: false,
+            fields: ['password']
+        }
+    ],
     timestamps: true
 });
 

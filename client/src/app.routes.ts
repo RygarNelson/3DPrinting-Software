@@ -13,6 +13,26 @@ export const appRoutes: Routes = [
                 path: '',
                 loadComponent: () => import('./app/dashboard/dashboard.component').then(c => c.DashboardComponent),
                 data: { breadcrumb: 'Dashboard' },
+            },
+            {
+                path: 'stampante',
+                redirectTo: 'stampante/listing',
+                pathMatch: 'full',
+            },
+            {
+                path: 'stampante/listing',
+                loadComponent: () => import('./app/stampante/stampante-listing/stampante-listing.component').then(c => c.StampanteListingComponent),
+                data: { breadcrumb: 'Stampanti' },
+            },
+            {
+                path: 'stampante/manager',
+                loadComponent: () => import('./app/stampante/stampante-manager/stampante-manager.component').then(c => c.StampanteManagerComponent),
+                data: { breadcrumb: 'Nuova Stampante' },
+            },
+            {
+                path: 'stampante/manager/:id',
+                loadComponent: () => import('./app/stampante/stampante-manager/stampante-manager.component').then(c => c.StampanteManagerComponent),
+                data: { breadcrumb: 'Modifica Stampante' },
             }
         ]
     },

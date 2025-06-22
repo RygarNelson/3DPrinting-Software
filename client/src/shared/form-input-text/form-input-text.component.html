@@ -1,0 +1,25 @@
+<div class="flex align-items-center">
+    <label [htmlFor]="property" class="block">{{label}}</label>
+    @if (obligatory) {
+        <span class="obligatory">*</span>
+    }
+    @if(infoMessage) {
+        <i class="pi pi-info-circle info-icon" [pTooltip]="infoMessage"></i>
+    }
+</div>
+<input 
+    pInputText 
+    [id]="property" 
+    [type]="type"
+    class="w-full"
+    [ngClass]="{'input-error' : property | showError: listaErrori}"
+    [disabled]="disabled"
+    [placeholder]="placeholder"
+    [maxlength]="maxlength"
+    [(ngModel)]="value" />
+@if(property | showError: listaErrori) {
+    @for(error of property | errorMessages: listaErrori; track error) {
+        <small id="help" class="message-error block">{{error}}</small>
+    }
+}
+

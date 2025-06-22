@@ -1,0 +1,31 @@
+$error-color: #ff0000;
+$obligatory-color: #ff0000;
+$info-color: #337bbe;
+
+.header-title {
+    padding-top: 1.5rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+.input-error {
+    border: 1px solid $error-color !important;
+}
+
+.message-error {
+    color: $error-color;
+}
+
+.obligatory {
+    color: $obligatory-color;
+    padding-left: 0.25rem;
+}
+
+.info-icon {
+    color: $info-color;
+    padding-left: 0.25rem;
+}
+
+.margin-left-auto {
+    margin-left: auto;
+}

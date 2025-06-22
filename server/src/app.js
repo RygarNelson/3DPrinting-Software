@@ -10,8 +10,8 @@ import path from 'path';
 import * as rfs from 'rotating-file-stream';
 import { fileURLToPath } from 'url';
 import { connectToDatabase, initializeDatabase } from './db.js';
-import authRoute from './routes/auth.js';
-import clientsRoute from './routes/clients.js';
+import authRoute from './routes/auth.route.js';
+import stampanteRoute from './routes/stampante.route.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,19 +21,7 @@ const app = express();
 
 /* COMPRESSION */
 // Enable compression for all responses when browser supports it
-app.use(compression({
-    // Only compress responses larger than 1KB
-    // threshold: 1024,
-    // Compress all content types
-    filter: (req, res) => {
-        if (req.headers['x-no-compression']) {
-            return false;
-        }
-        return compression.filter(req, res);
-    },
-    // Set compression level (0-9, higher = more compression but slower)
-    level: 6
-}));
+app.use(compression());
 
 /* SECURITY */
 app.use(helmet({
@@ -42,14 +30,28 @@ app.use(helmet({
 
 /* LOGGING */
 // Create a rotating write stream
-var accessLogStream = rfs.createStream('access.log', {
-    interval: '1d', // rotate daily
-    path: path.join(__dirname.substring(0, __dirname.length - 4), 'log')
-});
-app.use(morgan('combined', {
-    stream: accessLogStream
-}));
-app.use(morgan('combined'));
+try {
+    var accessLogStream = rfs.createStream('access.log', {
+        interval: '1d', // rotate daily
+        path: path.join(process.cwd(), 'log'), // Use process.cwd() for more reliable path
+        compress: 'gzip', // compress rotated files
+    });
+    
+    // Handle stream errors
+    accessLogStream.on('error', (err) => {
+        console.error('Access log stream error:', err);
+    });
+    
+    app.use(morgan('combined', {
+        stream: accessLogStream
+    }));
+    
+    console.log('Rotating file stream initialized successfully');
+} catch (error) {
+    console.error('Failed to initialize rotating file stream:', error);
+    // Fallback to console logging
+    app.use(morgan('combined'));
+}
 
 /* CORS */
 app.use(cors({credentials: true, origin: true}));
@@ -78,20 +80,20 @@ await initializeDatabase();
 /* ROUTES */
 // API Routes
 app.use('/api/auth', authRoute);
-app.use('/api/clients', clientsRoute);
+app.use('/api/stampante', stampanteRoute);
 
 /* STATIC FILES - Angular App */
-// Check if Angular build directory and index.html exist
-const angularBuildPath = path.join(__dirname, '../../client/dist/apollo-ng/browser');
-const indexPath = path.join(angularBuildPath, 'index.html');
+// Check if Angular static files directory exists
+const angularStaticPath = path.join(__dirname, '../client_static_files');
+const indexPath = path.join(angularStaticPath, 'index.html');
 
-const angularAppExists = fs.existsSync(angularBuildPath) && fs.existsSync(indexPath);
+const angularAppExists = fs.existsSync(angularStaticPath) && fs.existsSync(indexPath);
 
 if (angularAppExists) {
-    console.log('Angular app found, serving static files from:', angularBuildPath);
+    console.log('Angular static files found, serving from:', angularStaticPath);
     
-    // Serve static files from the Angular build directory
-    app.use(express.static(angularBuildPath, {
+    // Serve static files from the Angular static files directory
+    app.use(express.static(angularStaticPath, {
         setHeaders: (res, path) => {
             res.setHeader('Cache-Control', 'no-cache');
         }
@@ -108,21 +110,7 @@ if (angularAppExists) {
         res.sendFile(indexPath);
     });
 } else {
-    console.log('Angular app not found at:', angularBuildPath);
-    console.log('Make sure to build the Angular app with: ng build');
-    
-    // Provide a helpful message for non-API routes when Angular app is not available
-    app.get('*', (req, res) => {
-        if (req.path.startsWith('/api/')) {
-            return res.status(404).json({ error: 'API endpoint not found' });
-        }
-        
-        res.status(404).json({ 
-            error: 'Angular app not found',
-            message: 'Please build the Angular app first with: ng build',
-            expectedPath: angularBuildPath
-        });
-    });
+    console.log('Angular static files not found at:', angularStaticPath);
 }
 
 export default app;

@@ -1,6 +1,13 @@
 /* You can add global styles to this file, and also import other style files */
-@use './tailwind.css';
+// Tailwind
+@use "../node_modules/tailwindcss/base";
+@use "../node_modules/tailwindcss/components";
+@use "../node_modules/tailwindcss/utilities";
+
+// PrimeNG
 @use './assets/layout/layout.scss';
 @use 'primeicons/primeicons.css';
 @use './assets/demo/demo.scss';
 
+// Utilities
+@use './assets/app-utilities.scss';
