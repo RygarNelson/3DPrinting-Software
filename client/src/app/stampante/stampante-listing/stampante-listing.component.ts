@@ -67,7 +67,7 @@ export class StampanteListingComponent implements OnDestroy {
   }
 
   loadStampanti(): void {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 700);
+    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
     
     this.stampantiSubscription = this.stampanteService.getListing(this.filtri)
       .subscribe({
@@ -87,21 +87,27 @@ export class StampanteListingComponent implements OnDestroy {
       });
   }
 
-  onSearchChange(): void {
-    this.filtri.offset = 0;
-    this.loadStampanti();
-  }
-
   loadData(event: TableLazyLoadEvent): void {
-    console.log(event);
     this.filtri.offset = event.first;
     this.filtri.limit = event.rows ?? 10;
 
+    // Global filter
+    if (event.globalFilter) {
+      this.filtri.search = typeof event.globalFilter === 'string' ? event.globalFilter : event.globalFilter[0];
+    }
+    else {
+      this.filtri.search = undefined;
+    }
+
+    // Sorting
     if (event.sortField) {
       this.filtri.order = {
         column: typeof event.sortField === 'string' ? event.sortField : event.sortField[0],
         direction: event.sortOrder === 1 ? 'ASC' : 'DESC'
       }
+    }
+    else {
+      this.filtri.order = undefined;
     }
 
     this.loadStampanti();
@@ -140,7 +146,7 @@ export class StampanteListingComponent implements OnDestroy {
   }
 
   private deleteStampante(id: number): void {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 700);
+    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
 
     this.stampanteDeleteSubscription = this.stampanteService.delete(id)
       .subscribe({

@@ -34,7 +34,7 @@
                     placeholder="Cerca stampanti..." 
                     class="w-full sm:w-auto"
                     [(ngModel)]="filtri.search"
-                    (ngModelChange)="onSearchChange()">
+                    (ngModelChange)="dataTable.filterGlobal($event, 'contains')">
               </p-iconfield>
               <button pButton label="Pulisci" class="p-button-outlined" icon="pi pi-filter-slash" (click)="dataTable.clear()"></button>
               </div>
@@ -62,7 +62,7 @@
         <!-- ID Column -->
         <ng-template #header>
           <tr>
-            <th class="text-center" style="width: 80px;">ID</th>
+            <th pSortableColumn="id" class="text-center" style="width: 80px;">ID <p-sortIcon field="id" /></th>
             <th pSortableColumn="nome">Nome <p-sortIcon field="nome" /></th>
             <th pSortableColumn="descrizione">Descrizione <p-sortIcon field="descrizione" /></th>
             <th class="text-center" style="width: 120px;"></th>

@@ -59,7 +59,7 @@ export class StampanteManagerComponent implements OnInit, OnDestroy {
   }
 
   private getStampante(): void {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 700);
+    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
 
     this.stampanteService.getStampante(this.stampante.id).subscribe({
       next: (result) => {
@@ -82,7 +82,7 @@ export class StampanteManagerComponent implements OnInit, OnDestroy {
   }
 
   saveStampante(): void {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 700);
+    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
     
     this.stampanteService.save(this.stampante).subscribe({
       next: () => {
