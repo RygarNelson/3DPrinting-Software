@@ -52,6 +52,7 @@ export class StampanteListingComponent implements OnInit, OnDestroy {
 
   private stampantiSubscription?: Subscription;
   private stampanteDeleteSubscription?: Subscription;
+  private loadingTimeout?: number;
 
   constructor(
     private stampanteService: StampanteService,
@@ -66,20 +67,25 @@ export class StampanteListingComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.stampantiSubscription?.unsubscribe();
     this.stampanteDeleteSubscription?.unsubscribe();
+    clearTimeout(this.loadingTimeout);
   }
 
   loadStampanti(): void {
-    this.loading = true;
+    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
     
     this.stampantiSubscription = this.stampanteService.getListing(this.filtri)
       .subscribe({
         next: (response: StampanteListingResponse) => {
           this.stampanti = response.data;
           this.totalRecords = response.count;
+
+          window.clearTimeout(this.loadingTimeout);
           this.loading = false;
         },
         error: (error) => {
           console.error('Error loading stampanti:', error);
+
+          window.clearTimeout(this.loadingTimeout);
           this.loading = false;
         }
       });
@@ -129,15 +135,20 @@ export class StampanteListingComponent implements OnInit, OnDestroy {
   }
 
   private deleteStampante(id: number): void {
-    this.loading = true;
+    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+
     this.stampanteDeleteSubscription = this.stampanteService.delete(id)
       .subscribe({
         next: () => {
+          window.clearTimeout(this.loadingTimeout);
           this.loading = false;
 
           this.loadStampanti();
         },
         error: (error) => {
+          window.clearTimeout(this.loadingTimeout);
+          this.loading = false;
+          
           console.error('Error deleting stampante:', error);
         }
       });

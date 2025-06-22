@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
@@ -29,10 +29,12 @@ import { FormInputTextareaComponent } from 'src/shared/form-input-textarea/form-
   templateUrl: './stampante-manager.component.html',
   styleUrl: './stampante-manager.component.scss'
 })
-export class StampanteManagerComponent implements OnInit {
+export class StampanteManagerComponent implements OnInit, OnDestroy {
   stampante: StampanteManagerModel = new StampanteManagerModel();
   listaErrori: ErrorsViewModel[] = [];
   loading: boolean = false;
+
+  private loadingTimeout?: number;
 
   constructor(
     private stampanteService: StampanteService,
@@ -52,11 +54,18 @@ export class StampanteManagerComponent implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    clearTimeout(this.loadingTimeout);
+  }
+
   private getStampante(): void {
-    this.loading = true;
+    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+
     this.stampanteService.getStampante(this.stampante.id).subscribe({
       next: (result) => {
+        clearTimeout(this.loadingTimeout);
         this.loading = false;
+
         if (result.success) {
           this.stampante = result.data;
         } else {
@@ -64,17 +73,20 @@ export class StampanteManagerComponent implements OnInit {
         }
       },
       error: (error: any) => {
+        clearTimeout(this.loadingTimeout);
         this.loading = false;
+
         console.error(error);
       }
     });
   }
 
   saveStampante(): void {
-    this.loading = true;
+    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
     
     this.stampanteService.save(this.stampante).subscribe({
       next: () => {
+        clearTimeout(this.loadingTimeout);
         this.loading = false;
 
         this.MessageService.add({
@@ -86,7 +98,9 @@ export class StampanteManagerComponent implements OnInit {
         this.indietro();
       },
       error: (error: any) => {
+        clearTimeout(this.loadingTimeout);
         this.loading = false;
+
         if (error.status === 400) {
           this.listaErrori = error.error.technical_data;
         }
