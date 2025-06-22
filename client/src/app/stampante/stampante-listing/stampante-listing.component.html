@@ -70,24 +70,40 @@
             <td class="font-medium">{{ stampante.nome }}</td>
             <td>{{ stampante.descrizione }}</td>
             <td class="text-center">
-              <div class="flex justify-center gap-1">
-                <!-- Edit Button -->
-                <p-button 
-                  icon="pi pi-pencil" 
-                  severity="info" 
-                  size="small"
-                  (onClick)="editStampante(stampante)"
-                  pTooltip="Modifica stampante">
-                </p-button>
+              <div class="flex justify-center gap-2">
+                @if (loading) {
+                  <p-button 
+                    icon="pi pi-spinner pi-spin" 
+                    severity="info" 
+                    size="small"
+                    [disabled]="true"
+                    pTooltip="Modifica stampante">
+                  </p-button>
+                  <p-button 
+                    icon="pi pi-spinner pi-spin" 
+                    severity="danger" 
+                    size="small"
+                    [disabled]="true"
+                    pTooltip="Elimina stampante">
+                  </p-button>
+                }
+                @else {
+                  <p-button 
+                    icon="pi pi-pencil" 
+                    severity="info" 
+                    size="small"
+                    (click)="editStampante(stampante)"
+                    pTooltip="Modifica stampante">
+                  </p-button>
+                  <p-button 
+                    icon="pi pi-trash" 
+                    severity="danger" 
+                    size="small"
+                    (click)="confirmDelete($event, stampante)"
+                    pTooltip="Elimina stampante">
+                  </p-button>
+                }
                 
-                <!-- Delete Button -->
-                <p-button 
-                  icon="pi pi-trash" 
-                  severity="danger" 
-                  size="small"
-                  (onClick)="confirmDelete($event, stampante)"
-                  pTooltip="Elimina stampante">
-                </p-button>
               </div>
             </td>
           </tr>

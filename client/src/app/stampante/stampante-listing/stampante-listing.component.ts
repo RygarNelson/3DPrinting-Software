@@ -74,7 +74,6 @@ export class StampanteListingComponent implements OnInit, OnDestroy {
     this.stampantiSubscription = this.stampanteService.getListing(this.filtri)
       .subscribe({
         next: (response: StampanteListingResponse) => {
-          console.log(response);
           this.stampanti = response.data;
           this.totalRecords = response.count;
           this.loading = false;
@@ -114,6 +113,12 @@ export class StampanteListingComponent implements OnInit, OnDestroy {
       target: event.target as EventTarget,
       message: `Sei sicuro di voler eliminare la stampante "${stampante.nome}"?`,
       icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Si',
+      rejectLabel: 'No',
+      acceptIcon: 'pi pi-exclamation-triangle',
+      rejectIcon: 'pi pi-times',
+      acceptButtonStyleClass: 'p-button-danger',
+      rejectButtonStyleClass: 'p-button-secondary',
       accept: () => {
         this.deleteStampante(stampante.id);
       },
@@ -124,10 +129,12 @@ export class StampanteListingComponent implements OnInit, OnDestroy {
   }
 
   private deleteStampante(id: number): void {
+    this.loading = true;
     this.stampanteDeleteSubscription = this.stampanteService.delete(id)
       .subscribe({
         next: () => {
-          // Reload the table after successful deletion
+          this.loading = false;
+
           this.loadStampanti();
         },
         error: (error) => {

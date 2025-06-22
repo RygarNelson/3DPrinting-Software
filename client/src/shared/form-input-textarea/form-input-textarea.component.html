@@ -4,9 +4,7 @@
         <span class="obligatory">*</span>
     }
     @if(infoMessage) {
-        <p-inputicon>
-            <i class="pi pi-info-circle ml-2" [pTooltip]="infoMessage"></i>
-        </p-inputicon>
+        <i class="pi pi-info-circle info-icon" [pTooltip]="infoMessage"></i>
     }
 </div>
 <textarea 
@@ -17,6 +15,7 @@
     [disabled]="disabled"
     [placeholder]="placeholder"
     [rows]="rows"
+    [maxlength]="maxlength"
     [(ngModel)]="value">
 </textarea>
 @if(property | showError: listaErrori) {

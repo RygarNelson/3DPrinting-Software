@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, forwardRef, Input } from '@angular/core';
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { InputIconModule } from 'primeng/inputicon';
 import { TextareaModule } from 'primeng/textarea';
 import { TooltipModule } from 'primeng/tooltip';
 import { ErrorsViewModel } from 'src/models/ErrorsViewModel';
@@ -16,8 +15,7 @@ import { ShowErrorPipe } from '../pipes/show-error.pipe';
     TextareaModule,
     ShowErrorPipe,
     ErrorMessagesPipe,
-    TooltipModule,
-    InputIconModule
+    TooltipModule
   ],
   providers: [
     {
@@ -46,6 +44,7 @@ export class FormInputTextareaComponent implements ControlValueAccessor {
    @Input() placeholder: string = '';
    @Input() type: string = 'text';
    @Input() rows: number = 5;
+   @Input() maxlength: number | null = null;
  
    get value(): any {
      return this.innerValue;

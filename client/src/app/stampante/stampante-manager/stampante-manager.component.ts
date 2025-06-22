@@ -32,6 +32,7 @@ import { FormInputTextareaComponent } from 'src/shared/form-input-textarea/form-
 export class StampanteManagerComponent implements OnInit {
   stampante: StampanteManagerModel = new StampanteManagerModel();
   listaErrori: ErrorsViewModel[] = [];
+  loading: boolean = false;
 
   constructor(
     private stampanteService: StampanteService,
@@ -52,8 +53,10 @@ export class StampanteManagerComponent implements OnInit {
   }
 
   private getStampante(): void {
+    this.loading = true;
     this.stampanteService.getStampante(this.stampante.id).subscribe({
       next: (result) => {
+        this.loading = false;
         if (result.success) {
           this.stampante = result.data;
         } else {
@@ -61,22 +64,29 @@ export class StampanteManagerComponent implements OnInit {
         }
       },
       error: (error: any) => {
+        this.loading = false;
         console.error(error);
       }
     });
   }
 
   saveStampante(): void {
+    this.loading = true;
+    
     this.stampanteService.save(this.stampante).subscribe({
       next: () => {
+        this.loading = false;
+
         this.MessageService.add({
           severity: 'success',
           summary: 'Success',
           detail: 'Stampante salvata con successo'
         });
-        this.router.navigate(['/stampante']);
+
+        this.indietro();
       },
       error: (error: any) => {
+        this.loading = false;
         if (error.status === 400) {
           this.listaErrori = error.error.technical_data;
         }

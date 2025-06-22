@@ -4,9 +4,7 @@
         <span class="obligatory">*</span>
     }
     @if(infoMessage) {
-        <p-inputicon>
-            <i class="pi pi-info-circle ml-2" [pTooltip]="infoMessage"></i>
-        </p-inputicon>
+        <i class="pi pi-info-circle info-icon" [pTooltip]="infoMessage"></i>
     }
 </div>
 <input 
@@ -17,6 +15,7 @@
     [ngClass]="{'input-error' : property | showError: listaErrori}"
     [disabled]="disabled"
     [placeholder]="placeholder"
+    [maxlength]="maxlength"
     [(ngModel)]="value" />
 @if(property | showError: listaErrori) {
     @for(error of property | errorMessages: listaErrori; track error) {

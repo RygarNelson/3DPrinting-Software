@@ -117,23 +117,22 @@ router.post(
             });
         } else {
             try {
-                if (req.body.id) {
-                    await StampanteRepository.insertOne(req, res);
-                } else {
+                if (req.body.id && req.body.id > 0) {
+                    // Update existing stampante
                     await StampanteRepository.updateOne(req, res);
+                } else {
+                    // Insert new stampante
+                    await StampanteRepository.insertOne(req, res);
                 }
             }
             catch (error) {
+                console.log('Error in save route:', error);
                 return res.status(400).json({
                     success: false,
                     error: 'Errore nel salvataggio della stampante',
                     technical_data: error
                 });
             }
-            return res.status(200).json({
-                success: true,
-                data: 'Stampante salvata con successo!'
-            });
         }
     }
 );
