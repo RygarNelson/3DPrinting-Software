@@ -7,14 +7,18 @@ const stampanteRepository = {
         return Stampante.findAll();
     },
 
-    find: function(searchExample, limit, offset, order) {
-        return Stampante.findAll({ where: searchExample, limit: limit, offset: offset, order: order });
+    find: function(searchExample, limit, offset, order, projection) {
+        return Stampante.findAll({ where: searchExample, limit: limit, offset: offset, order: order, attributes: projection });
     },
 
-    findOne: function(id) {
+    count: function(searchExample) {
+        return Stampante.count({ where: searchExample });
+    },
+
+    findOne: function(id, projection) {
         return Stampante.findOne({ where: {
             id: id
-        } });
+        }, attributes: projection });
     },
 
     insertOne: function(req, res) {

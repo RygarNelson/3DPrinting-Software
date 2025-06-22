@@ -9,6 +9,18 @@ const router = express.Router();
 
 router.use(authenticate);
 
+router.get(
+    '/:id',
+    async (req, res) => {
+        const projection = ['id', 'nome', 'descrizione'];
+        const stampante = await StampanteRepository.findOne(req.params.id, projection);
+        res.status(200).json({
+            success: true,
+            data: stampante
+        });
+    }
+);
+
 router.post(
     '/listing',
     async (req, res) => {
@@ -60,12 +72,16 @@ router.post(
                 order = [[req.body.order.column, req.body.order.direction]];
             }
 
+            const projection = ['id', 'nome', 'descrizione'];
+
             StampanteRepository
-            .find(whereOptions, limit, offset, order)
+            .find(whereOptions, limit, offset, order, projection)
             .then((stampanti) => {
+                const count = StampanteRepository.count(whereOptions);
                 res.status(200).json({
                     success: true,
-                    data: stampanti
+                    data: stampanti,
+                    count: count
                 });
             })
             .catch((error) => {
