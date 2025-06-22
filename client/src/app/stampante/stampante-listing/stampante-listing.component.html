@@ -35,10 +35,10 @@
                       [value]="searchTerm"
                       (input)="onSearchChange($event)">
                 </p-iconfield>
-                <div class="flex items-center gap-2 ml-auto">
+                <div class="flex items-center gap-2 margin-left-auto">
                   <p-button 
                     icon="pi pi-refresh" 
-                    severity="secondary" 
+                    severity="warn" 
                     [loading]="loading"
                     (onClick)="refreshTable()"
                     pTooltip="Aggiorna tabella">
