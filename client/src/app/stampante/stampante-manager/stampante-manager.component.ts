@@ -69,6 +69,13 @@ export class StampanteManagerComponent implements OnInit, OnDestroy {
         if (result.success) {
           this.stampante = result.data;
         } else {
+          this.dialogService.open(DialogErrorComponent, {
+            inputValues: {
+              error: result
+            },
+            modal: true
+          });
+          
           console.error(result);
         }
       },
