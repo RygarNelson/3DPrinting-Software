@@ -48,6 +48,20 @@ const validationSchema = {
                     options: { max: 50 },
                     errorMessage: 'Il telefono non può superare i 50 caratteri'
                 }
+            },
+            // Custom validator to ensure at least one of the three fields is present
+            _atLeastOne: {
+                custom: {
+                    options: (value, { req }) => {
+                        const nome = req.body.nome ? req.body.nome.trim() : '';
+                        const cognome = req.body.cognome ? req.body.cognome.trim() : '';
+                        const ragione_sociale = req.body.ragione_sociale ? req.body.ragione_sociale.trim() : '';
+                        if (!nome && !cognome && !ragione_sociale) {
+                            throw new Error('Almeno uno tra Nome, Cognome o Ragione Sociale deve essere valorizzato');
+                        }
+                        return true;
+                    }
+                }
             }
         });
     }
