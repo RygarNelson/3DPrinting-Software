@@ -46,6 +46,7 @@ try {
     app.use(morgan('combined', {
         stream: accessLogStream
     }));
+    app.use(morgan('combined'));
     
     console.log('Rotating file stream initialized successfully');
 } catch (error) {

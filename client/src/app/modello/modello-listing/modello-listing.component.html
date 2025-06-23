@@ -86,15 +86,13 @@
                       icon="pi pi-spinner pi-spin" 
                       severity="info" 
                       size="small"
-                      [disabled]="true"
-                      pTooltip="Modifica modello">
+                      [disabled]="true">
                     </p-button>
                     <p-button 
                       icon="pi pi-spinner pi-spin" 
                       severity="danger" 
                       size="small"
-                      [disabled]="true"
-                      pTooltip="Elimina modello">
+                      [disabled]="true">
                     </p-button>
                   }
                   @else {
@@ -103,14 +101,16 @@
                       severity="info" 
                       size="small"
                       (click)="editModello(modello)"
-                      pTooltip="Modifica modello">
+                      pTooltip="Modifica modello"
+                      tooltipPosition="top">
                     </p-button>
                     <p-button 
                       icon="pi pi-trash" 
                       severity="danger" 
                       size="small"
                       (click)="confirmDelete($event, modello)"
-                      pTooltip="Elimina modello">
+                      pTooltip="Elimina modello"
+                      tooltipPosition="top">
                     </p-button>
                   }
                   
