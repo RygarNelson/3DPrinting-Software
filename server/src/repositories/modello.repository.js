@@ -1,35 +1,35 @@
 'use strict'
 
-import Stampante from '../models/stampante.model.js';
+import Modello from '../models/modello.model.js';
 
-const stampanteRepository = {
+const modelloRepository = {
     getAll: function () {
-        return Stampante.findAll();
+        return Modello.findAll();
     },
 
     find: function(searchExample, limit, offset, order, projection) {
-        return Stampante.findAll({ where: searchExample, limit: limit, offset: offset, order: order, attributes: projection });
+        return Modello.findAll({ where: searchExample, limit: limit, offset: offset, order: order, attributes: projection });
     },
 
     count: function(searchExample) {
-        return Stampante.count({ where: searchExample });
+        return Modello.count({ where: searchExample });
     },
 
     findOne: function(id, projection) {
-        return Stampante.findOne({ where: {
+        return Modello.findOne({ where: {
             id: id
         }, attributes: projection });
     },
 
     insertOne: function(req, res) {
-        return Stampante.create({
+        return Modello.create({
             nome: req.body.nome,
             descrizione: req.body.descrizione
         });
     },
 
     updateOne: function(req, res) {
-        return Stampante.update({
+        return Modello.update({
             nome: req.body.nome,
             descrizione: req.body.descrizione
         }, {
@@ -38,8 +38,8 @@ const stampanteRepository = {
     },
 
     deleteOne: function(id) {
-        return Stampante.destroy({ where: { id: id } });
+        return Modello.destroy({ where: { id: id } });
     }
 };
 
-export default stampanteRepository;
+export default modelloRepository;

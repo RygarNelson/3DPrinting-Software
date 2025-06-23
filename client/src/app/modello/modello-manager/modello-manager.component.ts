@@ -7,14 +7,14 @@ import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DialogService } from 'primeng/dynamicdialog';
 import { ErrorsViewModel } from 'src/models/ErrorsViewModel';
-import { StampanteManagerModel } from 'src/models/stampante/stampante-manager';
-import { StampanteService } from 'src/services/stampante.service';
+import { ModelloManagerModel } from 'src/models/modello/modello-manager';
+import { ModelloService } from 'src/services/modello.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { FormInputTextComponent } from 'src/shared/form-input-text/form-input-text.component';
 import { FormInputTextareaComponent } from 'src/shared/form-input-textarea/form-input-textarea.component';
 
 @Component({
-  selector: 'app-stampante-manager',
+  selector: 'app-modello-manager',
   imports: [
     CommonModule,
     FormsModule,
@@ -24,20 +24,20 @@ import { FormInputTextareaComponent } from 'src/shared/form-input-textarea/form-
     ButtonModule
   ],
   providers: [
-    StampanteService
+    ModelloService
   ],
-  templateUrl: './stampante-manager.component.html',
-  styleUrl: './stampante-manager.component.scss'
+  templateUrl: './modello-manager.component.html',
+  styleUrl: './modello-manager.component.scss'
 })
-export class StampanteManagerComponent implements OnInit, OnDestroy {
-  stampante: StampanteManagerModel = new StampanteManagerModel();
+export class ModelloManagerComponent implements OnInit, OnDestroy {
+  modello: ModelloManagerModel = new ModelloManagerModel();
   listaErrori: ErrorsViewModel[] = [];
   loading: boolean = false;
 
   private loadingTimeout?: number;
 
   constructor(
-    private stampanteService: StampanteService,
+    private modelloService: ModelloService,
     private router: Router,
     private route: ActivatedRoute,
     private MessageService: MessageService,
@@ -47,9 +47,9 @@ export class StampanteManagerComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Get router params
     this.route.params.subscribe(params => {
-      this.stampante.id = params['id'] ? Number(params['id']) : 0;
-      if (this.stampante.id) {
-        this.getStampante();
+      this.modello.id = params['id'] ? Number(params['id']) : 0;
+      if (this.modello.id) {
+        this.getModello();
       }
     });
   }
@@ -58,16 +58,16 @@ export class StampanteManagerComponent implements OnInit, OnDestroy {
     clearTimeout(this.loadingTimeout);
   }
 
-  private getStampante(): void {
+  private getModello(): void {
     this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
 
-    this.stampanteService.getStampante(this.stampante.id).subscribe({
+    this.modelloService.getModello(this.modello.id).subscribe({
       next: (result) => {
         clearTimeout(this.loadingTimeout);
         this.loading = false;
 
         if (result.success) {
-          this.stampante = result.data;
+          this.modello = result.data;
         } else {
           this.dialogService.open(DialogErrorComponent, {
             inputValues: {
@@ -75,7 +75,7 @@ export class StampanteManagerComponent implements OnInit, OnDestroy {
             },
             modal: true
           });
-          
+
           console.error(result);
         }
       },
@@ -91,7 +91,7 @@ export class StampanteManagerComponent implements OnInit, OnDestroy {
   saveStampante(): void {
     this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
     
-    this.stampanteService.save(this.stampante).subscribe({
+    this.modelloService.save(this.modello).subscribe({
       next: () => {
         clearTimeout(this.loadingTimeout);
         this.loading = false;
@@ -99,7 +99,7 @@ export class StampanteManagerComponent implements OnInit, OnDestroy {
         this.MessageService.add({
           severity: 'success',
           summary: 'Success',
-          detail: 'Stampante salvata con successo'
+          detail: 'Modello salvato con successo'
         });
 
         this.indietro();
@@ -112,7 +112,7 @@ export class StampanteManagerComponent implements OnInit, OnDestroy {
           this.MessageService.add({
             severity: 'error',
             summary: 'Errore',
-            detail: 'Errore durante il salvataggio della stampante'
+            detail: 'Errore durante il salvataggio del modello'
           });
 
           this.listaErrori = error.error.technical_data;
@@ -130,6 +130,6 @@ export class StampanteManagerComponent implements OnInit, OnDestroy {
   }
 
   indietro(): void {
-    this.router.navigate(['/stampante']);
+    this.router.navigate(['/modello']);
   }
 }

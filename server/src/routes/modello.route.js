@@ -4,8 +4,8 @@ import express from 'express';
 import { validationResult } from 'express-validator';
 import { Op } from 'sequelize';
 import { authenticate } from '../middleware/authenticate.js';
-import StampanteRepository from '../repositories/stampante.repository.js';
-import validationSchema from '../schemas/stampante.schema.js';
+import ModelloRepository from '../repositories/modello.repository.js';
+import validationSchema from '../schemas/modello.schema.js';
 import asyncHandler from '../utils/asyncHandler.js';
 
 const router = express.Router();
@@ -16,10 +16,10 @@ router.get(
     '/:id',
     asyncHandler(async (req, res) => {
         const projection = ['id', 'nome', 'descrizione'];
-        const stampante = await StampanteRepository.findOne(req.params.id, projection);
+        const modello = await ModelloRepository.findOne(req.params.id, projection);
         res.status(200).json({
             success: true,
-            data: stampante
+            data: modello
         });
     })
 );
@@ -75,15 +75,15 @@ router.post(
                 order = [[req.body.order.column, req.body.order.direction]];
             }
 
-            const projection = ['id', 'nome', 'descrizione'];
+            const projection = ['id', 'nome', 'descrizione', 'updatedAt'];
 
-            const count = await StampanteRepository.count(whereOptions);
+            const count = await ModelloRepository.count(whereOptions);
 
-            const stampanti = await StampanteRepository.find(whereOptions, limit, offset, order, projection);
+            const modelli = await ModelloRepository.find(whereOptions, limit, offset, order, projection);
 
             res.status(200).json({
                 success: true,
-                data: stampanti,
+                data: modelli,
                 count: count
             });
         }
@@ -110,17 +110,17 @@ router.post(
             });
         }
         if (req.body.id && req.body.id > 0) {
-            const data = await StampanteRepository.updateOne(req, res);
+            const data = await ModelloRepository.updateOne(req, res);
             return res.status(200).json({
                 success: true,
-                data: 'Stampante modificata con successo!',
+                data: 'Modello modificato con successo!',
                 technical_data: data
             });
         } else {
-            const data = await StampanteRepository.insertOne(req, res);
+            const data = await ModelloRepository.insertOne(req, res);
             return res.status(200).json({
                 success: true,
-                data: 'Stampante creata con successo!',
+                data: 'Modello creato con successo!',
                 technical_data: data
             });
         }
@@ -130,10 +130,10 @@ router.post(
 router.delete(
     '/:id',
     asyncHandler(async (req, res) => {
-        const data = await StampanteRepository.deleteOne(req.params.id);
+        const data = await ModelloRepository.deleteOne(req.params.id);
         return res.status(200).json({
             success: true,
-            data: 'Stampante eliminata con successo!',
+            data: 'Modello eliminato con successo!',
             technical_data: data
         });
     })

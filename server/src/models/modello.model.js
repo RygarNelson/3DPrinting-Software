@@ -3,7 +3,7 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../config/database.js';
 
-const Stampante = sequelize.define('Stampante', {
+const Modello = sequelize.define('Modello', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -11,28 +11,33 @@ const Stampante = sequelize.define('Stampante', {
     },
     nome: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: true
     },
     descrizione: {
         type: DataTypes.STRING(500),
         allowNull: true,
     }
 }, {
-    tableName: "T_STAMPANTI",
+    tableName: "T_MODELLI",
     indexes: [
         {
-            name: 'IX_T_STAMPANTI_NOME',
+            name: 'IX_T_MODELLI_NOME',
             unique: false,
             fields: ['nome']
         },
         {
-            name: 'IX_T_STAMPANTI_DESCRIZIONE',
+            name: 'IX_T_MODELLI_DESCRIZIONE',
             unique: false,
             fields: ['descrizione']
+        },
+        {
+            name: 'IX_T_MODELLI_UPDATED_AT',
+            unique: false,
+            fields: ['updatedAt']
         }
     ],
     timestamps: true,
     paranoid: true
 });
 
-export default Stampante;
+export default Modello;

@@ -45,6 +45,11 @@ export class AppMenu {
                         label: 'Stampanti',
                         icon: 'pi pi-fw pi-print',
                         routerLink: ['/stampante/listing'],
+                    },
+                    {
+                        label: 'Modelli',
+                        icon: 'pi pi-fw pi-box',
+                        routerLink: ['/modello/listing'],
                     }
                 ]
             }

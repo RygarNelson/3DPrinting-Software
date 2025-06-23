@@ -11,6 +11,7 @@ import * as rfs from 'rotating-file-stream';
 import { fileURLToPath } from 'url';
 import { connectToDatabase, initializeDatabase } from './db.js';
 import authRoute from './routes/auth.route.js';
+import modelloRoute from './routes/modello.route.js';
 import stampanteRoute from './routes/stampante.route.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -45,6 +46,7 @@ try {
     app.use(morgan('combined', {
         stream: accessLogStream
     }));
+    app.use(morgan('combined'));
     
     console.log('Rotating file stream initialized successfully');
 } catch (error) {
@@ -81,6 +83,7 @@ await initializeDatabase();
 // API Routes
 app.use('/api/auth', authRoute);
 app.use('/api/stampante', stampanteRoute);
+app.use('/api/modello', modelloRoute);
 
 /* STATIC FILES - Angular App */
 // Check if Angular static files directory exists
@@ -112,5 +115,14 @@ if (angularAppExists) {
 } else {
     console.log('Angular static files not found at:', angularStaticPath);
 }
+
+// Add global error handler middleware
+app.use((err, req, res, next) => {
+    res.status(500).json({
+        success: false,
+        error: 'Errore generale',
+        technical_data: err.toString()
+    });
+});
 
 export default app;

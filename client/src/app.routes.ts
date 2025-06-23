@@ -33,6 +33,26 @@ export const appRoutes: Routes = [
                 path: 'stampante/manager/:id',
                 loadComponent: () => import('./app/stampante/stampante-manager/stampante-manager.component').then(c => c.StampanteManagerComponent),
                 data: { breadcrumb: 'Modifica Stampante' },
+            },
+            {
+                path: 'modello',
+                redirectTo: 'modello/listing',
+                pathMatch: 'full',
+            },
+            {
+                path: 'modello/listing',
+                loadComponent: () => import('./app/modello/modello-listing/modello-listing.component').then(c => c.ModelloListingComponent),
+                data: { breadcrumb: 'Modelli' },
+            },
+            {
+                path: 'modello/manager',
+                loadComponent: () => import('./app/modello/modello-manager/modello-manager.component').then(c => c.ModelloManagerComponent),
+                data: { breadcrumb: 'Nuovo Modello' },
+            },
+            {
+                path: 'modello/manager/:id',
+                loadComponent: () => import('./app/modello/modello-manager/modello-manager.component').then(c => c.ModelloManagerComponent),
+                data: { breadcrumb: 'Modifica Modello' },
             }
         ]
     },
