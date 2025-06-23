@@ -28,7 +28,6 @@ export class AppMenu {
         this.model = [
             {
                 label: 'Dashboards',
-                icon: 'pi pi-home',
                 items: [
                     {
                         label: 'Dashboard',
@@ -38,8 +37,17 @@ export class AppMenu {
                 ]
             },
             {
+                label: 'Anagrafiche',
+                items: [
+                    {
+                        label: 'Clienti',
+                        icon: 'pi pi-fw pi-users',
+                        routerLink: ['/cliente/listing'],
+                    },
+                ]
+            },
+            {
                 label: 'Magazzino',
-                icon: 'pi pi-fw pi-box',
                 items: [
                     {
                         label: 'Stampanti',

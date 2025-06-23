@@ -1,0 +1,100 @@
+<div class="p-4">
+    <p-card>
+        <ng-template pTemplate="header">
+            <div class="flex items-center flex-wrap header-title">
+                <h2 class="text-xl font-semibold text-gray-800">{{cliente.id ? 'Modifica' : 'Nuovo'}} Cliente</h2>
+                <div class="flex items-center gap-2 margin-left-auto">
+                    @if (loading) {
+                        <p-button 
+                            icon="pi pi-spinner pi-spin"
+                            label="Indietro"
+                            [disabled]="true"
+                            [severity]="'secondary'"
+                        />
+                        <p-button 
+                            icon="pi pi-spinner pi-spin"
+                            label="Salva"
+                            [disabled]="true"
+                            [severity]="'primary'"
+                        />
+                    }
+                    @else {
+                        <p-button 
+                            icon="pi pi-arrow-left"
+                            label="Indietro"
+                            (click)="indietro()"
+                            [severity]="'secondary'"
+                        />
+                        <p-button 
+                            icon="pi pi-save"
+                            label="Salva"
+                            (click)="saveCliente()"
+                            [severity]="'primary'"
+                        />
+                    }
+                    
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="content">
+            <div class="grid grid gap-4">
+                <div class="flex flex-col flex-row w-full">
+                    <form-input-text
+                        label="Nome"
+                        name="nome"
+                        property="nome"
+                        infoMessage="Il nome del cliente deve essere valorizzato se non e' valorizzata la ragione sociale"
+                        [obligatory]="!cliente.ragione_sociale"
+                        [disabled]="!!cliente.ragione_sociale"
+                        [maxlength]="60"
+                        [listaErrori]="listaErrori"
+                        [(ngModel)]="cliente.nome" />
+                </div>
+                <div class="flex flex-col flex-row w-full">
+                    <form-input-text
+                    label="Cognome"
+                    name="cognome"
+                    property="cognome"
+                    [obligatory]="!cliente.ragione_sociale"
+                    [disabled]="!!cliente.ragione_sociale"
+                    [maxlength]="60"
+                    infoMessage="Il cognome del cliente deve essere valorizzato se non e' valorizzata la ragione sociale"
+                    [listaErrori]="listaErrori"
+                    [(ngModel)]="cliente.cognome" />
+                </div>
+                <div class="flex flex-col flex-row w-full">
+                    <form-input-text
+                    label="Ragione Sociale"
+                    name="ragione_sociale"
+                    property="ragione_sociale"
+                    infoMessage="La ragione sociale del cliente deve essere valorizzata se non sono valorizzati nome e cognome"
+                    [obligatory]="!cliente.nome && !cliente.cognome"
+                    [disabled]="!!cliente.nome || !!cliente.cognome"
+                    [maxlength]="80"
+                    [listaErrori]="listaErrori"
+                    [(ngModel)]="cliente.ragione_sociale" />
+                </div>
+                <div class="flex flex-col flex-row w-full">
+                    <form-input-text
+                    label="Email"
+                    name="email"
+                    property="email"
+                    infoMessage="L'email del cliente deve essere valida se valorizzata"
+                    [maxlength]="255"
+                    [listaErrori]="listaErrori"
+                    [(ngModel)]="cliente.email" />
+                </div>
+                <div class="flex flex-col flex-row w-full">
+                    <form-input-text
+                    label="Telefono"
+                    name="telefono"
+                    property="telefono"
+                    infoMessage="Si puo' inserire qualsiasi cosa"
+                    [maxlength]="50"
+                    [listaErrori]="listaErrori"
+                    [(ngModel)]="cliente.telefono" />
+                </div>
+            </div>
+        </ng-template>
+      </p-card> 
+</div>
