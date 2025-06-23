@@ -14,6 +14,7 @@ import authRoute from './routes/auth.route.js';
 import clienteRoute from './routes/cliente.route.js';
 import modelloRoute from './routes/modello.route.js';
 import stampanteRoute from './routes/stampante.route.js';
+import venditaRoute from './routes/vendita.route.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -86,6 +87,7 @@ app.use('/api/auth', authRoute);
 app.use('/api/stampante', stampanteRoute);
 app.use('/api/modello', modelloRoute);
 app.use('/api/cliente', clienteRoute);
+app.use('/api/vendita', venditaRoute);
 
 /* STATIC FILES - Angular App */
 // Check if Angular static files directory exists
