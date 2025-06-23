@@ -30,131 +30,123 @@ $info-color: #337bbe;
     margin-left: auto;
 }
 
-.grid-cols-1 {
-    grid-template-columns: repeat(1, minmax(0, 1fr));
-}
-.grid-cols-2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-.grid-cols-3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-.grid-cols-4 {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-.grid-cols-5 {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-}
-.grid-cols-6 {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-}
-.grid-cols-7 {
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-}
-.grid-cols-8 {
-    grid-template-columns: repeat(8, minmax(0, 1fr));
-}
-.grid-cols-9 {
-    grid-template-columns: repeat(9, minmax(0, 1fr));
-}
-.grid-cols-10 {
-    grid-template-columns: repeat(10, minmax(0, 1fr));
-}
-.grid-cols-11 {
-    grid-template-columns: repeat(11, minmax(0, 1fr));
-}
-.grid-cols-12 {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
+// --- Responsive Grid Utilities (Tailwind-like) ---
+$breakpoints: (
+  'sm': 576px,
+  'md': 768px,
+  'lg': 992px,
+  'xl': 1200px,
+  'xxl': 1920px
+);
+
+@mixin grid-cols($n) {
+  .grid-cols-#{$n} {
+    grid-template-columns: repeat(#{$n}, minmax(0, 1fr));
+  }
 }
 
-/* md: breakpoint (min-width: 768px) */
-@media (min-width: 768px) {
-    .md\:grid-cols-1 {
-        grid-template-columns: repeat(1, minmax(0, 1fr));
-    }
-    .md\:grid-cols-2 {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-    .md\:grid-cols-3 {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-    .md\:grid-cols-4 {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-    .md\:grid-cols-5 {
-        grid-template-columns: repeat(5, minmax(0, 1fr));
-    }
-    .md\:grid-cols-6 {
-        grid-template-columns: repeat(6, minmax(0, 1fr));
-    }
-    .md\:grid-cols-7 {
-        grid-template-columns: repeat(7, minmax(0, 1fr));
-    }
-    .md\:grid-cols-8 {
-        grid-template-columns: repeat(8, minmax(0, 1fr));
-    }
-    .md\:grid-cols-9 {
-        grid-template-columns: repeat(9, minmax(0, 1fr));
-    }
-    .md\:grid-cols-10 {
-        grid-template-columns: repeat(10, minmax(0, 1fr));
-    }
-    .md\:grid-cols-11 {
-        grid-template-columns: repeat(11, minmax(0, 1fr));
-    }
-    .md\:grid-cols-12 {
-        grid-template-columns: repeat(12, minmax(0, 1fr));
+@mixin mt($n) {
+  .mt-#{$n} {
+    margin-top: #{$n * 0.25}rem;
+  }
+}
+
+@mixin mb($n) {
+    .mb-#{$n} {
+        margin-bottom: #{$n * 0.25}rem;
     }
 }
 
-.mt-0 {
-    margin-top: 0rem;
+@mixin ml($n) {
+    .ml-#{$n} {
+        margin-left: #{$n * 0.25}rem;
+    }
 }
 
-.mt-1 {
-    margin-top: 0.25rem;
+@mixin mr($n) {
+    .mr-#{$n} {
+        margin-right: #{$n * 0.25}rem;
+    }
 }
 
-.mt-2 {
-    margin-top: 0.5rem;
+@mixin mx($n) {
+    .mx-#{$n} {
+        margin-left: #{$n * 0.25}rem;
+        margin-right: #{$n * 0.25}rem;
+    }
 }
 
-.mt-3 {
-    margin-top: 0.75rem;
+@mixin my($n) {
+    .my-#{$n} {
+        margin-top: #{$n * 0.25}rem;
+        margin-bottom: #{$n * 0.25}rem;
+    }
 }
 
-.mt-4 {
-    margin-top: 1rem;
+// Base grid-cols and mt utilities
+@for $i from 1 through 12 {
+  @include grid-cols($i);
+  @include mt($i - 1);
+  @include mb($i - 1);
+  @include ml($i - 1);
+  @include mr($i - 1);
+  @include mx($i - 1);
+  @include my($i - 1);
 }
+@include mt(12);
+@include mb(12);
+@include ml(12);
+@include mr(12);
+@include mx(12);
+@include my(12);
 
-.mt-5 {
-    margin-top: 1.25rem;
-}
-
-.mt-6 {
-    margin-top: 1.5rem;
-}
-
-.mt-7 {
-    margin-top: 1.75rem;
-}
-
-.mt-8 {
-    margin-top: 2rem;
-}
-
-.mt-9 {
-    margin-top: 2.25rem;
-}
-
-.mt-10 {
-    margin-top: 2.5rem;
-}
-
-.mt-11 {
-    margin-top: 2.75rem;
-}
-
-.mt-12 {
-    margin-top: 3rem;
+// Responsive grid-cols and mt utilities for breakpoints
+@each $break, $size in $breakpoints {
+  @media (min-width: #{$size}) {
+    @for $i from 1 through 12 {
+      .#{$break}\:grid-cols-#{$i} {
+        grid-template-columns: repeat(#{$i}, minmax(0, 1fr));
+      }
+      .#{$break}\:mt-#{$i - 1} {
+        margin-top: #{($i - 1) * 0.25}rem;
+      }
+      .#{$break}\:mb-#{$i - 1} {
+        margin-bottom: #{($i - 1) * 0.25}rem;
+      }
+      .#{$break}\:ml-#{$i - 1} {
+        margin-left: #{($i - 1) * 0.25}rem;
+      }
+      .#{$break}\:mr-#{$i - 1} {
+        margin-right: #{($i - 1) * 0.25}rem;
+      }
+      .#{$break}\:mx-#{$i - 1} {
+        margin-left: #{($i - 1) * 0.25}rem;
+        margin-right: #{($i - 1) * 0.25}rem;
+      }
+      .#{$break}\:my-#{$i - 1} {
+        margin-top: #{($i - 1) * 0.25}rem;
+        margin-bottom: #{($i - 1) * 0.25}rem;
+      }
+    }
+    .#{$break}\:mt-12 {
+      margin-top: 3rem;
+    }
+    .#{$break}\:mb-12 {
+      margin-bottom: 3rem;
+    }
+    .#{$break}\:ml-12 {
+      margin-left: 3rem;
+    }
+    .#{$break}\:mr-12 {
+      margin-right: 3rem;
+    }
+    .#{$break}\:mx-12 {
+      margin-left: 3rem;
+      margin-right: 3rem;
+    }
+    .#{$break}\:my-12 {
+      margin-top: 3rem;
+      margin-bottom: 3rem;
+    }
+  }
 }
