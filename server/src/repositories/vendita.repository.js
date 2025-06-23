@@ -18,31 +18,22 @@ const venditaRepository = {
         return Vendita.findOne({ where: { id }, attributes: projection, include: include });
     },
 
-    find: function(whereOptions, limit, offset, order, projection) {
+    find: function(whereOptions, limit, offset, order, projection, include) {
         return Vendita.findAll({
             where: whereOptions,
             attributes: projection,
             limit: limit,
             offset: offset,
             order: order,
-            include: [
-                { association: 'cliente', where: { deletedAt: null }, attributes: ['etichetta'], required: false },
-                {
-                    association: 'dettagli',
-                    where: { deletedAt: null },
-                    required: false,
-                    attributes: ['id', 'quantita', 'prezzo', 'stato_stampa'],
-                    include: [
-                        { association: 'modello', attributes: ['nome'], required: false },
-                        { association: 'stampante', attributes: ['nome'], required: false }
-                    ]
-                }
-            ]
+            include: include
         });
     },
 
-    count: function(whereOptions) {
-        return Vendita.count({ where: whereOptions });
+    count: function(whereOptions, include) {
+        return Vendita.count({
+            where: whereOptions,
+            include: include
+        });
     },
 
     insertOne: async function(req) {

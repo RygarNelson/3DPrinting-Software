@@ -1,17 +1,17 @@
 <div class="p-4">
     <p-card>
       <ng-template pTemplate="header">
-        <h2 class="text-xl font-semibold text-gray-800 pt-6 header-title">Gestione Modelli</h2>
+        <h2 class="text-xl font-semibold text-gray-800 pt-6 header-title">Gestione Vendite</h2>
       </ng-template>
   
       <ng-template pTemplate="content">
         <!-- Table -->
         <p-table 
           #dataTable
-          currentPageReportTemplate="Mostrando da {first} a {last} di {totalRecords} modelli"
+          currentPageReportTemplate="Mostrando da {first} a {last} di {totalRecords} vendite"
           styleClass="p-datatable-sm"
           responsiveLayout="scroll"
-          [value]="modelli"
+          [value]="vendite"
           [paginator]="true" 
           [rows]="filtri.limit"
           [totalRecords]="totalRecords"
@@ -31,7 +31,7 @@
                       #searchInput
                       pInputText 
                       type="text" 
-                      placeholder="Cerca modelli..." 
+                      placeholder="Cerca vendite..." 
                       class="w-full sm:w-auto"
                       [(ngModel)]="filtri.search"
                       (ngModelChange)="dataTable.filterGlobal($event, 'contains')">
@@ -50,10 +50,10 @@
                     </p-button>
                     <p-button 
                       icon="pi pi-plus" 
-                      label="Nuovo Modello"
+                      label="Nuova Vendita"
                       severity="success" 
-                      (click)="addNewModello()"
-                      pTooltip="Aggiungi nuovo modello"
+                      (click)="addNewVendita()"
+                      pTooltip="Aggiungi nuova vendita"
                       class="flex-shrink-0"
                       tooltipPosition="top">
                     </p-button>
@@ -64,19 +64,25 @@
           <!-- ID Column -->
           <ng-template #header>
             <tr>
-              <th pSortableColumn="nome">Nome <p-sortIcon field="nome" /></th>
-              <th pSortableColumn="descrizione">Descrizione <p-sortIcon field="descrizione" /></th>
-              <th pSortableColumn="updatedAt">Ultima modifica <p-sortIcon field="updatedAt" /></th>
-              <th class="text-center" style="width: 120px;"></th>
+              <th pSortableColumn="data_vendita">Data Vendita <p-sortIcon field="data_vendita" /></th>
+              <th pSortableColumn="data_scadenza">Data Scadenza <p-sortIcon field="data_scadenza" /></th>
+              <th>Cliente</th>
+              <th pSortableColumn="totale_vendita">Totale Vendita <p-sortIcon field="totale_vendita" /></th>
+              <th>Stato</th>
+              <th style="width: 120px;"></th>
             </tr>
           </ng-template>
   
           <!-- Data Rows -->
-          <ng-template #body let-modello>
+          <ng-template #body let-vendita>
             <tr>
-              <td class="font-medium">{{ modello.nome }}</td>
-              <td>{{ modello.descrizione }}</td>
-              <td class="text-center">{{ modello.updatedAt | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td class="font-medium">{{ vendita.data_vendita | date:'dd/MM/yyyy' }}</td>
+              <td>{{ vendita.data_scadenza | date:'dd/MM/yyyy' }}</td>
+              <td>{{ vendita.cliente.etichetta }}</td>
+              <td>{{ vendita.totale_vendita | currency:'EUR' }}</td>
+              <td>
+                <vendita-listing-stato [stato_spedizione]="vendita.stato_spedizione"></vendita-listing-stato>
+              </td>
               <td class="text-center">
                 <div class="flex justify-center gap-2">
                   @if (loading) {
@@ -98,16 +104,16 @@
                       icon="pi pi-pencil" 
                       severity="info" 
                       size="small"
-                      (click)="editModello(modello)"
-                      pTooltip="Modifica modello"
+                      (click)="editVendita(vendita)"
+                      pTooltip="Modifica vendita"
                       tooltipPosition="top">
                     </p-button>
                     <p-button 
                       icon="pi pi-trash" 
                       severity="danger" 
                       size="small"
-                      (click)="confirmDelete($event, modello)"
-                      pTooltip="Elimina modello"
+                      (click)="confirmDelete($event, vendita)"
+                      pTooltip="Elimina vendita"
                       tooltipPosition="top">
                     </p-button>
                   }
@@ -120,13 +126,13 @@
           <!-- Empty State -->
           <ng-template pTemplate="emptymessage">
             <tr>
-              <td colspan="5" class="text-center py-8">
+              <td colspan="4" class="text-center py-8">
                   @if (loading) {
                       <p-skeleton height="100px" width="100%" />
                   } @else {
                       <div class="flex flex-col items-center gap-2">
                           <i class="pi pi-inbox text-4xl text-gray-400"></i>
-                          <p class="text-gray-500">Nessun modello trovato</p>
+                          <p class="text-gray-500">Nessuna vendita trovata</p>
                       </div>
                   }
               </td>

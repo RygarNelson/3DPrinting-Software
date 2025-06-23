@@ -73,6 +73,26 @@ export const appRoutes: Routes = [
                 path: 'cliente/manager/:id',
                 loadComponent: () => import('./app/cliente/cliente-manager/cliente-manager.component').then(c => c.ClienteManagerComponent),
                 data: { breadcrumb: 'Modifica Cliente' },
+            },
+            {
+                path: 'vendita',
+                redirectTo: 'vendita/listing',
+                pathMatch: 'full',
+            },
+            {
+                path: 'vendita/listing',
+                loadComponent: () => import('./app/vendita/vendita-listing/vendita-listing.component').then(c => c.VenditaListingComponent),
+                data: { breadcrumb: 'Vendite' },
+            },
+            {
+                path: 'vendita/manager',
+                loadComponent: () => import('./app/vendita/vendita-manager/vendita-manager.component').then(c => c.VenditaManagerComponent),
+                data: { breadcrumb: 'Nuova Vendita' },
+            },
+            {
+                path: 'vendita/manager/:id',
+                loadComponent: () => import('./app/vendita/vendita-manager/vendita-manager.component').then(c => c.VenditaManagerComponent),
+                data: { breadcrumb: 'Modifica Vendita' },
             }
         ]
     },

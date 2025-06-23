@@ -38,32 +38,108 @@ router.post(
     asyncHandler(async (req, res) => {
         if (req != null && req.body != null) {
             let whereOptions = {};
+
+            let includeCliente = { association: 'cliente', required: false, attributes: ['etichetta'] };
             
+            let includeDettagliModello = { association: 'modello', attributes: ['nome', 'descrizione'], required: false };
+            let includeDettagliStampante = { association: 'stampante', attributes: ['nome'], required: false };
+            let includeDettagli = {
+                association: 'dettagli',
+                where: { deletedAt: null },
+                required: false,
+                attributes: ['id', 'quantita', 'prezzo', 'stato_stampa', 'modello_id', 'stampante_id'],
+                include: [includeDettagliModello, includeDettagliStampante]
+            };
+
             if (req.body.data_vendita && req.body.data_vendita.trim() !== '') {
                 whereOptions.data_vendita = req.body.data_vendita;
             }
-            
             if (req.body.data_scadenza && req.body.data_scadenza.trim() !== '') {
                 whereOptions.data_scadenza = req.body.data_scadenza;
             }
-            
             if (req.body.cliente_id && req.body.cliente_id.trim() !== '') {
                 whereOptions.cliente_id = req.body.cliente_id;
             }
-            
+
+            // Handle search - we'll do separate queries for each search type and combine results
+            let venditeIds = new Set();
+
             if (req.body.search && req.body.search.trim() !== '') {
-                whereOptions = {
-                    [Op.or]: [
-                        // Cliente's etichetta
-                        { '$cliente.etichetta$': { [Op.like]: `%${req.body.search}%` } },
-                        // Dettaglio's modello nome
-                        { '$dettagli.modello.nome$': { [Op.like]: `%${req.body.search}%` } },
-                        // Dettaglio's modello descrizione
-                        { '$dettagli.modello.descrizione$': { [Op.like]: `%${req.body.search}%` } },
-                        // Dettaglio's stampante nome
-                        { '$dettagli.stampante.nome$': { [Op.like]: `%${req.body.search}%` } }
-                    ]
-                };
+                const search = req.body.search.trim();
+
+                // Search 1: By cliente.etichetta
+                const venditeByCliente = await VenditaRepository.find(
+                    { ...whereOptions },
+                    null, // no limit
+                    null, // no offset
+                    null, // no order
+                    ['id'], // only get IDs
+                    [{
+                        association: 'cliente',
+                        required: true,
+                        attributes: [],
+                        where: { 
+                            etichetta: { [Op.like]: `%${search}%` },
+                            deletedAt: null 
+                        }
+                    }]
+                );
+                venditeByCliente.forEach(v => venditeIds.add(v.id));
+
+                // Search 2: By dettagli.modello
+                const venditeByModello = await VenditaRepository.find(
+                    { ...whereOptions },
+                    null,
+                    null,
+                    null,
+                    ['id'],
+                    [{
+                        association: 'dettagli',
+                        required: true,
+                        attributes: [],
+                        where: { deletedAt: null },
+                        include: [{
+                            association: 'modello',
+                            required: true,
+                            attributes: [],
+                            where: {
+                                [Op.or]: [
+                                    { nome: { [Op.like]: `%${search}%` } },
+                                    { descrizione: { [Op.like]: `%${search}%` } }
+                                ],
+                                deletedAt: null
+                            }
+                        }]
+                    }]
+                );
+                venditeByModello.forEach(v => venditeIds.add(v.id));
+
+                // Search 3: By dettagli.stampante
+                const venditeByStampante = await VenditaRepository.find(
+                    { ...whereOptions },
+                    null,
+                    null,
+                    null,
+                    ['id'],
+                    [{
+                        association: 'dettagli',
+                        required: true,
+                        attributes: [],
+                        where: { deletedAt: null },
+                        include: [{
+                            association: 'stampante',
+                            required: true,
+                            attributes: [],
+                            where: { 
+                                nome: { [Op.like]: `%${search}%` },
+                                deletedAt: null 
+                            }
+                        }]
+                    }]
+                );
+                venditeByStampante.forEach(v => venditeIds.add(v.id));
+
+                whereOptions.id = { [Op.in]: Array.from(venditeIds) };
             }
 
             // Ensure we only get non-deleted records
@@ -83,10 +159,10 @@ router.post(
             }
 
             const projection = ['id', 'data_vendita', 'data_scadenza', 'totale_vendita', 'stato_spedizione'];
+            const include = [includeCliente, includeDettagli];
 
-            const count = await VenditaRepository.count(whereOptions);
-
-            const vendite = await VenditaRepository.find(whereOptions, limit, offset, order, projection);
+            const count = await VenditaRepository.count(whereOptions, include);
+            const vendite = await VenditaRepository.find(whereOptions, limit, offset, order, projection, include);
 
             res.status(200).json({
                 success: true,
