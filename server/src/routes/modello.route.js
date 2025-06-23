@@ -4,8 +4,8 @@ import express from 'express';
 import { validationResult } from 'express-validator';
 import { Op } from 'sequelize';
 import { authenticate } from '../middleware/authenticate.js';
-import StampanteRepository from '../repositories/stampante.repository.js';
-import validationSchema from '../schemas/stampante.schema.js';
+import ModelloRepository from '../repositories/modello.repository.js';
+import validationSchema from '../schemas/modello.schema.js';
 
 const router = express.Router();
 
@@ -15,10 +15,10 @@ router.get(
     '/:id',
     async (req, res) => {
         const projection = ['id', 'nome', 'descrizione'];
-        const stampante = await StampanteRepository.findOne(req.params.id, projection);
+        const modello = await ModelloRepository.findOne(req.params.id, projection);
         res.status(200).json({
             success: true,
-            data: stampante
+            data: modello
         });
     }
 );
@@ -74,23 +74,23 @@ router.post(
                 order = [[req.body.order.column, req.body.order.direction]];
             }
 
-            const projection = ['id', 'nome', 'descrizione'];
+            const projection = ['id', 'nome', 'descrizione', 'updatedAt'];
 
-            const count = await StampanteRepository.count(whereOptions);
+            const count = await ModelloRepository.count(whereOptions);
 
-            StampanteRepository
+            ModelloRepository
             .find(whereOptions, limit, offset, order, projection)
-            .then((stampanti) => {
+            .then((modelli) => {
                 res.status(200).json({
                     success: true,
-                    data: stampanti,
+                    data: modelli,
                     count: count
                 });
             })
             .catch((error) => {
                 return res.status(400).json({
                     success: false,
-                    error: 'Errore nel trovare le stampanti!',
+                    error: 'Errore nel trovare i modelli!',
                     technical_data: error
                 });
             });
@@ -120,11 +120,11 @@ router.post(
             try {
                 if (req.body.id && req.body.id > 0) {
                     // Update existing stampante
-                    await StampanteRepository.updateOne(req, res)
+                    await ModelloRepository.updateOne(req, res)
                     .then((data) => {
                         return res.status(200).json({
                             success: true,
-                            data: 'Stampante modificata con successo!',
+                            data: 'Modello modificato con successo!',
                             technical_data: data
                         });
                     })
@@ -132,17 +132,17 @@ router.post(
                         console.log(error);
                         return res.status(400).json({
                             success: false,
-                            error: "Errore durante la modifica della stampante",
+                            error: "Errore durante la modifica del modello",
                             technical_data: error.toString()
                         });
                     });
                 } else {
                     // Insert new stampante
-                    await StampanteRepository.insertOne(req, res)
+                    await ModelloRepository.insertOne(req, res)
                     .then((data) => {
                         return res.status(200).json({
                             success: true,
-                            data: 'Stampante creata con successo!',
+                            data: 'Modello creato con successo!',
                             technical_data: data
                         });
                     })
@@ -150,7 +150,7 @@ router.post(
                         console.log(error);
                         return res.status(400).json({
                             success: false,
-                            error: "Errore durante la creazione della stampante",
+                            error: "Errore durante la creazione del modello",
                             technical_data: error.toString()
                         });
                     });
@@ -171,12 +171,12 @@ router.post(
 router.delete(
     '/:id',
     async (req, res) => {
-        StampanteRepository
+        ModelloRepository
         .deleteOne(req.params.id)
         .then((data) => {
             return res.status(200).json({
                 success: true,
-                data: 'Stampante eliminata con successo!',
+                data: 'Modello eliminato con successo!',
                 technical_data: data
             });
         })
@@ -184,7 +184,7 @@ router.delete(
             console.log(error);
             return res.status(400).json({
                 success: false,
-                error: "Errore durante l'eliminazione della stampante",
+                error: "Errore durante l'eliminazione del modello",
                 technical_data: error.toString()
             });
         });
