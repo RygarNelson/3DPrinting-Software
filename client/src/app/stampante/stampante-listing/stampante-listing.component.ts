@@ -12,6 +12,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
+import { TooltipModule } from 'primeng/tooltip';
 import { Subscription } from 'rxjs';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { StampanteListingModel, StampanteListingResponse } from '../../../models/stampante/stampante-listing';
@@ -30,7 +31,8 @@ import { StampanteService } from '../../../services/stampante.service';
     ConfirmPopupModule,
     IconFieldModule,
     InputIconModule,
-    SkeletonModule
+    SkeletonModule,
+    TooltipModule
   ],
   templateUrl: './stampante-listing.component.html',
   styleUrl: './stampante-listing.component.scss',
