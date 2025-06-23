@@ -2,16 +2,18 @@ import { CommonModule } from '@angular/common';
 import { Component, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
+import { DialogService } from 'primeng/dynamicdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { Subscription } from 'rxjs';
+import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { StampanteListingModel, StampanteListingResponse } from '../../../models/stampante/stampante-listing';
 import { StampanteListingFiltri } from '../../../models/stampante/stampante-listing-filtri';
 import { StampanteService } from '../../../services/stampante.service';
@@ -57,7 +59,9 @@ export class StampanteListingComponent implements OnDestroy {
   constructor(
     private stampanteService: StampanteService,
     private router: Router,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private messageService: MessageService,
+    private dialogService: DialogService
   ) {}
 
   ngOnDestroy(): void {
@@ -154,11 +158,24 @@ export class StampanteListingComponent implements OnDestroy {
           window.clearTimeout(this.loadingTimeout);
           this.loading = false;
 
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Stampante cancellata con successo'
+          });
+
           this.loadStampanti();
         },
         error: (error) => {
           window.clearTimeout(this.loadingTimeout);
           this.loading = false;
+
+          this.dialogService.open(DialogErrorComponent, {
+            inputValues: {
+              error: error
+            },
+            modal: true
+          });
           
           console.error('Error deleting stampante:', error);
         }
