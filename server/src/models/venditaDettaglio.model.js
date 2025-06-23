@@ -15,7 +15,7 @@ const VenditaDettaglio = sequelize.define('VenditaDettaglio', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'T_VENDITA',
+            model: 'T_VENDITE',
             key: 'id'
         }
     },
@@ -23,7 +23,7 @@ const VenditaDettaglio = sequelize.define('VenditaDettaglio', {
         type: DataTypes.INTEGER,
         allowNull: true,
         references: {
-            model: 'T_MODELLO',
+            model: 'T_MODELLI',
             key: 'id'
         }
     },
@@ -31,7 +31,7 @@ const VenditaDettaglio = sequelize.define('VenditaDettaglio', {
         type: DataTypes.INTEGER,
         allowNull: true,
         references: {
-            model: 'T_STAMPANTE',
+            model: 'T_STAMPANTI',
             key: 'id'
         }
     },
@@ -48,25 +48,25 @@ const VenditaDettaglio = sequelize.define('VenditaDettaglio', {
         allowNull: true
     }
 }, {
-    tableName: 'T_VENDITA_DETTAGLIO',
+    tableName: 'T_VENDITE_DETTAGLI',
     indexes: [
         {
-            name: 'IX_T_VENDITA_DETTAGLIO_VENDITA_ID',
+            name: 'IX_T_VENDITE_DETTAGLI_VENDITA_ID',
             unique: false,
             fields: ['vendita_id']
         },
         {
-            name: 'IX_T_VENDITA_DETTAGLIO_MODELLO_ID',
+            name: 'IX_T_VENDITE_DETTAGLI_MODELLO_ID',
             unique: false,
             fields: ['modello_id']
         },
         {
-            name: 'IX_T_VENDITA_DETTAGLIO_STAMPANTE_ID',
+            name: 'IX_T_VENDITE_DETTAGLI_STAMPANTE_ID',
             unique: false,
             fields: ['stampante_id']
         },
         {
-            name: 'IX_T_VENDITA_DETTAGLIO_STATO_STAMPA',
+            name: 'IX_T_VENDITE_DETTAGLI_STATO_STAMPA',
             unique: false,
             fields: ['stato_stampa']
         }

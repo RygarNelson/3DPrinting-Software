@@ -40,25 +40,25 @@ const Vendita = sequelize.define('Vendita', {
         allowNull: true
     }
 }, {
-    tableName: 'T_VENDITA',
+    tableName: 'T_VENDITE',
     indexes: [
         {
-            name: 'IX_T_VENDITA_DATA_VENDITA',
+            name: 'IX_T_VENDITE_DATA_VENDITA',
             unique: false,
             fields: ['data_vendita']
         },
         {
-            name: 'IX_T_VENDITA_DATA_SCADENZA',
+            name: 'IX_T_VENDITE_DATA_SCADENZA',
             unique: false,
             fields: ['data_scadenza']
         },
         {
-            name: 'IX_T_VENDITA_CLIENTE_ID',
+            name: 'IX_T_VENDITE_CLIENTE_ID',
             unique: false,
             fields: ['cliente_id']
         },
         {
-            name: 'IX_T_VENDITA_STATO_SPEDIZIONE',
+            name: 'IX_T_VENDITE_STATO_SPEDIZIONE',
             unique: false,
             fields: ['stato_spedizione']
         }

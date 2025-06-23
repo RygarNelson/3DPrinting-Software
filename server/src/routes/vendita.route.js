@@ -3,7 +3,6 @@
 import express from 'express';
 import { validationResult } from 'express-validator';
 import { Op } from 'sequelize';
-import { sequelize } from '../config/database.js';
 import { authenticate } from '../middleware/authenticate.js';
 import VenditaRepository from '../repositories/vendita.repository.js';
 import validationSchema from '../schemas/vendita.schema.js';
@@ -83,7 +82,7 @@ router.post(
                 order = [[req.body.order.column, req.body.order.direction]];
             }
 
-            const projection = ['id', 'data_vendita', 'data_scadenza', [sequelize.col('cliente.etichetta'), 'cliente_etichetta'], 'totale_vendita', 'stato_spedizione'];
+            const projection = ['id', 'data_vendita', 'data_scadenza', 'totale_vendita', 'stato_spedizione'];
 
             const count = await VenditaRepository.count(whereOptions);
 

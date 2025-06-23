@@ -26,7 +26,17 @@ const venditaRepository = {
             offset: offset,
             order: order,
             include: [
-                { association: 'cliente', where: { deletedAt: null }, required: false }
+                { association: 'cliente', where: { deletedAt: null }, attributes: ['etichetta'], required: false },
+                {
+                    association: 'dettagli',
+                    where: { deletedAt: null },
+                    required: false,
+                    attributes: ['id', 'quantita', 'prezzo', 'stato_stampa'],
+                    include: [
+                        { association: 'modello', attributes: ['nome'], required: false },
+                        { association: 'stampante', attributes: ['nome'], required: false }
+                    ]
+                }
             ]
         });
     },
