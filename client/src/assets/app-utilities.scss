@@ -30,6 +30,19 @@ $info-color: #337bbe;
     margin-left: auto;
 }
 
+.text-center {
+  text-align: center !important;
+}
+
+.p-datatable-gridlines .p-datatable-thead > tr > th,
+.p-datatable-gridlines .p-datatable-tbody > td {
+  border-left-width: 1px;
+  border-bottom-width: 1px;
+}
+.p-datatable-gridlines .p-datatable-tbody > td:last-child {
+  border-right-width: 1px;
+}
+
 // --- Responsive Grid Utilities (Tailwind-like) ---
 $breakpoints: (
   'sm': 576px,
@@ -83,30 +96,76 @@ $breakpoints: (
     }
 }
 
-// Base grid-cols and mt utilities
+@mixin pt($n) {
+  .pt-#{$n} {
+    padding-top: #{$n * 0.25}rem;
+  }
+}
+
+@mixin pb($n) {
+    .pb-#{$n} {
+        padding-bottom: #{$n * 0.25}rem;
+    }
+}
+
+@mixin pl($n) {
+    .pl-#{$n} {
+        padding-left: #{$n * 0.25}rem;
+    }
+}
+
+@mixin pr($n) {
+    .pr-#{$n} {
+        padding-right: #{$n * 0.25}rem;
+    }
+}
+
+@mixin px($n) {
+    .px-#{$n} {
+        padding-left: #{$n * 0.25}rem;
+        padding-right: #{$n * 0.25}rem;
+    }
+}
+
+@mixin py($n) {
+    .py-#{$n} {
+        padding-top: #{$n * 0.25}rem;
+        padding-bottom: #{$n * 0.25}rem;
+    }
+}
+
 @for $i from 1 through 12 {
   @include grid-cols($i);
-  @include mt($i - 1);
-  @include mb($i - 1);
-  @include ml($i - 1);
-  @include mr($i - 1);
-  @include mx($i - 1);
-  @include my($i - 1);
 }
-@include mt(12);
-@include mb(12);
-@include ml(12);
-@include mr(12);
-@include mx(12);
-@include my(12);
+
+// Base grid-cols and mt utilities
+@for $i from 0 through 12 {
+  @include mt($i);
+  @include mb($i);
+  @include ml($i);
+  @include mr($i);
+  @include mx($i);
+  @include my($i);
+  @include pt($i);
+  @include pb($i);
+  @include pl($i);
+  @include pr($i);
+  @include px($i);
+  @include py($i);
+}
 
 // Responsive grid-cols and mt utilities for breakpoints
 @each $break, $size in $breakpoints {
+
   @media (min-width: #{$size}) {
+
     @for $i from 1 through 12 {
       .#{$break}\:grid-cols-#{$i} {
         grid-template-columns: repeat(#{$i}, minmax(0, 1fr));
       }
+    }
+
+    @for $i from 0 through 12 {
       .#{$break}\:mt-#{$i - 1} {
         margin-top: #{($i - 1) * 0.25}rem;
       }
@@ -127,26 +186,26 @@ $breakpoints: (
         margin-top: #{($i - 1) * 0.25}rem;
         margin-bottom: #{($i - 1) * 0.25}rem;
       }
-    }
-    .#{$break}\:mt-12 {
-      margin-top: 3rem;
-    }
-    .#{$break}\:mb-12 {
-      margin-bottom: 3rem;
-    }
-    .#{$break}\:ml-12 {
-      margin-left: 3rem;
-    }
-    .#{$break}\:mr-12 {
-      margin-right: 3rem;
-    }
-    .#{$break}\:mx-12 {
-      margin-left: 3rem;
-      margin-right: 3rem;
-    }
-    .#{$break}\:my-12 {
-      margin-top: 3rem;
-      margin-bottom: 3rem;
+      .#{$break}\:pt-#{$i - 1} {
+        padding-top: #{($i - 1) * 0.25}rem;
+      }
+      .#{$break}\:pb-#{$i - 1} {
+        padding-bottom: #{($i - 1) * 0.25}rem;
+      }
+      .#{$break}\:pl-#{$i - 1} {
+        padding-left: #{($i - 1) * 0.25}rem;
+      }
+      .#{$break}\:pr-#{$i - 1} {
+        padding-right: #{($i - 1) * 0.25}rem;
+      }
+      .#{$break}\:px-#{$i - 1} {
+        padding-left: #{($i - 1) * 0.25}rem;
+        padding-right: #{($i - 1) * 0.25}rem;
+      }
+      .#{$break}\:py-#{$i - 1} {
+        padding-top: #{($i - 1) * 0.25}rem;
+        padding-bottom: #{($i - 1) * 0.25}rem;
+      }
     }
   }
 }

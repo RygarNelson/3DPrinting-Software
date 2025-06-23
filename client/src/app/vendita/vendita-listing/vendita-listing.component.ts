@@ -18,6 +18,7 @@ import { VenditaListingModel, VenditaListingResponse } from 'src/models/vendita/
 import { VenditaListingFiltri } from 'src/models/vendita/vendita-listing-filtri';
 import { VenditaService } from 'src/services/vendita.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
+import { VenditaListingDettaglioStatoComponent } from '../vendita-listing-dettaglio-stato/vendita-listing-dettaglio-stato.component';
 import { VenditaListingStatoComponent } from '../vendita-listing-stato/vendita-listing-stato.component';
 
 @Component({
@@ -34,7 +35,8 @@ import { VenditaListingStatoComponent } from '../vendita-listing-stato/vendita-l
     InputIconModule,
     SkeletonModule,
     TooltipModule,
-    VenditaListingStatoComponent
+    VenditaListingStatoComponent,
+    VenditaListingDettaglioStatoComponent
   ],
   providers: [
     ConfirmationService,
@@ -48,6 +50,7 @@ export class VenditaListingComponent implements OnDestroy {
   vendite: VenditaListingModel[] = [];
   totalRecords: number = 0;
   loading: boolean = false;
+  expandedRows: any = {};
 
   // Filter properties
   filtri: VenditaListingFiltri = {

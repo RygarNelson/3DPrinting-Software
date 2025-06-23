@@ -17,6 +17,8 @@
           [totalRecords]="totalRecords"
           [first]="filtri.offset"
           [showCurrentPageReport]="true"
+          dataKey="id"
+          [expandedRowKeys]="expandedRows"
           [lazy]="true"
           (onLazyLoad)="loadData($event)">
           
@@ -64,6 +66,7 @@
           <!-- ID Column -->
           <ng-template #header>
             <tr>
+              <th style="width: 5rem"></th>
               <th pSortableColumn="data_vendita">Data Vendita <p-sortIcon field="data_vendita" /></th>
               <th pSortableColumn="data_scadenza">Data Scadenza <p-sortIcon field="data_scadenza" /></th>
               <th>Cliente</th>
@@ -74,8 +77,11 @@
           </ng-template>
   
           <!-- Data Rows -->
-          <ng-template #body let-vendita>
+          <ng-template #body let-vendita let-expanded="expanded">
             <tr>
+                <td>
+                    <p-button type="button" pRipple [pRowToggler]="vendita" [text]="true" [rounded]="true" [plain]="true" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
+                </td>
               <td class="font-medium">{{ vendita.data_vendita | date:'dd/MM/yyyy' }}</td>
               <td>{{ vendita.data_scadenza | date:'dd/MM/yyyy' }}</td>
               <td>{{ vendita.cliente.etichetta }}</td>
@@ -122,11 +128,56 @@
               </td>
             </tr>
           </ng-template>
+          <ng-template #expandedrow let-vendita>
+            <tr>
+              <td colspan="7">
+                <div class="my-3">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Dettagli</h3>
+                    <p-table showGridlines [value]="vendita.dettagli" [totalRecords]="vendita.dettagli.length">
+                        <ng-template #header>
+                          <tr>
+                            <th class="text-center">Modello</th>
+                            <th class="text-center">Stampante</th>
+                            <th class="text-center">Quantità</th>
+                            <th class="text-center">Prezzo</th>
+                            <th class="text-center">Stato Stampa</th>
+                            <th class="text-center"></th>
+                          </tr>
+                        </ng-template>
+                        <ng-template #body let-dettaglio>
+                          <td class="text-center">{{ dettaglio.modello.nome }}</td>
+                          <td class="text-center">{{ dettaglio.stampante.nome }}</td>
+                          <td class="text-center">{{ dettaglio.quantita }}</td>
+                          <td class="text-center">{{ dettaglio.prezzo | currency:'EUR' }}</td>
+                          <td class="text-center">
+                            <vendita-listing-dettaglio-stato [stato_stampa]="dettaglio.stato_stampa"></vendita-listing-dettaglio-stato>
+                          </td>
+                          <td class="text-center">
+                              <p-button 
+                                icon="pi pi-arrow-right" 
+                                severity="info" 
+                                size="small"
+                                pTooltip="Avanza Stato"
+                                tooltipPosition="top">
+                              </p-button>
+                          </td>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                          <div class="flex flex-col items-center gap-2">
+                              <i class="pi pi-inbox text-4xl text-gray-400"></i>
+                              <p class="text-gray-500">Non ci sono dettagli per questa vendita</p>
+                          </div>
+                        </ng-template>
+                      </p-table>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
   
           <!-- Empty State -->
           <ng-template pTemplate="emptymessage">
             <tr>
-              <td colspan="4" class="text-center py-8">
+              <td colspan="7" class="text-center py-8">
                   @if (loading) {
                       <p-skeleton height="100px" width="100%" />
                   } @else {
