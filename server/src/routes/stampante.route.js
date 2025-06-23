@@ -6,6 +6,7 @@ import { Op } from 'sequelize';
 import { authenticate } from '../middleware/authenticate.js';
 import StampanteRepository from '../repositories/stampante.repository.js';
 import validationSchema from '../schemas/stampante.schema.js';
+import asyncHandler from '../utils/asyncHandler.js';
 
 const router = express.Router();
 
@@ -13,19 +14,19 @@ router.use(authenticate);
 
 router.get(
     '/:id',
-    async (req, res) => {
+    asyncHandler(async (req, res) => {
         const projection = ['id', 'nome', 'descrizione'];
         const stampante = await StampanteRepository.findOne(req.params.id, projection);
         res.status(200).json({
             success: true,
             data: stampante
         });
-    }
+    })
 );
 
 router.post(
     '/listing',
-    async (req, res) => {
+    asyncHandler(async (req, res) => {
         if (req != null && req.body != null) {
             let whereOptions = {};
             
@@ -78,21 +79,12 @@ router.post(
 
             const count = await StampanteRepository.count(whereOptions);
 
-            StampanteRepository
-            .find(whereOptions, limit, offset, order, projection)
-            .then((stampanti) => {
-                res.status(200).json({
-                    success: true,
-                    data: stampanti,
-                    count: count
-                });
-            })
-            .catch((error) => {
-                return res.status(400).json({
-                    success: false,
-                    error: 'Errore nel trovare le stampanti!',
-                    technical_data: error
-                });
+            const stampanti = await StampanteRepository.find(whereOptions, limit, offset, order, projection);
+
+            res.status(200).json({
+                success: true,
+                data: stampanti,
+                count: count
             });
         }
         else {
@@ -102,13 +94,13 @@ router.post(
                 technical_data: 'Nessun parametro di ricerca specificato'
             });
         }
-    }
+    })
 );
 
 router.post(
     '/save',
     validationSchema.check(),
-    async (req, res) => {
+    asyncHandler(async (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({
@@ -116,79 +108,35 @@ router.post(
                 error: 'Uno o più campi non sono validi',
                 technical_data: errors.errors
             });
-        } else {
-            try {
-                if (req.body.id && req.body.id > 0) {
-                    // Update existing stampante
-                    await StampanteRepository.updateOne(req, res)
-                    .then((data) => {
-                        return res.status(200).json({
-                            success: true,
-                            data: 'Stampante modificata con successo!',
-                            technical_data: data
-                        });
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                        return res.status(400).json({
-                            success: false,
-                            error: "Errore durante la modifica della stampante",
-                            technical_data: error.toString()
-                        });
-                    });
-                } else {
-                    // Insert new stampante
-                    await StampanteRepository.insertOne(req, res)
-                    .then((data) => {
-                        return res.status(200).json({
-                            success: true,
-                            data: 'Stampante creata con successo!',
-                            technical_data: data
-                        });
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                        return res.status(400).json({
-                            success: false,
-                            error: "Errore durante la creazione della stampante",
-                            technical_data: error.toString()
-                        });
-                    });
-                }
-            }
-            catch (error) {
-                console.log('Error in save route:', error);
-                return res.status(400).json({
-                    success: false,
-                    error: 'Errore nel salvataggio della stampante',
-                    technical_data: error
-                });
-            }
         }
-    }
+        if (req.body.id && req.body.id > 0) {
+            const data = await StampanteRepository.updateOne(req, res);
+            return res.status(200).json({
+                success: true,
+                data: 'Stampante modificata con successo!',
+                technical_data: data
+            });
+        } else {
+            const data = await StampanteRepository.insertOne(req, res);
+            return res.status(200).json({
+                success: true,
+                data: 'Stampante creata con successo!',
+                technical_data: data
+            });
+        }
+    })
 );
 
 router.delete(
     '/:id',
-    async (req, res) => {
-        StampanteRepository
-        .deleteOne(req.params.id)
-        .then((data) => {
-            return res.status(200).json({
-                success: true,
-                data: 'Stampante eliminata con successo!',
-                technical_data: data
-            });
-        })
-        .catch((error) => {
-            console.log(error);
-            return res.status(400).json({
-                success: false,
-                error: "Errore durante l'eliminazione della stampante",
-                technical_data: error.toString()
-            });
+    asyncHandler(async (req, res) => {
+        const data = await StampanteRepository.deleteOne(req.params.id);
+        return res.status(200).json({
+            success: true,
+            data: 'Stampante eliminata con successo!',
+            technical_data: data
         });
-    }
+    })
 );
 
 export default router;

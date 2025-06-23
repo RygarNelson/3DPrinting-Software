@@ -116,4 +116,13 @@ if (angularAppExists) {
     console.log('Angular static files not found at:', angularStaticPath);
 }
 
+// Add global error handler middleware
+app.use((err, req, res, next) => {
+    res.status(500).json({
+        success: false,
+        error: 'Errore generale',
+        technical_data: err.toString()
+    });
+});
+
 export default app;
