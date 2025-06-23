@@ -102,6 +102,12 @@ export class StampanteManagerComponent implements OnInit, OnDestroy {
         this.loading = false;
 
         if (error.status === 400) {
+          this.MessageService.add({
+            severity: 'error',
+            summary: 'Errore',
+            detail: 'Errore durante il salvataggio della stampante'
+          });
+
           this.listaErrori = error.error.technical_data;
         }
         else {
