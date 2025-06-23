@@ -16,12 +16,12 @@ router.use(authenticate);
 router.get(
     '/:id',
     asyncHandler(async (req, res) => {
-        const projection = ['id', 'data_vendita', 'data_scadenza', 'cliente_id', 'totale_vendita'];
+        const projection = ['id', 'data_vendita', 'data_scadenza', 'cliente_id', 'totale_vendita', 'stato_spedizione', 'link_tracciamento'];
         // Pass an include option to also get all dettagli
         const include = [
             {
                 association: 'dettagli',
-                attributes: ['id', 'modello_id', 'quantita', 'prezzo', 'vendita_id'], // projection for dettagli
+                attributes: ['id', 'modello_id', 'quantita', 'prezzo', 'vendita_id', 'stampante_id', 'stato_stampa'], // projection for dettagli
                 where: { deletedAt: null },
                 required: false, // so that vendite with no non-deleted dettagli are still included
             }
@@ -60,7 +60,9 @@ router.post(
                         // Dettaglio's modello nome
                         { '$dettagli.modello.nome$': { [Op.like]: `%${req.body.search}%` } },
                         // Dettaglio's modello descrizione
-                        { '$dettagli.modello.descrizione$': { [Op.like]: `%${req.body.search}%` } }
+                        { '$dettagli.modello.descrizione$': { [Op.like]: `%${req.body.search}%` } },
+                        // Dettaglio's stampante nome
+                        { '$dettagli.stampante.nome$': { [Op.like]: `%${req.body.search}%` } }
                     ]
                 };
             }
@@ -81,7 +83,7 @@ router.post(
                 order = [[req.body.order.column, req.body.order.direction]];
             }
 
-            const projection = ['id', 'data_vendita', 'data_scadenza', [sequelize.col('cliente.etichetta'), 'cliente_etichetta']];
+            const projection = ['id', 'data_vendita', 'data_scadenza', [sequelize.col('cliente.etichetta'), 'cliente_etichetta'], 'totale_vendita', 'stato_spedizione'];
 
             const count = await VenditaRepository.count(whereOptions);
 

@@ -30,6 +30,14 @@ const Vendita = sequelize.define('Vendita', {
     totale_vendita: {
         type: DataTypes.DECIMAL(20,5),
         allowNull: true
+    },
+    stato_spedizione: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
+    link_tracciamento: {
+        type: DataTypes.STRING(500),
+        allowNull: true
     }
 }, {
     tableName: 'T_VENDITA',
@@ -48,6 +56,11 @@ const Vendita = sequelize.define('Vendita', {
             name: 'IX_T_VENDITA_CLIENTE_ID',
             unique: false,
             fields: ['cliente_id']
+        },
+        {
+            name: 'IX_T_VENDITA_STATO_SPEDIZIONE',
+            unique: false,
+            fields: ['stato_spedizione']
         }
     ],
     timestamps: true,

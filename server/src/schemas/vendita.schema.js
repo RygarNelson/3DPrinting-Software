@@ -59,6 +59,27 @@ const validationSchema = {
                     options: { decimal_digits: '0,5' },
                     errorMessage: 'Il prezzo deve essere un decimale con 5 cifre decimali',
                 }
+            },
+            stato_spedizione: {
+                optional: true,
+                isInt: {
+                    errorMessage: 'Lo stato spedizione deve essere un intero',
+                },
+                toInt: true
+            },
+            link_tracciamento: {
+                optional: true,
+                isLength: {
+                    options: { max: 500 },
+                    errorMessage: 'Il link tracciamento non può superare i 500 caratteri'
+                }
+            },
+            'dettagli.*.stato_stampa': {
+                optional: true,
+                isInt: {
+                    errorMessage: 'Lo stato stampa deve essere un intero',
+                },
+                toInt: true
             }
         });
     }
