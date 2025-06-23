@@ -37,7 +37,7 @@
             </div>
         </ng-template>
         <ng-template pTemplate="content">
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <form-input-text
                         label="Nome"
                         name="nome"
@@ -72,8 +72,9 @@
                     [listaErrori]="listaErrori"
                     [(ngModel)]="cliente.ragione_sociale" />
                 </div>
-                <div class="flex flex-col flex-row w-full">
-                    <form-input-text
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <form-input-text
                     label="Email"
                     name="email"
                     property="email"
@@ -81,9 +82,7 @@
                     [maxlength]="255"
                     [listaErrori]="listaErrori"
                     [(ngModel)]="cliente.email" />
-                </div>
-                <div class="flex flex-col flex-row w-full">
-                    <form-input-text
+                <form-input-text
                     label="Telefono"
                     name="telefono"
                     property="telefono"
@@ -91,7 +90,6 @@
                     [maxlength]="50"
                     [listaErrori]="listaErrori"
                     [(ngModel)]="cliente.telefono" />
-                </div>
             </div>
         </ng-template>
       </p-card> 
