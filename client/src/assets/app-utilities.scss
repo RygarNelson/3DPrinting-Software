@@ -29,3 +29,124 @@ $info-color: #337bbe;
 .margin-left-auto {
     margin-left: auto;
 }
+
+// --- Responsive Grid Utilities (Tailwind-like) ---
+$breakpoints: (
+  'sm': 576px,
+  'md': 768px,
+  'lg': 992px,
+  'xl': 1200px,
+  'xxl': 1920px
+);
+
+@mixin grid-cols($n) {
+  .grid-cols-#{$n} {
+    grid-template-columns: repeat(#{$n}, minmax(0, 1fr));
+  }
+}
+
+@mixin mt($n) {
+  .mt-#{$n} {
+    margin-top: #{$n * 0.25}rem;
+  }
+}
+
+@mixin mb($n) {
+    .mb-#{$n} {
+        margin-bottom: #{$n * 0.25}rem;
+    }
+}
+
+@mixin ml($n) {
+    .ml-#{$n} {
+        margin-left: #{$n * 0.25}rem;
+    }
+}
+
+@mixin mr($n) {
+    .mr-#{$n} {
+        margin-right: #{$n * 0.25}rem;
+    }
+}
+
+@mixin mx($n) {
+    .mx-#{$n} {
+        margin-left: #{$n * 0.25}rem;
+        margin-right: #{$n * 0.25}rem;
+    }
+}
+
+@mixin my($n) {
+    .my-#{$n} {
+        margin-top: #{$n * 0.25}rem;
+        margin-bottom: #{$n * 0.25}rem;
+    }
+}
+
+// Base grid-cols and mt utilities
+@for $i from 1 through 12 {
+  @include grid-cols($i);
+  @include mt($i - 1);
+  @include mb($i - 1);
+  @include ml($i - 1);
+  @include mr($i - 1);
+  @include mx($i - 1);
+  @include my($i - 1);
+}
+@include mt(12);
+@include mb(12);
+@include ml(12);
+@include mr(12);
+@include mx(12);
+@include my(12);
+
+// Responsive grid-cols and mt utilities for breakpoints
+@each $break, $size in $breakpoints {
+  @media (min-width: #{$size}) {
+    @for $i from 1 through 12 {
+      .#{$break}\:grid-cols-#{$i} {
+        grid-template-columns: repeat(#{$i}, minmax(0, 1fr));
+      }
+      .#{$break}\:mt-#{$i - 1} {
+        margin-top: #{($i - 1) * 0.25}rem;
+      }
+      .#{$break}\:mb-#{$i - 1} {
+        margin-bottom: #{($i - 1) * 0.25}rem;
+      }
+      .#{$break}\:ml-#{$i - 1} {
+        margin-left: #{($i - 1) * 0.25}rem;
+      }
+      .#{$break}\:mr-#{$i - 1} {
+        margin-right: #{($i - 1) * 0.25}rem;
+      }
+      .#{$break}\:mx-#{$i - 1} {
+        margin-left: #{($i - 1) * 0.25}rem;
+        margin-right: #{($i - 1) * 0.25}rem;
+      }
+      .#{$break}\:my-#{$i - 1} {
+        margin-top: #{($i - 1) * 0.25}rem;
+        margin-bottom: #{($i - 1) * 0.25}rem;
+      }
+    }
+    .#{$break}\:mt-12 {
+      margin-top: 3rem;
+    }
+    .#{$break}\:mb-12 {
+      margin-bottom: 3rem;
+    }
+    .#{$break}\:ml-12 {
+      margin-left: 3rem;
+    }
+    .#{$break}\:mr-12 {
+      margin-right: 3rem;
+    }
+    .#{$break}\:mx-12 {
+      margin-left: 3rem;
+      margin-right: 3rem;
+    }
+    .#{$break}\:my-12 {
+      margin-top: 3rem;
+      margin-bottom: 3rem;
+    }
+  }
+}

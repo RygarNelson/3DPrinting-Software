@@ -19,6 +19,7 @@ const initializeDatabase = async () => {
         const { default: User } = await import('./models/users.model.js');
         const { default: DatabaseVersion } = await import('./models/databaseVersion.model.js');
         const authMethods = await import('./methods/authMethods.js');
+        const { default: Cliente } = await import('./models/cliente.model.js');
 
         // Sync all models with database
         await sequelize.sync();

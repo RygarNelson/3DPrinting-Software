@@ -11,6 +11,7 @@ import * as rfs from 'rotating-file-stream';
 import { fileURLToPath } from 'url';
 import { connectToDatabase, initializeDatabase } from './db.js';
 import authRoute from './routes/auth.route.js';
+import clienteRoute from './routes/cliente.route.js';
 import modelloRoute from './routes/modello.route.js';
 import stampanteRoute from './routes/stampante.route.js';
 
@@ -84,6 +85,7 @@ await initializeDatabase();
 app.use('/api/auth', authRoute);
 app.use('/api/stampante', stampanteRoute);
 app.use('/api/modello', modelloRoute);
+app.use('/api/cliente', clienteRoute);
 
 /* STATIC FILES - Angular App */
 // Check if Angular static files directory exists

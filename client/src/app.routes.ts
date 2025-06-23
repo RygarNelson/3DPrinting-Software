@@ -53,6 +53,26 @@ export const appRoutes: Routes = [
                 path: 'modello/manager/:id',
                 loadComponent: () => import('./app/modello/modello-manager/modello-manager.component').then(c => c.ModelloManagerComponent),
                 data: { breadcrumb: 'Modifica Modello' },
+            },
+            {
+                path: 'cliente',
+                redirectTo: 'cliente/listing',
+                pathMatch: 'full',
+            },
+            {
+                path: 'cliente/listing',
+                loadComponent: () => import('./app/cliente/cliente-listing/cliente-listing.component').then(c => c.ClienteListingComponent),
+                data: { breadcrumb: 'Clienti' },
+            },
+            {
+                path: 'cliente/manager',
+                loadComponent: () => import('./app/cliente/cliente-manager/cliente-manager.component').then(c => c.ClienteManagerComponent),
+                data: { breadcrumb: 'Nuovo Cliente' },
+            },
+            {
+                path: 'cliente/manager/:id',
+                loadComponent: () => import('./app/cliente/cliente-manager/cliente-manager.component').then(c => c.ClienteManagerComponent),
+                data: { breadcrumb: 'Modifica Cliente' },
             }
         ]
     },
