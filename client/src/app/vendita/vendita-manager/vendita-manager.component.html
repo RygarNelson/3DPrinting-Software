@@ -1,1 +1,70 @@
-<p>vendita-manager works!</p>
+<div class="p-4">
+    <p-card>
+        <ng-template pTemplate="header">
+            <div class="flex items-center flex-wrap header-title">
+                <h2 class="text-xl font-semibold text-gray-800">{{vendita.id ? 'Modifica' : 'Nuova'}} Vendita</h2>
+                <div class="flex items-center gap-2 margin-left-auto">
+                    @if (loading) {
+                        <p-button 
+                            icon="pi pi-spinner pi-spin"
+                            label="Indietro"
+                            [disabled]="true"
+                            [severity]="'secondary'"
+                        />
+                        <p-button 
+                            icon="pi pi-spinner pi-spin"
+                            label="Salva"
+                            [disabled]="true"
+                            [severity]="'primary'"
+                        />
+                    }
+                    @else {
+                        <p-button 
+                            icon="pi pi-arrow-left"
+                            label="Indietro"
+                            (click)="indietro()"
+                            [severity]="'secondary'"
+                        />
+                        <p-button 
+                            icon="pi pi-save"
+                            label="Salva"
+                            (click)="saveStampante()"
+                            [severity]="'primary'"
+                        />
+                    }
+                    
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="content">
+            <p-tabs value="0">
+                <p-tablist>
+                    <p-tab value="0">Dati Generali</p-tab>
+                    <p-tab value="1">Dettagli</p-tab>
+                </p-tablist>
+                <p-tabpanels>
+                    <p-tabpanel value="0">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <form-input-datetime
+                                property="data_vendita"
+                                label="Data Vendita"
+                                [obligatory]="true"
+                                [listaErrori]="listaErrori"
+                                [(ngModel)]="vendita.data_vendita"
+                            />
+                            <form-input-datetime
+                                property="data_scadenza"
+                                label="Data Scadenza"
+                                [listaErrori]="listaErrori"
+                                [(ngModel)]="vendita.data_scadenza"
+                            />
+                        </div>
+                    </p-tabpanel>
+                    <p-tabpanel value="1">
+
+                    </p-tabpanel>
+                </p-tabpanels>
+            </p-tabs>
+        </ng-template>
+    </p-card>
+</div>

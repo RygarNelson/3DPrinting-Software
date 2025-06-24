@@ -4,8 +4,8 @@ import { ResponseInterface } from "src/interfaces/response.interface";
 
 export class VenditaManagerModel {
     id: number = 0;
-    data_vendita: Date = new Date();
-    data_scadenza: Date = new Date();
+    data_vendita: Date | undefined = undefined;
+    data_scadenza: Date | undefined = undefined;
     cliente_id: number = 0;
     link_tracciamento: string = '';
     stato_spedizione: VenditaStatoSpedizioneEnum = VenditaStatoSpedizioneEnum.DaSpedire;

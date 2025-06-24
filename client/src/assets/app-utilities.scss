@@ -34,6 +34,10 @@ $info-color: #337bbe;
   text-align: center !important;
 }
 
+.p-datepicker.p-component.p-inputwrapper {
+  width: 100%;
+}
+
 .p-datatable-gridlines .p-datatable-thead > tr > th,
 .p-datatable-gridlines .p-datatable-tbody > td {
   border-left-width: 1px;

@@ -2,6 +2,7 @@ import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/
 import { ApplicationConfig } from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, withEnabledBlockingInitialNavigation, withInMemoryScrolling } from '@angular/router';
+import { provideTranslateService } from "@ngx-translate/core";
 import Aura from '@primeng/themes/aura';
 import { MessageService } from 'primeng/api';
 import { providePrimeNG } from 'primeng/config';
@@ -18,6 +19,9 @@ export const appConfig: ApplicationConfig = {
         provideHttpClient(
             withInterceptors([HttpInterceptorService])
         ),
+        provideTranslateService({
+            defaultLanguage: 'it',
+        }),
         MessageService,
         DialogService,
     ]
