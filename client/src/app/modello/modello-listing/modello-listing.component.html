@@ -76,7 +76,7 @@
             <tr>
               <td class="font-medium">{{ modello.nome }}</td>
               <td>{{ modello.descrizione }}</td>
-              <td class="text-center">{{ modello.updatedAt | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ modello.updatedAt | date:'dd/MM/yyyy HH:mm' }}</td>
               <td class="text-center">
                 <div class="flex justify-center gap-2">
                   @if (loading) {
@@ -106,8 +106,9 @@
                       icon="pi pi-trash" 
                       severity="danger" 
                       size="small"
+                      [disabled]="modello.isUsed"
                       (click)="confirmDelete($event, modello)"
-                      pTooltip="Elimina modello"
+                      [pTooltip]="modello.isUsed | modelloListingEliminaMessaggio"
                       tooltipPosition="top">
                     </p-button>
                   }

@@ -5,6 +5,7 @@ export class ModelloListingModel {
     nome: string = '';
     descrizione: string = '';
     updatedAt: Date = new Date();
+    isUsed: boolean = false;
 }
 
 export class ModelloListingResponse implements ResponseInterface {

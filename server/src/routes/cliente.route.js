@@ -106,10 +106,20 @@ router.post(
 
             const count = await ClienteRepository.count(whereOptions);
             const clienti = await ClienteRepository.find(whereOptions, limit, offset, order, projection);
+            
+            const result = await Promise.all(clienti.map(async (cliente) => {
+                return {
+                    id: cliente.dataValues.id,
+                    etichetta: cliente.dataValues.etichetta,
+                    email: cliente.dataValues.email,
+                    telefono: cliente.dataValues.telefono,
+                    isUsed: await ClienteRepository.isUsed(cliente.dataValues.id)
+                }
+            }));
 
             res.status(200).json({
                 success: true,
-                data: clienti,
+                data: result,
                 count: count
             });
         } else {

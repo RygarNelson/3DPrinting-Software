@@ -18,6 +18,7 @@ import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.compo
 import { ClienteListingModel, ClienteListingResponse } from '../../../models/cliente/cliente-listing';
 import { ClienteListingFiltri } from '../../../models/cliente/cliente-listing-filtri';
 import { ClienteService } from '../../../services/cliente.service';
+import { ClienteListingEliminaMessaggioPipe } from '../pipes/cliente-listing-elimina-messaggio.pipe';
 
 @Component({
   selector: 'app-cliente-listing',
@@ -32,7 +33,8 @@ import { ClienteService } from '../../../services/cliente.service';
     IconFieldModule,
     InputIconModule,
     SkeletonModule,
-    TooltipModule
+    TooltipModule,
+    ClienteListingEliminaMessaggioPipe
   ],
   templateUrl: './cliente-listing.component.html',
   providers: [

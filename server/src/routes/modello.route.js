@@ -107,12 +107,21 @@ router.post(
             const projection = ['id', 'nome', 'descrizione', 'updatedAt'];
 
             const count = await ModelloRepository.count(whereOptions);
-
             const modelli = await ModelloRepository.find(whereOptions, limit, offset, order, projection);
+
+            const result = await Promise.all(modelli.map(async (modello) => {
+                return {
+                    id: modello.dataValues.id,
+                    nome: modello.dataValues.nome,
+                    descrizione: modello.dataValues.descrizione,
+                    updatedAt: modello.dataValues.updatedAt,
+                    isUsed: await ModelloRepository.isUsed(modello.dataValues.id)
+                }
+            }));
 
             res.status(200).json({
                 success: true,
-                data: modelli,
+                data: result,
                 count: count
             });
         }

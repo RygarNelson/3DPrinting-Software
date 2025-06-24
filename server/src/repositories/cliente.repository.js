@@ -1,6 +1,7 @@
 'use strict'
 
 import Cliente from '../models/cliente.model.js';
+import Vendita from '../models/vendita.model.js';
 
 const clienteRepository = {
     getAll: function () {
@@ -63,6 +64,11 @@ const clienteRepository = {
 
     deleteOne: function(id) {
         return Cliente.destroy({ where: { id: id } });
+    },
+
+    isUsed: async function(id) {
+        const isVendita = await Vendita.findOne({ where: { cliente_id: id } });
+        return isVendita ? true : false;
     }
 };
 

@@ -1,6 +1,7 @@
 'use strict'
 
 import Modello from '../models/modello.model.js';
+import VenditaDettaglio from '../models/venditaDettaglio.model.js';
 
 const modelloRepository = {
     getAll: function () {
@@ -39,6 +40,11 @@ const modelloRepository = {
 
     deleteOne: function(id) {
         return Modello.destroy({ where: { id: id } });
+    },
+
+    isUsed: async function(id) {
+        const isDettaglioVendita = await VenditaDettaglio.findOne({ where: { modello_id: id } });
+        return isDettaglioVendita ? true : false;
     }
 };
 
