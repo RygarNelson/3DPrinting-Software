@@ -8,12 +8,14 @@ import { CardModule } from 'primeng/card';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TabsModule } from 'primeng/tabs';
 import { ClienteLookupDirective } from 'src/directives/cliente/cliente-lookup.directive';
+import { VenditaStatoSpedizioneLookupDirective } from 'src/directives/vendita/vendita-stato-spedizione-lookup.directive';
 import { ErrorsViewModel } from 'src/models/ErrorsViewModel';
 import { VenditaManagerModel } from 'src/models/vendita/vendita-manager';
 import { VenditaService } from 'src/services/vendita.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { FormInputDatetimeComponent } from 'src/shared/form-input-datetime/form-input-datetime.component';
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
+import { FormInputTextComponent } from 'src/shared/form-input-text/form-input-text.component';
 
 @Component({
   selector: 'app-vendita-manager',
@@ -23,9 +25,11 @@ import { FormInputSelectComponent } from 'src/shared/form-input-select/form-inpu
     CardModule,
     ButtonModule,
     TabsModule,
+    FormInputTextComponent,
     FormInputDatetimeComponent,
     FormInputSelectComponent,
-    ClienteLookupDirective
+    ClienteLookupDirective,
+    VenditaStatoSpedizioneLookupDirective
   ],
   providers: [
     VenditaService

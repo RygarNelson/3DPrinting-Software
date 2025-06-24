@@ -8,7 +8,7 @@ export class VenditaManagerModel {
     data_scadenza?: Date;
     cliente_id?: number;
     link_tracciamento?: string;
-    stato_spedizione: VenditaStatoSpedizioneEnum = VenditaStatoSpedizioneEnum.DaSpedire;
+    stato_spedizione?: VenditaStatoSpedizioneEnum;
     dettagli: VenditaDettaglioManagerModel[] = [];
 }
 

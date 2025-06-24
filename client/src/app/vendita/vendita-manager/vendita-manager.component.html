@@ -66,6 +66,21 @@
                                 [listaErrori]="listaErrori"
                                 [(ngModel)]="vendita.cliente_id" />
                         </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                            <form-input-select
+                                vendita-stato-spedizione-lookup
+                                property="stato_spedizione"
+                                label="Stato Spedizione"
+                                [obligatory]="true"
+                                [filter]="false"
+                                [listaErrori]="listaErrori"
+                                [(ngModel)]="vendita.stato_spedizione" />
+                            <form-input-text
+                                property="link_tracciamento"
+                                label="Link Tracciamento"
+                                [listaErrori]="listaErrori"
+                                [(ngModel)]="vendita.link_tracciamento" />
+                        </div>
                     </p-tabpanel>
                     <p-tabpanel value="1">
 
