@@ -22,7 +22,7 @@ const validationSchema = {
             cliente_id: {
                 optional: false,
                 isInt: {
-                    errorMessage: 'Il cliente_id deve essere un intero',
+                    errorMessage: 'Il Cliente non è valido',
                 },
                 toInt: true
             },
@@ -30,19 +30,40 @@ const validationSchema = {
                 optional: true,
                 isDecimal: {
                     options: { decimal_digits: '0,5' },
-                    errorMessage: 'Il totale vendita deve essere un decimale',
+                    errorMessage: 'Il totale vendita non è valido',
+                }
+            },
+            stato_spedizione: {
+                optional: false,
+                isInt: {
+                    errorMessage: 'Lo stato spedizione non è valido',
+                },
+                toInt: true
+            },
+            link_tracciamento: {
+                optional: true,
+                isLength: {
+                    options: { max: 500 },
+                    errorMessage: 'Il link tracciamento non può superare i 500 caratteri'
                 }
             },
             'dettagli': {
                 optional: false,
                 isArray: {
-                    errorMessage: 'I dettagli devono essere un array',
+                    errorMessage: 'I dettagli non sono validi',
                 }
             },
             'dettagli.*.modello_id': {
                 optional: false,
                 isInt: {
-                    errorMessage: 'Il modello_id deve essere un intero',
+                    errorMessage: 'Il modello non è valido',
+                },
+                toInt: true
+            },
+            'dettagli.*.stampante_id': {
+                optional: false,
+                isInt: {
+                    errorMessage: 'La stampante non è valida',
                 },
                 toInt: true
             },
@@ -60,24 +81,10 @@ const validationSchema = {
                     errorMessage: 'Il prezzo deve essere un decimale con 5 cifre decimali',
                 }
             },
-            stato_spedizione: {
-                optional: false,
-                isInt: {
-                    errorMessage: 'Lo stato spedizione deve essere un intero',
-                },
-                toInt: true
-            },
-            link_tracciamento: {
-                optional: true,
-                isLength: {
-                    options: { max: 500 },
-                    errorMessage: 'Il link tracciamento non può superare i 500 caratteri'
-                }
-            },
             'dettagli.*.stato_stampa': {
                 optional: false,
                 isInt: {
-                    errorMessage: 'Lo stato stampa deve essere un intero',
+                    errorMessage: 'Lo stato stampa non è valido',
                 },
                 toInt: true
             }

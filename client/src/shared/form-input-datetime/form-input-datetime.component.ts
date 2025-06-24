@@ -3,7 +3,7 @@ import { Component, forwardRef, Input } from '@angular/core';
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { DatePickerModule } from 'primeng/datepicker';
 import { TooltipModule } from 'primeng/tooltip';
-import { ErrorsViewModel } from 'src/models/ErrorsViewModel';
+import { FormInputGeneralComponent } from '../form-input-general.component';
 import { ErrorMessagesPipe } from '../pipes/error-messages.pipe';
 import { ShowErrorPipe } from '../pipes/show-error.pipe';
 
@@ -27,19 +27,11 @@ import { ShowErrorPipe } from '../pipes/show-error.pipe';
   templateUrl: './form-input-datetime.component.html',
   styleUrl: './form-input-datetime.component.scss'
 })
-export class FormInputDatetimeComponent implements ControlValueAccessor {
+export class FormInputDatetimeComponent extends FormInputGeneralComponent implements ControlValueAccessor {
   
   //The internal data model
   private innerValue: Date | undefined = undefined;
 
-  @Input() property: string = '';
-  @Input() label: string = '';
-  @Input() infoMessage: string | undefined = undefined;
-  @Input() disabled: boolean = false;
-  @Input() obligatory: boolean = false;
-  @Input() listaErrori: ErrorsViewModel[] = [];
-
-  @Input() placeholder: string = '';
   @Input() format: string = 'dd/MM/yy';
   @Input() showOnFocus: boolean = true;
 

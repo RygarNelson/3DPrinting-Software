@@ -110,13 +110,15 @@
                                     </p-button>
                                 </div>
                             </ng-template>
-                            <ng-template pTemplate="body" let-dettaglio let-index="index">
+                            <ng-template pTemplate="body" let-dettaglio let-rowIndex="rowIndex">
                                 <tr>
                                     <td>
                                         <form-input-select
                                             modello-lookup
                                             property="modello_id"
                                             [listaErrori]="listaErrori"
+                                            [parent]="'dettagli'"
+                                            [index]="rowIndex"
                                             [(ngModel)]="dettaglio.modello_id" />
                                     </td>
                                     <td>
@@ -124,6 +126,8 @@
                                             stampante-lookup
                                             property="stampante_id"
                                             [listaErrori]="listaErrori"
+                                            [parent]="'dettagli'"
+                                            [index]="rowIndex"
                                             [(ngModel)]="dettaglio.stampante_id" />
                                     </td>
                                     <td>
@@ -135,6 +139,8 @@
                                             [minFractionDigits]="4"
                                             [maxFractionDigits]="4"
                                             [listaErrori]="listaErrori"
+                                            [parent]="'dettagli'"
+                                            [index]="rowIndex"
                                             [(ngModel)]="dettaglio.quantita" />
                                     </td>
                                     <td>
@@ -148,6 +154,8 @@
                                             [suffix]="'€'"
                                             [showButtons]="true"
                                             [listaErrori]="listaErrori"
+                                            [parent]="'dettagli'"
+                                            [index]="rowIndex"
                                             [(ngModel)]="dettaglio.prezzo" />
                                     </td>
                                     <td>
@@ -156,6 +164,8 @@
                                             property="stato_stampa"
                                             [filter]="false"
                                             [listaErrori]="listaErrori"
+                                            [parent]="'dettagli'"
+                                            [index]="rowIndex"
                                             [(ngModel)]="dettaglio.stato_stampa" />
                                     </td>
                                     <td>
@@ -165,7 +175,7 @@
                                             size="small"
                                             pTooltip="Elimina dettaglio"
                                             tooltipPosition="top" 
-                                            (click)="confirmDeleteDettaglio($event, dettaglio, index)"
+                                            (click)="confirmDeleteDettaglio($event, dettaglio, rowIndex)"
                                         />
                                     </td>
                                 </tr>

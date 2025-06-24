@@ -10,7 +10,7 @@
 <p-inputnumber
     [id]="property"
     class="w-full"
-    [ngClass]="{'input-error' : property | showError: listaErrori}"
+    [ngClass]="{'input-error' : property | showError: listaErrori : parent : index}"
     [disabled]="disabled"
     [placeholder]="placeholder"
     [min]="min"
@@ -25,8 +25,8 @@
     [suffix]="suffix"
     [showButtons]="showButtons"
     [(ngModel)]="value" />
-@if(property | showError: listaErrori) {
-    @for(error of property | errorMessages: listaErrori; track error) {
+@if(property | showError: listaErrori : parent : index) {
+    @for(error of property | errorMessages: listaErrori : parent : index; track error) {
         <small id="help" class="message-error block">{{error}}</small>
     }
 }

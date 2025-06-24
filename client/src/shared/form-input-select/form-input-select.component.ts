@@ -6,7 +6,7 @@ import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { SelectModule } from 'primeng/select';
 import { TooltipModule } from 'primeng/tooltip';
 import { LookupInterface } from 'src/interfaces/lookup.interface';
-import { ErrorsViewModel } from 'src/models/ErrorsViewModel';
+import { FormInputGeneralComponent } from '../form-input-general.component';
 import { ErrorMessagesPipe } from '../pipes/error-messages.pipe';
 import { ShowErrorPipe } from '../pipes/show-error.pipe';
 
@@ -32,17 +32,11 @@ import { ShowErrorPipe } from '../pipes/show-error.pipe';
   templateUrl: './form-input-select.component.html',
   styleUrl: './form-input-select.component.scss'
 })
-export class FormInputSelectComponent implements ControlValueAccessor {
+export class FormInputSelectComponent extends FormInputGeneralComponent implements ControlValueAccessor {
 
-  @Input() property: string = '';
-  @Input() label: string = '';
-  @Input() infoMessage: string | undefined = undefined;
-  @Input() disabled: boolean = false;
-  @Input() obligatory: boolean = false;
-  @Input() listaErrori: ErrorsViewModel[] = [];
+  private innerValue: number | null = null;
 
   @Input() data: LookupInterface[] = [];
-  @Input() placeholder: string = '';
   @Input() loading: boolean = false;
   @Input() checkmark: boolean = true;
   @Input() editable: boolean = false;
@@ -54,8 +48,6 @@ export class FormInputSelectComponent implements ControlValueAccessor {
   @Input() showAdd: boolean = false;
 
   @Output() add = new EventEmitter<void>();
-
-  private innerValue: number | null = null;
 
   get value(): any {
     return this.innerValue;

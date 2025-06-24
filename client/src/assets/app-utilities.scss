@@ -8,12 +8,28 @@ $info-color: #337bbe;
     padding-right: 1.5rem;
 }
 
-.input-error > .p-datepicker.p-component.p-inputwrapper > .p-inputtext {
-  border: 1px solid $error-color !important;
+form-input-datetime {
+  .input-error > .p-datepicker.p-component.p-inputwrapper > .p-inputtext {
+    border: 1px solid $error-color !important;
+  }
 }
 
-.input-error:not(:has(> .p-datepicker.p-component.p-inputwrapper)) {
-  border: 1px solid $error-color !important;
+form-input-select {
+  .input-error {
+    border: 1px solid $error-color !important;
+  }
+}
+
+form-input-number {
+  .input-error > input {
+    border: 1px solid $error-color !important;
+  }
+}
+
+form-input-text {
+  .input-error {
+    border: 1px solid $error-color !important;
+  }
 }
 
 .message-error {
