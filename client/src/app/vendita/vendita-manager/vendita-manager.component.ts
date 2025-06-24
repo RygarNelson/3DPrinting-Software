@@ -2,15 +2,20 @@ import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
+import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { DialogService } from 'primeng/dynamicdialog';
+import { TableModule } from 'primeng/table';
 import { TabsModule } from 'primeng/tabs';
 import { ClienteLookupDirective } from 'src/directives/cliente/cliente-lookup.directive';
+import { ModelloLookupDirective } from 'src/directives/modello/modello-lookup.directive';
+import { StampanteLookupDirective } from 'src/directives/stampante/stampante-lookup.directive';
+import { VenditaDettaglioStatoStampaLookupDirective } from 'src/directives/vendita/vendita-dettaglio-stato-stampa-lookup.directive';
 import { VenditaStatoSpedizioneLookupDirective } from 'src/directives/vendita/vendita-stato-spedizione-lookup.directive';
 import { ErrorsViewModel } from 'src/models/ErrorsViewModel';
-import { VenditaManagerModel } from 'src/models/vendita/vendita-manager';
+import { VenditaDettaglioManagerModel, VenditaManagerModel } from 'src/models/vendita/vendita-manager';
 import { VenditaService } from 'src/services/vendita.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { FormInputDatetimeComponent } from 'src/shared/form-input-datetime/form-input-datetime.component';
@@ -29,10 +34,16 @@ import { FormInputTextComponent } from 'src/shared/form-input-text/form-input-te
     FormInputDatetimeComponent,
     FormInputSelectComponent,
     ClienteLookupDirective,
-    VenditaStatoSpedizioneLookupDirective
+    VenditaStatoSpedizioneLookupDirective,
+    TableModule,
+    ConfirmPopupModule,
+    ModelloLookupDirective,
+    StampanteLookupDirective,
+    VenditaDettaglioStatoStampaLookupDirective
   ],
   providers: [
-    VenditaService
+    VenditaService,
+    ConfirmationService
   ],
   templateUrl: './vendita-manager.component.html',
   styleUrl: './vendita-manager.component.scss'
@@ -49,7 +60,8 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private MessageService: MessageService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private confirmationService: ConfirmationService
   ){ }
 
   ngOnInit(): void {
@@ -124,6 +136,7 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
           });
 
           this.listaErrori = error.error.technical_data;
+          console.error(this.listaErrori);
         }
         else {
           this.dialogService.open(DialogErrorComponent, {
@@ -135,6 +148,37 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
         }
       }
     });
+  }
+
+  addDettaglio(): void {
+    let dettaglio = new VenditaDettaglioManagerModel();
+    dettaglio.vendita_id = this.vendita.id;
+
+    this.vendita.dettagli.push(dettaglio);
+  }
+
+  confirmDeleteDettaglio(event: Event, dettaglio: VenditaDettaglioManagerModel, index: number): void {
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      message: `Sei sicuro di voler eliminare il dettaglio?`,
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Si',
+      rejectLabel: 'No',
+      acceptIcon: 'pi pi-exclamation-triangle',
+      rejectIcon: 'pi pi-times',
+      acceptButtonStyleClass: 'p-button-danger',
+      rejectButtonStyleClass: 'p-button-secondary',
+      accept: () => {
+        this.deleteDettaglio(dettaglio, index);
+      },
+      reject: () => {
+        // User rejected the deletion
+      }
+    });
+  }
+
+  deleteDettaglio(dettaglio: VenditaDettaglioManagerModel, index: number): void {
+    this.vendita.dettagli.splice(index, 1);
   }
 
   indietro(): void {

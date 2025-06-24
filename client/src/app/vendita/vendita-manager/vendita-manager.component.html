@@ -83,10 +83,78 @@
                         </div>
                     </p-tabpanel>
                     <p-tabpanel value="1">
-
+                        <p-table 
+                            [value]="vendita.dettagli"
+                            [paginator]="true" 
+                            [rows]="10"
+                            [totalRecords]="vendita.dettagli.length">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>Modello</th>
+                                    <th>Stampante</th>
+                                    <th>Quantità</th>
+                                    <th>Prezzo</th>
+                                    <th>Stato Stampa</th>
+                                    <th></th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="caption">
+                                <div class="flex items-center gap-2 margin-left-auto">
+                                    <p-button 
+                                        icon="pi pi-plus" 
+                                        label="Aggiungi Dettaglio"
+                                        severity="success" 
+                                        (click)="addDettaglio()"
+                                        pTooltip="Aggiungi nuovo dettaglio"
+                                        tooltipPosition="top">
+                                    </p-button>
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-dettaglio let-index="index">
+                                <tr>
+                                    <td>
+                                        <form-input-select
+                                            modello-lookup
+                                            property="modello_id"
+                                            [listaErrori]="listaErrori"
+                                            [(ngModel)]="dettaglio.modello_id" />
+                                    </td>
+                                    <td>
+                                        <form-input-select
+                                            stampante-lookup
+                                            property="stampante_id"
+                                            [listaErrori]="listaErrori"
+                                            [(ngModel)]="dettaglio.stampante_id" />
+                                    </td>
+                                    <td>{{dettaglio.quantita}}</td>
+                                    <td>{{dettaglio.prezzo}}</td>
+                                    <td>
+                                        <form-input-select
+                                            vendita-dettaglio-stato-stampa-lookup
+                                            property="stato_stampa"
+                                            [filter]="false"
+                                            [listaErrori]="listaErrori"
+                                            [(ngModel)]="dettaglio.stato_stampa" />
+                                    </td>
+                                    <td>
+                                        <p-button 
+                                            icon="pi pi-trash" 
+                                            severity="danger" 
+                                            size="small"
+                                            pTooltip="Elimina dettaglio"
+                                            tooltipPosition="top" 
+                                            (click)="confirmDeleteDettaglio($event, dettaglio, index)"
+                                        />
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
                     </p-tabpanel>
                 </p-tabpanels>
             </p-tabs>
         </ng-template>
     </p-card>
+
+    <!-- Confirm Popup for Delete -->
+    <p-confirmPopup></p-confirmPopup>
 </div>

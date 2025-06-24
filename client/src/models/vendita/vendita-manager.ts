@@ -14,12 +14,12 @@ export class VenditaManagerModel {
 
 export class VenditaDettaglioManagerModel {
     id: number = 0;
-    quantita: number = 0;
-    prezzo: number = 0;
-    modello_id: number = 0;
-    vendita_id: number = 0;
-    stampante_id: number = 0;
-    stato_stampa: VenditaDettaglioStatoStampaEnum = VenditaDettaglioStatoStampaEnum.DaStampare;
+    quantita?: number;
+    prezzo?: number;
+    modello_id?: number;
+    vendita_id?: number;
+    stampante_id?: number;
+    stato_stampa?: VenditaDettaglioStatoStampaEnum;
 }
 
 export class VenditaManagerResponse implements ResponseInterface {

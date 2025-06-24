@@ -7,3 +7,13 @@ export enum VenditaDettaglioStatoStampaEnum {
     TerminatoConDifetti = 5,
     Fallito = 6
 }
+
+export const VenditaDettaglioStatoStampaEnumRecord: Record<VenditaDettaglioStatoStampaEnum, string> = {
+    [VenditaDettaglioStatoStampaEnum.DaStampare]: 'Da Stampare',
+    [VenditaDettaglioStatoStampaEnum.StampaInCorso]: 'Stampa In Corso',
+    [VenditaDettaglioStatoStampaEnum.DaLavare]: 'Da Lavare',
+    [VenditaDettaglioStatoStampaEnum.DaCurare]: 'Da Curare',
+    [VenditaDettaglioStatoStampaEnum.TerminatoSenzaDifetti]: 'Terminato Senza Difetti',
+    [VenditaDettaglioStatoStampaEnum.TerminatoConDifetti]: 'Terminato Con Difetti',
+    [VenditaDettaglioStatoStampaEnum.Fallito]: 'Fallito'
+}
