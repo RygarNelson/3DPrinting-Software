@@ -182,6 +182,9 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
         padding: '0px'
       },
       modal: true,
+      inputValues: {
+        isExternal: true
+      }
     });
 
     if (this.clienteRef) {
@@ -209,7 +212,8 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
       },
       modal: true,
       inputValues: {
-        venditaIndex: index
+        venditaIndex: index,
+        isExternal: true
       }
     });
 
@@ -238,7 +242,8 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
       },
       modal: true,
       inputValues: {
-        venditaIndex: index
+        venditaIndex: index,
+        isExternal: true
       }
     });
 

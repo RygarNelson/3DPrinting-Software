@@ -23,7 +23,30 @@
           (onLazyLoad)="loadData($event)">
           
           <ng-template pTemplate="caption">
-              <div class="flex items-center flex-wrap gap-2">
+            <p-accordion>
+              <p-accordion-panel value="0">
+                <p-accordion-header>
+                  Filtri
+                </p-accordion-header>
+                <p-accordion-content>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-2 w-full">
+                    <form-input-select
+                      cliente-lookup
+                      property="cliente_id"
+                      label="Cliente"
+                      [(ngModel)]="filtri.cliente_id"
+                      (ngModelChange)="loadVendite()" />
+                    <form-input-select
+                      vendita-stato-spedizione-lookup
+                      property="stato_spedizione"
+                      label="Stato Spedizione"
+                      [(ngModel)]="filtri.stato_spedizione"
+                      (ngModelChange)="loadVendite()" />
+                  </div>
+                </p-accordion-content>
+              </p-accordion-panel>
+            </p-accordion>
+              <div class="flex items-center flex-wrap gap-2 mt-4">
                 <div class="flex items-center gap-2">
                   <p-iconfield iconPosition="left">
                     <p-inputicon>

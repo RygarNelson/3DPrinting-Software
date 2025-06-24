@@ -53,13 +53,10 @@ router.post(
                 include: [includeDettagliModello, includeDettagliStampante]
             };
 
-            if (req.body.data_vendita && req.body.data_vendita.trim() !== '') {
-                whereOptions.data_vendita = req.body.data_vendita;
+            if (req.body.stato_spedizione != null) {
+                whereOptions.stato_spedizione = req.body.stato_spedizione;
             }
-            if (req.body.data_scadenza && req.body.data_scadenza.trim() !== '') {
-                whereOptions.data_scadenza = req.body.data_scadenza;
-            }
-            if (req.body.cliente_id && req.body.cliente_id.trim() !== '') {
+            if (req.body.cliente_id != null) {
                 whereOptions.cliente_id = req.body.cliente_id;
             }
 

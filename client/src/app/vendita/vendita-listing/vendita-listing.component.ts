@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AccordionModule } from 'primeng/accordion';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -14,10 +15,13 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import { Subscription } from 'rxjs';
+import { ClienteLookupDirective } from 'src/directives/cliente/cliente-lookup.directive';
+import { VenditaStatoSpedizioneLookupDirective } from 'src/directives/vendita/vendita-stato-spedizione-lookup.directive';
 import { VenditaListingModel, VenditaListingResponse } from 'src/models/vendita/vendita-listing';
 import { VenditaListingFiltri } from 'src/models/vendita/vendita-listing-filtri';
 import { VenditaService } from 'src/services/vendita.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
+import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
 import { VenditaListingDettaglioStatoComponent } from '../vendita-listing-dettaglio-stato/vendita-listing-dettaglio-stato.component';
 import { VenditaListingStatoComponent } from '../vendita-listing-stato/vendita-listing-stato.component';
 
@@ -36,7 +40,11 @@ import { VenditaListingStatoComponent } from '../vendita-listing-stato/vendita-l
     SkeletonModule,
     TooltipModule,
     VenditaListingStatoComponent,
-    VenditaListingDettaglioStatoComponent
+    VenditaListingDettaglioStatoComponent,
+    AccordionModule,
+    FormInputSelectComponent,
+    ClienteLookupDirective,
+    VenditaStatoSpedizioneLookupDirective
   ],
   providers: [
     ConfirmationService,

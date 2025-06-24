@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
@@ -22,11 +22,14 @@ import { FormInputTextComponent } from 'src/shared/form-input-text/form-input-te
     ButtonModule
   ],
   providers: [
-    ClienteService
+    ClienteService,
+    DynamicDialogRef
   ],
   templateUrl: './cliente-manager.component.html'
 })
 export class ClienteManagerComponent implements OnInit, OnDestroy {
+  @Input() isExternal: boolean = false;
+  
   cliente: ClienteManagerModel = new ClienteManagerModel();
   listaErrori: ErrorsViewModel[] = [];
   loading: boolean = false;
@@ -99,7 +102,7 @@ export class ClienteManagerComponent implements OnInit, OnDestroy {
           detail: 'Cliente salvato con successo'
         });
 
-        if (this.ref) {
+        if (this.isExternal) {
           this.ref.close(result.technical_data.id);
         }
         else {
@@ -132,7 +135,7 @@ export class ClienteManagerComponent implements OnInit, OnDestroy {
   }
 
   indietro(): void {
-    if (this.ref) {
+    if (this.isExternal) {
       this.ref.close();
     }
     else {

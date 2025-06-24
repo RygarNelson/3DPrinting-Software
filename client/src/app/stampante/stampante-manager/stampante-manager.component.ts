@@ -24,13 +24,15 @@ import { FormInputTextareaComponent } from 'src/shared/form-input-textarea/form-
     ButtonModule
   ],
   providers: [
-    StampanteService
+    StampanteService,
+    DynamicDialogRef
   ],
   templateUrl: './stampante-manager.component.html',
   styleUrl: './stampante-manager.component.scss'
 })
 export class StampanteManagerComponent implements OnInit, OnDestroy {
   @Input() venditaIndex: number = 0;
+  @Input() isExternal: boolean = false;
 
   stampante: StampanteManagerModel = new StampanteManagerModel();
   listaErrori: ErrorsViewModel[] = [];
@@ -105,7 +107,7 @@ export class StampanteManagerComponent implements OnInit, OnDestroy {
           detail: 'Stampante salvata con successo'
         });
 
-        if (this.ref) {
+        if (this.isExternal) {
           this.ref.close({
             id: result.technical_data.id,
             index: this.venditaIndex
@@ -141,7 +143,7 @@ export class StampanteManagerComponent implements OnInit, OnDestroy {
   }
 
   indietro(): void {
-    if (this.ref) {
+    if (this.isExternal) {
       this.ref.close();
     }
     else {

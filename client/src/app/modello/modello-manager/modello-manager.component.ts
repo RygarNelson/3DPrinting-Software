@@ -24,13 +24,15 @@ import { FormInputTextareaComponent } from 'src/shared/form-input-textarea/form-
     ButtonModule
   ],
   providers: [
-    ModelloService
+    ModelloService,
+    DynamicDialogRef
   ],
   templateUrl: './modello-manager.component.html',
   styleUrl: './modello-manager.component.scss'
 })
 export class ModelloManagerComponent implements OnInit, OnDestroy {
   @Input() venditaIndex: number = 0;
+  @Input() isExternal: boolean = false;
 
   modello: ModelloManagerModel = new ModelloManagerModel();
   listaErrori: ErrorsViewModel[] = [];
@@ -105,7 +107,7 @@ export class ModelloManagerComponent implements OnInit, OnDestroy {
           detail: 'Modello salvato con successo'
         });
 
-        if (this.ref) {
+        if (this.isExternal) {
           this.ref.close({
             id: result.technical_data.id,
             index: this.venditaIndex
@@ -141,7 +143,7 @@ export class ModelloManagerComponent implements OnInit, OnDestroy {
   }
 
   indietro(): void {
-    if (this.ref) {
+    if (this.isExternal) {
       this.ref.close();
     }
     else {

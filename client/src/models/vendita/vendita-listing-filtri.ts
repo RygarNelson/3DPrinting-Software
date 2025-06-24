@@ -9,8 +9,6 @@ export class VenditaListingFiltri implements ListingFilter {
         column?: string;
         direction?: string;
     };
-    data_vendita?: Date = undefined;
-    data_scadenza?: Date = undefined;
     stato_spedizione?: VenditaStatoSpedizioneEnum = undefined;
     cliente_id?: number = 0;
 }
