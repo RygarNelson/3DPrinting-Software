@@ -161,7 +161,6 @@ router.post(
             const include = [includeCliente, includeDettagli];
 
             const vendite = await VenditaRepository.find(whereOptions, limit, offset, order, projection, include);
-            console.log(vendite);
 
             res.status(200).json({
                 success: true,

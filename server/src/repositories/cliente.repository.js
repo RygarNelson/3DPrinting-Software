@@ -9,11 +9,7 @@ const clienteRepository = {
     },
 
     find: function(searchExample, limit, offset, order, projection) {
-        return Cliente.findAll({ where: searchExample, limit: limit, offset: offset, order: order, attributes: projection });
-    },
-
-    count: function(searchExample) {
-        return Cliente.count({ where: searchExample });
+        return Cliente.findAndCountAll({ where: searchExample, limit: limit, offset: offset, order: order, attributes: projection, distinct: true });
     },
 
     findOne: function(id, projection) {

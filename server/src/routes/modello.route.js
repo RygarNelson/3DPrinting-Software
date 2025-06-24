@@ -39,11 +39,11 @@ router.post(
 
         const data = await ModelloRepository.find(whereOptions, limit, offset, order, projection);
 
-        const result = data.map((modello) => {
+        const result = data.rows.map((modello) => {
             return {
-                id: modello.id,
-                etichetta: modello.nome,
-                informazioniAggiuntive: modello.descrizione
+                id: modello.dataValues.id,
+                etichetta: modello.dataValues.nome,
+                informazioniAggiuntive: modello.dataValues.descrizione
             };
         });
         res.status(200).json({
@@ -106,10 +106,9 @@ router.post(
 
             const projection = ['id', 'nome', 'descrizione', 'updatedAt'];
 
-            const count = await ModelloRepository.count(whereOptions);
             const modelli = await ModelloRepository.find(whereOptions, limit, offset, order, projection);
 
-            const result = await Promise.all(modelli.map(async (modello) => {
+            const result = await Promise.all(modelli.rows.map(async (modello) => {
                 return {
                     id: modello.dataValues.id,
                     nome: modello.dataValues.nome,
@@ -122,7 +121,7 @@ router.post(
             res.status(200).json({
                 success: true,
                 data: result,
-                count: count
+                count: modelli.count
             });
         }
         else {

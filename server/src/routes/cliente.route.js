@@ -39,11 +39,11 @@ router.post(
 
         const data = await ClienteRepository.find(whereOptions, limit, offset, order, projection);
 
-        const result = data.map((cliente) => {
+        const result = data.rows.map((cliente) => {
             return {
-                id: cliente.id,
-                etichetta: cliente.etichetta,
-                informazioniAggiuntive: `${cliente.email ? cliente.email : 'No email'} - ${cliente.telefono ? cliente.telefono : 'No telefono'}`
+                id: cliente.dataValues.id,
+                etichetta: cliente.dataValues.etichetta,
+                informazioniAggiuntive: `${cliente.dataValues.email ? cliente.dataValues.email : 'No email'} - ${cliente.dataValues.telefono ? cliente.dataValues.telefono : 'No telefono'}`
             };
         });
         res.status(200).json({
@@ -104,10 +104,9 @@ router.post(
 
             const projection = ['id', 'etichetta', 'email', 'telefono'];
 
-            const count = await ClienteRepository.count(whereOptions);
             const clienti = await ClienteRepository.find(whereOptions, limit, offset, order, projection);
             
-            const result = await Promise.all(clienti.map(async (cliente) => {
+            const result = await Promise.all(clienti.rows.map(async (cliente) => {
                 return {
                     id: cliente.dataValues.id,
                     etichetta: cliente.dataValues.etichetta,
@@ -120,7 +119,7 @@ router.post(
             res.status(200).json({
                 success: true,
                 data: result,
-                count: count
+                count: clienti.count
             });
         } else {
             return res.status(400).json({

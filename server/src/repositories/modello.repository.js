@@ -9,11 +9,7 @@ const modelloRepository = {
     },
 
     find: function(searchExample, limit, offset, order, projection) {
-        return Modello.findAll({ where: searchExample, limit: limit, offset: offset, order: order, attributes: projection });
-    },
-
-    count: function(searchExample) {
-        return Modello.count({ where: searchExample });
+        return Modello.findAndCountAll({ where: searchExample, limit: limit, offset: offset, order: order, attributes: projection, distinct: true });
     },
 
     findOne: function(id, projection) {

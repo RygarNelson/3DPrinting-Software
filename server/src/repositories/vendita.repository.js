@@ -25,7 +25,8 @@ const venditaRepository = {
             limit: limit,
             offset: offset,
             order: order,
-            include: include
+            include: include,
+            distinct: true
         });
     },
 

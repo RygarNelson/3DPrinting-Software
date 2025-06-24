@@ -39,11 +39,11 @@ router.post(
 
         const data = await StampanteRepository.find(whereOptions, limit, offset, order, projection);
 
-        const result = data.map((stampante) => {
+        const result = data.rows.map((stampante) => {
             return {
-                id: stampante.id,
-                etichetta: stampante.nome,
-                informazioniAggiuntive: stampante.descrizione
+                id: stampante.dataValues.id,
+                etichetta: stampante.dataValues.nome,
+                informazioniAggiuntive: stampante.dataValues.descrizione
             };
         });
         res.status(200).json({
@@ -106,10 +106,9 @@ router.post(
 
             const projection = ['id', 'nome', 'descrizione'];
 
-            const count = await StampanteRepository.count(whereOptions);
             const stampanti = await StampanteRepository.find(whereOptions, limit, offset, order, projection);
 
-            const result = await Promise.all(stampanti.map(async (stampante) => {
+            const result = await Promise.all(stampanti.rows.map(async (stampante) => {
                 return {
                     id: stampante.dataValues.id,
                     nome: stampante.dataValues.nome,
@@ -121,7 +120,7 @@ router.post(
             res.status(200).json({
                 success: true,
                 data: result,
-                count: count
+                count: stampanti.count
             });
         }
         else {

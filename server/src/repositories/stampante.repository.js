@@ -9,11 +9,7 @@ const stampanteRepository = {
     },
 
     find: function(searchExample, limit, offset, order, projection) {
-        return Stampante.findAll({ where: searchExample, limit: limit, offset: offset, order: order, attributes: projection });
-    },
-
-    count: function(searchExample) {
-        return Stampante.count({ where: searchExample });
+        return Stampante.findAndCountAll({ where: searchExample, limit: limit, offset: offset, order: order, attributes: projection, distinct: true });
     },
 
     findOne: function(id, projection) {
