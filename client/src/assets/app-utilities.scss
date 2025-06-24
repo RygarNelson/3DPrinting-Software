@@ -12,8 +12,8 @@ $info-color: #337bbe;
   border: 1px solid $error-color !important;
 }
 
-.input-error {
-    border: 1px solid $error-color !important;
+.input-error:not(:has(> .p-datepicker.p-component.p-inputwrapper)) {
+  border: 1px solid $error-color !important;
 }
 
 .message-error {
