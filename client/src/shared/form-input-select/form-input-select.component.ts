@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, forwardRef, Input, Output } from '@angular/core';
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ButtonModule } from 'primeng/button';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { SelectModule } from 'primeng/select';
@@ -20,7 +21,9 @@ import { ShowErrorPipe } from '../pipes/show-error.pipe';
     ShowErrorPipe,
     ErrorMessagesPipe,
     InputGroupModule,
-    InputGroupAddonModule
+    InputGroupAddonModule,
+    ButtonModule,
+    TooltipModule
   ],
   providers: [
     {

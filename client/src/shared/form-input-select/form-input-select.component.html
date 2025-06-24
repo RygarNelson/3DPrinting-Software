@@ -39,7 +39,12 @@
     </p-select>
     @if(showAdd) {
         <p-inputgroup-addon>
-            <i class="pi pi-plus" (click)="add.emit()"></i>
+            <p-button
+                icon="pi pi-plus"
+                severity="primary"
+                [pTooltip]="'Aggiungi'"
+                tooltipPosition="top"
+                (click)="add.emit()"/>
         </p-inputgroup-addon>
     }
 </p-inputgroup>

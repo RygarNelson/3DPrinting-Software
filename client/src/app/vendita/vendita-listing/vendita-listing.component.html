@@ -133,7 +133,9 @@
               <td colspan="7">
                 <div class="my-3">
                     <h3 class="text-lg font-semibold text-gray-800 mb-2">Dettagli</h3>
-                    <p-table showGridlines [value]="vendita.dettagli" [totalRecords]="vendita.dettagli?.length ?? 0">
+                    <p-table 
+                      showGridlines 
+                      [value]="vendita.dettagli">
                         <ng-template #header>
                           <tr>
                             <th class="text-center">Modello</th>
@@ -145,14 +147,15 @@
                           </tr>
                         </ng-template>
                         <ng-template #body let-dettaglio>
-                          <td class="text-center">{{ dettaglio?.modello?.nome }}</td>
-                          <td class="text-center">{{ dettaglio?.stampante?.nome }}</td>
-                          <td class="text-center">{{ dettaglio?.quantita }}</td>
-                          <td class="text-center">{{ dettaglio?.prezzo | currency:'EUR' }}</td>
-                          <td class="text-center">
-                            <vendita-listing-dettaglio-stato [stato_stampa]="dettaglio?.stato_stampa"></vendita-listing-dettaglio-stato>
-                          </td>
-                          <td class="text-center">
+                          <tr>
+                            <td class="text-center">{{ dettaglio?.modello?.nome }}</td>
+                            <td class="text-center">{{ dettaglio?.stampante?.nome }}</td>
+                            <td class="text-center">{{ dettaglio?.quantita }}</td>
+                            <td class="text-center">{{ dettaglio?.prezzo | currency:'EUR' }}</td>
+                            <td class="text-center">
+                              <vendita-listing-dettaglio-stato [stato_stampa]="dettaglio?.stato_stampa"></vendita-listing-dettaglio-stato>
+                            </td>
+                            <td class="text-center">
                               <p-button 
                                 icon="pi pi-arrow-right" 
                                 severity="info" 
@@ -160,7 +163,8 @@
                                 pTooltip="Avanza Stato"
                                 tooltipPosition="top">
                               </p-button>
-                          </td>
+                            </td>
+                          </tr>
                         </ng-template>
                         <ng-template pTemplate="emptymessage">
                           <td colspan="7" class="text-center py-8">

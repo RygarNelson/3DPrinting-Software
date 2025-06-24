@@ -72,6 +72,8 @@
                                 label="Cliente"
                                 [obligatory]="true"
                                 [listaErrori]="listaErrori"
+                                [showAdd]="true"
+                                (add)="addCliente()"
                                 [(ngModel)]="vendita.cliente_id" />
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -127,6 +129,8 @@
                                             [listaErrori]="listaErrori"
                                             [parent]="'dettagli'"
                                             [index]="rowIndex"
+                                            [showAdd]="true"
+                                            (add)="addModello(rowIndex)"
                                             [(ngModel)]="dettaglio.modello_id" />
                                     </td>
                                     <td>
@@ -136,6 +140,8 @@
                                             [listaErrori]="listaErrori"
                                             [parent]="'dettagli'"
                                             [index]="rowIndex"
+                                            [showAdd]="true"
+                                            (add)="addStampante(rowIndex)"
                                             [(ngModel)]="dettaglio.stampante_id" />
                                     </td>
                                     <td>

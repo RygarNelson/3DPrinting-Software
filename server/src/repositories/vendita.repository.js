@@ -19,19 +19,12 @@ const venditaRepository = {
     },
 
     find: function(whereOptions, limit, offset, order, projection, include) {
-        return Vendita.findAll({
+        return Vendita.findAndCountAll({
             where: whereOptions,
             attributes: projection,
             limit: limit,
             offset: offset,
             order: order,
-            include: include
-        });
-    },
-
-    count: function(whereOptions, include) {
-        return Vendita.count({
-            where: whereOptions,
             include: include
         });
     },

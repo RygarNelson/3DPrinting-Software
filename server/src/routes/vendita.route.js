@@ -37,12 +37,14 @@ router.post(
     '/listing',
     asyncHandler(async (req, res) => {
         if (req != null && req.body != null) {
-            let whereOptions = {};
+            let whereOptions = {
+                deletedAt: null
+            };
 
-            let includeCliente = { association: 'cliente', required: false, attributes: ['etichetta'] };
+            let includeCliente = { association: 'cliente', required: false, attributes: ['etichetta'], where: { deletedAt: null } };
             
-            let includeDettagliModello = { association: 'modello', attributes: ['nome', 'descrizione'], required: false };
-            let includeDettagliStampante = { association: 'stampante', attributes: ['nome'], required: false };
+            let includeDettagliModello = { association: 'modello', attributes: ['nome', 'descrizione'], required: false, where: { deletedAt: null } };
+            let includeDettagliStampante = { association: 'stampante', attributes: ['nome'], required: false, where: { deletedAt: null } };
             let includeDettagli = {
                 association: 'dettagli',
                 where: { deletedAt: null },
@@ -61,10 +63,10 @@ router.post(
                 whereOptions.cliente_id = req.body.cliente_id;
             }
 
-            // Handle search - we'll do separate queries for each search type and combine results
-            let venditeIds = new Set();
-
             if (req.body.search && req.body.search.trim() !== '') {
+                // Handle search - we'll do separate queries for each search type and combine results
+                let venditeIds = new Set();
+
                 const search = req.body.search.trim();
 
                 // Search 1: By cliente.etichetta
@@ -142,9 +144,6 @@ router.post(
                 whereOptions.id = { [Op.in]: Array.from(venditeIds) };
             }
 
-            // Ensure we only get non-deleted records
-            whereOptions.deletedAt = null;
-
             const limit = req.body.limit ? parseInt(req.body.limit) : 10;
             const offset = req.body.offset ? parseInt(req.body.offset) : 0;
 
@@ -161,13 +160,13 @@ router.post(
             const projection = ['id', 'data_vendita', 'data_scadenza', 'totale_vendita', 'stato_spedizione'];
             const include = [includeCliente, includeDettagli];
 
-            const count = await VenditaRepository.count(whereOptions, include);
             const vendite = await VenditaRepository.find(whereOptions, limit, offset, order, projection, include);
+            console.log(vendite);
 
             res.status(200).json({
                 success: true,
-                data: vendite,
-                count: count
+                data: vendite.rows,
+                count: vendite.count
             });
         }
         else {

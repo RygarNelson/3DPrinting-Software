@@ -1,3 +1,6 @@
+import { ClienteManagerComponent } from '@/cliente/cliente-manager/cliente-manager.component';
+import { ModelloManagerComponent } from '@/modello/modello-manager/modello-manager.component';
+import { StampanteManagerComponent } from '@/stampante/stampante-manager/stampante-manager.component';
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -6,7 +9,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
-import { DialogService } from 'primeng/dynamicdialog';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { TableModule } from 'primeng/table';
 import { TabsModule } from 'primeng/tabs';
 import { ClienteLookupDirective } from 'src/directives/cliente/cliente-lookup.directive';
@@ -16,6 +19,7 @@ import { VenditaDettaglioStatoStampaLookupDirective } from 'src/directives/vendi
 import { VenditaStatoSpedizioneLookupDirective } from 'src/directives/vendita/vendita-stato-spedizione-lookup.directive';
 import { ErrorsViewModel } from 'src/models/ErrorsViewModel';
 import { VenditaDettaglioManagerModel, VenditaManagerModel } from 'src/models/vendita/vendita-manager';
+import { ApplicationStateService } from 'src/services/application-state.service';
 import { VenditaService } from 'src/services/vendita.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { FormInputDatetimeComponent } from 'src/shared/form-input-datetime/form-input-datetime.component';
@@ -63,6 +67,9 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
   ];
 
   private loadingTimeout?: number;
+  private clienteRef?: DynamicDialogRef;
+  private modelloRef?: DynamicDialogRef;
+  private stampanteRef?: DynamicDialogRef;
 
   constructor(
     private venditaService: VenditaService,
@@ -70,7 +77,8 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private MessageService: MessageService,
     private dialogService: DialogService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private applicationStateService: ApplicationStateService
   ){ }
 
   ngOnInit(): void {
@@ -160,6 +168,90 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
         }
       }
     });
+  }
+
+  addCliente(): void {
+    this.clienteRef = this.dialogService.open(ClienteManagerComponent, {
+      showHeader: false,
+      closeOnEscape: true,
+      dismissableMask: true,
+      style: {
+        width: '75%'
+      },
+      contentStyle: {
+        padding: '0px'
+      },
+      modal: true,
+    });
+
+    if (this.clienteRef) {
+      this.clienteRef.onClose.subscribe({
+        next: (result) => {
+          if (result) {
+            this.applicationStateService.clienteLookupUpdate.next();
+            this.vendita.cliente_id = result;
+          }
+        }
+      });
+    }
+  }
+
+  addModello(index: number): void {
+    this.modelloRef = this.dialogService.open(ModelloManagerComponent, {
+      showHeader: false,
+      closeOnEscape: true,
+      dismissableMask: true,
+      style: {
+        width: '75%'
+      },
+      contentStyle: {
+        padding: '0px'
+      },
+      modal: true,
+      inputValues: {
+        venditaIndex: index
+      }
+    });
+
+    if (this.modelloRef) {
+      this.modelloRef.onClose.subscribe({
+        next: (result) => {
+          if (result) {
+            this.applicationStateService.modelloLookupUpdate.next();
+            this.vendita.dettagli[index].modello_id = result.id;
+          }
+        }
+      });
+    }
+  }
+
+  addStampante(index: number): void {
+    this.stampanteRef = this.dialogService.open(StampanteManagerComponent, {
+      showHeader: false,
+      closeOnEscape: true,
+      dismissableMask: true,
+      style: {
+        width: '75%'
+      },
+      contentStyle: {
+        padding: '0px'
+      },
+      modal: true,
+      inputValues: {
+        venditaIndex: index
+      }
+    });
+
+    if (this.stampanteRef) {
+      this.stampanteRef.onClose.subscribe({
+        next: (result) => {
+          if (result) {
+            this.applicationStateService.stampanteLookupUpdate.next();
+            this.vendita.dettagli[index].stampante_id = result.id;
+          }
+        }
+      });
+    }
   }
 
   addDettaglio(): void {

@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { DialogService } from 'primeng/dynamicdialog';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ErrorsViewModel } from 'src/models/ErrorsViewModel';
 import { StampanteManagerModel } from 'src/models/stampante/stampante-manager';
 import { StampanteService } from 'src/services/stampante.service';
@@ -30,6 +30,8 @@ import { FormInputTextareaComponent } from 'src/shared/form-input-textarea/form-
   styleUrl: './stampante-manager.component.scss'
 })
 export class StampanteManagerComponent implements OnInit, OnDestroy {
+  @Input() venditaIndex: number = 0;
+
   stampante: StampanteManagerModel = new StampanteManagerModel();
   listaErrori: ErrorsViewModel[] = [];
   loading: boolean = false;
@@ -41,7 +43,8 @@ export class StampanteManagerComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private MessageService: MessageService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private ref: DynamicDialogRef
   ){ }
 
   ngOnInit(): void {
@@ -92,7 +95,7 @@ export class StampanteManagerComponent implements OnInit, OnDestroy {
     this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
     
     this.stampanteService.save(this.stampante).subscribe({
-      next: () => {
+      next: (result) => {
         clearTimeout(this.loadingTimeout);
         this.loading = false;
 
@@ -102,7 +105,15 @@ export class StampanteManagerComponent implements OnInit, OnDestroy {
           detail: 'Stampante salvata con successo'
         });
 
-        this.indietro();
+        if (this.ref) {
+          this.ref.close({
+            id: result.technical_data.id,
+            index: this.venditaIndex
+          });
+        }
+        else {
+          this.indietro();
+        }
       },
       error: (error: any) => {
         clearTimeout(this.loadingTimeout);
@@ -130,6 +141,11 @@ export class StampanteManagerComponent implements OnInit, OnDestroy {
   }
 
   indietro(): void {
-    this.router.navigate(['/stampante']);
+    if (this.ref) {
+      this.ref.close();
+    }
+    else {
+      this.router.navigate(['/stampante']);
+    }
   }
 }
