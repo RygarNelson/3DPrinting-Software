@@ -28,7 +28,7 @@
                         <p-button 
                             icon="pi pi-save"
                             label="Salva"
-                            (click)="saveStampante()"
+                            (click)="saveVendita()"
                             [severity]="'primary'"
                         />
                     }
@@ -50,14 +50,21 @@
                                 label="Data Vendita"
                                 [obligatory]="true"
                                 [listaErrori]="listaErrori"
-                                [(ngModel)]="vendita.data_vendita"
-                            />
+                                [(ngModel)]="vendita.data_vendita" />
                             <form-input-datetime
                                 property="data_scadenza"
                                 label="Data Scadenza"
                                 [listaErrori]="listaErrori"
-                                [(ngModel)]="vendita.data_scadenza"
-                            />
+                                [(ngModel)]="vendita.data_scadenza" />
+                        </div>
+                        <div class="grid grid-cols-1 gap-4 mt-4">
+                            <form-input-select
+                                cliente-lookup
+                                property="cliente_id"
+                                label="Cliente"
+                                [obligatory]="true"
+                                [listaErrori]="listaErrori"
+                                [(ngModel)]="vendita.cliente_id" />
                         </div>
                     </p-tabpanel>
                     <p-tabpanel value="1">

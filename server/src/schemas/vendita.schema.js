@@ -6,7 +6,7 @@ const validationSchema = {
     check: function() {
         return checkSchema({
             data_vendita: {
-                optional: true,
+                optional: false,
                 isISO8601: {
                     errorMessage: 'La data di vendita non è valida',
                 },
@@ -20,7 +20,7 @@ const validationSchema = {
                 toDate: true
             },
             cliente_id: {
-                optional: true,
+                optional: false,
                 isInt: {
                     errorMessage: 'Il cliente_id deve essere un intero',
                 },
@@ -34,34 +34,34 @@ const validationSchema = {
                 }
             },
             'dettagli': {
-                optional: true,
+                optional: false,
                 isArray: {
                     errorMessage: 'I dettagli devono essere un array',
                 }
             },
             'dettagli.*.modello_id': {
-                optional: true,
+                optional: false,
                 isInt: {
                     errorMessage: 'Il modello_id deve essere un intero',
                 },
                 toInt: true
             },
             'dettagli.*.quantita': {
-                optional: true,
+                optional: false,
                 isDecimal: {
                     options: { decimal_digits: '0,4' },
                     errorMessage: 'La quantita deve essere un decimale con 4 cifre decimali',
                 }
             },
             'dettagli.*.prezzo': {
-                optional: true,
+                optional: false,
                 isDecimal: {
                     options: { decimal_digits: '0,5' },
                     errorMessage: 'Il prezzo deve essere un decimale con 5 cifre decimali',
                 }
             },
             stato_spedizione: {
-                optional: true,
+                optional: false,
                 isInt: {
                     errorMessage: 'Lo stato spedizione deve essere un intero',
                 },
@@ -75,7 +75,7 @@ const validationSchema = {
                 }
             },
             'dettagli.*.stato_stampa': {
-                optional: true,
+                optional: false,
                 isInt: {
                     errorMessage: 'Lo stato stampa deve essere un intero',
                 },

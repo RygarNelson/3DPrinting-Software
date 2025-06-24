@@ -4,10 +4,10 @@ import { ResponseInterface } from "src/interfaces/response.interface";
 
 export class VenditaManagerModel {
     id: number = 0;
-    data_vendita: Date | undefined = undefined;
-    data_scadenza: Date | undefined = undefined;
-    cliente_id: number = 0;
-    link_tracciamento: string = '';
+    data_vendita?: Date;
+    data_scadenza?: Date;
+    cliente_id?: number;
+    link_tracciamento?: string;
     stato_spedizione: VenditaStatoSpedizioneEnum = VenditaStatoSpedizioneEnum.DaSpedire;
     dettagli: VenditaDettaglioManagerModel[] = [];
 }

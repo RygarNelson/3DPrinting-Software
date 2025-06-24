@@ -7,11 +7,13 @@ import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DialogService } from 'primeng/dynamicdialog';
 import { TabsModule } from 'primeng/tabs';
+import { ClienteLookupDirective } from 'src/directives/cliente/cliente-lookup.directive';
 import { ErrorsViewModel } from 'src/models/ErrorsViewModel';
 import { VenditaManagerModel } from 'src/models/vendita/vendita-manager';
 import { VenditaService } from 'src/services/vendita.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { FormInputDatetimeComponent } from 'src/shared/form-input-datetime/form-input-datetime.component';
+import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
 
 @Component({
   selector: 'app-vendita-manager',
@@ -21,7 +23,9 @@ import { FormInputDatetimeComponent } from 'src/shared/form-input-datetime/form-
     CardModule,
     ButtonModule,
     TabsModule,
-    FormInputDatetimeComponent
+    FormInputDatetimeComponent,
+    FormInputSelectComponent,
+    ClienteLookupDirective
   ],
   providers: [
     VenditaService
@@ -88,7 +92,7 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
     });
   }
 
-  saveStampante(): void {
+  saveVendita(): void {
     this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
     
     this.venditaService.save(this.vendita).subscribe({
@@ -99,7 +103,7 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
         this.MessageService.add({
           severity: 'success',
           summary: 'Success',
-          detail: 'Stampante salvata con successo'
+          detail: 'Vendita salvata con successo'
         });
 
         this.indietro();
@@ -112,7 +116,7 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
           this.MessageService.add({
             severity: 'error',
             summary: 'Errore',
-            detail: 'Errore durante il salvataggio della stampante'
+            detail: 'Errore durante il salvataggio della vendita'
           });
 
           this.listaErrori = error.error.technical_data;

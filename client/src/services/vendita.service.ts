@@ -23,7 +23,7 @@ export class VenditaService {
   }
 
   save(vendita: VenditaManagerModel): Observable<any> {
-    return this.http.post<any>(`${this.api}`, vendita);
+    return this.http.post<any>(`${this.api}/save`, vendita);
   }
 
   delete(id: number): Observable<any> {

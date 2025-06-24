@@ -8,6 +8,10 @@ $info-color: #337bbe;
     padding-right: 1.5rem;
 }
 
+.input-error > .p-datepicker.p-component.p-inputwrapper > .p-inputtext {
+  border: 1px solid $error-color !important;
+}
+
 .input-error {
     border: 1px solid $error-color !important;
 }
@@ -46,6 +50,24 @@ $info-color: #337bbe;
 .p-datatable-gridlines .p-datatable-tbody > td:last-child {
   border-right-width: 1px;
 }
+
+.p-inputgroup .p-inputtext, .p-inputgroup .p-inputwrapper {
+  width: 100% !important;
+}
+
+.p-component.p-iconwrapper.p-select-clear-icon {
+  margin-top: -7px !important;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+.text-gray-500 {
+  color: #6b7280;
+}
+
 
 // --- Responsive Grid Utilities (Tailwind-like) ---
 $breakpoints: (
