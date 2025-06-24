@@ -19,6 +19,7 @@ import { VenditaDettaglioManagerModel, VenditaManagerModel } from 'src/models/ve
 import { VenditaService } from 'src/services/vendita.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { FormInputDatetimeComponent } from 'src/shared/form-input-datetime/form-input-datetime.component';
+import { FormInputNumberComponent } from 'src/shared/form-input-number/form-input-number.component';
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
 import { FormInputTextComponent } from 'src/shared/form-input-text/form-input-text.component';
 
@@ -31,6 +32,7 @@ import { FormInputTextComponent } from 'src/shared/form-input-text/form-input-te
     ButtonModule,
     TabsModule,
     FormInputTextComponent,
+    FormInputNumberComponent,
     FormInputDatetimeComponent,
     FormInputSelectComponent,
     ClienteLookupDirective,

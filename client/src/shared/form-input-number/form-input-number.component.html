@@ -7,15 +7,23 @@
         <i class="pi pi-info-circle info-icon" [pTooltip]="infoMessage"></i>
     }
 </div>
-<input 
-    pInputText 
-    [id]="property" 
-    [type]="type"
+<p-inputnumber
+    [id]="property"
     class="w-full"
     [ngClass]="{'input-error' : property | showError: listaErrori}"
     [disabled]="disabled"
     [placeholder]="placeholder"
-    [maxlength]="maxlength"
+    [min]="min"
+    [max]="max"
+    [step]="step"
+    [mode]="mode"
+    [minFractionDigits]="minFractionDigits"
+    [maxFractionDigits]="maxFractionDigits"
+    [currency]="currency"
+    [currencyDisplay]="currencyDisplay"
+    [prefix]="prefix"
+    [suffix]="suffix"
+    [showButtons]="showButtons"
     [(ngModel)]="value" />
 @if(property | showError: listaErrori) {
     @for(error of property | errorMessages: listaErrori; track error) {
