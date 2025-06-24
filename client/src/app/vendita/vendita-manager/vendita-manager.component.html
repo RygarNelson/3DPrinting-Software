@@ -39,8 +39,16 @@
         <ng-template pTemplate="content">
             <p-tabs value="0">
                 <p-tablist>
-                    <p-tab value="0">Dati Generali</p-tab>
-                    <p-tab value="1">Dettagli</p-tab>
+                    <p-tab value="0">
+                        Dati Generali @if(listaErrori | showTabError: proprietaErrori[0]) {
+                            <i class="ml-2 pi pi-exclamation-triangle message-error"></i>
+                        }
+                    </p-tab>
+                    <p-tab value="1">
+                        Dettagli @if(listaErrori | showTabError: proprietaErrori[1]) {
+                            <i class="ml-2 pi pi-exclamation-triangle message-error"></i>
+                        }
+                    </p-tab>
                 </p-tablist>
                 <p-tabpanels>
                     <p-tabpanel value="0">
@@ -92,10 +100,10 @@
                                 <tr>
                                     <th>Modello</th>
                                     <th>Stampante</th>
-                                    <th>Quantità</th>
-                                    <th>Prezzo</th>
-                                    <th>Stato Stampa</th>
-                                    <th></th>
+                                    <th style="width: 200px;">Quantità</th>
+                                    <th style="width: 200px;">Prezzo</th>
+                                    <th style="width: 300px;">Stato Stampa</th>
+                                    <th style="width: 100px;"></th>
                                 </tr>
                             </ng-template>
                             <ng-template pTemplate="caption">

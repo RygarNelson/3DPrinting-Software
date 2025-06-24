@@ -11,7 +11,7 @@ import { ChipModule } from 'primeng/chip';
   styleUrl: './vendita-listing-dettaglio-stato.component.scss'
 })
 export class VenditaListingDettaglioStatoComponent implements OnChanges {
-  @Input() stato_stampa: VenditaDettaglioStatoStampaEnum = VenditaDettaglioStatoStampaEnum.DaStampare;
+  @Input() stato_stampa?: VenditaDettaglioStatoStampaEnum | undefined;
 
   protected readonly VenditaDettaglioStatoStampaEnum: typeof VenditaDettaglioStatoStampaEnum = VenditaDettaglioStatoStampaEnum;
   protected icon: string = '';

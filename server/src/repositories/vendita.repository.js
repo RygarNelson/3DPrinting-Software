@@ -39,10 +39,12 @@ const venditaRepository = {
     insertOne: async function(req) {
         const t = await sequelize.transaction();
         try {
-            const { data_vendita, data_scadenza, cliente_id, dettagli } = req.body;
+            const { data_vendita, data_scadenza, stato_spedizione, link_tracciamento, cliente_id, dettagli } = req.body;
             const vendita = await Vendita.create({
                 data_vendita,
                 data_scadenza,
+                stato_spedizione,
+                link_tracciamento,
                 cliente_id
             }, { transaction: t });
 
@@ -52,6 +54,8 @@ const venditaRepository = {
                     const det = await VenditaDettaglio.create({
                         vendita_id: vendita.id,
                         modello_id: d.modello_id,
+                        stampante_id: d.stampante_id,
+                        stato_stampa: d.stato_stampa,
                         quantita: d.quantita,
                         prezzo: d.prezzo
                     }, { transaction: t });
@@ -70,10 +74,10 @@ const venditaRepository = {
     updateOne: async function(req) {
         const t = await sequelize.transaction();
         try {
-            const { id, data_vendita, data_scadenza, cliente_id, dettagli } = req.body;
+            const { id, data_vendita, data_scadenza, stato_spedizione, link_tracciamento, cliente_id, dettagli } = req.body;
             const vendita = await Vendita.findByPk(id, { include: [{ model: VenditaDettaglio, as: 'dettagli' }], transaction: t });
             if (!vendita) throw new Error('Vendita non trovata');
-            await vendita.update({ data_vendita, data_scadenza, cliente_id }, { transaction: t });
+            await vendita.update({ data_vendita, data_scadenza, stato_spedizione, link_tracciamento, cliente_id }, { transaction: t });
 
             // Handle dettagli
             const existingDettagli = vendita.dettagli || [];
@@ -87,7 +91,7 @@ const venditaRepository = {
             for (const det of existingDettagli) {
                 if (dettagliMap.has(det.id)) {
                     const d = dettagliMap.get(det.id);
-                    await det.update({ modello_id: d.modello_id, quantita: d.quantita, prezzo: d.prezzo }, { transaction: t });
+                    await det.update({ modello_id: d.modello_id, stampante_id: d.stampante_id, stato_stampa: d.stato_stampa, quantita: d.quantita, prezzo: d.prezzo }, { transaction: t });
                     dettagliMap.delete(det.id);
                 } else {
                     await det.destroy({ transaction: t });
@@ -101,6 +105,8 @@ const venditaRepository = {
                         await VenditaDettaglio.create({
                             vendita_id: vendita.id,
                             modello_id: d.modello_id,
+                            stampante_id: d.stampante_id,
+                            stato_stampa: d.stato_stampa,
                             quantita: d.quantita,
                             prezzo: d.prezzo
                         }, { transaction: t });

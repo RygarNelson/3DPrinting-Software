@@ -8,7 +8,7 @@ export class VenditaManagerModel {
     data_scadenza?: Date;
     cliente_id?: number;
     link_tracciamento?: string;
-    stato_spedizione?: VenditaStatoSpedizioneEnum;
+    stato_spedizione?: VenditaStatoSpedizioneEnum = VenditaStatoSpedizioneEnum.DaSpedire;
     dettagli: VenditaDettaglioManagerModel[] = [];
 }
 
@@ -19,7 +19,7 @@ export class VenditaDettaglioManagerModel {
     modello_id?: number;
     vendita_id?: number;
     stampante_id?: number;
-    stato_stampa?: VenditaDettaglioStatoStampaEnum;
+    stato_stampa?: VenditaDettaglioStatoStampaEnum = VenditaDettaglioStatoStampaEnum.DaStampare;
 }
 
 export class VenditaManagerResponse implements ResponseInterface {

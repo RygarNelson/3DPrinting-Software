@@ -22,6 +22,7 @@ import { FormInputDatetimeComponent } from 'src/shared/form-input-datetime/form-
 import { FormInputNumberComponent } from 'src/shared/form-input-number/form-input-number.component';
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
 import { FormInputTextComponent } from 'src/shared/form-input-text/form-input-text.component';
+import { ShowTabErrorPipe } from 'src/shared/pipes/show-tab-error.pipe';
 
 @Component({
   selector: 'app-vendita-manager',
@@ -41,7 +42,8 @@ import { FormInputTextComponent } from 'src/shared/form-input-text/form-input-te
     ConfirmPopupModule,
     ModelloLookupDirective,
     StampanteLookupDirective,
-    VenditaDettaglioStatoStampaLookupDirective
+    VenditaDettaglioStatoStampaLookupDirective,
+    ShowTabErrorPipe
   ],
   providers: [
     VenditaService,
@@ -54,6 +56,11 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
   vendita: VenditaManagerModel = new VenditaManagerModel();
   listaErrori: ErrorsViewModel[] = [];
   loading: boolean = false;
+
+  proprietaErrori: Array<string[]> = [
+    ['data_vendita', 'data_scadenza', 'cliente_id', 'totale_vendita', 'stato_spedizione', 'link_tracciamento'],
+    ['dettagli']
+  ];
 
   private loadingTimeout?: number;
 
@@ -90,6 +97,9 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
 
         if (result.success) {
           this.vendita = result.data;
+
+          console.log(this.vendita);
+          console.log(result.data);
         } else {
           this.dialogService.open(DialogErrorComponent, {
             inputValues: {
@@ -112,7 +122,7 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
 
   saveVendita(): void {
     this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
-    
+
     this.venditaService.save(this.vendita).subscribe({
       next: () => {
         clearTimeout(this.loadingTimeout);

@@ -15,9 +15,9 @@ export class VenditaListingStatoComponent implements OnChanges {
   @Input() stato_spedizione: VenditaStatoSpedizioneEnum = VenditaStatoSpedizioneEnum.DaSpedire;
 
   protected readonly VenditaStatoSpedizioneEnum: typeof VenditaStatoSpedizioneEnum = VenditaStatoSpedizioneEnum;
-  protected icon: string = '';
-  protected descrizione: string = '';
-  protected color: string = '';
+  protected icon: string = 'pi pi-clock';
+  protected descrizione: string = 'Da Spedire';
+  protected color: string = '#FFC107';
 
   ngOnChanges(changes: SimpleChanges): void {
     switch (this.stato_spedizione) {

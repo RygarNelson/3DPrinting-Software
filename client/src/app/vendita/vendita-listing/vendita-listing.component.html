@@ -84,7 +84,7 @@
                 </td>
               <td class="font-medium">{{ vendita.data_vendita | date:'dd/MM/yyyy' }}</td>
               <td>{{ vendita.data_scadenza | date:'dd/MM/yyyy' }}</td>
-              <td>{{ vendita.cliente.etichetta }}</td>
+              <td>{{ vendita.cliente?.etichetta }}</td>
               <td>{{ vendita.totale_vendita | currency:'EUR' }}</td>
               <td>
                 <vendita-listing-stato [stato_spedizione]="vendita.stato_spedizione"></vendita-listing-stato>
@@ -133,7 +133,7 @@
               <td colspan="7">
                 <div class="my-3">
                     <h3 class="text-lg font-semibold text-gray-800 mb-2">Dettagli</h3>
-                    <p-table showGridlines [value]="vendita.dettagli" [totalRecords]="vendita.dettagli.length">
+                    <p-table showGridlines [value]="vendita.dettagli" [totalRecords]="vendita.dettagli?.length ?? 0">
                         <ng-template #header>
                           <tr>
                             <th class="text-center">Modello</th>
@@ -145,12 +145,12 @@
                           </tr>
                         </ng-template>
                         <ng-template #body let-dettaglio>
-                          <td class="text-center">{{ dettaglio.modello.nome }}</td>
-                          <td class="text-center">{{ dettaglio.stampante.nome }}</td>
-                          <td class="text-center">{{ dettaglio.quantita }}</td>
-                          <td class="text-center">{{ dettaglio.prezzo | currency:'EUR' }}</td>
+                          <td class="text-center">{{ dettaglio?.modello?.nome }}</td>
+                          <td class="text-center">{{ dettaglio?.stampante?.nome }}</td>
+                          <td class="text-center">{{ dettaglio?.quantita }}</td>
+                          <td class="text-center">{{ dettaglio?.prezzo | currency:'EUR' }}</td>
                           <td class="text-center">
-                            <vendita-listing-dettaglio-stato [stato_stampa]="dettaglio.stato_stampa"></vendita-listing-dettaglio-stato>
+                            <vendita-listing-dettaglio-stato [stato_stampa]="dettaglio?.stato_stampa"></vendita-listing-dettaglio-stato>
                           </td>
                           <td class="text-center">
                               <p-button 
@@ -163,10 +163,12 @@
                           </td>
                         </ng-template>
                         <ng-template pTemplate="emptymessage">
-                          <div class="flex flex-col items-center gap-2">
+                          <td colspan="7" class="text-center py-8">
+                            <div class="flex flex-col items-center gap-2">
                               <i class="pi pi-inbox text-4xl text-gray-400"></i>
                               <p class="text-gray-500">Non ci sono dettagli per questa vendita</p>
-                          </div>
+                            </div>
+                          </td>
                         </ng-template>
                       </p-table>
                 </div>
