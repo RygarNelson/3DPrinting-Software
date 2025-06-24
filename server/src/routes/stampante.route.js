@@ -25,6 +25,35 @@ router.get(
 );
 
 router.post(
+    '/lookup',
+    asyncHandler(async (req, res) => {
+        let whereOptions = {
+            deletedAt: null
+        };
+
+        const limit = undefined;
+        const offset = undefined;
+        const order = undefined;
+
+        const projection = ['id', 'nome', 'descrizione'];
+
+        const data = await StampanteRepository.find(whereOptions, limit, offset, order, projection);
+
+        const result = data.map((stampante) => {
+            return {
+                id: stampante.id,
+                etichetta: stampante.nome,
+                informazioniAggiuntive: stampante.descrizione
+            };
+        });
+        res.status(200).json({
+            success: true,
+            data: result
+        });
+    })
+);
+
+router.post(
     '/listing',
     asyncHandler(async (req, res) => {
         if (req != null && req.body != null) {

@@ -25,6 +25,35 @@ router.get(
 );
 
 router.post(
+    '/lookup',
+    asyncHandler(async (req, res) => {
+        let whereOptions = {
+            deletedAt: null
+        };
+
+        const limit = undefined;
+        const offset = undefined;
+        const order = undefined;
+
+        const projection = ['id', 'etichetta', 'email', 'telefono'];
+
+        const data = await ClienteRepository.find(whereOptions, limit, offset, order, projection);
+
+        const result = data.map((cliente) => {
+            return {
+                id: cliente.id,
+                etichetta: cliente.etichetta,
+                informazioniAggiuntive: `${cliente.email ? cliente.email : 'No email'} - ${cliente.telefono ? cliente.telefono : 'No telefono'}`
+            };
+        });
+        res.status(200).json({
+            success: true,
+            data: result
+        });
+    })
+);
+
+router.post(
     '/listing',
     asyncHandler(async (req, res) => {
         if (req != null && req.body != null) {
