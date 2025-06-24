@@ -217,4 +217,16 @@ router.delete(
     })
 );
 
+router.post(
+    '/dettaglio/stato/avanza',
+    asyncHandler(async (req, res) => {
+        const data = await VenditaRepository.avanzaStatoDettaglio(req.body.id, req.body.stato_avanzamento);
+        return res.status(200).json({
+            success: true,
+            data: 'Stato avanzato con successo!',
+            technical_data: data
+        });
+    })
+);
+
 export default router;

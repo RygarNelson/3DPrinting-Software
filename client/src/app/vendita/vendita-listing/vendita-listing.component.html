@@ -184,7 +184,12 @@
                                 severity="info" 
                                 size="small"
                                 pTooltip="Avanza Stato"
-                                tooltipPosition="top">
+                                tooltipPosition="top"
+                                [disabled]="
+                                  dettaglio?.stato_stampa == VenditaDettaglioStatoStampaEnum.TerminatoSenzaDifetti || 
+                                  dettaglio?.stato_stampa == VenditaDettaglioStatoStampaEnum.TerminatoConDifetti ||
+                                  dettaglio?.stato_stampa == VenditaDettaglioStatoStampaEnum.Fallito"
+                                (click)="confirmAvanzaStatoDettaglio($event, dettaglio)">
                               </p-button>
                             </td>
                           </tr>

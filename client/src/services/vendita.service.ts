@@ -29,4 +29,11 @@ export class VenditaService {
   delete(id: number): Observable<any> {
     return this.http.delete<any>(`${this.api}/${id}`);
   }
+
+  avanzaStatoDettaglio(id: number, stato_avanzamento?: number): Observable<any> {
+    return this.http.post<any>(`${this.api}/dettaglio/stato/avanza`, {
+      id,
+      stato_avanzamento
+    });
+  }
 }

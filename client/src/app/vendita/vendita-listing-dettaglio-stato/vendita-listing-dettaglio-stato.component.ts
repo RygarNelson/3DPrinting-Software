@@ -1,6 +1,6 @@
-import { VenditaDettaglioStatoStampaEnum } from '@/enums/VenditaDettaglioStatoStampaEnum';
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ChipModule } from 'primeng/chip';
+import { VenditaDettaglioStatoStampaEnum } from 'src/enums/VenditaDettaglioStatoStampaEnum';
 
 @Component({
   selector: 'vendita-listing-dettaglio-stato',

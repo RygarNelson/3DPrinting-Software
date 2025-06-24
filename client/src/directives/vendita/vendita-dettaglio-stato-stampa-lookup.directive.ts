@@ -1,5 +1,5 @@
-import { VenditaDettaglioStatoStampaEnumRecord } from '@/enums/VenditaDettaglioStatoStampaEnum';
 import { Directive, OnInit } from '@angular/core';
+import { VenditaDettaglioStatoStampaEnumRecord } from 'src/enums/VenditaDettaglioStatoStampaEnum';
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
 
 @Directive({

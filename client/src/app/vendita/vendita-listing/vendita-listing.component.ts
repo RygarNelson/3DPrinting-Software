@@ -17,7 +17,8 @@ import { TooltipModule } from 'primeng/tooltip';
 import { Subscription } from 'rxjs';
 import { ClienteLookupDirective } from 'src/directives/cliente/cliente-lookup.directive';
 import { VenditaStatoSpedizioneLookupDirective } from 'src/directives/vendita/vendita-stato-spedizione-lookup.directive';
-import { VenditaListingModel, VenditaListingResponse } from 'src/models/vendita/vendita-listing';
+import { VenditaDettaglioStatoStampaEnum } from 'src/enums/VenditaDettaglioStatoStampaEnum';
+import { VenditaListingDettaglioModel, VenditaListingModel, VenditaListingResponse } from 'src/models/vendita/vendita-listing';
 import { VenditaListingFiltri } from 'src/models/vendita/vendita-listing-filtri';
 import { VenditaService } from 'src/services/vendita.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
@@ -70,6 +71,8 @@ export class VenditaListingComponent implements OnDestroy {
   private venditeSubscription?: Subscription;
   private venditaDeleteSubscription?: Subscription;
   private loadingTimeout?: number;
+
+  protected readonly VenditaDettaglioStatoStampaEnum = VenditaDettaglioStatoStampaEnum;
 
   constructor(
     private venditaService: VenditaService,
@@ -200,6 +203,57 @@ export class VenditaListingComponent implements OnDestroy {
           });
           
           console.error('Error deleting vendita:', error);
+        }
+      });
+  }
+
+  confirmAvanzaStatoDettaglio(event: Event, dettaglio: VenditaListingDettaglioModel): void {
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      message: `Sei sicuro di voler avanzare lo stato del dettaglio?`,
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Si',
+      rejectLabel: 'No',
+      acceptButtonStyleClass: 'p-button-success',
+      rejectButtonStyleClass: 'p-button-secondary',
+      accept: () => {
+        this.avanzaStatoDettaglio(dettaglio.id);
+      },
+      reject: () => {
+        // User rejected the deletion
+      }
+    });
+  }
+
+  private avanzaStatoDettaglio(id: number): void {
+    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+
+    this.venditaService.avanzaStatoDettaglio(id)
+      .subscribe({
+        next: () => {
+          window.clearTimeout(this.loadingTimeout);
+          this.loading = false;
+
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Stato avanzato con successo'
+          });
+
+          this.loadVendite();
+        },
+        error: (error) => {
+          window.clearTimeout(this.loadingTimeout);
+          this.loading = false;
+
+          this.dialogService.open(DialogErrorComponent, {
+            inputValues: {
+              error: error
+            },
+            modal: true
+          });
+
+          console.error('Error avanzando stato dettaglio:', error);
         }
       });
   }

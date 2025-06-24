@@ -1,4 +1,4 @@
-import { VenditaStatoSpedizioneEnum } from "@/enums/VenditaStatoSpedizioneEnum";
+import { VenditaStatoSpedizioneEnum } from "src/enums/VenditaStatoSpedizioneEnum";
 import { ListingFilter } from "../../interfaces/listing-filter.interface";
 
 export class VenditaListingFiltri implements ListingFilter {

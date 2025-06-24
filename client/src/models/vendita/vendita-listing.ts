@@ -1,5 +1,5 @@
-import { VenditaDettaglioStatoStampaEnum } from "@/enums/VenditaDettaglioStatoStampaEnum";
-import { VenditaStatoSpedizioneEnum } from "@/enums/VenditaStatoSpedizioneEnum";
+import { VenditaDettaglioStatoStampaEnum } from "src/enums/VenditaDettaglioStatoStampaEnum";
+import { VenditaStatoSpedizioneEnum } from "src/enums/VenditaStatoSpedizioneEnum";
 import { ResponseInterface } from "src/interfaces/response.interface";
 
 export class VenditaListingModel {

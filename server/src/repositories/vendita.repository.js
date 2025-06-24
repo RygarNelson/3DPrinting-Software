@@ -126,6 +126,43 @@ const venditaRepository = {
         } catch (error) {
             await t.rollback();
         }
+    },
+
+    avanzaStatoDettaglio: async function(id, stato_avanzamento) {
+        const dettaglio = await VenditaDettaglio.findByPk(id);
+
+        if (!dettaglio) {
+            throw new Error('Dettaglio non trovato');
+        }
+
+        let stato = stato_avanzamento;
+        if (stato == null) {
+            switch (dettaglio.stato_stampa) {
+                // DaStampare
+                case 0: {
+                    stato = 1; // StampaInCorso
+                    break;
+                }
+                // StampaInCorso
+                case 1: {
+                    stato = 2; // DaLavare
+                    break;
+                }
+                // DaLavare
+                case 2: {
+                    stato = 3; // DaCurare
+                    break;
+                }
+                // DaCurare
+                case 3: {
+                    stato = 4; // TerminatoSenzaDifetti
+                    break;
+                }
+            }
+        }
+        await dettaglio.update({ stato_stampa: stato });
+
+        return dettaglio;
     }
 };
 
