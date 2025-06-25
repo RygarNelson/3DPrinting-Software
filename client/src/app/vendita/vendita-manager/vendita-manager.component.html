@@ -87,7 +87,7 @@
                                 [listaErrori]="listaErrori"
                                 [(ngModel)]="vendita.stato_spedizione">
                                 <ng-template #selectedItem let-item>
-                                  <vendita-stato class="w-full" [stato_spedizione]="vendita.stato_spedizione!" [isInSelect]="true" />
+                                  <vendita-stato class="w-full" [stato_spedizione]="vendita.stato_spedizione" [isInSelect]="true" />
                                 </ng-template>
                                 <ng-template #item let-item>
                                   <vendita-stato class="w-full" [stato_spedizione]="item.id" [isInSelect]="true" />
@@ -191,7 +191,7 @@
                                             [index]="rowIndex"
                                             [(ngModel)]="dettaglio.stato_stampa">
                                             <ng-template #selectedItem let-item>
-                                                <vendita-dettaglio-stato class="w-full" [stato_stampa]="dettaglio?.stato_stampa" [isInSelect]="true" />
+                                                <vendita-dettaglio-stato class="w-full" [stato_stampa]="dettaglio.stato_stampa" [isInSelect]="true" />
                                               </ng-template>
                                               <ng-template #item let-item>
                                                 <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id" [isInSelect]="true" />

@@ -14,7 +14,7 @@ import { VenditaStatoSpedizioneEnum } from 'src/enums/VenditaStatoSpedizioneEnum
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class VenditaStatoComponent implements OnChanges {
-  @Input() stato_spedizione: VenditaStatoSpedizioneEnum = VenditaStatoSpedizioneEnum.DaSpedire;
+  @Input() stato_spedizione?: VenditaStatoSpedizioneEnum = undefined;
   @Input() isInSelect: boolean = false;
 
   protected readonly VenditaStatoSpedizioneEnum: typeof VenditaStatoSpedizioneEnum = VenditaStatoSpedizioneEnum;
@@ -52,6 +52,12 @@ export class VenditaStatoComponent implements OnChanges {
         this.icon = 'pi pi-check';
         this.descrizione = 'Consegna Parziale';
         this.color = '#2196F3';
+        break;
+      }
+      default: {
+        this.icon = '';
+        this.descrizione = '';
+        this.color = '';
         break;
       }
     }

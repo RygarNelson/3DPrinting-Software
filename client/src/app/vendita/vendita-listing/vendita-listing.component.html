@@ -29,13 +29,15 @@
                   Filtri
                 </p-accordion-header>
                 <p-accordion-content>
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-2 w-full">
+                  <div class="grid grid-cols-1 gap-2 w-full">
                     <form-input-select
                       cliente-lookup
                       property="cliente_id"
                       label="Cliente"
                       [(ngModel)]="filtri.cliente_id"
                       (ngModelChange)="loadVendite()" />
+                  </div>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-2 w-full mt-4">
                     <form-input-select
                       vendita-stato-spedizione-lookup
                       property="stato_spedizione"
@@ -43,10 +45,24 @@
                       [(ngModel)]="filtri.stato_spedizione"
                       (ngModelChange)="loadVendite()">
                       <ng-template #selectedItem let-item>
-                        <vendita-stato class="w-full" [stato_spedizione]="filtri.stato_spedizione!" [isInSelect]="true" />
+                        <vendita-stato class="w-full" [stato_spedizione]="filtri.stato_spedizione" [isInSelect]="true" />
                       </ng-template>
                       <ng-template #item let-item>
                         <vendita-stato class="w-full" [stato_spedizione]="item.id" [isInSelect]="true" />
+                      </ng-template>
+                    </form-input-select>
+                    <form-input-select
+                      vendita-dettaglio-stato-stampa-lookup
+                      property="stato_stampa"
+                      label="Stato Stampa"
+                      [filter]="false"
+                      [(ngModel)]="filtri.stato_stampa"
+                      (ngModelChange)="loadVendite()">
+                      <ng-template #selectedItem let-item>
+                        <vendita-dettaglio-stato class="w-full" [stato_stampa]="filtri.stato_stampa" [isInSelect]="true" />
+                      </ng-template>
+                      <ng-template #item let-item>
+                        <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id" [isInSelect]="true" />
                       </ng-template>
                     </form-input-select>
                   </div>
@@ -125,7 +141,7 @@
                   [(ngModel)]="vendita.stato_spedizione"
                   (ngModelChange)="modificaStatoVendita(vendita)">
                   <ng-template #selectedItem let-item>
-                    <vendita-stato class="w-full" [stato_spedizione]="vendita?.stato_spedizione" [isInSelect]="true" />
+                    <vendita-stato class="w-full" [stato_spedizione]="vendita.stato_spedizione" [isInSelect]="true" />
                   </ng-template>
                   <ng-template #item let-item>
                     <vendita-stato class="w-full" [stato_spedizione]="item.id" [isInSelect]="true" />
@@ -203,7 +219,7 @@
                                 [(ngModel)]="dettaglio.stato_stampa"
                                 (ngModelChange)="modificaStatoDettaglio(dettaglio)">
                                 <ng-template #selectedItem let-item>
-                                  <vendita-dettaglio-stato class="w-full" [stato_stampa]="dettaglio?.stato_stampa" [isInSelect]="true" />
+                                  <vendita-dettaglio-stato class="w-full" [stato_stampa]="dettaglio.stato_stampa" [isInSelect]="true" />
                                 </ng-template>
                                 <ng-template #item let-item>
                                   <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id" [isInSelect]="true" />

@@ -1,3 +1,4 @@
+import { VenditaDettaglioStatoStampaEnum } from "src/enums/VenditaDettaglioStatoStampaEnum";
 import { VenditaStatoSpedizioneEnum } from "src/enums/VenditaStatoSpedizioneEnum";
 import { ListingFilter } from "../../interfaces/listing-filter.interface";
 
@@ -10,5 +11,6 @@ export class VenditaListingFiltri implements ListingFilter {
         direction?: string;
     };
     stato_spedizione?: VenditaStatoSpedizioneEnum = undefined;
+    stato_stampa?: VenditaDettaglioStatoStampaEnum = undefined;
     cliente_id?: number = 0;
 }

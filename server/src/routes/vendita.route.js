@@ -60,83 +60,103 @@ router.post(
                 whereOptions.cliente_id = req.body.cliente_id;
             }
 
-            if (req.body.search && req.body.search.trim() !== '') {
+            if ((req.body.search && req.body.search.trim() !== '') || (req.body.stato_stampa != null)) {
                 // Handle search - we'll do separate queries for each search type and combine results
                 let venditeIds = new Set();
 
-                const search = req.body.search.trim();
+                if (req.body.search && req.body.search.trim() !== '') {
+                    const search = req.body.search.trim();
 
-                // Search 1: By cliente.etichetta
-                const venditeByCliente = await VenditaRepository.find(
-                    { ...whereOptions },
-                    null, // no limit
-                    null, // no offset
-                    null, // no order
-                    ['id'], // only get IDs
-                    [{
-                        association: 'cliente',
-                        required: true,
-                        attributes: [],
-                        where: { 
-                            etichetta: { [Op.like]: `%${search}%` },
-                            deletedAt: null 
-                        }
-                    }]
-                );
-                venditeByCliente.forEach(v => venditeIds.add(v.id));
-
-                // Search 2: By dettagli.modello
-                const venditeByModello = await VenditaRepository.find(
-                    { ...whereOptions },
-                    null,
-                    null,
-                    null,
-                    ['id'],
-                    [{
-                        association: 'dettagli',
-                        required: true,
-                        attributes: [],
-                        where: { deletedAt: null },
-                        include: [{
-                            association: 'modello',
-                            required: true,
-                            attributes: [],
-                            where: {
-                                [Op.or]: [
-                                    { nome: { [Op.like]: `%${search}%` } },
-                                    { descrizione: { [Op.like]: `%${search}%` } }
-                                ],
-                                deletedAt: null
-                            }
-                        }]
-                    }]
-                );
-                venditeByModello.forEach(v => venditeIds.add(v.id));
-
-                // Search 3: By dettagli.stampante
-                const venditeByStampante = await VenditaRepository.find(
-                    { ...whereOptions },
-                    null,
-                    null,
-                    null,
-                    ['id'],
-                    [{
-                        association: 'dettagli',
-                        required: true,
-                        attributes: [],
-                        where: { deletedAt: null },
-                        include: [{
-                            association: 'stampante',
+                    // Search 1: By cliente.etichetta
+                    const venditeByCliente = await VenditaRepository.find(
+                        { ...whereOptions },
+                        null, // no limit
+                        null, // no offset
+                        null, // no order
+                        ['id'], // only get IDs
+                        [{
+                            association: 'cliente',
                             required: true,
                             attributes: [],
                             where: { 
-                                nome: { [Op.like]: `%${search}%` },
+                                etichetta: { [Op.like]: `%${search}%` },
                                 deletedAt: null 
                             }
                         }]
-                    }]
-                );
-                venditeByStampante.forEach(v => venditeIds.add(v.id));
+                    );
+                    venditeByCliente.rows.forEach(v => venditeIds.add(v.id));
+
+                    // Search 2: By dettagli.modello
+                    const venditeByModello = await VenditaRepository.find(
+                        { ...whereOptions },
+                        null,
+                        null,
+                        null,
+                        ['id'],
+                        [{
+                            association: 'dettagli',
+                            required: true,
+                            attributes: [],
+                            where: { deletedAt: null },
+                            include: [{
+                                association: 'modello',
+                                required: true,
+                                attributes: [],
+                                where: {
+                                    [Op.or]: [
+                                        { nome: { [Op.like]: `%${search}%` } },
+                                        { descrizione: { [Op.like]: `%${search}%` } }
+                                    ],
+                                    deletedAt: null
+                                }
+                            }]
+                        }]
+                    );
+                    venditeByModello.rows.forEach(v => venditeIds.add(v.id));
+
+                    // Search 3: By dettagli.stampante
+                    const venditeByStampante = await VenditaRepository.find(
+                        { ...whereOptions },
+                        null,
+                        null,
+                        null,
+                        ['id'],
+                        [{
+                            association: 'dettagli',
+                            required: true,
+                            attributes: [],
+                            where: { deletedAt: null },
+                            include: [{
+                                association: 'stampante',
+                                required: true,
+                                attributes: [],
+                                where: { 
+                                    nome: { [Op.like]: `%${search}%` },
+                                    deletedAt: null 
+                                }
+                            }]
+                        }]
+                    );
+                    venditeByStampante.rows.forEach(v => venditeIds.add(v.id));
+                }
+
+                // Stato stampa
+                if (req.body.stato_stampa != null) {
+                    const venditeByDettaglioConStatoStampa = await VenditaRepository.find(
+                        { ...whereOptions },
+                        null, // no limit
+                        null, // no offset
+                        null, // no order
+                        ['id'], // only get IDs
+                        [{
+                            association: 'dettagli',
+                            required: true,
+                            attributes: [],
+                            where: { deletedAt: null, stato_stampa: req.body.stato_stampa },
+                        }]
+                    );
+                    venditeByDettaglioConStatoStampa.rows.forEach(v => venditeIds.add(v.id));
+                }
 
                 whereOptions.id = { [Op.in]: Array.from(venditeIds) };
             }
