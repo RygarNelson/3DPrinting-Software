@@ -1,0 +1,149 @@
+<div class="p-4">
+    <p-card>
+      <ng-template pTemplate="header">
+        <h2 class="text-xl font-semibold text-gray-800 pt-6 header-title">Gestione Stampanti</h2>
+      </ng-template>
+  
+      <ng-template pTemplate="content">
+        <!-- Table -->
+        <p-table 
+          #dataTable
+          currentPageReportTemplate="Mostrando da {first} a {last} di {totalRecords} spese"
+          styleClass="p-datatable-sm"
+          responsiveLayout="scroll"
+          [value]="spese"
+          [paginator]="true" 
+          [rows]="filtri.limit"
+          [totalRecords]="totalRecords"
+          [first]="filtri.offset"
+          [showCurrentPageReport]="true"
+          [lazy]="true"
+          (onLazyLoad)="loadData($event)">
+          
+          <ng-template pTemplate="caption">
+              <div class="flex items-center flex-wrap gap-2">
+                <div class="flex items-center gap-2">
+                  <p-iconfield iconPosition="left">
+                    <p-inputicon>
+                        <i class="pi pi-search"></i>
+                    </p-inputicon>
+                    <input 
+                      #searchInput
+                      pInputText 
+                      type="text" 
+                      placeholder="Cerca spese..." 
+                      class="w-full sm:w-auto"
+                      [(ngModel)]="filtri.search"
+                      (ngModelChange)="dataTable.filterGlobal($event, 'contains')">
+                </p-iconfield>
+                <button pButton label="Pulisci" class="p-button-outlined" icon="pi pi-filter-slash" (click)="dataTable.clear()"></button>
+                </div>
+                  
+                  <div class="flex items-center gap-2 margin-left-auto">
+                    <p-button 
+                      icon="pi pi-refresh" 
+                      severity="warn" 
+                      [loading]="loading"
+                      (click)="refreshTable()"
+                      pTooltip="Aggiorna tabella"
+                      tooltipPosition="top">
+                    </p-button>
+                    <p-button 
+                      icon="pi pi-plus" 
+                      label="Nuova Spesa"
+                      severity="success" 
+                      (click)="addNewSpesa()"
+                      pTooltip="Aggiungi nuova spesa"
+                      class="flex-shrink-0"
+                      tooltipPosition="top">
+                    </p-button>
+                  </div>
+              </div>
+          </ng-template>
+          
+          <!-- ID Column -->
+          <ng-template #header>
+            <tr>
+              <th pSortableColumn="data_spesa">
+                Data Spesa
+                <p-sortIcon field="data_spesa" />
+                <p-columnFilter field="data_spesa" [type]="'date'" display="menu" [showMatchModes]="true" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
+              </th>
+              <th pSortableColumn="totale_spesa">
+                Totale Spesa
+                <p-sortIcon field="totale_spesa" />
+                <p-columnFilter field="totale_spesa" [type]="'numeric'" currency="EUR" display="menu" minFractionDigits="2" maxFractionDigits="2" [showMatchModes]="true" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
+              </th>
+              <th>Descrizione</th>
+              <th class="text-center" style="width: 120px;"></th>
+            </tr>
+          </ng-template>
+  
+          <!-- Data Rows -->
+          <ng-template #body let-spesa>
+            <tr>
+              <td class="font-medium">{{ spesa.nome }}</td>
+              <td>{{ spesa.descrizione }}</td>
+              <td class="text-center">
+                <div class="flex justify-center gap-2">
+                  @if (loading) {
+                    <p-button 
+                      icon="pi pi-spinner pi-spin" 
+                      severity="info" 
+                      size="small"
+                      [disabled]="true">
+                    </p-button>
+                    <p-button 
+                      icon="pi pi-spinner pi-spin" 
+                      severity="danger" 
+                      size="small"
+                      [disabled]="true">
+                    </p-button>
+                  }
+                  @else {
+                    <p-button 
+                      icon="pi pi-pencil" 
+                      severity="info" 
+                      size="small"
+                      (click)="editSpesa(spesa)"
+                      pTooltip="Modifica spesa"
+                      tooltipPosition="top">
+                    </p-button>
+                    <p-button 
+                      icon="pi pi-trash" 
+                      severity="danger" 
+                      size="small"
+                      (click)="confirmDelete($event, spesa)"
+                      pTooltip="Elimina spesa"
+                      tooltipPosition="top">
+                    </p-button>
+                  }
+                  
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+  
+          <!-- Empty State -->
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="4" class="text-center py-8">
+                  @if (loading) {
+                      <p-skeleton height="100px" width="100%" />
+                  } @else {
+                      <div class="flex flex-col items-center gap-2">
+                          <i class="pi pi-inbox text-4xl text-gray-400"></i>
+                          <p class="text-gray-500">Nessuna spesa trovata</p>
+                      </div>
+                  }
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </ng-template>
+    </p-card>
+  
+    <!-- Confirm Popup for Delete -->
+    <p-confirmPopup></p-confirmPopup>
+  </div>
+  
