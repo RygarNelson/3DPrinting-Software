@@ -21,4 +21,8 @@ export class VenditaListingFiltri implements ListingFilter {
         value?: Date;
         operator?: string;
     }
+    totale_vendita?: {
+        value?: number;
+        operator?: string;
+    }
 }

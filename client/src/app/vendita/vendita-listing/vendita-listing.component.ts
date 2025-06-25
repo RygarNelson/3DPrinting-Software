@@ -162,6 +162,8 @@ export class VenditaListingComponent implements OnDestroy {
           value: value,
           operator: operator
         };
+      } else {
+        this.filtri.data_vendita = undefined;
       }
     }
     else {
@@ -186,10 +188,38 @@ export class VenditaListingComponent implements OnDestroy {
           value: value,
           operator: operator
         };
+      } else {
+        this.filtri.data_scadenza = undefined;
       }
     }
     else {
       this.filtri.data_scadenza = undefined;
+    }
+
+    const totaleVenditaFilter: FilterMetadata | FilterMetadata[] | undefined = event.filters?.['totale_vendita'];
+    if (totaleVenditaFilter) {
+      let value = null;
+      let operator = null;
+
+      if (totaleVenditaFilter instanceof Array) {
+        value = totaleVenditaFilter[0].value;
+        operator = totaleVenditaFilter[0].matchMode;
+      } else {
+        value = totaleVenditaFilter.value;
+        operator = totaleVenditaFilter.matchMode;
+      }
+
+      if (value && operator) {
+        this.filtri.totale_vendita = {
+          value: value,
+          operator: operator
+        };
+      } else {
+        this.filtri.totale_vendita = undefined;
+      }
+    }
+    else {
+      this.filtri.totale_vendita = undefined;
     }
 
     this.loadVendite();

@@ -205,6 +205,36 @@ router.post(
                 }
             }
 
+            // Totale Vendita
+            if (req.body.totale_vendita && req.body.totale_vendita.value && req.body.totale_vendita.operator) {
+                switch (req.body.totale_vendita.operator) {
+                    case 'equals': {
+                        whereOptions.totale_vendita = { [Op.eq]: req.body.totale_vendita.value };
+                        break;
+                    }
+                    case 'notEquals': {
+                        whereOptions.totale_vendita = { [Op.ne]: req.body.totale_vendita.value };
+                        break;
+                    }
+                    case 'lt': {
+                        whereOptions.totale_vendita = { [Op.lt]: req.body.totale_vendita.value };
+                        break;
+                    }
+                    case 'lte': {
+                        whereOptions.totale_vendita = { [Op.lte]: req.body.totale_vendita.value };
+                        break;
+                    }
+                    case 'gt': {
+                        whereOptions.totale_vendita = { [Op.gt]: req.body.totale_vendita.value };
+                        break;
+                    }
+                    case 'gte': {
+                        whereOptions.totale_vendita = { [Op.gte]: req.body.totale_vendita.value };
+                        break;
+                    }
+                }
+            }
+
             const limit = req.body.limit ? parseInt(req.body.limit) : 10;
             const offset = req.body.offset ? parseInt(req.body.offset) : 0;
 

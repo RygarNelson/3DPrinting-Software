@@ -99,7 +99,11 @@
                   </ng-template>
               </p-columnFilter>
               </th>
-              <th pSortableColumn="totale_vendita">Totale Vendita <p-sortIcon field="totale_vendita" /></th>
+              <th pSortableColumn="totale_vendita">
+                Totale Vendita 
+                <p-sortIcon field="totale_vendita" />
+                <p-columnFilter field="totale_vendita" [type]="'numeric'" currency="EUR" display="menu" minFractionDigits="2" [showMatchModes]="true" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
+              </th>
               <th style="width: 300px;">
                 Stato
                 <p-columnFilter display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false">
