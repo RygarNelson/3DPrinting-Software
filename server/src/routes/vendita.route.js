@@ -2,7 +2,7 @@
 
 import express from 'express';
 import { validationResult } from 'express-validator';
-import { Op } from 'sequelize';
+import { Op, literal } from 'sequelize';
 import { authenticate } from '../middleware/authenticate.js';
 import VenditaRepository from '../repositories/vendita.repository.js';
 import validationSchema from '../schemas/vendita.schema.js';
@@ -144,18 +144,40 @@ router.post(
             const limit = req.body.limit ? parseInt(req.body.limit) : 10;
             const offset = req.body.offset ? parseInt(req.body.offset) : 0;
 
-            let order = [['id', 'ASC']];
+            // --- Custom RANK for stato_spedizione ---
+            const projection = [
+                'id',
+                'data_vendita',
+                'data_scadenza',
+                'totale_vendita',
+                'stato_spedizione',
+                [literal(`
+                    CASE
+                        WHEN stato_spedizione = 4 THEN 1
+                        WHEN stato_spedizione = 0 THEN 2
+                        WHEN stato_spedizione = 1 THEN 3
+                        WHEN stato_spedizione = 2 THEN 4
+                        WHEN stato_spedizione = 3 THEN 5
+                        ELSE 6
+                    END
+                `), 'rank']
+            ];
+            const include = [includeCliente, includeDettagli];
+
+            // Default order: by rank, then by id
+            let order = [[literal('rank'), 'ASC'], ['id', 'ASC']];
             if (
                 req.body.order && 
                 req.body.order.column && 
                 req.body.order.column.trim() !== '' && 
                 req.body.order.direction && 
                 req.body.order.direction.trim() !== '') {
-                order = [[req.body.order.column, req.body.order.direction]];
+                // Always order by rank first, then by the requested column
+                order = [
+                    [literal('rank'), 'ASC'],
+                    [req.body.order.column, req.body.order.direction]
+                ];
             }
-
-            const projection = ['id', 'data_vendita', 'data_scadenza', 'totale_vendita', 'stato_spedizione'];
-            const include = [includeCliente, includeDettagli];
 
             const vendite = await VenditaRepository.find(whereOptions, limit, offset, order, projection, include);
 
