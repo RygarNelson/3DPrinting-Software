@@ -23,52 +23,15 @@
           (onLazyLoad)="loadData($event)">
           
           <ng-template pTemplate="caption">
-            <p-accordion>
+            <!-- <p-accordion>
               <p-accordion-panel value="0">
                 <p-accordion-header>
                   Filtri
                 </p-accordion-header>
                 <p-accordion-content>
-                  <div class="grid grid-cols-1 gap-2 w-full">
-                    <form-input-select
-                      cliente-lookup
-                      property="cliente_id"
-                      label="Cliente"
-                      [(ngModel)]="filtri.cliente_id"
-                      (ngModelChange)="loadVendite()" />
-                  </div>
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-2 w-full mt-4">
-                    <form-input-select
-                      vendita-stato-spedizione-lookup
-                      property="stato_spedizione"
-                      label="Stato Spedizione"
-                      [(ngModel)]="filtri.stato_spedizione"
-                      (ngModelChange)="loadVendite()">
-                      <ng-template #selectedItem let-item>
-                        <vendita-stato class="w-full" [stato_spedizione]="filtri.stato_spedizione" [isInSelect]="true" />
-                      </ng-template>
-                      <ng-template #item let-item>
-                        <vendita-stato class="w-full" [stato_spedizione]="item.id" [isInSelect]="true" />
-                      </ng-template>
-                    </form-input-select>
-                    <form-input-select
-                      vendita-dettaglio-stato-stampa-lookup
-                      property="stato_stampa"
-                      label="Stato Stampa"
-                      [filter]="false"
-                      [(ngModel)]="filtri.stato_stampa"
-                      (ngModelChange)="loadVendite()">
-                      <ng-template #selectedItem let-item>
-                        <vendita-dettaglio-stato class="w-full" [stato_stampa]="filtri.stato_stampa" [isInSelect]="true" />
-                      </ng-template>
-                      <ng-template #item let-item>
-                        <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id" [isInSelect]="true" />
-                      </ng-template>
-                    </form-input-select>
-                  </div>
                 </p-accordion-content>
               </p-accordion-panel>
-            </p-accordion>
+            </p-accordion> -->
               <div class="flex items-center flex-wrap gap-2 mt-4">
                 <div class="flex items-center gap-2">
                   <p-iconfield iconPosition="left">
@@ -84,7 +47,7 @@
                       [(ngModel)]="filtri.search"
                       (ngModelChange)="dataTable.filterGlobal($event, 'contains')">
                 </p-iconfield>
-                <button pButton label="Pulisci" class="p-button-outlined" icon="pi pi-filter-slash" (click)="dataTable.clear()"></button>
+                <button pButton label="Pulisci" class="p-button-outlined" icon="pi pi-filter-slash" (click)="dataTable.clear(); pulisciFiltri();"></button>
                 </div>
                   
                   <div class="flex items-center gap-2 margin-left-auto">
@@ -113,11 +76,64 @@
           <ng-template #header>
             <tr>
               <th style="width: 5rem"></th>
-              <th pSortableColumn="data_vendita">Data Vendita <p-sortIcon field="data_vendita" /></th>
-              <th pSortableColumn="data_scadenza">Data Scadenza <p-sortIcon field="data_scadenza" /></th>
-              <th>Cliente</th>
+              <th pSortableColumn="data_vendita">
+                Data Vendita 
+                <p-sortIcon field="data_vendita" />
+              </th>
+              <th pSortableColumn="data_scadenza">
+                Data Scadenza 
+                <p-sortIcon field="data_scadenza" />
+              </th>
+              <th>
+                Cliente
+                <p-columnFilter field="cliente_id" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false">
+                  <ng-template #filter let-value let-filter="filterCallback">
+                      <form-input-select
+                        cliente-lookup
+                        property="cliente_id"
+                        label="Cliente"
+                        [(ngModel)]="filtri.cliente_id"
+                        (ngModelChange)="filter($event)" />
+                  </ng-template>
+              </p-columnFilter>
+              </th>
               <th pSortableColumn="totale_vendita">Totale Vendita <p-sortIcon field="totale_vendita" /></th>
-              <th style="width: 300px;">Stato</th>
+              <th style="width: 300px;">
+                Stato
+                <p-columnFilter field="cliente_id" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false">
+                  <ng-template #filter let-value let-filter="filterCallback">
+                    <div class="grid grid-cols-1 gap-2 w-full">
+                      <form-input-select
+                        vendita-stato-spedizione-lookup
+                        property="stato_spedizione"
+                        label="Stato Spedizione"
+                        [(ngModel)]="filtri.stato_spedizione"
+                        (ngModelChange)="filter($event)">
+                        <ng-template #selectedItem let-item>
+                          <vendita-stato class="w-full" [stato_spedizione]="filtri.stato_spedizione" [isInSelect]="true" />
+                        </ng-template>
+                        <ng-template #item let-item>
+                          <vendita-stato class="w-full" [stato_spedizione]="item.id" [isInSelect]="true" />
+                        </ng-template>
+                      </form-input-select>
+                      <form-input-select
+                        vendita-dettaglio-stato-stampa-lookup
+                        property="stato_stampa"
+                        label="Stato Stampa"
+                        [filter]="false"
+                        [(ngModel)]="filtri.stato_stampa"
+                        (ngModelChange)="filter($event)">
+                        <ng-template #selectedItem let-item>
+                          <vendita-dettaglio-stato class="w-full" [stato_stampa]="filtri.stato_stampa" [isInSelect]="true" />
+                        </ng-template>
+                        <ng-template #item let-item>
+                          <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id" [isInSelect]="true" />
+                        </ng-template>
+                      </form-input-select>
+                    </div>
+                  </ng-template>
+              </p-columnFilter>
+              </th>
               <th style="width: 120px;"></th>
             </tr>
           </ng-template>

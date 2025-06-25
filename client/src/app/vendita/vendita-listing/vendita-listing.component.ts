@@ -91,7 +91,9 @@ export class VenditaListingComponent implements OnDestroy {
   }
 
   loadVendite(): void {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    if (this.loadingTimeout == null) {
+      this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    }
     
     this.venditeSubscription = this.venditaService.getListing(this.filtri)
       .subscribe({
@@ -150,6 +152,22 @@ export class VenditaListingComponent implements OnDestroy {
 
   addNewVendita(): void {
     this.router.navigate(['/vendita/manager']);
+  }
+
+  pulisciFiltri(): void {
+    this.filtri = {
+      offset: 0,
+      limit: 10,
+      search: ''
+    };
+
+    this.loadData({
+      first: 0,
+      rows: 10,
+      globalFilter: '',
+      sortField: '',
+      sortOrder: 0
+    });
   }
 
   editVendita(vendita: VenditaListingModel): void {
