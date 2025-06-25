@@ -36,4 +36,11 @@ export class VenditaService {
       stato_avanzamento
     });
   }
+
+  modificaStatoVendita(id: number, stato_avanzamento?: number): Observable<any> {
+    return this.http.post<any>(`${this.api}/vendita/stato/modifica`, {
+      id,
+      stato_avanzamento
+    });
+  }
 }

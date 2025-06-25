@@ -141,6 +141,21 @@ const venditaRepository = {
         await dettaglio.update({ stato_stampa: stato_avanzamento });
 
         return dettaglio;
+    },
+
+    modificaStatoVendita: async function(id, stato_avanzamento) {
+        const vendita = await Vendita.findByPk(id);
+
+        if (!vendita) {
+            throw new Error('Vendita non trovata');
+        }
+        if (stato_avanzamento == null) {
+            throw new Error('Stato di avanzamento non specificato');
+        }
+
+        await vendita.update({ stato_spedizione: stato_avanzamento });
+
+        return vendita;
     }
 };
 

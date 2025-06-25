@@ -25,7 +25,7 @@ import { VenditaService } from 'src/services/vendita.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
 import { VenditaDettaglioStatoComponent } from '../vendita-dettaglio-stato/vendita-dettaglio-stato.component';
-import { VenditaListingStatoComponent } from '../vendita-listing-stato/vendita-listing-stato.component';
+import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component';
 
 @Component({
   selector: 'app-vendita-listing',
@@ -41,7 +41,7 @@ import { VenditaListingStatoComponent } from '../vendita-listing-stato/vendita-l
     InputIconModule,
     SkeletonModule,
     TooltipModule,
-    VenditaListingStatoComponent,
+    VenditaStatoComponent,
     VenditaDettaglioStatoComponent,
     AccordionModule,
     FormInputSelectComponent,
@@ -209,7 +209,40 @@ export class VenditaListingComponent implements OnDestroy {
       });
   }
 
-  modificaStatoDettaglio(event: Event, dettaglio: VenditaListingDettaglioModel): void {
+  modificaStatoVendita(vendita: VenditaListingModel): void {
+    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+
+    this.venditaService.modificaStatoVendita(vendita.id, vendita.stato_spedizione)
+      .subscribe({
+        next: () => {
+          window.clearTimeout(this.loadingTimeout);
+          this.loading = false;
+
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Stato spedizione modificato con successo'
+          });
+
+          this.loadVendite();
+        },
+        error: (error) => {
+          window.clearTimeout(this.loadingTimeout);
+          this.loading = false;
+
+          this.dialogService.open(DialogErrorComponent, {
+            inputValues: {
+              error: error
+            },
+            modal: true
+          });
+
+          console.error('Error avanzando stato dettaglio:', error);
+        }
+      });
+  }
+
+  modificaStatoDettaglio(dettaglio: VenditaListingDettaglioModel): void {
     this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
 
     this.venditaService.modificaStatoDettaglio(dettaglio.id, dettaglio.stato_stampa)

@@ -218,19 +218,39 @@ router.delete(
 );
 
 router.post(
+    '/vendita/stato/modifica',
+    asyncHandler(async (req, res) => {
+        if (req.body.id > 0 && req.body.stato_avanzamento > 0) {
+            const data = await VenditaRepository.modificaStatoVendita(req.body.id, req.body.stato_avanzamento);
+            return res.status(200).json({
+                success: true,
+                data: 'Stato spedizione modificato con successo!',
+                technical_data: data
+            });
+        } else {
+            return res.status(400).json({
+                success: false,
+                error: 'Specificare l\'id della vendita e lo stato spedizione',
+                technical_data: 'Nessun parametro di ricerca specificato'
+            });
+        }
+    })
+);
+
+router.post(
     '/dettaglio/stato/modifica',
     asyncHandler(async (req, res) => {
         if (req.body.id > 0 && req.body.stato_avanzamento > 0) {
             const data = await VenditaRepository.modificaStatoDettaglio(req.body.id, req.body.stato_avanzamento);
             return res.status(200).json({
                 success: true,
-                data: 'Stato avanzato con successo!',
+                data: 'Stato stampa modificato con successo!',
                 technical_data: data
             });
         } else {
             return res.status(400).json({
                 success: false,
-                error: 'Specificare l\'id della vendita e lo stato di avanzamento',
+                error: 'Specificare l\'id del dettaglio e lo stato di avanzamento',
                 technical_data: 'Nessun parametro di ricerca specificato'
             });
         }

@@ -85,7 +85,14 @@
                                 [filter]="false"
                                 [showClear]="false"
                                 [listaErrori]="listaErrori"
-                                [(ngModel)]="vendita.stato_spedizione" />
+                                [(ngModel)]="vendita.stato_spedizione">
+                                <ng-template #selectedItem let-item>
+                                  <vendita-stato class="w-full" [stato_spedizione]="vendita.stato_spedizione!" [isInSelect]="true" />
+                                </ng-template>
+                                <ng-template #item let-item>
+                                  <vendita-stato class="w-full" [stato_spedizione]="item.id" [isInSelect]="true" />
+                                </ng-template>
+                            </form-input-select>
                             <form-input-text
                                 property="link_tracciamento"
                                 label="Link Tracciamento"

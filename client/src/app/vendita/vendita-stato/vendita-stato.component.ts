@@ -1,18 +1,21 @@
+import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ChipModule } from 'primeng/chip';
 import { VenditaStatoSpedizioneEnum } from 'src/enums/VenditaStatoSpedizioneEnum';
 
 @Component({
-  selector: 'vendita-listing-stato',
+  selector: 'vendita-stato',
   imports: [
+    CommonModule,
     ChipModule
   ],
-  templateUrl: './vendita-listing-stato.component.html',
-  styleUrl: './vendita-listing-stato.component.scss',
+  templateUrl: './vendita-stato.component.html',
+  styleUrl: './vendita-stato.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class VenditaListingStatoComponent implements OnChanges {
+export class VenditaStatoComponent implements OnChanges {
   @Input() stato_spedizione: VenditaStatoSpedizioneEnum = VenditaStatoSpedizioneEnum.DaSpedire;
+  @Input() isInSelect: boolean = false;
 
   protected readonly VenditaStatoSpedizioneEnum: typeof VenditaStatoSpedizioneEnum = VenditaStatoSpedizioneEnum;
   protected icon: string = 'pi pi-clock';

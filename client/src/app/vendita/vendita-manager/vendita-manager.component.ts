@@ -28,6 +28,7 @@ import { FormInputSelectComponent } from 'src/shared/form-input-select/form-inpu
 import { FormInputTextComponent } from 'src/shared/form-input-text/form-input-text.component';
 import { ShowTabErrorPipe } from 'src/shared/pipes/show-tab-error.pipe';
 import { VenditaDettaglioStatoComponent } from '../vendita-dettaglio-stato/vendita-dettaglio-stato.component';
+import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component';
 
 @Component({
   selector: 'app-vendita-manager',
@@ -49,7 +50,8 @@ import { VenditaDettaglioStatoComponent } from '../vendita-dettaglio-stato/vendi
     StampanteLookupDirective,
     VenditaDettaglioStatoStampaLookupDirective,
     ShowTabErrorPipe,
-    VenditaDettaglioStatoComponent
+    VenditaDettaglioStatoComponent,
+    VenditaStatoComponent
   ],
   providers: [
     VenditaService,

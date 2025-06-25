@@ -41,7 +41,14 @@
                       property="stato_spedizione"
                       label="Stato Spedizione"
                       [(ngModel)]="filtri.stato_spedizione"
-                      (ngModelChange)="loadVendite()" />
+                      (ngModelChange)="loadVendite()">
+                      <ng-template #selectedItem let-item>
+                        <vendita-stato class="w-full" [stato_spedizione]="filtri.stato_spedizione!" [isInSelect]="true" />
+                      </ng-template>
+                      <ng-template #item let-item>
+                        <vendita-stato class="w-full" [stato_spedizione]="item.id" [isInSelect]="true" />
+                      </ng-template>
+                    </form-input-select>
                   </div>
                 </p-accordion-content>
               </p-accordion-panel>
@@ -94,7 +101,7 @@
               <th pSortableColumn="data_scadenza">Data Scadenza <p-sortIcon field="data_scadenza" /></th>
               <th>Cliente</th>
               <th pSortableColumn="totale_vendita">Totale Vendita <p-sortIcon field="totale_vendita" /></th>
-              <th>Stato</th>
+              <th style="width: 300px;">Stato</th>
               <th style="width: 120px;"></th>
             </tr>
           </ng-template>
@@ -110,7 +117,20 @@
               <td>{{ vendita.cliente?.etichetta }}</td>
               <td>{{ vendita.totale_vendita | currency:'EUR' }}</td>
               <td>
-                <vendita-listing-stato [stato_spedizione]="vendita.stato_spedizione"></vendita-listing-stato>
+                <form-input-select
+                  vendita-stato-spedizione-lookup
+                  property="stato_spedizione"
+                  [filter]="false"
+                  [showClear]="false"
+                  [(ngModel)]="vendita.stato_spedizione"
+                  (ngModelChange)="modificaStatoVendita(vendita)">
+                  <ng-template #selectedItem let-item>
+                    <vendita-stato class="w-full" [stato_spedizione]="vendita?.stato_spedizione" [isInSelect]="true" />
+                  </ng-template>
+                  <ng-template #item let-item>
+                    <vendita-stato class="w-full" [stato_spedizione]="item.id" [isInSelect]="true" />
+                  </ng-template>
+                </form-input-select>
               </td>
               <td class="text-center">
                 <div class="flex justify-center gap-2">
@@ -181,7 +201,7 @@
                                 [filter]="false"
                                 [showClear]="false"
                                 [(ngModel)]="dettaglio.stato_stampa"
-                                (ngModelChange)="modificaStatoDettaglio($event, dettaglio)">
+                                (ngModelChange)="modificaStatoDettaglio(dettaglio)">
                                 <ng-template #selectedItem let-item>
                                   <vendita-dettaglio-stato class="w-full" [stato_stampa]="dettaglio?.stato_stampa" [isInSelect]="true" />
                                 </ng-template>
