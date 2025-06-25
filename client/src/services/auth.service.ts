@@ -18,6 +18,10 @@ export class AuthService {
     return this.http.post(`${this.api}/login`, {email: email, password: password});
   }
 
+  checkToken(token: string): Observable<any> {
+    return this.http.post(`${this.api}/checkToken`, {token: token});
+  }
+
   registerLocalStorage(loginData: any): void {
     localStorage.setItem('name', loginData.name);
     localStorage.setItem('surname', loginData.surname);

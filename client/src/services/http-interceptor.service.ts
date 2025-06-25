@@ -1,10 +1,23 @@
-import { HttpEvent, HttpHandlerFn, HttpHeaders, HttpRequest } from '@angular/common/http';
+import { HttpErrorResponse, HttpEvent, HttpHandlerFn, HttpHeaders, HttpRequest } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { Observable, tap } from 'rxjs';
+import { catchError, Observable, tap, throwError } from 'rxjs';
+import { AuthService } from './auth.service';
 
 export function HttpInterceptorService(req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
   const messageService = inject(MessageService);
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  const handleErrors = (error: HttpErrorResponse) => {
+    if (error.status === 401) {
+      authService.removeLocalStorage();
+      router.navigate(['/login']);
+    }
+
+    return throwError(() => error);
+  }
 
   if (localStorage.getItem('token')) {
     let headers: HttpHeaders = new HttpHeaders().set('token', localStorage.getItem('token') ?? '');
@@ -19,7 +32,8 @@ export function HttpInterceptorService(req: HttpRequest<unknown>, next: HttpHand
             detail: data.body.message
           }), 100);
         }
-      })
+      }),
+      catchError(handleErrors)
     );
   } else {
     return next(req).pipe(
@@ -30,7 +44,8 @@ export function HttpInterceptorService(req: HttpRequest<unknown>, next: HttpHand
             detail: data.body.message
           }), 100);
         }
-      })
+      }),
+      catchError(handleErrors)
     );
 
     
