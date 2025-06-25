@@ -13,6 +13,7 @@ import { connectToDatabase, initializeDatabase } from './db.js';
 import authRoute from './routes/auth.route.js';
 import clienteRoute from './routes/cliente.route.js';
 import modelloRoute from './routes/modello.route.js';
+import spesaRoute from './routes/spesa.route.js';
 import stampanteRoute from './routes/stampante.route.js';
 import venditaRoute from './routes/vendita.route.js';
 
@@ -88,6 +89,7 @@ app.use('/api/stampante', stampanteRoute);
 app.use('/api/modello', modelloRoute);
 app.use('/api/cliente', clienteRoute);
 app.use('/api/vendita', venditaRoute);
+app.use('/api/spesa', spesaRoute);
 
 /* STATIC FILES - Angular App */
 // Check if Angular static files directory exists
