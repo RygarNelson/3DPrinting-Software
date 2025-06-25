@@ -25,14 +25,16 @@ const spesaRepository = {
     insertOne: function(req) {
         return Spesa.create({
             data_spesa: req.body.data_spesa,
-            totale_spesa: req.body.totale_spesa
+            totale_spesa: req.body.totale_spesa,
+            descrizione: req.body.descrizione
         }); 
     },
 
     updateOne: function(req, res) {
         return Spesa.update({
             data_spesa: req.body.data_spesa,
-            totale_spesa: req.body.totale_spesa
+            totale_spesa: req.body.totale_spesa,
+            descrizione: req.body.descrizione
         }, {
             where: { id: req.body.id }
         });

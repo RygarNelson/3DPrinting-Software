@@ -1,1 +1,66 @@
-<p>spesa-manager works!</p>
+<div class="p-4">
+    <p-card>
+        <ng-template pTemplate="header">
+            <div class="flex items-center flex-wrap header-title">
+                <h2 class="text-xl font-semibold text-gray-800">{{spesa.id ? 'Modifica' : 'Nuova'}} Spesa</h2>
+                <div class="flex items-center gap-2 margin-left-auto">
+                    @if (loading) {
+                        <p-button 
+                            icon="pi pi-spinner pi-spin"
+                            label="Indietro"
+                            [disabled]="true"
+                            [severity]="'secondary'"
+                        />
+                        <p-button 
+                            icon="pi pi-spinner pi-spin"
+                            label="Salva"
+                            [disabled]="true"
+                            [severity]="'primary'"
+                        />
+                    }
+                    @else {
+                        <p-button 
+                            icon="pi pi-arrow-left"
+                            label="Indietro"
+                            (click)="indietro()"
+                            [severity]="'secondary'"
+                        />
+                        <p-button 
+                            icon="pi pi-save"
+                            label="Salva"
+                            (click)="saveSpesa()"
+                            [severity]="'primary'"
+                        />
+                    }
+                    
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="content">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <form-input-datetime
+                    property="data_spesa"
+                    label="Data Spesa"
+                    [obligatory]="true"
+                    [listaErrori]="listaErrori"
+                    [(ngModel)]="spesa.data_spesa" />
+                <form-input-number
+                    property="totale_spesa"
+                    label="Totale Spesa"
+                    [obligatory]="true"
+                    [minFractionDigits]="5"
+                    [maxFractionDigits]="5"
+                    [suffix]="'€'"
+                    [listaErrori]="listaErrori"
+                    [(ngModel)]="spesa.totale_spesa" />
+            </div>
+            <div class="grid grid-cols-1 gap-4 mt-4">
+                <form-input-textarea
+                    property="descrizione"
+                    label="Descrizione"
+                    [listaErrori]="listaErrori"
+                    [(ngModel)]="spesa.descrizione" />
+            </div>
+        </ng-template>
+    </p-card>
+</div>

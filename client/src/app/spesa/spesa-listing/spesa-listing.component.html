@@ -82,7 +82,8 @@
           <!-- Data Rows -->
           <ng-template #body let-spesa>
             <tr>
-              <td class="font-medium">{{ spesa.nome }}</td>
+              <td class="font-medium">{{ spesa.data_spesa | date:'dd/MM/yyyy' }}</td>
+              <td>{{ spesa.totale_spesa | currency:'EUR' }}</td>
               <td>{{ spesa.descrizione }}</td>
               <td class="text-center">
                 <div class="flex justify-center gap-2">
