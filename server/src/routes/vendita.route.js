@@ -161,6 +161,50 @@ router.post(
                 whereOptions.id = { [Op.in]: Array.from(venditeIds) };
             }
 
+            // Data vendita
+            if (req.body.data_vendita && req.body.data_vendita.value && req.body.data_vendita.operator) {
+                switch (req.body.data_vendita.operator) {
+                    case 'dateIs': {
+                        whereOptions.data_vendita = { [Op.eq]: req.body.data_vendita.value };
+                        break;
+                    }
+                    case 'dateIsNot': {
+                        whereOptions.data_vendita = { [Op.ne]: req.body.data_vendita.value };
+                        break;
+                    }
+                    case 'dateBefore': {
+                        whereOptions.data_vendita = { [Op.lte]: req.body.data_vendita.value };
+                        break;
+                    }
+                    case 'dateAfter': {
+                        whereOptions.data_vendita = { [Op.gte]: req.body.data_vendita.value };
+                        break;
+                    }
+                }
+            }
+
+            // Data scadenza
+            if (req.body.data_scadenza && req.body.data_scadenza.value && req.body.data_scadenza.operator) {
+                switch (req.body.data_scadenza.operator) {
+                    case 'dateIs': {
+                        whereOptions.data_scadenza = { [Op.eq]: req.body.data_scadenza.value };
+                        break;
+                    }
+                    case 'dateIsNot': {
+                        whereOptions.data_scadenza = { [Op.ne]: req.body.data_scadenza.value };
+                        break;
+                    }
+                    case 'dateBefore': {
+                        whereOptions.data_scadenza = { [Op.lte]: req.body.data_scadenza.value };
+                        break;
+                    }
+                    case 'dateAfter': {
+                        whereOptions.data_scadenza = { [Op.gte]: req.body.data_scadenza.value };
+                        break;
+                    }
+                }
+            }
+
             const limit = req.body.limit ? parseInt(req.body.limit) : 10;
             const offset = req.body.offset ? parseInt(req.body.offset) : 0;
 

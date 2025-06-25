@@ -3,7 +3,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AccordionModule } from 'primeng/accordion';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, FilterMetadata, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
@@ -141,6 +141,55 @@ export class VenditaListingComponent implements OnDestroy {
     }
     else {
       this.filtri.order = undefined;
+    }
+
+    // Date filters
+    const dataVenditaFilter: FilterMetadata | FilterMetadata[] | undefined = event.filters?.['data_vendita'];
+    if (dataVenditaFilter) {
+      let value = null;
+      let operator = null;
+
+      if (dataVenditaFilter instanceof Array) {
+        value = dataVenditaFilter[0].value;
+        operator = dataVenditaFilter[0].matchMode;
+      } else {
+        value = dataVenditaFilter.value;
+        operator = dataVenditaFilter.matchMode;
+      }
+
+      if (value && operator) {
+        this.filtri.data_vendita = {
+          value: value,
+          operator: operator
+        };
+      }
+    }
+    else {
+      this.filtri.data_vendita = undefined;
+    }
+
+    const dataScadenzaFilter: FilterMetadata | FilterMetadata[] | undefined = event.filters?.['data_scadenza'];
+    if (dataScadenzaFilter) {
+      let value = null;
+      let operator = null;
+
+      if (dataScadenzaFilter instanceof Array) {
+        value = dataScadenzaFilter[0].value;
+        operator = dataScadenzaFilter[0].matchMode;
+      } else {
+        value = dataScadenzaFilter.value;
+        operator = dataScadenzaFilter.matchMode;
+      }
+
+      if (value && operator) {
+        this.filtri.data_scadenza = {
+          value: value,
+          operator: operator
+        };
+      }
+    }
+    else {
+      this.filtri.data_scadenza = undefined;
     }
 
     this.loadVendite();

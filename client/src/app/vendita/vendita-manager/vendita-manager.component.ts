@@ -109,9 +109,6 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
 
         if (result.success) {
           this.vendita = result.data;
-
-          console.log(this.vendita);
-          console.log(result.data);
         } else {
           this.dialogService.open(DialogErrorComponent, {
             inputValues: {

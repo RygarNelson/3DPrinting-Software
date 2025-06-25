@@ -16,6 +16,7 @@
         [placeholder]="placeholder"
         [showOnFocus]="showOnFocus"
         [dateFormat]="format"
+        [showButtonBar]="showButtonBar"
         [(ngModel)]="value" />
     @if(property | showError: listaErrori : parent : index) {
         @for(error of property | errorMessages: listaErrori : parent : index; track error) {

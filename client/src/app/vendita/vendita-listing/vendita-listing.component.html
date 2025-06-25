@@ -79,10 +79,12 @@
               <th pSortableColumn="data_vendita">
                 Data Vendita 
                 <p-sortIcon field="data_vendita" />
+                <p-columnFilter field="data_vendita" [type]="'date'" display="menu" [showMatchModes]="true" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
               </th>
               <th pSortableColumn="data_scadenza">
                 Data Scadenza 
                 <p-sortIcon field="data_scadenza" />
+                <p-columnFilter field="data_scadenza" [type]="'date'" display="menu" [showMatchModes]="true" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
               </th>
               <th>
                 Cliente
@@ -100,13 +102,14 @@
               <th pSortableColumn="totale_vendita">Totale Vendita <p-sortIcon field="totale_vendita" /></th>
               <th style="width: 300px;">
                 Stato
-                <p-columnFilter field="cliente_id" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false">
+                <p-columnFilter display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false">
                   <ng-template #filter let-value let-filter="filterCallback">
-                    <div class="grid grid-cols-1 gap-2 w-full">
+                    <div class="grid grid-cols-1 gap-2 w-full" style="width: 300px">
                       <form-input-select
                         vendita-stato-spedizione-lookup
                         property="stato_spedizione"
                         label="Stato Spedizione"
+                        [filter]="false"
                         [(ngModel)]="filtri.stato_spedizione"
                         (ngModelChange)="filter($event)">
                         <ng-template #selectedItem let-item>
