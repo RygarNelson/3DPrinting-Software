@@ -15,6 +15,7 @@ const validationSchema = {
             data_scadenza: {
                 optional: true,
                 isISO8601: {
+                    if: (value) => value !== undefined && value !== null && value !== '',
                     errorMessage: 'La data di scadenza non è valida',
                 },
                 toDate: true

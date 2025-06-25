@@ -16,6 +16,7 @@ import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import { Subscription } from 'rxjs';
 import { ClienteLookupDirective } from 'src/directives/cliente/cliente-lookup.directive';
+import { VenditaDettaglioStatoStampaLookupDirective } from 'src/directives/vendita/vendita-dettaglio-stato-stampa-lookup.directive';
 import { VenditaStatoSpedizioneLookupDirective } from 'src/directives/vendita/vendita-stato-spedizione-lookup.directive';
 import { VenditaDettaglioStatoStampaEnum } from 'src/enums/VenditaDettaglioStatoStampaEnum';
 import { VenditaListingDettaglioModel, VenditaListingModel, VenditaListingResponse } from 'src/models/vendita/vendita-listing';
@@ -23,7 +24,7 @@ import { VenditaListingFiltri } from 'src/models/vendita/vendita-listing-filtri'
 import { VenditaService } from 'src/services/vendita.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
-import { VenditaListingDettaglioStatoComponent } from '../vendita-listing-dettaglio-stato/vendita-listing-dettaglio-stato.component';
+import { VenditaDettaglioStatoComponent } from '../vendita-dettaglio-stato/vendita-dettaglio-stato.component';
 import { VenditaListingStatoComponent } from '../vendita-listing-stato/vendita-listing-stato.component';
 
 @Component({
@@ -41,11 +42,12 @@ import { VenditaListingStatoComponent } from '../vendita-listing-stato/vendita-l
     SkeletonModule,
     TooltipModule,
     VenditaListingStatoComponent,
-    VenditaListingDettaglioStatoComponent,
+    VenditaDettaglioStatoComponent,
     AccordionModule,
     FormInputSelectComponent,
     ClienteLookupDirective,
-    VenditaStatoSpedizioneLookupDirective
+    VenditaStatoSpedizioneLookupDirective,
+    VenditaDettaglioStatoStampaLookupDirective
   ],
   providers: [
     ConfirmationService,
@@ -207,28 +209,10 @@ export class VenditaListingComponent implements OnDestroy {
       });
   }
 
-  confirmAvanzaStatoDettaglio(event: Event, dettaglio: VenditaListingDettaglioModel): void {
-    this.confirmationService.confirm({
-      target: event.target as EventTarget,
-      message: `Sei sicuro di voler avanzare lo stato del dettaglio?`,
-      icon: 'pi pi-exclamation-triangle',
-      acceptLabel: 'Si',
-      rejectLabel: 'No',
-      acceptButtonStyleClass: 'p-button-success',
-      rejectButtonStyleClass: 'p-button-secondary',
-      accept: () => {
-        this.avanzaStatoDettaglio(dettaglio.id);
-      },
-      reject: () => {
-        // User rejected the deletion
-      }
-    });
-  }
-
-  private avanzaStatoDettaglio(id: number): void {
+  modificaStatoDettaglio(event: Event, dettaglio: VenditaListingDettaglioModel): void {
     this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
 
-    this.venditaService.avanzaStatoDettaglio(id)
+    this.venditaService.modificaStatoDettaglio(dettaglio.id, dettaglio.stato_stampa)
       .subscribe({
         next: () => {
           window.clearTimeout(this.loadingTimeout);
@@ -237,7 +221,7 @@ export class VenditaListingComponent implements OnDestroy {
           this.messageService.add({
             severity: 'success',
             summary: 'Success',
-            detail: 'Stato avanzato con successo'
+            detail: 'Stato di stampa modificato con successo'
           });
 
           this.loadVendite();

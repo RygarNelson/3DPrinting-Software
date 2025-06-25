@@ -28,13 +28,22 @@
         [loading]="loading"
         (onBlur)="onBlur()"
         [(ngModel)]="value">
+        @if(selectedItemTemplate) {
+            <ng-template #selectedItem let-item>
+                <ng-container *ngTemplateOutlet="selectedItemTemplate; context: { $implicit: item }"></ng-container>
+            </ng-template>
+        }
         <ng-template #item let-item>
-            <div class="flex flex-col">
-                <span>{{item.etichetta}}</span>
-                <span *ngIf="item.informazioniAggiuntive" class="ml-2 text-xs text-gray-500 italic">
-                    {{item.informazioniAggiuntive}}
-                </span>
-            </div>
+            @if(itemTemplate) {
+                <ng-container *ngTemplateOutlet="itemTemplate; context: { $implicit: item }"></ng-container>
+            } @else {
+                <div class="flex flex-col">
+                    <span>{{item.etichetta}}</span>
+                    <span *ngIf="item.informazioniAggiuntive" class="ml-2 text-xs text-gray-500 italic">
+                        {{item.informazioniAggiuntive}}
+                    </span>
+                </div>
+            }
         </ng-template>
     </p-select>
     @if(showAdd) {

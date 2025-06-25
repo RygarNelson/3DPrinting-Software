@@ -30,8 +30,8 @@ export class VenditaService {
     return this.http.delete<any>(`${this.api}/${id}`);
   }
 
-  avanzaStatoDettaglio(id: number, stato_avanzamento?: number): Observable<any> {
-    return this.http.post<any>(`${this.api}/dettaglio/stato/avanza`, {
+  modificaStatoDettaglio(id: number, stato_avanzamento?: number): Observable<any> {
+    return this.http.post<any>(`${this.api}/dettaglio/stato/modifica`, {
       id,
       stato_avanzamento
     });

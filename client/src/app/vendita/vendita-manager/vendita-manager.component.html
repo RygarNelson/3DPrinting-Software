@@ -83,6 +83,7 @@
                                 label="Stato Spedizione"
                                 [obligatory]="true"
                                 [filter]="false"
+                                [showClear]="false"
                                 [listaErrori]="listaErrori"
                                 [(ngModel)]="vendita.stato_spedizione" />
                             <form-input-text
@@ -177,10 +178,18 @@
                                             vendita-dettaglio-stato-stampa-lookup
                                             property="stato_stampa"
                                             [filter]="false"
+                                            [showClear]="false"
                                             [listaErrori]="listaErrori"
                                             [parent]="'dettagli'"
                                             [index]="rowIndex"
-                                            [(ngModel)]="dettaglio.stato_stampa" />
+                                            [(ngModel)]="dettaglio.stato_stampa">
+                                            <ng-template #selectedItem let-item>
+                                                <vendita-dettaglio-stato class="w-full" [stato_stampa]="dettaglio?.stato_stampa" [isInSelect]="true" />
+                                              </ng-template>
+                                              <ng-template #item let-item>
+                                                <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id" [isInSelect]="true" />
+                                              </ng-template>
+                                        </form-input-select>
                                     </td>
                                     <td>
                                         <p-button 

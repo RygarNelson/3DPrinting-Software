@@ -165,8 +165,7 @@
                             <th class="text-center">Stampante</th>
                             <th class="text-center">Quantità</th>
                             <th class="text-center">Prezzo</th>
-                            <th class="text-center">Stato Stampa</th>
-                            <th class="text-center"></th>
+                            <th class="text-center" style="width: 300px;">Stato Stampa</th>
                           </tr>
                         </ng-template>
                         <ng-template #body let-dettaglio>
@@ -176,26 +175,25 @@
                             <td class="text-center">{{ dettaglio?.quantita }}</td>
                             <td class="text-center">{{ dettaglio?.prezzo | currency:'EUR' }}</td>
                             <td class="text-center">
-                              <vendita-listing-dettaglio-stato [stato_stampa]="dettaglio?.stato_stampa"></vendita-listing-dettaglio-stato>
-                            </td>
-                            <td class="text-center">
-                              <p-button 
-                                icon="pi pi-arrow-right" 
-                                severity="info" 
-                                size="small"
-                                pTooltip="Avanza Stato"
-                                tooltipPosition="top"
-                                [disabled]="
-                                  dettaglio?.stato_stampa == VenditaDettaglioStatoStampaEnum.TerminatoSenzaDifetti || 
-                                  dettaglio?.stato_stampa == VenditaDettaglioStatoStampaEnum.TerminatoConDifetti ||
-                                  dettaglio?.stato_stampa == VenditaDettaglioStatoStampaEnum.Fallito"
-                                (click)="confirmAvanzaStatoDettaglio($event, dettaglio)">
-                              </p-button>
+                              <form-input-select
+                                vendita-dettaglio-stato-stampa-lookup
+                                property="stato_stampa"
+                                [filter]="false"
+                                [showClear]="false"
+                                [(ngModel)]="dettaglio.stato_stampa"
+                                (ngModelChange)="modificaStatoDettaglio($event, dettaglio)">
+                                <ng-template #selectedItem let-item>
+                                  <vendita-dettaglio-stato class="w-full" [stato_stampa]="dettaglio?.stato_stampa" [isInSelect]="true" />
+                                </ng-template>
+                                <ng-template #item let-item>
+                                  <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id" [isInSelect]="true" />
+                                </ng-template>
+                              </form-input-select>
                             </td>
                           </tr>
                         </ng-template>
                         <ng-template pTemplate="emptymessage">
-                          <td colspan="7" class="text-center py-8">
+                          <td colspan="5" class="text-center py-8">
                             <div class="flex flex-col items-center gap-2">
                               <i class="pi pi-inbox text-4xl text-gray-400"></i>
                               <p class="text-gray-500">Non ci sono dettagli per questa vendita</p>

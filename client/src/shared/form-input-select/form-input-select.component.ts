@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, forwardRef, Input, Output } from '@angular/core';
+import { Component, ContentChild, EventEmitter, forwardRef, Input, Output, TemplateRef } from '@angular/core';
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputGroupModule } from 'primeng/inputgroup';
@@ -51,6 +51,9 @@ export class FormInputSelectComponent extends FormInputGeneralComponent implemen
   @Input() showAdd: boolean = false;
 
   @Output() add = new EventEmitter<void>();
+
+  @ContentChild('item') itemTemplate: TemplateRef<any> | null = null;
+  @ContentChild('selectedItem') selectedItemTemplate: TemplateRef<any> | null = null;
 
   get value(): any {
     return this.innerValue;
