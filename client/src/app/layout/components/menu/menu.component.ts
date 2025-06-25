@@ -60,6 +60,16 @@ export class AppMenu {
                         routerLink: ['/modello/listing'],
                     }
                 ]
+            },
+            {
+                label: 'Amministrazione',
+                items: [
+                    {
+                        label: 'Vendite',
+                        icon: 'pi pi-fw pi-dollar',
+                        routerLink: ['/vendita/listing'],
+                    }
+                ]
             }
         ];
     }

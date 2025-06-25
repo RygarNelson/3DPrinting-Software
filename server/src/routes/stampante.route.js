@@ -25,6 +25,35 @@ router.get(
 );
 
 router.post(
+    '/lookup',
+    asyncHandler(async (req, res) => {
+        let whereOptions = {
+            deletedAt: null
+        };
+
+        const limit = undefined;
+        const offset = undefined;
+        const order = undefined;
+
+        const projection = ['id', 'nome', 'descrizione'];
+
+        const data = await StampanteRepository.find(whereOptions, limit, offset, order, projection);
+
+        const result = data.rows.map((stampante) => {
+            return {
+                id: stampante.dataValues.id,
+                etichetta: stampante.dataValues.nome,
+                informazioniAggiuntive: stampante.dataValues.descrizione
+            };
+        });
+        res.status(200).json({
+            success: true,
+            data: result
+        });
+    })
+);
+
+router.post(
     '/listing',
     asyncHandler(async (req, res) => {
         if (req != null && req.body != null) {
@@ -77,14 +106,21 @@ router.post(
 
             const projection = ['id', 'nome', 'descrizione'];
 
-            const count = await StampanteRepository.count(whereOptions);
-
             const stampanti = await StampanteRepository.find(whereOptions, limit, offset, order, projection);
+
+            const result = await Promise.all(stampanti.rows.map(async (stampante) => {
+                return {
+                    id: stampante.dataValues.id,
+                    nome: stampante.dataValues.nome,
+                    descrizione: stampante.dataValues.descrizione,
+                    isUsed: await StampanteRepository.isUsed(stampante.dataValues.id)
+                }
+            }));
 
             res.status(200).json({
                 success: true,
-                data: stampanti,
-                count: count
+                data: result,
+                count: stampanti.count
             });
         }
         else {

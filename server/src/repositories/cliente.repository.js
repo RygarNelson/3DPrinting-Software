@@ -1,6 +1,7 @@
 'use strict'
 
 import Cliente from '../models/cliente.model.js';
+import Vendita from '../models/vendita.model.js';
 
 const clienteRepository = {
     getAll: function () {
@@ -8,11 +9,7 @@ const clienteRepository = {
     },
 
     find: function(searchExample, limit, offset, order, projection) {
-        return Cliente.findAll({ where: searchExample, limit: limit, offset: offset, order: order, attributes: projection });
-    },
-
-    count: function(searchExample) {
-        return Cliente.count({ where: searchExample });
+        return Cliente.findAndCountAll({ where: searchExample, limit: limit, offset: offset, order: order, attributes: projection, distinct: true });
     },
 
     findOne: function(id, projection) {
@@ -63,6 +60,11 @@ const clienteRepository = {
 
     deleteOne: function(id) {
         return Cliente.destroy({ where: { id: id } });
+    },
+
+    isUsed: async function(id) {
+        const isVendita = await Vendita.findOne({ where: { cliente_id: id } });
+        return isVendita ? true : false;
     }
 };
 

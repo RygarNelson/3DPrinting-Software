@@ -18,6 +18,7 @@ import { ModelloListingModel, ModelloListingResponse } from 'src/models/modello/
 import { ModelloListingFiltri } from 'src/models/modello/modello-listing-filtri';
 import { ModelloService } from 'src/services/modello.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
+import { ModelloListingEliminaMessaggioPipe } from '../pipes/modello-listing-elimina-messaggio.pipe';
 
 @Component({
   selector: 'app-modello-listing',
@@ -32,7 +33,8 @@ import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.compo
     IconFieldModule,
     InputIconModule,
     SkeletonModule,
-    TooltipModule
+    TooltipModule,
+    ModelloListingEliminaMessaggioPipe
   ],
   providers: [
     ConfirmationService,

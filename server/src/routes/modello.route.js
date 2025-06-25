@@ -25,6 +25,35 @@ router.get(
 );
 
 router.post(
+    '/lookup',
+    asyncHandler(async (req, res) => {
+        let whereOptions = {
+            deletedAt: null
+        };
+
+        const limit = undefined;
+        const offset = undefined;
+        const order = undefined;
+
+        const projection = ['id', 'nome', 'descrizione'];
+
+        const data = await ModelloRepository.find(whereOptions, limit, offset, order, projection);
+
+        const result = data.rows.map((modello) => {
+            return {
+                id: modello.dataValues.id,
+                etichetta: modello.dataValues.nome,
+                informazioniAggiuntive: modello.dataValues.descrizione
+            };
+        });
+        res.status(200).json({
+            success: true,
+            data: result
+        });
+    })
+);
+
+router.post(
     '/listing',
     asyncHandler(async (req, res) => {
         if (req != null && req.body != null) {
@@ -77,14 +106,22 @@ router.post(
 
             const projection = ['id', 'nome', 'descrizione', 'updatedAt'];
 
-            const count = await ModelloRepository.count(whereOptions);
-
             const modelli = await ModelloRepository.find(whereOptions, limit, offset, order, projection);
+
+            const result = await Promise.all(modelli.rows.map(async (modello) => {
+                return {
+                    id: modello.dataValues.id,
+                    nome: modello.dataValues.nome,
+                    descrizione: modello.dataValues.descrizione,
+                    updatedAt: modello.dataValues.updatedAt,
+                    isUsed: await ModelloRepository.isUsed(modello.dataValues.id)
+                }
+            }));
 
             res.status(200).json({
                 success: true,
-                data: modelli,
-                count: count
+                data: result,
+                count: modelli.count
             });
         }
         else {

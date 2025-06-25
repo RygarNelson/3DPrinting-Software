@@ -11,7 +11,7 @@
     "dev:client": "cd client && ng serve",
     "dev:electron": "cross-env NODE_ENV=development electron electron/dev.js",
     "build": "npm run build:client && npm run copy:angular && npm run build:electron",
-    "build:client": "cd client && ng build --configuration=production",
+    "build:client": "cd client && ng cache clean && ng build --configuration=production",
     "copy:angular": "node electron/scripts/copy-angular.js",
     "build:electron": "electron-builder",
     "dist": "npm run build && electron-builder --publish=never",

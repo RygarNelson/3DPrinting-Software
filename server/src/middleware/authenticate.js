@@ -10,20 +10,20 @@ const authenticate = async (req, res, next) => {
             if (verification) {
                 return next();
             } else {
-                res.send({
+                res.status(401).json({
                     success: false,
                     error: 'Il token non è valido'
                 });
             }
         }
         catch (err) {
-            res.send({
+            res.status(401).json({
                 success: false,
                 error: 'Il token non è valido'
             });
         }
     } else {
-        res.send({
+        res.status(401).json({
             success: false,
             error: 'Nessun token trovato'
         });

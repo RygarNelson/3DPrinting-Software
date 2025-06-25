@@ -64,7 +64,6 @@
         <!-- ID Column -->
         <ng-template #header>
           <tr>
-            <th pSortableColumn="id" class="text-center" style="width: 80px;">ID <p-sortIcon field="id" /></th>
             <th pSortableColumn="nome">Nome <p-sortIcon field="nome" /></th>
             <th pSortableColumn="descrizione">Descrizione <p-sortIcon field="descrizione" /></th>
             <th class="text-center" style="width: 120px;"></th>
@@ -74,7 +73,6 @@
         <!-- Data Rows -->
         <ng-template #body let-stampante>
           <tr>
-            <td class="text-center font-medium">{{ stampante.id }}</td>
             <td class="font-medium">{{ stampante.nome }}</td>
             <td>{{ stampante.descrizione }}</td>
             <td class="text-center">
@@ -106,8 +104,9 @@
                     icon="pi pi-trash" 
                     severity="danger" 
                     size="small"
+                    [disabled]="stampante.isUsed"
                     (click)="confirmDelete($event, stampante)"
-                    pTooltip="Elimina stampante"
+                    [pTooltip]="stampante.isUsed | stampanteListingEliminaMessaggio"
                     tooltipPosition="top">
                   </p-button>
                 }

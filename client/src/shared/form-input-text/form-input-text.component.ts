@@ -3,7 +3,7 @@ import { Component, forwardRef, Input } from '@angular/core';
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { TooltipModule } from 'primeng/tooltip';
-import { ErrorsViewModel } from 'src/models/ErrorsViewModel';
+import { FormInputGeneralComponent } from '../form-input-general.component';
 import { ErrorMessagesPipe } from '../pipes/error-messages.pipe';
 import { ShowErrorPipe } from '../pipes/show-error.pipe';
 
@@ -27,22 +27,11 @@ import { ShowErrorPipe } from '../pipes/show-error.pipe';
   templateUrl: './form-input-text.component.html',
   styleUrl: './form-input-text.component.scss'
 })
-export class FormInputTextComponent implements ControlValueAccessor {
+export class FormInputTextComponent extends FormInputGeneralComponent implements ControlValueAccessor {
 
   //The internal data model
   private innerValue: string | undefined = "";
 
-  //Placeholders for the callbacks which are later provided
-  //by the Control Value Accessor
-
-  @Input() property: string = '';
-  @Input() label: string = '';
-  @Input() infoMessage: string | undefined = undefined;
-  @Input() disabled: boolean = false;
-  @Input() obligatory: boolean = false;
-  @Input() listaErrori: ErrorsViewModel[] = [];
-
-  @Input() placeholder: string = '';
   @Input() type: string = 'text';
   @Input() maxlength: number | null = null;
 

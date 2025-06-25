@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { StampanteLookupFiltri } from 'src/models/stampante/stampante-lookup-filtri';
+import { StampanteLookupResponse } from 'src/models/stampante/stampante.lookup';
 import { StampanteListingResponse } from '../models/stampante/stampante-listing';
 import { StampanteListingFiltri } from '../models/stampante/stampante-listing-filtri';
 import { StampanteManagerModel, StampanteManagerResponse } from '../models/stampante/stampante-manager';
@@ -14,30 +16,22 @@ export class StampanteService {
     this.api = `http://localhost:3000/api/stampante`;
   }
 
-  /**
-   * Get list of printers with filters
-   */
+  getLookup(filtri: StampanteLookupFiltri): Observable<StampanteLookupResponse> {
+    return this.http.post<StampanteLookupResponse>(`${this.api}/lookup`, filtri);
+  }
+
   getListing(filtri: StampanteListingFiltri): Observable<StampanteListingResponse> {
     return this.http.post<StampanteListingResponse>(`${this.api}/listing`, filtri);
   }
 
-  /**
-   * Get a printer by ID
-   */
   getStampante(id: number): Observable<StampanteManagerResponse> {
     return this.http.get<StampanteManagerResponse>(`${this.api}/${id}`);
   }
 
-  /**
-   * Save or update a printer
-   */
   save(stampante: StampanteManagerModel): Observable<any> {
     return this.http.post(`${this.api}/save`, stampante);
   }
 
-  /**
-   * Delete a printer by ID
-   */
   delete(id: number): Observable<any> {
     return this.http.delete(`${this.api}/${id}`);
   }

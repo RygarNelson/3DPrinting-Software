@@ -6,6 +6,7 @@ export class ClienteListingModel {
     email: string = '';
     telefono: string = '';
     updatedAt?: string = '';
+    isUsed: boolean = false;
 }
 
 export class ClienteListingResponse implements ResponseInterface {

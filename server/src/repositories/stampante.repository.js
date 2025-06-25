@@ -1,6 +1,7 @@
 'use strict'
 
 import Stampante from '../models/stampante.model.js';
+import VenditaDettaglio from '../models/venditaDettaglio.model.js';
 
 const stampanteRepository = {
     getAll: function () {
@@ -8,11 +9,7 @@ const stampanteRepository = {
     },
 
     find: function(searchExample, limit, offset, order, projection) {
-        return Stampante.findAll({ where: searchExample, limit: limit, offset: offset, order: order, attributes: projection });
-    },
-
-    count: function(searchExample) {
-        return Stampante.count({ where: searchExample });
+        return Stampante.findAndCountAll({ where: searchExample, limit: limit, offset: offset, order: order, attributes: projection, distinct: true });
     },
 
     findOne: function(id, projection) {
@@ -39,6 +36,11 @@ const stampanteRepository = {
 
     deleteOne: function(id) {
         return Stampante.destroy({ where: { id: id } });
+    },
+
+    isUsed: async function(id) {
+        const isDettaglioVendita = await VenditaDettaglio.findOne({ where: { stampante_id: id } });
+        return isDettaglioVendita ? true : false;
     }
 };
 

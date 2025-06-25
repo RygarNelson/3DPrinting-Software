@@ -25,6 +25,35 @@ router.get(
 );
 
 router.post(
+    '/lookup',
+    asyncHandler(async (req, res) => {
+        let whereOptions = {
+            deletedAt: null
+        };
+
+        const limit = undefined;
+        const offset = undefined;
+        const order = undefined;
+
+        const projection = ['id', 'etichetta', 'email', 'telefono'];
+
+        const data = await ClienteRepository.find(whereOptions, limit, offset, order, projection);
+
+        const result = data.rows.map((cliente) => {
+            return {
+                id: cliente.dataValues.id,
+                etichetta: cliente.dataValues.etichetta,
+                informazioniAggiuntive: `${cliente.dataValues.email ? cliente.dataValues.email : 'No email'} - ${cliente.dataValues.telefono ? cliente.dataValues.telefono : 'No telefono'}`
+            };
+        });
+        res.status(200).json({
+            success: true,
+            data: result
+        });
+    })
+);
+
+router.post(
     '/listing',
     asyncHandler(async (req, res) => {
         if (req != null && req.body != null) {
@@ -75,13 +104,22 @@ router.post(
 
             const projection = ['id', 'etichetta', 'email', 'telefono'];
 
-            const count = await ClienteRepository.count(whereOptions);
             const clienti = await ClienteRepository.find(whereOptions, limit, offset, order, projection);
+            
+            const result = await Promise.all(clienti.rows.map(async (cliente) => {
+                return {
+                    id: cliente.dataValues.id,
+                    etichetta: cliente.dataValues.etichetta,
+                    email: cliente.dataValues.email,
+                    telefono: cliente.dataValues.telefono,
+                    isUsed: await ClienteRepository.isUsed(cliente.dataValues.id)
+                }
+            }));
 
             res.status(200).json({
                 success: true,
-                data: clienti,
-                count: count
+                data: result,
+                count: clienti.count
             });
         } else {
             return res.status(400).json({

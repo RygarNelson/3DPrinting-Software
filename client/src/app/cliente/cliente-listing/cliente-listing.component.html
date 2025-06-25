@@ -99,8 +99,9 @@
                       icon="pi pi-trash" 
                       severity="danger" 
                       size="small"
+                      [disabled]="cliente.isUsed"
                       (click)="confirmDelete($event, cliente)"
-                      pTooltip="Elimina cliente"
+                      [pTooltip]="cliente.isUsed | clienteListingEliminaMessaggio"
                       tooltipPosition="top">
                     </p-button>
                   }

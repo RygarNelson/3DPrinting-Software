@@ -18,6 +18,7 @@ import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.compo
 import { StampanteListingModel, StampanteListingResponse } from '../../../models/stampante/stampante-listing';
 import { StampanteListingFiltri } from '../../../models/stampante/stampante-listing-filtri';
 import { StampanteService } from '../../../services/stampante.service';
+import { StampanteListingEliminaMessaggioPipe } from '../pipes/stampante-listing-elimina-messaggio.pipe';
 
 @Component({
   selector: 'app-stampante-listing',
@@ -32,7 +33,8 @@ import { StampanteService } from '../../../services/stampante.service';
     IconFieldModule,
     InputIconModule,
     SkeletonModule,
-    TooltipModule
+    TooltipModule,
+    StampanteListingEliminaMessaggioPipe
   ],
   templateUrl: './stampante-listing.component.html',
   styleUrl: './stampante-listing.component.scss',

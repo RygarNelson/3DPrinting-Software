@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { DialogService } from 'primeng/dynamicdialog';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ErrorsViewModel } from 'src/models/ErrorsViewModel';
 import { ClienteManagerModel } from 'src/models/cliente/cliente-manager';
 import { ClienteService } from 'src/services/cliente.service';
@@ -22,11 +22,14 @@ import { FormInputTextComponent } from 'src/shared/form-input-text/form-input-te
     ButtonModule
   ],
   providers: [
-    ClienteService
+    ClienteService,
+    DynamicDialogRef
   ],
   templateUrl: './cliente-manager.component.html'
 })
 export class ClienteManagerComponent implements OnInit, OnDestroy {
+  @Input() isExternal: boolean = false;
+  
   cliente: ClienteManagerModel = new ClienteManagerModel();
   listaErrori: ErrorsViewModel[] = [];
   loading: boolean = false;
@@ -38,7 +41,8 @@ export class ClienteManagerComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private MessageService: MessageService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private ref: DynamicDialogRef
   ){ }
 
   ngOnInit(): void {
@@ -88,7 +92,7 @@ export class ClienteManagerComponent implements OnInit, OnDestroy {
     this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
     
     this.clienteService.save(this.cliente).subscribe({
-      next: () => {
+      next: (result) => {
         clearTimeout(this.loadingTimeout);
         this.loading = false;
 
@@ -98,7 +102,12 @@ export class ClienteManagerComponent implements OnInit, OnDestroy {
           detail: 'Cliente salvato con successo'
         });
 
-        this.indietro();
+        if (this.isExternal) {
+          this.ref.close(result.technical_data.id);
+        }
+        else {
+          this.indietro();
+        }
       },
       error: (error: any) => {
         clearTimeout(this.loadingTimeout);
@@ -126,6 +135,11 @@ export class ClienteManagerComponent implements OnInit, OnDestroy {
   }
 
   indietro(): void {
-    this.router.navigate(['/cliente']);
+    if (this.isExternal) {
+      this.ref.close();
+    }
+    else {
+      this.router.navigate(['/cliente']);
+    }
   }
 } 

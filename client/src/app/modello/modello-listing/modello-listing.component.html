@@ -64,7 +64,6 @@
           <!-- ID Column -->
           <ng-template #header>
             <tr>
-              <th pSortableColumn="id" class="text-center" style="width: 80px;">ID <p-sortIcon field="id" /></th>
               <th pSortableColumn="nome">Nome <p-sortIcon field="nome" /></th>
               <th pSortableColumn="descrizione">Descrizione <p-sortIcon field="descrizione" /></th>
               <th pSortableColumn="updatedAt">Ultima modifica <p-sortIcon field="updatedAt" /></th>
@@ -75,10 +74,9 @@
           <!-- Data Rows -->
           <ng-template #body let-modello>
             <tr>
-              <td class="text-center font-medium">{{ modello.id }}</td>
               <td class="font-medium">{{ modello.nome }}</td>
               <td>{{ modello.descrizione }}</td>
-              <td class="text-center">{{ modello.updatedAt | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ modello.updatedAt | date:'dd/MM/yyyy HH:mm' }}</td>
               <td class="text-center">
                 <div class="flex justify-center gap-2">
                   @if (loading) {
@@ -108,8 +106,9 @@
                       icon="pi pi-trash" 
                       severity="danger" 
                       size="small"
+                      [disabled]="modello.isUsed"
                       (click)="confirmDelete($event, modello)"
-                      pTooltip="Elimina modello"
+                      [pTooltip]="modello.isUsed | modelloListingEliminaMessaggio"
                       tooltipPosition="top">
                     </p-button>
                   }
