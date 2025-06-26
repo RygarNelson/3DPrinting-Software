@@ -22,7 +22,7 @@
         "@angular/router": "^19.0.0",
         "@ngx-translate/core": "^16.0.4",
         "@primeng/themes": "^19.0.2",
-        "chart.js": "4.4.2",
+        "chart.js": "^4.4.2",
         "primeclt": "^0.1.5",
         "primeicons": "^7.0.0",
         "primelocale": "^2.1.3",

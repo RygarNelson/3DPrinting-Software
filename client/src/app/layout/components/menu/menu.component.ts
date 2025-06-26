@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { MenuItem } from 'primeng/api';
 import { AppMenuitem } from '../menuitem/menuitem.component';
 
 
@@ -22,7 +23,7 @@ import { AppMenuitem } from '../menuitem/menuitem.component';
     </ul> `,
 })
 export class AppMenu {
-    model: any[] = [];
+    model: MenuItem[] = [];
 
     ngOnInit() {
         this.model = [
@@ -68,6 +69,11 @@ export class AppMenu {
                         label: 'Vendite',
                         icon: 'pi pi-fw pi-dollar',
                         routerLink: ['/vendita/listing'],
+                    },
+                    {
+                        label: 'Spese',
+                        icon: 'pi pi-fw pi-receipt',
+                        routerLink: ['/spesa/listing'],
                     }
                 ]
             }

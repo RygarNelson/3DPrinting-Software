@@ -93,6 +93,26 @@ export const appRoutes: Routes = [
                 path: 'vendita/manager/:id',
                 loadComponent: () => import('./app/vendita/vendita-manager/vendita-manager.component').then(c => c.VenditaManagerComponent),
                 data: { breadcrumb: 'Modifica Vendita' },
+            },
+            {
+                path: 'spesa',
+                redirectTo: 'spesa/listing',
+                pathMatch: 'full',
+            },
+            {
+                path: 'spesa/listing',
+                loadComponent: () => import('./app/spesa/spesa-listing/spesa-listing.component').then(c => c.SpesaListingComponent),
+                data: { breadcrumb: 'Spese' },
+            },
+            {
+                path: 'spesa/manager',
+                loadComponent: () => import('./app/spesa/spesa-manager/spesa-manager.component').then(c => c.SpesaManagerComponent),
+                data: { breadcrumb: 'Nuova Spesa' },
+            },
+            {
+                path: 'spesa/manager/:id',
+                loadComponent: () => import('./app/spesa/spesa-manager/spesa-manager.component').then(c => c.SpesaManagerComponent),
+                data: { breadcrumb: 'Modifica Spesa' },
             }
         ]
     },
