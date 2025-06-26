@@ -11,7 +11,8 @@
                         [data]="anni"
                         [filter]="false"
                         [placeholder]="'Seleziona un anno'"
-                        [(ngModel)]="anno" />
+                        [(ngModel)]="anno"
+                        (ngModelChange)="preparaGrafico()" />
                 }
             </div>
         </ng-template>
@@ -19,7 +20,7 @@
             @if (loading) {
                 <p-skeleton height="300px" width="100%" />
             } @else {
-                <!-- ToDo: Grafico -->
+                <p-chart type="line" [data]="graph.data" [options]="graph.options" class="h-[30rem]" />
             }
         </ng-template>
     </p-card>

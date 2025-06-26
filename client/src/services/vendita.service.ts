@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { VenditaAndamentoResponse } from 'src/models/vendita/vendita-andamento';
 import { VenditaAnniResponse } from 'src/models/vendita/vendita-anni';
 import { VenditaListingResponse } from 'src/models/vendita/vendita-listing';
 import { VenditaListingFiltri } from 'src/models/vendita/vendita-listing-filtri';
@@ -17,6 +18,10 @@ export class VenditaService {
 
   getAnni(): Observable<VenditaAnniResponse> {
     return this.http.get<VenditaAnniResponse>(`${this.api}/anni`);
+  }
+
+  getAndamentoVendite(anno: number): Observable<VenditaAndamentoResponse> {
+    return this.http.get<VenditaAndamentoResponse>(`${this.api}/andamento/${anno}`);
   }
 
   getListing(filtri: VenditaListingFiltri): Observable<VenditaListingResponse> {
