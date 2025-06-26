@@ -20,7 +20,7 @@
             @if (loading) {
                 <p-skeleton height="300px" width="100%" />
             } @else {
-                <p-chart type="line" [data]="graph.data" [options]="graph.options" class="h-[30rem]" />
+                <p-chart type="line" [data]="graph.data" [options]="graph.options" />
             }
         </ng-template>
     </p-card>
