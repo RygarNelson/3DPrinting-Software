@@ -1,5 +1,6 @@
 'use strict'
 
+import { col, fn, Op } from 'sequelize';
 import { sequelize } from '../config/database.js';
 import Vendita from '../models/vendita.model.js';
 import VenditaDettaglio from '../models/venditaDettaglio.model.js';
@@ -156,6 +157,32 @@ const venditaRepository = {
         await vendita.update({ stato_spedizione: stato_avanzamento });
 
         return vendita;
+    },
+
+    ottieniTuttiAnni: async function() {
+        console.log('ciao from repository');
+        const anni = await Vendita.findAll({
+            attributes: [
+                [fn('strftime', '%Y', col('data_vendita')), 'anno']
+            ],
+            where: {
+                deletedAt: null,
+                data_vendita: {
+                    [Op.not]: null
+                }
+            },
+            group: [fn('strftime', '%Y', col('data_vendita'))],
+            order: [[fn('strftime', '%Y', col('data_vendita')), 'DESC']]
+        });
+
+        console.log(anni);
+
+        return anni.map(a => {
+            return {
+                id:  a.get('anno'),
+                etichetta: a.get('anno')
+            }
+        });
     }
 };
 

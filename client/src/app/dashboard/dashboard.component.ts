@@ -1,14 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/services/auth.service';
+import { DashboardAndamentoComponent } from './dashboard-andamento/dashboard-andamento.component';
 
 @Component({
     selector: 'app-ecommerce-dashboard',
     standalone: true,
-    imports: [],
+    imports: [
+        DashboardAndamentoComponent
+    ],
     template: `
-        <div class="grid grid-cols-12 gap-8">
-            
+        <div class="grid grid-cols-1 gap-8 w-full">
+            <dashboard-andamento></dashboard-andamento>
         </div>
     `
 })
