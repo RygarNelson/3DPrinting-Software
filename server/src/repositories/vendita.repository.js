@@ -161,7 +161,6 @@ const venditaRepository = {
     },
 
     ottieniTuttiAnni: async function() {
-        console.log('ciao from repository');
         const anni = await Vendita.findAll({
             attributes: [
                 [fn('strftime', '%Y', col('data_vendita')), 'anno']
@@ -175,8 +174,6 @@ const venditaRepository = {
             group: [fn('strftime', '%Y', col('data_vendita'))],
             order: [[fn('strftime', '%Y', col('data_vendita')), 'DESC']]
         });
-
-        console.log(anni);
 
         return anni.map(a => {
             return {
