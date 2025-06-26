@@ -1,0 +1,27 @@
+<div class="p-4">
+    <p-card>
+        <ng-template pTemplate="header">
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-semibold text-gray-800 pt-6 header-title">Andamento</h2>
+                @if (loading) {
+                    <p-skeleton height="30px" width="100px" />
+                } @else {
+                    <form-input-select
+                        class="margin-left-auto header-title"
+                        [data]="anni"
+                        [filter]="false"
+                        [placeholder]="'Seleziona un anno'"
+                        [(ngModel)]="anno"
+                        (ngModelChange)="preparaGrafico()" />
+                }
+            </div>
+        </ng-template>
+        <ng-template pTemplate="content">
+            @if (loading) {
+                <p-skeleton height="300px" width="100%" />
+            } @else {
+                <p-chart type="line" [data]="graph.data" [options]="graph.options" />
+            }
+        </ng-template>
+    </p-card>
+</div>

@@ -13,7 +13,7 @@ const router = express.Router();
 router.use(authenticate);
 
 router.get(
-    '/:id',
+    '/vendita/:id',
     asyncHandler(async (req, res) => {
         const projection = ['id', 'data_vendita', 'data_scadenza', 'cliente_id', 'totale_vendita', 'stato_spedizione', 'link_tracciamento'];
         // Pass an include option to also get all dettagli
@@ -370,6 +370,28 @@ router.post(
                 technical_data: 'Nessun parametro di ricerca specificato'
             });
         }
+    })
+);
+
+router.get(
+    '/anni',
+    asyncHandler(async (req, res) => {
+        const data = await VenditaRepository.ottieniTuttiAnni();
+        return res.status(200).json({
+            success: true,
+            data: data
+        });
+    })
+);
+
+router.get(
+    '/andamento/:anno',
+    asyncHandler(async (req, res) => {
+        const data = await VenditaRepository.ottieniAndamentoVendite(req.params.anno);
+        return res.status(200).json({
+            success: true,
+            data: data
+        });
     })
 );
 
