@@ -59,9 +59,15 @@ export class DashboardAndamentoComponent implements OnInit, OnDestroy {
 
       if (res.success) {
         this.anni = res.data;
-        this.anno = this.anni[0].id;
 
-        this.preparaGrafico();
+        if (this.anni != null &&this.anni.length > 0) {
+          this.anno = this.anni[0].id;
+
+          this.preparaGrafico();
+        } else {
+          window.clearTimeout(this.loadingTimeout);
+          this.loading = false;
+        }
       }
     });
   }
