@@ -2,6 +2,7 @@
 
 import { col, fn, Op } from 'sequelize';
 import { sequelize } from '../config/database.js';
+import Spesa from '../models/spesa.model.js';
 import Vendita from '../models/vendita.model.js';
 import VenditaDettaglio from '../models/venditaDettaglio.model.js';
 
@@ -183,7 +184,73 @@ const venditaRepository = {
                 etichetta: a.get('anno')
             }
         });
-    }
+    },
+
+    ottieniAndamentoVendite: async function(anno) {
+        const data = {
+            labels: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'],
+            datasets: [
+                {
+                    label: 'Vendite',
+                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    backgroundColor: 'rgba(75, 197, 64, 1)',
+                    borderColor: 'rgba(75, 197, 64, 0.69)',
+                    borderWidth: 1,
+                },
+                {
+                    label: 'Spese',
+                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    backgroundColor: 'rgba(255, 99, 132, 1)',
+                    borderColor: 'rgba(255, 99, 132, 0.69)',
+                    borderWidth: 1,
+                }
+            ]
+        };
+
+        for (let i = 1; i <= 12; i++) {
+            const dataMeseVendite = await this.ottieniAndamentoVenditaAnnoMese(anno, i);
+            const dataMeseSpese = await this.ottieniAndamentoSpesaAnnoMese(anno, i);
+
+            data.datasets[0].data[i - 1] = dataMeseVendite || 0;
+            data.datasets[1].data[i - 1] = dataMeseSpese || 0;
+        }
+
+        const options = {
+            y: {
+                beginAtZero: true,
+            }
+        };
+
+        return { data, options };
+    },
+
+    ottieniAndamentoVenditaAnnoMese: async function(anno, mese) {
+        const data = await Vendita.sum('totale_vendita', {
+            where: {
+                deletedAt: null,
+                data_vendita: {
+                    [Op.between]: [new Date(anno, mese - 1), new Date(anno, mese)]
+                }
+            },
+            group: [fn('strftime', '%Y', col('data_vendita')), fn('strftime', '%m', col('data_vendita'))],
+        });
+
+        return data;
+    },
+
+    ottieniAndamentoSpesaAnnoMese: async function(anno, mese) {
+        const data = await Spesa.sum('totale_spesa', {
+            where: {
+                deletedAt: null,
+                data_spesa: {
+                    [Op.between]: [new Date(anno, mese - 1), new Date(anno, mese)]
+                }
+            },
+            group: [fn('strftime', '%Y', col('data_spesa')), fn('strftime', '%m', col('data_spesa'))],
+        });
+
+        return data;
+    },
 };
 
 export default venditaRepository; 

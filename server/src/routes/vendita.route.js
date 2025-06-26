@@ -384,4 +384,15 @@ router.get(
     })
 );
 
+router.get(
+    '/andamento/:anno',
+    asyncHandler(async (req, res) => {
+        const data = await VenditaRepository.ottieniAndamentoVendite(req.params.anno);
+        return res.status(200).json({
+            success: true,
+            data: data
+        });
+    })
+);
+
 export default router;
