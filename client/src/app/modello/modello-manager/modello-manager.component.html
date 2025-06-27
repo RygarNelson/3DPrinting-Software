@@ -37,26 +37,40 @@
             </div>
         </ng-template>
         <ng-template pTemplate="content">
-            <div class="grid grid-cols-1 gap-4">
-                <div class="flex flex-col flex-row w-full">
-                    <form-input-text 
-                        [label]="'Nome'"
-                        [property]="'nome'"
-                        [obligatory]="true"
-                        [infoMessage]="'Indica il nome del modello'"
-                        [maxlength]="255"
-                        [listaErrori]="listaErrori"
-                        [(ngModel)]="modello.nome"/>
-                </div>
-                <div class="flex flex-col flex-row w-full">
-                    <form-input-textarea 
-                        [label]="'Descrizione'"
-                        [property]="'descrizione'"
-                        [infoMessage]="'Descrizione del modello'"
-                        [maxlength]="500"
-                        [listaErrori]="listaErrori"
-                        [(ngModel)]="modello.descrizione"/>
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <form-input-radiobutton
+                    [label]="'PLA'"
+                    [property]="'tipo'"
+                    [name]="'tipo'"
+                    [infoMessage]="'Tipo di modello'"
+                    [listaErrori]="listaErrori"
+                    [radioButtonValue]="ModelloTipoEnum.PLA"
+                    [(ngModel)]="modello.tipo" />
+                <form-input-radiobutton
+                    [label]="'Resina'"
+                    [property]="'tipo'"
+                    [name]="'tipo'"
+                    [infoMessage]="'Tipo di modello'"
+                    [listaErrori]="listaErrori"
+                    [radioButtonValue]="ModelloTipoEnum.RESINA"
+                    [(ngModel)]="modello.tipo" />
+                <form-input-text 
+                    [label]="'Nome'"
+                    [property]="'nome'"
+                    [obligatory]="true"
+                    [infoMessage]="'Indica il nome del modello'"
+                    [maxlength]="255"
+                    [listaErrori]="listaErrori"
+                    [(ngModel)]="modello.nome"/>
+            </div>
+            <div class="grid grid-cols-1 mt-4">
+                <form-input-textarea 
+                    [label]="'Descrizione'"
+                    [property]="'descrizione'"
+                    [infoMessage]="'Descrizione del modello'"
+                    [maxlength]="500"
+                    [listaErrori]="listaErrori"
+                    [(ngModel)]="modello.descrizione"/>
             </div>
         </ng-template>
     </p-card>

@@ -23,6 +23,13 @@ const validationSchema = {
                     options: { max: 500 },
                     errorMessage: 'La descrizione non può superare i 500 caratteri'
                 }
+            },
+            tipo: {
+                escape: true,
+                optional: false,
+                isInt: {
+                    errorMessage: 'Il tipo non è valido'
+                }
             }
         });
     }

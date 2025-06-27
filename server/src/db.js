@@ -19,11 +19,6 @@ const initializeDatabase = async () => {
         const { default: User } = await import('./models/users.model.js');
         const { default: DatabaseVersion } = await import('./models/databaseVersion.model.js');
         const authMethods = await import('./methods/authMethods.js');
-        const { default: Cliente } = await import('./models/cliente.model.js');
-
-        // Sync all models with database
-        await sequelize.sync();
-        console.log('Database synchronized successfully');
 
         // Check database version
         const dbVersion = await getDatabaseVersion(DatabaseVersion);
@@ -42,9 +37,13 @@ const initializeDatabase = async () => {
             
             // If database version is lower, update it to current version
             if (dbVersion < CURRENT_DATABASE_VERSION) {
-                // Do nothing, for now
+                await updateDatabase(dbVersion, DatabaseVersion, CURRENT_DATABASE_VERSION);
             }
         }
+
+        // Sync all models with database
+        await sequelize.sync();
+        console.log('Database synchronized successfully');
 
         // Check if any users exist
         const userCount = await User.count();
@@ -64,6 +63,43 @@ const initializeDatabase = async () => {
         process.exit(1);
     }
 };
+
+const updateDatabase = async (dbVersion, DatabaseVersion, CURRENT_DATABASE_VERSION) => {
+    try {
+        let version = dbVersion;
+        do {
+            switch (version) {
+                case 1: {
+                    await updateDatabaseToVersion2();
+                    break;
+                }
+                default: {
+                    console.log('Database version not found');
+                    process.exit(1);
+                }
+            }
+
+            version++;
+            await setDatabaseVersion(DatabaseVersion, version);
+        } while (version < CURRENT_DATABASE_VERSION);
+    } catch (error) {
+        console.log('Cannot update database');
+        process.exit(1);
+    }
+};
+
+const updateDatabaseToVersion2 = async () => {
+    try {
+        console.log('Updating database to version 2');
+        await sequelize.query('ALTER TABLE T_MODELLI ADD COLUMN tipo INTEGER DEFAULT 0');
+
+        await sequelize.query('UPDATE T_MODELLI SET tipo = 0 WHERE nome like "%PLA%"');
+        await sequelize.query('UPDATE T_MODELLI SET tipo = 1 WHERE nome like "%Resina%"');
+    } catch (error) {
+        console.log('Cannot update database to version 2');
+        process.exit(1);
+    }
+}
 
 export { connectToDatabase, initializeDatabase, sequelize };
 

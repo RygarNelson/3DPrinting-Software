@@ -6,11 +6,13 @@ import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DialogService } from 'primeng/dynamicdialog';
+import { ModelloTipoEnum } from 'src/enums/ModelloTipoEnum';
 import { ErrorsViewModel } from 'src/models/ErrorsViewModel';
 import { ModelloManagerModel } from 'src/models/modello/modello-manager';
 import { ApplicationStateService } from 'src/services/application-state.service';
 import { ModelloService } from 'src/services/modello.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
+import { FormInputRadiobuttonComponent } from 'src/shared/form-input-radiobutton/form-input-radiobutton.component';
 import { FormInputTextComponent } from 'src/shared/form-input-text/form-input-text.component';
 import { FormInputTextareaComponent } from 'src/shared/form-input-textarea/form-input-textarea.component';
 
@@ -21,6 +23,7 @@ import { FormInputTextareaComponent } from 'src/shared/form-input-textarea/form-
     FormsModule,
     FormInputTextComponent,
     FormInputTextareaComponent,
+    FormInputRadiobuttonComponent,
     CardModule,
     ButtonModule
   ],
@@ -39,6 +42,8 @@ export class ModelloManagerComponent implements OnInit, OnDestroy {
   loading: boolean = false;
 
   private loadingTimeout?: number;
+
+  protected ModelloTipoEnum = ModelloTipoEnum;
 
   constructor(
     private modelloService: ModelloService,

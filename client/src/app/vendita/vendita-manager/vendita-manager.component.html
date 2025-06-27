@@ -142,7 +142,14 @@
                                     [index]="rowIndex"
                                     [showAdd]="true"
                                     (add)="addModello(rowIndex)"
-                                    [(ngModel)]="dettaglio.modello_id" />
+                                    [(ngModel)]="dettaglio.modello_id">
+                                    <ng-template #selectedItem let-item>
+                                        <modello-tipo class="w-full" [tipo]="item.altriDati.tipo" [descrizioneModello]="item.etichetta" [isInSelect]="true" />
+                                      </ng-template>
+                                      <ng-template #item let-item>
+                                        <modello-tipo class="w-full" [tipo]="item.altriDati.tipo" [descrizioneModello]="item.etichetta" [isInSelect]="true" />
+                                      </ng-template>
+                                </form-input-select>
                             </td>
                             <td>
                                 <form-input-select

@@ -1,5 +1,6 @@
 import { ClienteManagerComponent } from '@/cliente/cliente-manager/cliente-manager.component';
 import { ModelloManagerComponent } from '@/modello/modello-manager/modello-manager.component';
+import { ModelloTipoComponent } from '@/modello/modello-tipo/modello-tipo.component';
 import { StampanteManagerComponent } from '@/stampante/stampante-manager/stampante-manager.component';
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
@@ -18,6 +19,7 @@ import { ModelloLookupDirective } from 'src/directives/modello/modello-lookup.di
 import { StampanteLookupDirective } from 'src/directives/stampante/stampante-lookup.directive';
 import { VenditaDettaglioStatoStampaLookupDirective } from 'src/directives/vendita/vendita-dettaglio-stato-stampa-lookup.directive';
 import { VenditaStatoSpedizioneLookupDirective } from 'src/directives/vendita/vendita-stato-spedizione-lookup.directive';
+import { ModelloTipoEnum } from 'src/enums/ModelloTipoEnum';
 import { ErrorsViewModel } from 'src/models/ErrorsViewModel';
 import { VenditaDettaglioManagerModel, VenditaManagerModel } from 'src/models/vendita/vendita-manager';
 import { ApplicationStateService } from 'src/services/application-state.service';
@@ -50,7 +52,8 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
     StampanteLookupDirective,
     VenditaDettaglioStatoStampaLookupDirective,
     VenditaDettaglioStatoComponent,
-    VenditaStatoComponent
+    VenditaStatoComponent,
+    ModelloTipoComponent
   ],
   providers: [
     VenditaService,
@@ -71,6 +74,8 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
   private clienteSubscription?: Subscription;
   private modelloSubscription?: Subscription;
   private stampanteSubscription?: Subscription;
+
+  protected ModelloTipoEnum = ModelloTipoEnum;
 
   constructor(
     private venditaService: VenditaService,

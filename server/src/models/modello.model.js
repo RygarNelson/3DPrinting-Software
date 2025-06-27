@@ -16,6 +16,11 @@ const Modello = sequelize.define('Modello', {
     descrizione: {
         type: DataTypes.STRING(500),
         allowNull: true,
+    },
+    tipo: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: 0
     }
 }, {
     tableName: "T_MODELLI",
@@ -29,6 +34,11 @@ const Modello = sequelize.define('Modello', {
             name: 'IX_T_MODELLI_DESCRIZIONE',
             unique: false,
             fields: ['descrizione']
+        },
+        {
+            name: 'IX_T_MODELLI_TIPO',
+            unique: false,
+            fields: ['tipo']
         },
         {
             name: 'IX_T_MODELLI_UPDATED_AT',
