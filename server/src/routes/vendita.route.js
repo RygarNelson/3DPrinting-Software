@@ -390,9 +390,14 @@ router.get(
     '/andamento/:anno',
     asyncHandler(async (req, res) => {
         const data = await VenditaRepository.ottieniAndamentoVendite(req.params.anno);
+        const totaleVendite = data.data.datasets[0].data.reduce((acc, curr) => acc + curr, 0);
+        const totaleSpese = data.data.datasets[1].data.reduce((acc, curr) => acc + curr, 0);
+
         return res.status(200).json({
             success: true,
-            data: data
+            data: data,
+            totaleVendite: totaleVendite,
+            totaleSpese: totaleSpese
         });
     })
 );
