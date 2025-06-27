@@ -37,7 +37,7 @@
                       [(ngModel)]="filtri.search"
                       (ngModelChange)="dataTable.filterGlobal($event, 'contains')">
                 </p-iconfield>
-                <button pButton label="Pulisci" class="p-button-outlined" icon="pi pi-filter-slash" (click)="dataTable.clear()"></button>
+                <button pButton label="Pulisci" class="p-button-outlined" icon="pi pi-filter-slash" (click)="dataTable.clear(); pulisciFiltri();"></button>
                 </div>
                   
                   <div class="flex items-center gap-2 margin-left-auto">
@@ -68,6 +68,21 @@
               <th pSortableColumn="nome">Nome <p-sortIcon field="nome" /></th>
               <th pSortableColumn="descrizione">Descrizione <p-sortIcon field="descrizione" /></th>
               <th pSortableColumn="updatedAt">Ultima modifica <p-sortIcon field="updatedAt" /></th>
+              <th pSortableColumn="tipo">
+                Tipo
+                <p-sortIcon field="tipo" />
+                <p-columnFilter field="cliente_id" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false">
+                  <ng-template #filter let-value let-filter="filterCallback">
+                      <form-input-select
+                        modello-tipo-lookup
+                        property="tipo"
+                        [filter]="false"
+                        [showClear]="true"
+                        [(ngModel)]="filtri.tipo"
+                        (ngModelChange)="filter($event)" />
+                  </ng-template>
+              </p-columnFilter>
+              </th>
               <th class="text-center" style="width: 120px;"></th>
             </tr>
           </ng-template>
@@ -78,6 +93,7 @@
               <td class="font-medium">{{ modello.nome }}</td>
               <td>{{ modello.descrizione }}</td>
               <td>{{ modello.updatedAt | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ modello.tipo }}</td>
               <td class="text-center">
                 <div class="flex justify-center gap-2">
                   @if (loading) {

@@ -14,10 +14,12 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import { Subscription } from 'rxjs';
+import { ModelloTipoLookupDirective } from 'src/directives/modello/modello-tipo-lookup.directive';
 import { ModelloListingModel, ModelloListingResponse } from 'src/models/modello/modello-listing';
 import { ModelloListingFiltri } from 'src/models/modello/modello-listing-filtri';
 import { ModelloService } from 'src/services/modello.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
+import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
 import { ModelloListingEliminaMessaggioPipe } from '../pipes/modello-listing-elimina-messaggio.pipe';
 
 @Component({
@@ -34,7 +36,9 @@ import { ModelloListingEliminaMessaggioPipe } from '../pipes/modello-listing-eli
     InputIconModule,
     SkeletonModule,
     TooltipModule,
-    ModelloListingEliminaMessaggioPipe
+    ModelloListingEliminaMessaggioPipe,
+    ModelloTipoLookupDirective,
+    FormInputSelectComponent
   ],
   providers: [
     ConfirmationService,
@@ -119,6 +123,20 @@ loadData(event: TableLazyLoadEvent): void {
   }
 
   this.loadModelli();
+}
+
+pulisciFiltri(): void {
+  this.filtri = {
+    offset: 0,
+    limit: 10,
+    search: ''
+  };
+
+  this.loadData({
+    first: 0,
+    rows: 10,
+    globalFilter: ''
+  });
 }
 
 refreshTable(): void {

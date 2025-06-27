@@ -120,7 +120,8 @@ router.post(
                     nome: modello.dataValues.nome,
                     descrizione: modello.dataValues.descrizione,
                     updatedAt: modello.dataValues.updatedAt,
-                    isUsed: await ModelloRepository.isUsed(modello.dataValues.id)
+                    isUsed: await ModelloRepository.isUsed(modello.dataValues.id),
+                    tipo: modello.dataValues.tipo
                 }
             }));
 

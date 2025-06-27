@@ -1,3 +1,4 @@
+import { ModelloTipoEnum } from "src/enums/ModelloTipoEnum";
 import { ListingFilter } from "../../interfaces/listing-filter.interface";
 
 export class ModelloListingFiltri implements ListingFilter {
@@ -8,4 +9,5 @@ export class ModelloListingFiltri implements ListingFilter {
         column?: string;
         direction?: string;
     };
+    tipo?: ModelloTipoEnum;
 }

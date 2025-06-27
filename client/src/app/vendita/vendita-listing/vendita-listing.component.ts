@@ -246,8 +246,8 @@ export class VenditaListingComponent implements OnDestroy {
       first: 0,
       rows: 10,
       globalFilter: '',
-      sortField: '',
-      sortOrder: 0
+      sortField: 'data_vendita',
+      sortOrder: -1
     });
   }
 
