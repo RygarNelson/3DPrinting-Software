@@ -1,4 +1,5 @@
-import { Directive, OnInit } from '@angular/core';
+import { Directive, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { ModelloLookupFiltri } from 'src/models/modello/modello-lookup.filtri';
 import { ApplicationStateService } from 'src/services/application-state.service';
 import { ModelloService } from 'src/services/modello.service';
@@ -10,20 +11,26 @@ import { FormInputSelectComponent } from 'src/shared/form-input-select/form-inpu
     ModelloService
   ]
 })
-export class ModelloLookupDirective implements OnInit {
+export class ModelloLookupDirective implements OnInit, OnDestroy {
+
+  private subscription?: Subscription;
 
   constructor(
     private modelloService: ModelloService,
     private component: FormInputSelectComponent,
     private applicationStateService: ApplicationStateService
   ) {
-    this.applicationStateService.modelloLookupUpdate.subscribe(() => {
+    this.subscription = this.applicationStateService.modelloLookupUpdate.subscribe(() => {
       this.loadLookup();
     });
   }
 
   ngOnInit(): void {
     this.loadLookup();
+  }
+
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
   }
 
   private loadLookup(): void {

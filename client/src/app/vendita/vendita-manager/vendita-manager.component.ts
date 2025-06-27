@@ -12,6 +12,7 @@ import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { TableModule } from 'primeng/table';
 import { TabsModule } from 'primeng/tabs';
+import { Subscription } from 'rxjs';
 import { ClienteLookupDirective } from 'src/directives/cliente/cliente-lookup.directive';
 import { ModelloLookupDirective } from 'src/directives/modello/modello-lookup.directive';
 import { StampanteLookupDirective } from 'src/directives/stampante/stampante-lookup.directive';
@@ -74,6 +75,9 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
   private clienteRef?: DynamicDialogRef;
   private modelloRef?: DynamicDialogRef;
   private stampanteRef?: DynamicDialogRef;
+  private clienteSubscription?: Subscription;
+  private modelloSubscription?: Subscription;
+  private stampanteSubscription?: Subscription;
 
   constructor(
     private venditaService: VenditaService,
@@ -83,7 +87,31 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
     private dialogService: DialogService,
     private confirmationService: ConfirmationService,
     private applicationStateService: ApplicationStateService
-  ){ }
+  ){
+    this.clienteSubscription = this.applicationStateService.newCliente.subscribe((event) => {
+      if (event.id != null) {
+        this.clienteRef?.destroy();
+        this.vendita.cliente_id = event.id;
+        this.applicationStateService.clienteLookupUpdate.next();
+      }
+    });
+
+    this.modelloSubscription = this.applicationStateService.newModello.subscribe((event) => {
+      if (event.id != null && event.index != null) {
+        this.modelloRef?.destroy();
+        this.vendita.dettagli[event.index].modello_id = event.id;
+        this.applicationStateService.modelloLookupUpdate.next();
+      }
+    });
+
+    this.stampanteSubscription = this.applicationStateService.newStampante.subscribe((event) => {
+      if (event.id != null && event.index != null) {
+        this.stampanteRef?.destroy();
+        this.vendita.dettagli[event.index].stampante_id = event.id;
+        this.applicationStateService.stampanteLookupUpdate.next();
+      }
+    });
+  }
 
   ngOnInit(): void {
     // Get router params
@@ -97,6 +125,12 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     clearTimeout(this.loadingTimeout);
+    this.clienteSubscription?.unsubscribe();
+    this.modelloSubscription?.unsubscribe();
+    this.stampanteSubscription?.unsubscribe();
+    this.clienteRef?.destroy();
+    this.modelloRef?.destroy();
+    this.stampanteRef?.destroy();
   }
 
   private getVendita(): void {
@@ -187,17 +221,6 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
         isExternal: true
       }
     });
-
-    if (this.clienteRef) {
-      this.clienteRef.onClose.subscribe({
-        next: (result) => {
-          if (result) {
-            this.applicationStateService.clienteLookupUpdate.next();
-            this.vendita.cliente_id = result;
-          }
-        }
-      });
-    }
   }
 
   addModello(index: number): void {
@@ -217,17 +240,6 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
         isExternal: true
       }
     });
-
-    if (this.modelloRef) {
-      this.modelloRef.onClose.subscribe({
-        next: (result) => {
-          if (result) {
-            this.applicationStateService.modelloLookupUpdate.next();
-            this.vendita.dettagli[index].modello_id = result.id;
-          }
-        }
-      });
-    }
   }
 
   addStampante(index: number): void {
@@ -247,17 +259,6 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
         isExternal: true
       }
     });
-
-    if (this.stampanteRef) {
-      this.stampanteRef.onClose.subscribe({
-        next: (result) => {
-          if (result) {
-            this.applicationStateService.stampanteLookupUpdate.next();
-            this.vendita.dettagli[index].stampante_id = result.id;
-          }
-        }
-      });
-    }
   }
 
   addDettaglio(): void {

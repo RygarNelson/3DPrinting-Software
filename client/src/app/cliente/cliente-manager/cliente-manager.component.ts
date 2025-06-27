@@ -5,9 +5,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { DialogService } from 'primeng/dynamicdialog';
 import { ErrorsViewModel } from 'src/models/ErrorsViewModel';
 import { ClienteManagerModel } from 'src/models/cliente/cliente-manager';
+import { ApplicationStateService } from 'src/services/application-state.service';
 import { ClienteService } from 'src/services/cliente.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { FormInputTextComponent } from 'src/shared/form-input-text/form-input-text.component';
@@ -22,8 +23,7 @@ import { FormInputTextComponent } from 'src/shared/form-input-text/form-input-te
     ButtonModule
   ],
   providers: [
-    ClienteService,
-    DynamicDialogRef
+    ClienteService
   ],
   templateUrl: './cliente-manager.component.html'
 })
@@ -42,7 +42,7 @@ export class ClienteManagerComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private MessageService: MessageService,
     private dialogService: DialogService,
-    private ref: DynamicDialogRef
+    private applicationStateService: ApplicationStateService
   ){ }
 
   ngOnInit(): void {
@@ -103,7 +103,9 @@ export class ClienteManagerComponent implements OnInit, OnDestroy {
         });
 
         if (this.isExternal) {
-          this.ref.close(result.technical_data.id);
+          this.applicationStateService.newCliente.next({
+            id: result.technical_data.id
+          });
         }
         else {
           this.indietro();
@@ -136,7 +138,7 @@ export class ClienteManagerComponent implements OnInit, OnDestroy {
 
   indietro(): void {
     if (this.isExternal) {
-      this.ref.close();
+      this.applicationStateService.newCliente.next({});
     }
     else {
       this.router.navigate(['/cliente']);
