@@ -27,7 +27,6 @@ import { FormInputDatetimeComponent } from 'src/shared/form-input-datetime/form-
 import { FormInputNumberComponent } from 'src/shared/form-input-number/form-input-number.component';
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
 import { FormInputTextComponent } from 'src/shared/form-input-text/form-input-text.component';
-import { ShowTabErrorPipe } from 'src/shared/pipes/show-tab-error.pipe';
 import { VenditaDettaglioStatoComponent } from '../vendita-dettaglio-stato/vendita-dettaglio-stato.component';
 import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component';
 
@@ -50,7 +49,6 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
     ModelloLookupDirective,
     StampanteLookupDirective,
     VenditaDettaglioStatoStampaLookupDirective,
-    ShowTabErrorPipe,
     VenditaDettaglioStatoComponent,
     VenditaStatoComponent
   ],
@@ -65,11 +63,6 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
   vendita: VenditaManagerModel = new VenditaManagerModel();
   listaErrori: ErrorsViewModel[] = [];
   loading: boolean = false;
-
-  proprietaErrori: Array<string[]> = [
-    ['data_vendita', 'data_scadenza', 'cliente_id', 'totale_vendita', 'stato_spedizione', 'link_tracciamento'],
-    ['dettagli']
-  ];
 
   private loadingTimeout?: number;
   private clienteRef?: DynamicDialogRef;
