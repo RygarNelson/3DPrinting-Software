@@ -33,7 +33,7 @@ router.post(
 
         const limit = undefined;
         const offset = undefined;
-        const order = undefined;
+        const order = [['tipo', 'DESC'], ['nome', 'ASC']];
 
         const projection = ['id', 'nome', 'descrizione', 'tipo'];
 

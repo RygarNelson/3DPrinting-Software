@@ -16,6 +16,7 @@ import { ModelloTipoEnum } from 'src/enums/ModelloTipoEnum';
 export class ModelloTipoComponent implements OnChanges {
   @Input() tipo?: ModelloTipoEnum = undefined;
   @Input() isInSelect: boolean = false;
+  @Input() descrizioneModello?: string;
 
   protected readonly ModelloTipoEnum: typeof ModelloTipoEnum = ModelloTipoEnum;
   protected icon: string = 'pi pi-circle';
@@ -26,13 +27,21 @@ export class ModelloTipoComponent implements OnChanges {
     switch (this.tipo) {
       case ModelloTipoEnum.PLA: {
         this.icon = 'pi pi-circle';
-        this.descrizione = 'PLA';
+        if (this.descrizioneModello) {
+          this.descrizione = this.descrizioneModello;
+        } else {
+          this.descrizione = 'PLA';
+        }
         this.color = '#0a0a0a';
         break;
       }
       case ModelloTipoEnum.RESINA: {
         this.icon = 'pi pi-box';
-        this.descrizione = 'Resina';
+        if (this.descrizioneModello) {
+          this.descrizione = this.descrizioneModello;
+        } else {
+          this.descrizione = 'Resina';
+        }
         this.color = '#808080';
         break;
       }
