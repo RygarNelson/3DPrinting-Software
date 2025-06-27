@@ -274,11 +274,13 @@ router.post(
             }
 
             const vendite = await VenditaRepository.find(whereOptions, limit, offset, order, projection, include);
+            const andamentoUltimiTreMesi = await VenditaRepository.ottieniAndamentoUltimiTreMesi();
 
             res.status(200).json({
                 success: true,
                 data: vendite.rows,
-                count: vendite.count
+                count: vendite.count,
+                ultimiTreMesi: andamentoUltimiTreMesi
             });
         }
         else {

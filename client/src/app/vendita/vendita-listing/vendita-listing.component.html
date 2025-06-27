@@ -1,7 +1,12 @@
 <div class="p-4">
     <p-card>
       <ng-template pTemplate="header">
-        <h2 class="text-xl font-semibold text-gray-800 pt-6 header-title">Gestione Vendite</h2>
+        <div class="flex items-center gap-2">
+          <h2 class="text-xl font-semibold text-gray-800 pt-6 header-title">Gestione Vendite</h2>
+          <div class="margin-left-auto header-title">
+            <h5 class="text-lg font-semibold">Ultimi 3 mesi: {{ ultimiTreMesi | currency:'EUR' }}</h5>
+          </div>
+        </div>
       </ng-template>
   
       <ng-template pTemplate="content">

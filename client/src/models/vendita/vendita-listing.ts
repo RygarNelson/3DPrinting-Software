@@ -37,4 +37,5 @@ export class VenditaListingResponse implements ResponseInterface {
     success: boolean = true;
     data: VenditaListingModel[] = [];
     count: number = 0;
+    ultimiTreMesi: number = 0;
 }
