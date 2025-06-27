@@ -222,12 +222,19 @@ const venditaRepository = {
     },
 
     ottieniAndamentoVenditaAnnoMese: async function(anno, mese) {
+        let primoGiornoMese = new Date(anno, mese - 1, 1);
+        primoGiornoMese.setTime( primoGiornoMese.getTime() - primoGiornoMese.getTimezoneOffset()*60*1000 );
+
+        let ultimoGiornoMese = new Date(anno, mese, 0);
+        ultimoGiornoMese.setTime( ultimoGiornoMese.getTime() - ultimoGiornoMese.getTimezoneOffset()*60*1000 );
+
         const data = await Vendita.sum('totale_vendita', {
             where: {
                 deletedAt: null,
                 data_vendita: {
-                    [Op.between]: [new Date(anno, mese - 1), new Date(anno, mese)]
-                }
+                    [Op.between]: [primoGiornoMese, ultimoGiornoMese]
+                },
+                stato_spedizione: 3 // Consegnato
             },
             group: [fn('strftime', '%Y', col('data_vendita')), fn('strftime', '%m', col('data_vendita'))],
         });
@@ -236,11 +243,17 @@ const venditaRepository = {
     },
 
     ottieniAndamentoSpesaAnnoMese: async function(anno, mese) {
+        let primoGiornoMese = new Date(anno, mese - 1, 1);
+        primoGiornoMese.setTime( primoGiornoMese.getTime() - primoGiornoMese.getTimezoneOffset()*60*1000 );
+
+        let ultimoGiornoMese = new Date(anno, mese, 0);
+        ultimoGiornoMese.setTime( ultimoGiornoMese.getTime() - ultimoGiornoMese.getTimezoneOffset()*60*1000 );
+
         const data = await Spesa.sum('totale_spesa', {
             where: {
                 deletedAt: null,
                 data_spesa: {
-                    [Op.between]: [new Date(anno, mese - 1), new Date(anno, mese)]
+                    [Op.between]: [primoGiornoMese, ultimoGiornoMese]
                 }
             },
             group: [fn('strftime', '%Y', col('data_spesa')), fn('strftime', '%m', col('data_spesa'))],
