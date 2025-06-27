@@ -21,14 +21,16 @@ const modelloRepository = {
     insertOne: function(req, res) {
         return Modello.create({
             nome: req.body.nome,
-            descrizione: req.body.descrizione
+            descrizione: req.body.descrizione,
+            tipo: req.body.tipo
         });
     },
 
     updateOne: function(req, res) {
         return Modello.update({
             nome: req.body.nome,
-            descrizione: req.body.descrizione
+            descrizione: req.body.descrizione,
+            tipo: req.body.tipo
         }, {
             where: { id: req.body.id }
         });
