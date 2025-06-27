@@ -79,7 +79,14 @@
                         [filter]="false"
                         [showClear]="true"
                         [(ngModel)]="filtri.tipo"
-                        (ngModelChange)="filter($event)" />
+                        (ngModelChange)="filter($event)">
+                        <ng-template #selectedItem let-item>
+                          <modello-tipo class="w-full" [tipo]="filtri.tipo" [isInSelect]="true" />
+                        </ng-template>
+                        <ng-template #item let-item>
+                          <modello-tipo class="w-full" [tipo]="item.id" [isInSelect]="true" />
+                        </ng-template>
+                      </form-input-select>
                   </ng-template>
               </p-columnFilter>
               </th>
@@ -93,7 +100,7 @@
               <td class="font-medium">{{ modello.nome }}</td>
               <td>{{ modello.descrizione }}</td>
               <td>{{ modello.updatedAt | date:'dd/MM/yyyy HH:mm' }}</td>
-              <td>{{ modello.tipo }}</td>
+              <td><modello-tipo [tipo]="modello.tipo" /></td>
               <td class="text-center">
                 <div class="flex justify-center gap-2">
                   @if (loading) {

@@ -20,6 +20,7 @@ import { ModelloListingFiltri } from 'src/models/modello/modello-listing-filtri'
 import { ModelloService } from 'src/services/modello.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
+import { ModelloTipoComponent } from '../modello-tipo/modello-tipo.component';
 import { ModelloListingEliminaMessaggioPipe } from '../pipes/modello-listing-elimina-messaggio.pipe';
 
 @Component({
@@ -38,7 +39,8 @@ import { ModelloListingEliminaMessaggioPipe } from '../pipes/modello-listing-eli
     TooltipModule,
     ModelloListingEliminaMessaggioPipe,
     ModelloTipoLookupDirective,
-    FormInputSelectComponent
+    FormInputSelectComponent,
+    ModelloTipoComponent
   ],
   providers: [
     ConfirmationService,
