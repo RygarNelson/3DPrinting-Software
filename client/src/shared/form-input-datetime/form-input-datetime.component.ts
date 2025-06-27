@@ -32,7 +32,7 @@ export class FormInputDatetimeComponent extends FormInputGeneralComponent implem
   //The internal data model
   private innerValue: Date | undefined = undefined;
 
-  @Input() format: string = 'dd/MM/yy';
+  @Input() format: string = 'dd/mm/yy';
   @Input() showOnFocus: boolean = true;
   @Input() showButtonBar: boolean = true;
 
