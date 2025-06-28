@@ -73,6 +73,10 @@ const updateDatabase = async (dbVersion, DatabaseVersion, CURRENT_DATABASE_VERSI
                     await updateDatabaseToVersion2();
                     break;
                 }
+                case 2: {
+                    await updateDatabaseToVersion3();
+                    break;
+                }
                 default: {
                     console.log('Database version not found');
                     process.exit(1);
@@ -97,6 +101,17 @@ const updateDatabaseToVersion2 = async () => {
         await sequelize.query('UPDATE T_MODELLI SET tipo = 1 WHERE nome like "%Resina%"');
     } catch (error) {
         console.log('Cannot update database to version 2');
+        process.exit(1);
+    }
+}
+
+const updateDatabaseToVersion3 = async () => {
+    try {
+        console.log('Updating database to version 3');
+
+        await sequelize.query('UPDATE T_VENDITE_DETTAGLI SET prezzo = prezzo * quantita');
+    } catch (error) {
+        console.log('Cannot update database to version 3');
         process.exit(1);
     }
 }

@@ -162,7 +162,7 @@
               <td class="font-medium">{{ vendita.data_vendita | date:'dd/MM/yyyy' }}</td>
               <td>{{ vendita.data_scadenza | date:'dd/MM/yyyy' }}</td>
               <td>{{ vendita.cliente?.etichetta }}</td>
-              <td>{{ vendita.totale_vendita | currency:'EUR' }}</td>
+              <td>Totale: {{ vendita.totale_vendita | currency:'EUR' }}</td>
               <td>
                 <form-input-select
                   vendita-stato-spedizione-lookup
@@ -240,7 +240,12 @@
                             <td class="text-center">{{ dettaglio?.modello?.nome }}</td>
                             <td class="text-center">{{ dettaglio?.stampante?.nome }}</td>
                             <td class="text-center">{{ dettaglio?.quantita }}</td>
-                            <td class="text-center">{{ dettaglio?.prezzo | currency:'EUR' }}</td>
+                            <td class="text-center">
+                              <div class="flex flex-col items-center gap-2">
+                                <span>Totale: {{ dettaglio?.prezzo | currency:'EUR' }}</span>
+                                <span>Unitario: {{ (dettaglio?.prezzo / dettaglio?.quantita) | currency:'EUR' }}</span>
+                              </div>
+                            </td>
                             <td class="text-center">
                               <form-input-select
                                 vendita-dettaglio-stato-stampa-lookup

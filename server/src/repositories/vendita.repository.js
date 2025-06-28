@@ -55,8 +55,8 @@ const venditaRepository = {
                         quantita: d.quantita,
                         prezzo: d.prezzo
                     }, { transaction: t });
-                    if (d.quantita && d.prezzo) {
-                        totale += parseFloat(d.quantita) * parseFloat(d.prezzo);
+                    if (d.prezzo) {
+                        totale += parseFloat(d.prezzo);
                     }
                 }
             }
@@ -107,8 +107,8 @@ const venditaRepository = {
                             prezzo: d.prezzo
                         }, { transaction: t });
                     }
-                    if (d.quantita && d.prezzo) {
-                        totale += parseFloat(d.quantita) * parseFloat(d.prezzo);
+                    if (d.prezzo) {
+                        totale += parseFloat(d.prezzo);
                     }
                 }
             }

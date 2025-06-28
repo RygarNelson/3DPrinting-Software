@@ -13,6 +13,7 @@ import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { TableModule } from 'primeng/table';
 import { TabsModule } from 'primeng/tabs';
+import { TooltipModule } from 'primeng/tooltip';
 import { Subscription } from 'rxjs';
 import { ClienteLookupDirective } from 'src/directives/cliente/cliente-lookup.directive';
 import { ModelloLookupDirective } from 'src/directives/modello/modello-lookup.directive';
@@ -53,7 +54,8 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
     VenditaDettaglioStatoStampaLookupDirective,
     VenditaDettaglioStatoComponent,
     VenditaStatoComponent,
-    ModelloTipoComponent
+    ModelloTipoComponent,
+    TooltipModule
   ],
   providers: [
     VenditaService,
