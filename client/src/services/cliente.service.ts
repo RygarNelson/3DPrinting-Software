@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { ResponseInterface } from 'src/interfaces/response.interface';
 import { ClienteLookupFiltri } from 'src/models/cliente/cliente-looku-filtri';
 import { ClienteLookupResponse } from 'src/models/cliente/cliente-lookup';
 import { ClienteListingResponse } from '../models/cliente/cliente-listing';
@@ -34,5 +35,9 @@ export class ClienteService {
 
   delete(id: number): Observable<any> {
     return this.http.delete(`${this.api}/${id}`);
+  }
+
+  getClienteVintedId(): Observable<ResponseInterface> {
+    return this.http.get<ResponseInterface>(`${this.api}/vinted/id`);
   }
 } 
