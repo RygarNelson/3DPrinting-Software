@@ -24,6 +24,7 @@ import { ModelloTipoEnum } from 'src/enums/ModelloTipoEnum';
 import { ErrorsViewModel } from 'src/models/ErrorsViewModel';
 import { VenditaDettaglioManagerModel, VenditaManagerModel } from 'src/models/vendita/vendita-manager';
 import { ApplicationStateService } from 'src/services/application-state.service';
+import { ClienteService } from 'src/services/cliente.service';
 import { VenditaService } from 'src/services/vendita.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { FormInputDatetimeComponent } from 'src/shared/form-input-datetime/form-input-datetime.component';
@@ -59,6 +60,7 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
   ],
   providers: [
     VenditaService,
+    ClienteService,
     ConfirmationService
   ],
   templateUrl: './vendita-manager.component.html',
@@ -86,7 +88,8 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
     private MessageService: MessageService,
     private dialogService: DialogService,
     private confirmationService: ConfirmationService,
-    private applicationStateService: ApplicationStateService
+    private applicationStateService: ApplicationStateService,
+    private clienteService: ClienteService
   ){
     this.clienteSubscription = this.applicationStateService.newCliente.subscribe((event) => {
       if (event.id != null) {
@@ -119,6 +122,8 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
       this.vendita.id = params['id'] ? Number(params['id']) : 0;
       if (this.vendita.id) {
         this.getVendita();
+      } else {
+        this.getClienteVintedId();
       }
     });
   }
@@ -159,6 +164,15 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
         this.loading = false;
 
         console.error(error);
+      }
+    });
+  }
+
+  private getClienteVintedId(): void {
+    this.clienteService.getClienteVintedId().subscribe({
+      next: (result) => {
+        this.vendita.cliente_id = result.data;
+        this.applicationStateService.clienteLookupUpdate.next();
       }
     });
   }
