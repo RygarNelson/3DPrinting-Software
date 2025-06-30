@@ -15,7 +15,7 @@ router.use(authenticate);
 router.get(
     '/:id',
     asyncHandler(async (req, res) => {
-        const projection = ['id', 'data_spesa', 'totale_spesa', 'descrizione'];
+        const projection = ['id', 'data_spesa', 'totale_spesa', 'descrizione', 'quantita', 'tipo_spesa', 'unita_misura'];
         const spesa = await SpesaRepository.findOne(req.params.id, projection);
         res.status(200).json({
             success: true,
@@ -31,6 +31,14 @@ router.post(
             let whereOptions = {
                 deletedAt: null
             };
+
+            if (req.body.tipo_spesa != null) {
+                whereOptions.tipo_spesa = req.body.tipo_spesa;
+            }
+
+            if (req.body.unita_misura != null) {
+                whereOptions.unita_misura = req.body.unita_misura;
+            }
             
             // Data spesa
             if (req.body.data_spesa && req.body.data_spesa.value && req.body.data_spesa.operator) {
@@ -83,6 +91,36 @@ router.post(
                     }
                 }
             }
+
+            // Quantità
+            if (req.body.quantita && req.body.quantita.value && req.body.quantita.operator) {
+                switch (req.body.quantita.operator) {
+                    case 'equals': {
+                        whereOptions.quantita = { [Op.eq]: req.body.quantita.value };
+                        break;
+                    }
+                    case 'notEquals': {
+                        whereOptions.quantita = { [Op.ne]: req.body.quantita.value };
+                        break;
+                    }
+                    case 'lt': {
+                        whereOptions.quantita = { [Op.lt]: req.body.quantita.value };
+                        break;
+                    }
+                    case 'lte': {
+                        whereOptions.quantita = { [Op.lte]: req.body.quantita.value };
+                        break;
+                    }
+                    case 'gt': {
+                        whereOptions.quantita = { [Op.gt]: req.body.quantita.value };
+                        break;
+                    }
+                    case 'gte': {
+                        whereOptions.quantita = { [Op.gte]: req.body.quantita.value };
+                        break;
+                    }
+                }
+            }
             
             if (req.body.search && req.body.search.trim() !== '') {
                 whereOptions = {
@@ -109,7 +147,7 @@ router.post(
                 order = [[req.body.order.column, req.body.order.direction]];
             }
 
-            const projection = ['id', 'data_spesa', 'totale_spesa', 'descrizione'];
+            const projection = ['id', 'data_spesa', 'totale_spesa', 'descrizione', 'quantita', 'tipo_spesa', 'unita_misura'];
 
             const spese = await SpesaRepository.find(whereOptions, limit, offset, order, projection);
 

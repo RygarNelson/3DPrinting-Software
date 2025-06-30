@@ -26,7 +26,10 @@ const spesaRepository = {
         return Spesa.create({
             data_spesa: req.body.data_spesa,
             totale_spesa: req.body.totale_spesa,
-            descrizione: req.body.descrizione
+            descrizione: req.body.descrizione,
+            quantita: req.body.quantita,
+            tipo_spesa: req.body.tipo_spesa,
+            unita_misura: req.body.unita_misura
         }); 
     },
 
@@ -34,7 +37,10 @@ const spesaRepository = {
         return Spesa.update({
             data_spesa: req.body.data_spesa,
             totale_spesa: req.body.totale_spesa,
-            descrizione: req.body.descrizione
+            descrizione: req.body.descrizione,
+            quantita: req.body.quantita,
+            tipo_spesa: req.body.tipo_spesa,
+            unita_misura: req.body.unita_misura
         }, {
             where: { id: req.body.id }
         });
