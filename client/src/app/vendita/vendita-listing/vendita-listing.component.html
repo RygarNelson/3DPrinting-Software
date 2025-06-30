@@ -1,7 +1,12 @@
 <div class="p-4">
     <p-card>
       <ng-template pTemplate="header">
-        <h2 class="text-xl font-semibold text-gray-800 pt-6 header-title">Gestione Vendite</h2>
+        <div class="flex items-center gap-2">
+          <h2 class="text-xl font-semibold text-gray-800 pt-6 header-title">Gestione Vendite</h2>
+          <div class="margin-left-auto header-title">
+            <h5 class="text-lg font-semibold">Ultimi 3 mesi: {{ ultimiTreMesi | currency:'EUR' }}</h5>
+          </div>
+        </div>
       </ng-template>
   
       <ng-template pTemplate="content">
@@ -17,6 +22,9 @@
           [totalRecords]="totalRecords"
           [first]="filtri.offset"
           [showCurrentPageReport]="true"
+          [rowsPerPageOptions]="[10, 20, 50, 100]"
+          [sortField]="'data_vendita'"
+          [sortOrder]="-1"
           dataKey="id"
           [expandedRowKeys]="expandedRows"
           [lazy]="true"
@@ -154,7 +162,7 @@
               <td class="font-medium">{{ vendita.data_vendita | date:'dd/MM/yyyy' }}</td>
               <td>{{ vendita.data_scadenza | date:'dd/MM/yyyy' }}</td>
               <td>{{ vendita.cliente?.etichetta }}</td>
-              <td>{{ vendita.totale_vendita | currency:'EUR' }}</td>
+              <td>Totale: {{ vendita.totale_vendita | currency:'EUR' }}</td>
               <td>
                 <form-input-select
                   vendita-stato-spedizione-lookup
@@ -232,7 +240,12 @@
                             <td class="text-center">{{ dettaglio?.modello?.nome }}</td>
                             <td class="text-center">{{ dettaglio?.stampante?.nome }}</td>
                             <td class="text-center">{{ dettaglio?.quantita }}</td>
-                            <td class="text-center">{{ dettaglio?.prezzo | currency:'EUR' }}</td>
+                            <td class="text-center">
+                              <div class="flex flex-col items-center gap-2">
+                                <span>Totale: {{ dettaglio?.prezzo | currency:'EUR' }}</span>
+                                <span>Unitario: {{ (dettaglio?.prezzo / dettaglio?.quantita) | currency:'EUR' }}</span>
+                              </div>
+                            </td>
                             <td class="text-center">
                               <form-input-select
                                 vendita-dettaglio-stato-stampa-lookup

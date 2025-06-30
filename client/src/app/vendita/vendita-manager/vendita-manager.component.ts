@@ -1,5 +1,6 @@
 import { ClienteManagerComponent } from '@/cliente/cliente-manager/cliente-manager.component';
 import { ModelloManagerComponent } from '@/modello/modello-manager/modello-manager.component';
+import { ModelloTipoComponent } from '@/modello/modello-tipo/modello-tipo.component';
 import { StampanteManagerComponent } from '@/stampante/stampante-manager/stampante-manager.component';
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
@@ -12,21 +13,24 @@ import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { TableModule } from 'primeng/table';
 import { TabsModule } from 'primeng/tabs';
+import { TooltipModule } from 'primeng/tooltip';
+import { Subscription } from 'rxjs';
 import { ClienteLookupDirective } from 'src/directives/cliente/cliente-lookup.directive';
 import { ModelloLookupDirective } from 'src/directives/modello/modello-lookup.directive';
 import { StampanteLookupDirective } from 'src/directives/stampante/stampante-lookup.directive';
 import { VenditaDettaglioStatoStampaLookupDirective } from 'src/directives/vendita/vendita-dettaglio-stato-stampa-lookup.directive';
 import { VenditaStatoSpedizioneLookupDirective } from 'src/directives/vendita/vendita-stato-spedizione-lookup.directive';
+import { ModelloTipoEnum } from 'src/enums/ModelloTipoEnum';
 import { ErrorsViewModel } from 'src/models/ErrorsViewModel';
 import { VenditaDettaglioManagerModel, VenditaManagerModel } from 'src/models/vendita/vendita-manager';
 import { ApplicationStateService } from 'src/services/application-state.service';
+import { ClienteService } from 'src/services/cliente.service';
 import { VenditaService } from 'src/services/vendita.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { FormInputDatetimeComponent } from 'src/shared/form-input-datetime/form-input-datetime.component';
 import { FormInputNumberComponent } from 'src/shared/form-input-number/form-input-number.component';
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
 import { FormInputTextComponent } from 'src/shared/form-input-text/form-input-text.component';
-import { ShowTabErrorPipe } from 'src/shared/pipes/show-tab-error.pipe';
 import { VenditaDettaglioStatoComponent } from '../vendita-dettaglio-stato/vendita-dettaglio-stato.component';
 import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component';
 
@@ -49,12 +53,14 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
     ModelloLookupDirective,
     StampanteLookupDirective,
     VenditaDettaglioStatoStampaLookupDirective,
-    ShowTabErrorPipe,
     VenditaDettaglioStatoComponent,
-    VenditaStatoComponent
+    VenditaStatoComponent,
+    ModelloTipoComponent,
+    TooltipModule
   ],
   providers: [
     VenditaService,
+    ClienteService,
     ConfirmationService
   ],
   templateUrl: './vendita-manager.component.html',
@@ -65,15 +71,15 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
   listaErrori: ErrorsViewModel[] = [];
   loading: boolean = false;
 
-  proprietaErrori: Array<string[]> = [
-    ['data_vendita', 'data_scadenza', 'cliente_id', 'totale_vendita', 'stato_spedizione', 'link_tracciamento'],
-    ['dettagli']
-  ];
-
   private loadingTimeout?: number;
   private clienteRef?: DynamicDialogRef;
   private modelloRef?: DynamicDialogRef;
   private stampanteRef?: DynamicDialogRef;
+  private clienteSubscription?: Subscription;
+  private modelloSubscription?: Subscription;
+  private stampanteSubscription?: Subscription;
+
+  protected ModelloTipoEnum = ModelloTipoEnum;
 
   constructor(
     private venditaService: VenditaService,
@@ -82,8 +88,33 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
     private MessageService: MessageService,
     private dialogService: DialogService,
     private confirmationService: ConfirmationService,
-    private applicationStateService: ApplicationStateService
-  ){ }
+    private applicationStateService: ApplicationStateService,
+    private clienteService: ClienteService
+  ){
+    this.clienteSubscription = this.applicationStateService.newCliente.subscribe((event) => {
+      if (event.id != null) {
+        this.clienteRef?.destroy();
+        this.vendita.cliente_id = event.id;
+        this.applicationStateService.clienteLookupUpdate.next();
+      }
+    });
+
+    this.modelloSubscription = this.applicationStateService.newModello.subscribe((event) => {
+      if (event.id != null && event.index != null) {
+        this.modelloRef?.destroy();
+        this.vendita.dettagli[event.index].modello_id = event.id;
+        this.applicationStateService.modelloLookupUpdate.next();
+      }
+    });
+
+    this.stampanteSubscription = this.applicationStateService.newStampante.subscribe((event) => {
+      if (event.id != null && event.index != null) {
+        this.stampanteRef?.destroy();
+        this.vendita.dettagli[event.index].stampante_id = event.id;
+        this.applicationStateService.stampanteLookupUpdate.next();
+      }
+    });
+  }
 
   ngOnInit(): void {
     // Get router params
@@ -91,12 +122,20 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
       this.vendita.id = params['id'] ? Number(params['id']) : 0;
       if (this.vendita.id) {
         this.getVendita();
+      } else {
+        this.getClienteVintedId();
       }
     });
   }
 
   ngOnDestroy(): void {
     clearTimeout(this.loadingTimeout);
+    this.clienteSubscription?.unsubscribe();
+    this.modelloSubscription?.unsubscribe();
+    this.stampanteSubscription?.unsubscribe();
+    this.clienteRef?.destroy();
+    this.modelloRef?.destroy();
+    this.stampanteRef?.destroy();
   }
 
   private getVendita(): void {
@@ -125,6 +164,15 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
         this.loading = false;
 
         console.error(error);
+      }
+    });
+  }
+
+  private getClienteVintedId(): void {
+    this.clienteService.getClienteVintedId().subscribe({
+      next: (result) => {
+        this.vendita.cliente_id = result.data;
+        this.applicationStateService.clienteLookupUpdate.next();
       }
     });
   }
@@ -187,17 +235,6 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
         isExternal: true
       }
     });
-
-    if (this.clienteRef) {
-      this.clienteRef.onClose.subscribe({
-        next: (result) => {
-          if (result) {
-            this.applicationStateService.clienteLookupUpdate.next();
-            this.vendita.cliente_id = result;
-          }
-        }
-      });
-    }
   }
 
   addModello(index: number): void {
@@ -217,17 +254,6 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
         isExternal: true
       }
     });
-
-    if (this.modelloRef) {
-      this.modelloRef.onClose.subscribe({
-        next: (result) => {
-          if (result) {
-            this.applicationStateService.modelloLookupUpdate.next();
-            this.vendita.dettagli[index].modello_id = result.id;
-          }
-        }
-      });
-    }
   }
 
   addStampante(index: number): void {
@@ -247,17 +273,6 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
         isExternal: true
       }
     });
-
-    if (this.stampanteRef) {
-      this.stampanteRef.onClose.subscribe({
-        next: (result) => {
-          if (result) {
-            this.applicationStateService.stampanteLookupUpdate.next();
-            this.vendita.dettagli[index].stampante_id = result.id;
-          }
-        }
-      });
-    }
   }
 
   addDettaglio(): void {

@@ -59,6 +59,7 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
 export class VenditaListingComponent implements OnDestroy {
   // Data properties
   vendite: VenditaListingModel[] = [];
+  ultimiTreMesi: number = 0;
   totalRecords: number = 0;
   loading: boolean = false;
   expandedRows: any = {};
@@ -100,6 +101,7 @@ export class VenditaListingComponent implements OnDestroy {
         next: (response: VenditaListingResponse) => {
           this.vendite = response.data;
           this.totalRecords = response.count;
+          this.ultimiTreMesi = response.ultimiTreMesi;
 
           window.clearTimeout(this.loadingTimeout);
           this.loading = false;
@@ -244,8 +246,8 @@ export class VenditaListingComponent implements OnDestroy {
       first: 0,
       rows: 10,
       globalFilter: '',
-      sortField: '',
-      sortOrder: 0
+      sortField: 'data_vendita',
+      sortOrder: -1
     });
   }
 

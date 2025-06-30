@@ -60,6 +60,36 @@
                     label="Descrizione"
                     [listaErrori]="listaErrori"
                     [(ngModel)]="spesa.descrizione" />
+                
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                <form-input-number
+                    property="quantita"
+                    label="Quantità"
+                    [obligatory]="false"
+                    [minFractionDigits]="4"
+                    [maxFractionDigits]="4"
+                    [listaErrori]="listaErrori"
+                    [(ngModel)]="spesa.quantita" />
+                <form-input-select
+                    spesa-tipo-lookup
+                    property="tipo_spesa"
+                    label="Tipo Spesa"
+                    [obligatory]="false"
+                    [filter]="false"
+                    [showClear]="false"
+                    [listaErrori]="listaErrori"
+                    [(ngModel)]="spesa.tipo_spesa" />
+                <form-input-select
+                    spesa-unita-misura-lookup
+                    property="unita_misura"
+                    label="Unità di Misura"
+                    [obligatory]="false"
+                    [filter]="false"
+                    [showClear]="false"
+                    [listaErrori]="listaErrori"
+                    [(ngModel)]="spesa.unita_misura" />
+                
             </div>
         </ng-template>
     </p-card>

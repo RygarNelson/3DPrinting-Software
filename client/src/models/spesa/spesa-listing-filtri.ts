@@ -16,4 +16,10 @@ export class SpesaListingFiltri implements ListingFilter {
         value?: number;
         operator?: string;
     }
+    quantita?: {
+        value?: number;
+        operator?: string;
+    }
+    tipo_spesa?: number;
+    unita_misura?: number;
 }

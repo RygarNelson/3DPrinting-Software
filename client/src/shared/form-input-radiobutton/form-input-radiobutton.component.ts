@@ -1,18 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { Component, forwardRef, Input } from '@angular/core';
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { DatePickerModule } from 'primeng/datepicker';
+import { RadioButtonModule } from 'primeng/radiobutton';
 import { TooltipModule } from 'primeng/tooltip';
 import { FormInputGeneralComponent } from '../form-input-general.component';
 import { ErrorMessagesPipe } from '../pipes/error-messages.pipe';
 import { ShowErrorPipe } from '../pipes/show-error.pipe';
 
 @Component({
-  selector: 'form-input-datetime',
+  selector: 'form-input-radiobutton',
   imports: [
     CommonModule,
     FormsModule,
-    DatePickerModule,
+    RadioButtonModule,
     ShowErrorPipe,
     ErrorMessagesPipe,
     TooltipModule
@@ -20,21 +20,19 @@ import { ShowErrorPipe } from '../pipes/show-error.pipe';
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => FormInputDatetimeComponent),
+      useExisting: forwardRef(() => FormInputRadiobuttonComponent),
       multi: true,
     }
   ],
-  templateUrl: './form-input-datetime.component.html',
-  styleUrl: './form-input-datetime.component.scss'
+  templateUrl: './form-input-radiobutton.component.html',
+  styleUrl: './form-input-radiobutton.component.scss'
 })
-export class FormInputDatetimeComponent extends FormInputGeneralComponent implements ControlValueAccessor {
-  
+export class FormInputRadiobuttonComponent extends FormInputGeneralComponent implements ControlValueAccessor {
   //The internal data model
-  private innerValue: Date | undefined = undefined;
+  private innerValue: any = undefined;
 
-  @Input() format: string = 'dd/mm/yy';
-  @Input() showOnFocus: boolean = true;
-  @Input() showButtonBar: boolean = true;
+  @Input() name: string = '';
+  @Input() radioButtonValue: any = undefined;
 
   get value(): any {
     return this.innerValue;
@@ -43,13 +41,8 @@ export class FormInputDatetimeComponent extends FormInputGeneralComponent implem
   //set accessor including call the onchange callback
   set value(v: any) {
     if (v !== this.innerValue) {
-      if (v) {
-        this.innerValue = new Date(v);
-      } else {
-        this.innerValue = undefined;
-      }
-
-      this.onChangeCallback(this.innerValue);
+      this.innerValue = v;
+      this.onChangeCallback(v);
     }
   }
 
@@ -61,11 +54,7 @@ export class FormInputDatetimeComponent extends FormInputGeneralComponent implem
   //From ControlValueAccessor interface
   writeValue(value: any) {
     if (value !== this.innerValue) {
-      if (value) {
-        this.innerValue = new Date(value);
-      } else {
-        this.innerValue = undefined;
-      }
+      this.innerValue = value;
     }
   }
 

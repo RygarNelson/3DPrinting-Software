@@ -5,9 +5,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { DialogService } from 'primeng/dynamicdialog';
 import { ErrorsViewModel } from 'src/models/ErrorsViewModel';
 import { StampanteManagerModel } from 'src/models/stampante/stampante-manager';
+import { ApplicationStateService } from 'src/services/application-state.service';
 import { StampanteService } from 'src/services/stampante.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { FormInputTextComponent } from 'src/shared/form-input-text/form-input-text.component';
@@ -24,8 +25,7 @@ import { FormInputTextareaComponent } from 'src/shared/form-input-textarea/form-
     ButtonModule
   ],
   providers: [
-    StampanteService,
-    DynamicDialogRef
+    StampanteService
   ],
   templateUrl: './stampante-manager.component.html',
   styleUrl: './stampante-manager.component.scss'
@@ -46,7 +46,7 @@ export class StampanteManagerComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private MessageService: MessageService,
     private dialogService: DialogService,
-    private ref: DynamicDialogRef
+    private applicationStateService: ApplicationStateService
   ){ }
 
   ngOnInit(): void {
@@ -108,7 +108,7 @@ export class StampanteManagerComponent implements OnInit, OnDestroy {
         });
 
         if (this.isExternal) {
-          this.ref.close({
+          this.applicationStateService.newStampante.next({
             id: result.technical_data.id,
             index: this.venditaIndex
           });
@@ -144,7 +144,7 @@ export class StampanteManagerComponent implements OnInit, OnDestroy {
 
   indietro(): void {
     if (this.isExternal) {
-      this.ref.close();
+      this.applicationStateService.newStampante.next({});
     }
     else {
       this.router.navigate(['/stampante']);

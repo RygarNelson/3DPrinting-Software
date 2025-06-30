@@ -1,7 +1,7 @@
 <div class="p-4">
     <p-card>
       <ng-template pTemplate="header">
-        <h2 class="text-xl font-semibold text-gray-800 pt-6 header-title">Gestione Stampanti</h2>
+        <h2 class="text-xl font-semibold text-gray-800 pt-6 header-title">Gestione Spese</h2>
       </ng-template>
   
       <ng-template pTemplate="content">
@@ -17,6 +17,9 @@
           [totalRecords]="totalRecords"
           [first]="filtri.offset"
           [showCurrentPageReport]="true"
+          [rowsPerPageOptions]="[10, 20, 50, 100]"
+          [sortField]="'data_spesa'"
+          [sortOrder]="-1"
           [lazy]="true"
           (onLazyLoad)="loadData($event)">
           
@@ -36,7 +39,7 @@
                       [(ngModel)]="filtri.search"
                       (ngModelChange)="dataTable.filterGlobal($event, 'contains')">
                 </p-iconfield>
-                <button pButton label="Pulisci" class="p-button-outlined" icon="pi pi-filter-slash" (click)="dataTable.clear()"></button>
+                <button pButton label="Pulisci" class="p-button-outlined" icon="pi pi-filter-slash" (click)="dataTable.clear(); pulisciFiltri();"></button>
                 </div>
                   
                   <div class="flex items-center gap-2 margin-left-auto">
@@ -69,12 +72,47 @@
                 <p-sortIcon field="data_spesa" />
                 <p-columnFilter field="data_spesa" [type]="'date'" display="menu" [showMatchModes]="true" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
               </th>
-              <th pSortableColumn="totale_spesa">
+              <th>Descrizione</th>
+              <th pSortableColumn="quantita">
+                Quantità
+                <p-sortIcon field="quantita" />
+                <p-columnFilter field="quantita" [type]="'numeric'" display="menu" minFractionDigits="4" maxFractionDigits="4" [showMatchModes]="true" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
+              </th>
+              <th pSortableColumn="tipo_spesa">
+                Tipo Spesa
+                <p-sortIcon field="tipo_spesa" />
+                <p-columnFilter field="tipo_spesa" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" >
+                  <ng-template #filter let-value let-filter="filterCallback">
+                    <form-input-select
+                      spesa-tipo-lookup
+                      property="tipo_spesa"
+                      label="Tipo Spesa"
+                      [filter]="false"
+                      [(ngModel)]="filtri.tipo_spesa"
+                      (ngModelChange)="filter($event)" />
+                    </ng-template>
+                </p-columnFilter>
+              </th>
+              <th pSortableColumn="unita_misura">
+                Unità di Misura
+                <p-sortIcon field="unita_misura" />
+                <p-columnFilter field="unita_misura" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" >
+                  <ng-template #filter let-value let-filter="filterCallback">
+                    <form-input-select
+                      spesa-unita-misura-lookup
+                      property="unita_misura"
+                      label="Unità di Misura"
+                      [filter]="false"
+                      [(ngModel)]="filtri.unita_misura"
+                      (ngModelChange)="filter($event)" />
+                    </ng-template>
+                </p-columnFilter>
+              </th>
+              <th pSortableColumn="totale_spesa" style="width: 200px;">
                 Totale Spesa
                 <p-sortIcon field="totale_spesa" />
                 <p-columnFilter field="totale_spesa" [type]="'numeric'" currency="EUR" display="menu" minFractionDigits="2" maxFractionDigits="2" [showMatchModes]="true" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
               </th>
-              <th>Descrizione</th>
               <th class="text-center" style="width: 120px;"></th>
             </tr>
           </ng-template>
@@ -83,8 +121,11 @@
           <ng-template #body let-spesa>
             <tr>
               <td class="font-medium">{{ spesa.data_spesa | date:'dd/MM/yyyy' }}</td>
-              <td>{{ spesa.totale_spesa | currency:'EUR' }}</td>
               <td>{{ spesa.descrizione }}</td>
+              <td>{{ spesa.quantita | number : "0.4-4" }}</td>
+              <td>{{ spesa.tipo_spesa | spesaTipo }}</td>
+              <td>{{ spesa.unita_misura | spesaUnitaMisura }}</td>
+              <td>{{ spesa.totale_spesa | currency:'EUR' }}</td>
               <td class="text-center">
                 <div class="flex justify-center gap-2">
                   @if (loading) {
@@ -128,7 +169,7 @@
           <!-- Empty State -->
           <ng-template pTemplate="emptymessage">
             <tr>
-              <td colspan="4" class="text-center py-8">
+              <td colspan="7" class="text-center py-8">
                   @if (loading) {
                       <p-skeleton height="100px" width="100%" />
                   } @else {

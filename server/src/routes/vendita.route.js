@@ -274,11 +274,13 @@ router.post(
             }
 
             const vendite = await VenditaRepository.find(whereOptions, limit, offset, order, projection, include);
+            const andamentoUltimiTreMesi = await VenditaRepository.ottieniAndamentoUltimiTreMesi();
 
             res.status(200).json({
                 success: true,
                 data: vendite.rows,
-                count: vendite.count
+                count: vendite.count,
+                ultimiTreMesi: andamentoUltimiTreMesi
             });
         }
         else {
@@ -388,9 +390,14 @@ router.get(
     '/andamento/:anno',
     asyncHandler(async (req, res) => {
         const data = await VenditaRepository.ottieniAndamentoVendite(req.params.anno);
+        const totaleVendite = data.data.datasets[0].data.reduce((acc, curr) => acc + curr, 0);
+        const totaleSpese = data.data.datasets[1].data.reduce((acc, curr) => acc + curr, 0);
+
         return res.status(200).json({
             success: true,
-            data: data
+            data: data,
+            totaleVendite: totaleVendite,
+            totaleSpese: totaleSpese
         });
     })
 );

@@ -84,6 +84,10 @@ form-input-text {
   color: #6b7280;
 }
 
+.justify-end {
+  justify-content: flex-end;
+}
+
 
 // --- Responsive Grid Utilities (Tailwind-like) ---
 $breakpoints: (

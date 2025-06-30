@@ -6,14 +6,18 @@
                 @if (loading) {
                     <p-skeleton height="30px" width="100px" />
                 } @else {
-                    <form-input-select
-                        class="margin-left-auto header-title"
-                        [data]="anni"
-                        [filter]="false"
-                        [showClear]="false"
-                        [placeholder]="'Seleziona un anno'"
-                        [(ngModel)]="anno"
-                        (ngModelChange)="preparaGrafico()" />
+                    <div class="flex items-center gap-2 margin-left-auto header-title">
+                        <h5 class="text-lg font-semibold mr-3">Vendite: {{ totaleVendite | currency:'EUR' }}</h5>
+                        <h5 class="text-lg font-semibold mr-3">Spese: {{ totaleSpese | currency:'EUR' }}</h5>
+                        <form-input-select
+                            [data]="anni"
+                            [filter]="false"
+                            [showClear]="false"
+                            [placeholder]="'Seleziona un anno'"
+                            [(ngModel)]="anno"
+                            (ngModelChange)="preparaGrafico()" />
+                    </div>
+                    
                 }
             </div>
         </ng-template>

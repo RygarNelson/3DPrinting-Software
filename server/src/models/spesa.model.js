@@ -20,6 +20,18 @@ const Spesa = sequelize.define('Spesa', {
     descrizione: {
         type: DataTypes.STRING(500),
         allowNull: true
+    },
+    quantita: {
+        type: DataTypes.DECIMAL(20,4),
+        allowNull: true
+    },
+    tipo_spesa: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
+    unita_misura: {
+        type: DataTypes.INTEGER,
+        allowNull: true
     }
 }, {
     tableName: 'T_SPESE',

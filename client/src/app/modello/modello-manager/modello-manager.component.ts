@@ -5,11 +5,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { DialogService } from 'primeng/dynamicdialog';
+import { ModelloTipoEnum } from 'src/enums/ModelloTipoEnum';
 import { ErrorsViewModel } from 'src/models/ErrorsViewModel';
 import { ModelloManagerModel } from 'src/models/modello/modello-manager';
+import { ApplicationStateService } from 'src/services/application-state.service';
 import { ModelloService } from 'src/services/modello.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
+import { FormInputRadiobuttonComponent } from 'src/shared/form-input-radiobutton/form-input-radiobutton.component';
 import { FormInputTextComponent } from 'src/shared/form-input-text/form-input-text.component';
 import { FormInputTextareaComponent } from 'src/shared/form-input-textarea/form-input-textarea.component';
 
@@ -20,12 +23,12 @@ import { FormInputTextareaComponent } from 'src/shared/form-input-textarea/form-
     FormsModule,
     FormInputTextComponent,
     FormInputTextareaComponent,
+    FormInputRadiobuttonComponent,
     CardModule,
     ButtonModule
   ],
   providers: [
-    ModelloService,
-    DynamicDialogRef
+    ModelloService
   ],
   templateUrl: './modello-manager.component.html',
   styleUrl: './modello-manager.component.scss'
@@ -40,13 +43,15 @@ export class ModelloManagerComponent implements OnInit, OnDestroy {
 
   private loadingTimeout?: number;
 
+  protected ModelloTipoEnum = ModelloTipoEnum;
+
   constructor(
     private modelloService: ModelloService,
     private router: Router,
     private route: ActivatedRoute,
     private MessageService: MessageService,
     private dialogService: DialogService,
-    private ref: DynamicDialogRef
+    private applicationStateService: ApplicationStateService
   ){ }
 
   ngOnInit(): void {
@@ -108,7 +113,7 @@ export class ModelloManagerComponent implements OnInit, OnDestroy {
         });
 
         if (this.isExternal) {
-          this.ref.close({
+          this.applicationStateService.newModello.next({
             id: result.technical_data.id,
             index: this.venditaIndex
           });
@@ -144,7 +149,7 @@ export class ModelloManagerComponent implements OnInit, OnDestroy {
 
   indietro(): void {
     if (this.isExternal) {
-      this.ref.close();
+      this.applicationStateService.newModello.next({});
     }
     else {
       this.router.navigate(['/modello']);

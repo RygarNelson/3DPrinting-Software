@@ -1,4 +1,5 @@
-import { Directive, OnInit } from '@angular/core';
+import { Directive, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { ClienteLookupFiltri } from 'src/models/cliente/cliente-looku-filtri';
 import { ApplicationStateService } from 'src/services/application-state.service';
 import { ClienteService } from 'src/services/cliente.service';
@@ -10,20 +11,26 @@ import { FormInputSelectComponent } from 'src/shared/form-input-select/form-inpu
     ClienteService
   ]
 })
-export class ClienteLookupDirective implements OnInit {
+export class ClienteLookupDirective implements OnInit, OnDestroy {
+
+  private subscription?: Subscription;
 
   constructor(
     private clienteService: ClienteService,
     private component: FormInputSelectComponent,
     private applicationStateService: ApplicationStateService
   ) {
-    this.applicationStateService.clienteLookupUpdate.subscribe(() => {
+    this.subscription = this.applicationStateService.clienteLookupUpdate.subscribe(() => {
       this.loadLookup();
     });
   }
 
   ngOnInit(): void {
     this.loadLookup();
+  }
+
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
   }
 
   private loadLookup(): void {

@@ -1,5 +1,6 @@
 'use strict'
 
+import { Op } from 'sequelize';
 import Cliente from '../models/cliente.model.js';
 import Vendita from '../models/vendita.model.js';
 
@@ -65,6 +66,36 @@ const clienteRepository = {
     isUsed: async function(id) {
         const isVendita = await Vendita.findOne({ where: { cliente_id: id } });
         return isVendita ? true : false;
+    },
+
+    getClienteVintedId: async function() {
+        let vintedId = null;
+        
+        const cliente = await Cliente.findOne({ where: 
+            {
+                ragione_sociale: {
+                    [Op.like]: '%vinted%'
+                },
+                deletedAt: null
+            }
+        });
+
+        if (cliente) {
+            vintedId = cliente.id;
+        } else {
+            const clienteNuovo = await Cliente.create({
+                nome: null,
+                cognome: null,
+                ragione_sociale: 'Vinted',
+                email: null,
+                telefono: null,
+                etichetta: 'Vinted'
+            });
+
+            vintedId = clienteNuovo.id;
+        }
+
+        return vintedId;
     }
 };
 

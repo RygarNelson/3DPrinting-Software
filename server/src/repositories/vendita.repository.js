@@ -55,8 +55,8 @@ const venditaRepository = {
                         quantita: d.quantita,
                         prezzo: d.prezzo
                     }, { transaction: t });
-                    if (d.quantita && d.prezzo) {
-                        totale += parseFloat(d.quantita) * parseFloat(d.prezzo);
+                    if (d.prezzo) {
+                        totale += parseFloat(d.prezzo);
                     }
                 }
             }
@@ -107,8 +107,8 @@ const venditaRepository = {
                             prezzo: d.prezzo
                         }, { transaction: t });
                     }
-                    if (d.quantita && d.prezzo) {
-                        totale += parseFloat(d.quantita) * parseFloat(d.prezzo);
+                    if (d.prezzo) {
+                        totale += parseFloat(d.prezzo);
                     }
                 }
             }
@@ -221,13 +221,44 @@ const venditaRepository = {
         return { data, options };
     },
 
+    ottieniAndamentoUltimiTreMesi: async function() {
+        let dataOggi = new Date();
+        dataOggi.setTime( dataOggi.getTime() - dataOggi.getTimezoneOffset()*60*1000 );
+
+        const anno = dataOggi.getFullYear();
+        
+        const mese = dataOggi.getMonth() + 1;
+        const mesePrecedente = mese - 1;
+        const mesePrecedentePrecedente = mesePrecedente - 1;
+
+        const venditeMese = await this.ottieniAndamentoVenditaAnnoMese(anno, mese) || 0;
+        const venditeMesePrecedente = await this.ottieniAndamentoVenditaAnnoMese(anno, mesePrecedente) || 0;
+        const venditeMesePrecedentePrecedente = await this.ottieniAndamentoVenditaAnnoMese(anno, mesePrecedentePrecedente) || 0;
+
+        const speseMese = await this.ottieniAndamentoSpesaAnnoMese(anno, mese) || 0;
+        const speseMesePrecedente = await this.ottieniAndamentoSpesaAnnoMese(anno, mesePrecedente) || 0;
+        const speseMesePrecedentePrecedente = await this.ottieniAndamentoSpesaAnnoMese(anno, mesePrecedentePrecedente) || 0;
+
+        const totaleVendite = venditeMese + venditeMesePrecedente + venditeMesePrecedentePrecedente;
+        const totaleSpese = speseMese + speseMesePrecedente + speseMesePrecedentePrecedente;
+
+        return totaleVendite - totaleSpese;
+    },
+
     ottieniAndamentoVenditaAnnoMese: async function(anno, mese) {
+        let primoGiornoMese = new Date(anno, mese - 1, 1);
+        primoGiornoMese.setTime( primoGiornoMese.getTime() - primoGiornoMese.getTimezoneOffset()*60*1000 );
+
+        let ultimoGiornoMese = new Date(anno, mese, 0);
+        ultimoGiornoMese.setTime( ultimoGiornoMese.getTime() - ultimoGiornoMese.getTimezoneOffset()*60*1000 );
+
         const data = await Vendita.sum('totale_vendita', {
             where: {
                 deletedAt: null,
                 data_vendita: {
-                    [Op.between]: [new Date(anno, mese - 1), new Date(anno, mese)]
-                }
+                    [Op.between]: [primoGiornoMese, ultimoGiornoMese]
+                },
+                stato_spedizione: 3 // Consegnato
             },
             group: [fn('strftime', '%Y', col('data_vendita')), fn('strftime', '%m', col('data_vendita'))],
         });
@@ -236,11 +267,17 @@ const venditaRepository = {
     },
 
     ottieniAndamentoSpesaAnnoMese: async function(anno, mese) {
+        let primoGiornoMese = new Date(anno, mese - 1, 1);
+        primoGiornoMese.setTime( primoGiornoMese.getTime() - primoGiornoMese.getTimezoneOffset()*60*1000 );
+
+        let ultimoGiornoMese = new Date(anno, mese, 0);
+        ultimoGiornoMese.setTime( ultimoGiornoMese.getTime() - ultimoGiornoMese.getTimezoneOffset()*60*1000 );
+
         const data = await Spesa.sum('totale_spesa', {
             where: {
                 deletedAt: null,
                 data_spesa: {
-                    [Op.between]: [new Date(anno, mese - 1), new Date(anno, mese)]
+                    [Op.between]: [primoGiornoMese, ultimoGiornoMese]
                 }
             },
             group: [fn('strftime', '%Y', col('data_spesa')), fn('strftime', '%m', col('data_spesa'))],

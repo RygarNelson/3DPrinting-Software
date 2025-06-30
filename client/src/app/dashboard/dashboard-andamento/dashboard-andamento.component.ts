@@ -33,6 +33,8 @@ export class DashboardAndamentoComponent implements OnInit, OnDestroy {
   anno: number = 0;
   loading: boolean = false;
   graph: Graph = {};
+  totaleVendite: number = 0;
+  totaleSpese: number = 0;
 
   private anniSubscription?: Subscription;
   private andamentoSubscription?: Subscription;
@@ -81,6 +83,8 @@ export class DashboardAndamentoComponent implements OnInit, OnDestroy {
       next: (response: VenditaAndamentoResponse) => {
         if (response.success) {
           this.graph = response.data;
+          this.totaleVendite = response.totaleVendite;
+          this.totaleSpese = response.totaleSpese;
         }
 
         window.clearTimeout(this.loadingTimeout);

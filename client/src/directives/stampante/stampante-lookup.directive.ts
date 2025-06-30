@@ -1,4 +1,5 @@
-import { Directive, OnInit } from '@angular/core';
+import { Directive, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { StampanteLookupFiltri } from 'src/models/stampante/stampante-lookup-filtri';
 import { ApplicationStateService } from 'src/services/application-state.service';
 import { StampanteService } from 'src/services/stampante.service';
@@ -10,20 +11,26 @@ import { FormInputSelectComponent } from 'src/shared/form-input-select/form-inpu
     StampanteService
   ]
 })
-export class StampanteLookupDirective implements OnInit {
+export class StampanteLookupDirective implements OnInit, OnDestroy {
+
+  private subscription?: Subscription;
 
   constructor(
     private stampanteService: StampanteService,
     private component: FormInputSelectComponent,
     private applicationStateService: ApplicationStateService
   ) {
-    this.applicationStateService.stampanteLookupUpdate.subscribe(() => {
+    this.subscription = this.applicationStateService.stampanteLookupUpdate.subscribe(() => {
       this.loadLookup();
     });
   }
 
   ngOnInit(): void {
     this.loadLookup();
+  }
+
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
   }
 
   private loadLookup(): void {

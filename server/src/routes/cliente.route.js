@@ -173,4 +173,15 @@ router.delete(
     })
 );
 
+router.get(
+    '/vinted/id',
+    asyncHandler(async (req, res) => {
+        const vintedId = await ClienteRepository.getClienteVintedId();
+        res.status(200).json({
+            success: true,
+            data: vintedId
+        });
+    })
+);
+
 export default router; 

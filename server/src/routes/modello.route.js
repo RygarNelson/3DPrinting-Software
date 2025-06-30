@@ -15,7 +15,7 @@ router.use(authenticate);
 router.get(
     '/:id',
     asyncHandler(async (req, res) => {
-        const projection = ['id', 'nome', 'descrizione'];
+        const projection = ['id', 'nome', 'descrizione', 'tipo'];
         const modello = await ModelloRepository.findOne(req.params.id, projection);
         res.status(200).json({
             success: true,
@@ -33,9 +33,9 @@ router.post(
 
         const limit = undefined;
         const offset = undefined;
-        const order = undefined;
+        const order = [['tipo', 'DESC'], ['nome', 'ASC']];
 
-        const projection = ['id', 'nome', 'descrizione'];
+        const projection = ['id', 'nome', 'descrizione', 'tipo'];
 
         const data = await ModelloRepository.find(whereOptions, limit, offset, order, projection);
 
@@ -43,7 +43,10 @@ router.post(
             return {
                 id: modello.dataValues.id,
                 etichetta: modello.dataValues.nome,
-                informazioniAggiuntive: modello.dataValues.descrizione
+                informazioniAggiuntive: modello.dataValues.descrizione,
+                altriDati: {
+                    tipo: modello.dataValues.tipo
+                }
             };
         });
         res.status(200).json({
@@ -57,7 +60,9 @@ router.post(
     '/listing',
     asyncHandler(async (req, res) => {
         if (req != null && req.body != null) {
-            let whereOptions = {};
+            let whereOptions = {
+                deletedAt: null
+            };
             
             if (req.body.nome && req.body.nome.trim() !== '') {
                 whereOptions.nome = {
@@ -88,8 +93,9 @@ router.post(
                 };
             }
 
-            // Ensure we only get non-deleted records
-            whereOptions.deletedAt = null;
+            if (req.body.tipo != null) {
+                whereOptions.tipo = req.body.tipo;
+            }
 
             const limit = req.body.limit ? parseInt(req.body.limit) : 10;
             const offset = req.body.offset ? parseInt(req.body.offset) : 0;
@@ -104,7 +110,7 @@ router.post(
                 order = [[req.body.order.column, req.body.order.direction]];
             }
 
-            const projection = ['id', 'nome', 'descrizione', 'updatedAt'];
+            const projection = ['id', 'nome', 'descrizione', 'tipo', 'updatedAt'];
 
             const modelli = await ModelloRepository.find(whereOptions, limit, offset, order, projection);
 
@@ -114,7 +120,8 @@ router.post(
                     nome: modello.dataValues.nome,
                     descrizione: modello.dataValues.descrizione,
                     updatedAt: modello.dataValues.updatedAt,
-                    isUsed: await ModelloRepository.isUsed(modello.dataValues.id)
+                    isUsed: await ModelloRepository.isUsed(modello.dataValues.id),
+                    tipo: modello.dataValues.tipo
                 }
             }));
 
