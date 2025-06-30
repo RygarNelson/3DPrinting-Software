@@ -5,6 +5,9 @@ export class SpesaListingModel {
     data_spesa: Date = new Date();
     totale_spesa: number = 0;
     descrizione: string = '';
+    quantita: number = 0;
+    tipo_spesa: number = 0;
+    unita_misura: number = 0;
 }
 
 export class SpesaListingResponse implements ResponseInterface {

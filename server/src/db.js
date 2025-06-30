@@ -77,6 +77,10 @@ const updateDatabase = async (dbVersion, DatabaseVersion, CURRENT_DATABASE_VERSI
                     await updateDatabaseToVersion3();
                     break;
                 }
+                case 3: {
+                    await updateDatabaseToVersion4();
+                    break;
+                }
                 default: {
                     console.log('Database version not found');
                     process.exit(1);
@@ -112,6 +116,19 @@ const updateDatabaseToVersion3 = async () => {
         await sequelize.query('UPDATE T_VENDITE_DETTAGLI SET prezzo = prezzo * quantita');
     } catch (error) {
         console.log('Cannot update database to version 3');
+        process.exit(1);
+    }
+}
+
+const updateDatabaseToVersion4 = async () => {
+    try {
+        console.log('Updating database to version 4');
+
+        await sequelize.query('ALTER TABLE T_SPESE ADD COLUMN quantita DECIMAL(20,4) NULL');
+        await sequelize.query('ALTER TABLE T_SPESE ADD COLUMN tipo_spesa INTEGER NULL');
+        await sequelize.query('ALTER TABLE T_SPESE ADD COLUMN unita_misura INTEGER NULL');
+    } catch (error) {
+        console.log('Cannot update database to version 4');
         process.exit(1);
     }
 }

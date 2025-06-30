@@ -6,12 +6,15 @@ import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DialogService } from 'primeng/dynamicdialog';
+import { SpesaTipoLookupDirective } from 'src/directives/spesa/spesa-tipo-lookup.directive';
+import { SpesaUnitaMisuraLookupDirective } from 'src/directives/spesa/spesa-unita-misura-lookup.directive';
 import { ErrorsViewModel } from 'src/models/ErrorsViewModel';
 import { SpesaManagerModel } from 'src/models/spesa/spesa-manager';
 import { SpesaService } from 'src/services/spesa.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { FormInputDatetimeComponent } from 'src/shared/form-input-datetime/form-input-datetime.component';
 import { FormInputNumberComponent } from 'src/shared/form-input-number/form-input-number.component';
+import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
 import { FormInputTextareaComponent } from 'src/shared/form-input-textarea/form-input-textarea.component';
 
 @Component({
@@ -22,8 +25,11 @@ import { FormInputTextareaComponent } from 'src/shared/form-input-textarea/form-
     FormInputTextareaComponent,
     FormInputDatetimeComponent,
     FormInputNumberComponent,
+    FormInputSelectComponent,
     CardModule,
-    ButtonModule
+    ButtonModule,
+    SpesaTipoLookupDirective,
+    SpesaUnitaMisuraLookupDirective
   ],
   providers: [
     SpesaService,
