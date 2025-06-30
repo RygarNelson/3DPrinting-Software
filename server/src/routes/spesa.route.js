@@ -156,7 +156,10 @@ router.post(
                     id: spesa.dataValues.id,
                     data_spesa: spesa.dataValues.data_spesa,
                     totale_spesa: spesa.dataValues.totale_spesa,
-                    descrizione: spesa.dataValues.descrizione
+                    descrizione: spesa.dataValues.descrizione,
+                    quantita: spesa.dataValues.quantita,
+                    tipo_spesa: spesa.dataValues.tipo_spesa,
+                    unita_misura: spesa.dataValues.unita_misura,
                 }
             }));
 

@@ -14,10 +14,15 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import { Subscription } from 'rxjs';
+import { SpesaTipoLookupDirective } from 'src/directives/spesa/spesa-tipo-lookup.directive';
+import { SpesaUnitaMisuraLookupDirective } from 'src/directives/spesa/spesa-unita-misura-lookup.directive';
 import { SpesaListingModel, SpesaListingResponse } from 'src/models/spesa/spesa-listing';
 import { SpesaListingFiltri } from 'src/models/spesa/spesa-listing-filtri';
 import { SpesaService } from 'src/services/spesa.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
+import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
+import { SpesaTipoPipe } from '../spesa-tipo.pipe';
+import { SpesaUnitaMisuraPipe } from '../spesa-unita-misura.pipe';
 
 @Component({
   selector: 'app-spesa-listing',
@@ -33,6 +38,11 @@ import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.compo
     InputIconModule,
     SkeletonModule,
     TooltipModule,
+    SpesaTipoPipe,
+    SpesaUnitaMisuraPipe,
+    SpesaTipoLookupDirective,
+    SpesaUnitaMisuraLookupDirective,
+    FormInputSelectComponent
   ],
   providers: [
     ConfirmationService,
@@ -51,7 +61,7 @@ export class SpesaListingComponent {
   filtri: SpesaListingFiltri = {
     offset: 0,
     limit: 10,
-    search: ''
+    search: '',
   };
 
   private speseSubscription?: Subscription;
@@ -73,7 +83,9 @@ export class SpesaListingComponent {
   }
 
   loadSpese(): void {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    if (this.loadingTimeout == null) {
+      this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    }
     
     this.speseSubscription = this.spesaService.getListing(this.filtri)
       .subscribe({
@@ -168,7 +180,49 @@ export class SpesaListingComponent {
       this.filtri.totale_spesa = undefined;
     }
 
+    const quantitaFilter: FilterMetadata | FilterMetadata[] | undefined = event.filters?.['quantita'];
+    if (quantitaFilter) {
+      let value = null;
+      let operator = null;
+
+      if (quantitaFilter instanceof Array) {
+        value = quantitaFilter[0].value;
+        operator = quantitaFilter[0].matchMode;
+      } else {
+        value = quantitaFilter.value;
+        operator = quantitaFilter.matchMode;
+      }
+
+      if (value && operator) {
+        this.filtri.quantita = {
+          value: value,
+          operator: operator
+        };
+      } else {
+        this.filtri.quantita = undefined;
+      }
+    }
+    else {
+      this.filtri.quantita = undefined;
+    }
+
     this.loadSpese();
+  }
+
+  pulisciFiltri(): void {
+    this.filtri = {
+      offset: 0,
+      limit: 10,
+      search: ''
+    };
+
+    this.loadData({
+      first: 0,
+      rows: 10,
+      globalFilter: '',
+      sortField: 'data_spesa',
+      sortOrder: -1
+    });
   }
 
   refreshTable(): void {
