@@ -1,7 +1,7 @@
 'use strict'
 
 import { sequelize } from './config/database.js';
-import { checkDatabaseVersion, CURRENT_DATABASE_VERSION, getDatabaseVersion, setDatabaseVersion } from './methods/databaseVersionMethods.js';
+import { backupDatabase, checkDatabaseVersion, CURRENT_DATABASE_VERSION, getDatabaseVersion, setDatabaseVersion } from './methods/databaseVersionMethods.js';
 
 const connectToDatabase = async () => {
     try {
@@ -15,6 +15,9 @@ const connectToDatabase = async () => {
 
 const initializeDatabase = async () => {
     try {
+        // Backup the database before initializing
+        await backupDatabase();
+
         // Import models here to avoid circular dependency
         const { default: User } = await import('./models/users.model.js');
         const { default: DatabaseVersion } = await import('./models/databaseVersion.model.js');
