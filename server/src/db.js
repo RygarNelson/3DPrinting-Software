@@ -84,8 +84,12 @@ const updateDatabase = async (dbVersion, DatabaseVersion, CURRENT_DATABASE_VERSI
                     await updateDatabaseToVersion4();
                     break;
                 }
+                case 4: {
+                    await updateDatabaseToVersion5();
+                    break;
+                }
                 default: {
-                    console.log('Database version not found');
+                    console.log('Update to version', (version + 1), 'not implemented');
                     process.exit(1);
                 }
             }
@@ -132,6 +136,17 @@ const updateDatabaseToVersion4 = async () => {
         await sequelize.query('ALTER TABLE T_SPESE ADD COLUMN unita_misura INTEGER NULL');
     } catch (error) {
         console.log('Cannot update database to version 4');
+        process.exit(1);
+    }
+}
+
+const updateDatabaseToVersion5 = async () => {
+    try {
+        console.log('Updating database to version 5');
+
+        await sequelize.query('UPDATE T_VENDITE_DETTAGLI SET stato_stampa = 7 WHERE stato_stampa = 2 or stato_stampa = 3');
+    } catch (error) {
+        console.log('Cannot update database to version 5');
         process.exit(1);
     }
 }
