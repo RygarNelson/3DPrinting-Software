@@ -43,10 +43,12 @@
                     label="Data Vendita"
                     [obligatory]="true"
                     [listaErrori]="listaErrori"
-                    [(ngModel)]="vendita.data_vendita" />
+                    [(ngModel)]="vendita.data_vendita"
+                    (ngModelChange)="impostaDateScadenze()" />
                 <form-input-datetime
                     property="data_scadenza"
                     label="Data Scadenza"
+                    [min]="vendita.data_vendita"
                     [listaErrori]="listaErrori"
                     [(ngModel)]="vendita.data_scadenza" />
             </div>

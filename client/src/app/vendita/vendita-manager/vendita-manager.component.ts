@@ -180,6 +180,10 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
     });
   }
 
+  impostaDateScadenze(): void {
+    this.vendita.data_scadenza = undefined;
+  }
+
   saveVendita(): void {
     this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
 
