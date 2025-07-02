@@ -200,16 +200,25 @@ const venditaRepository = {
                     backgroundColor: 'rgba(255, 99, 132, 1)',
                     borderColor: 'rgba(255, 99, 132, 0.69)',
                     borderWidth: 1,
-                }
+                },
+                {
+                    label: 'In Sospeso',
+                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    backgroundColor: 'rgba(240, 173, 78, 1)',
+                    borderColor: 'rgba(240, 173, 78, 0.69)',
+                    borderWidth: 1,
+                },
             ]
         };
 
         for (let i = 1; i <= 12; i++) {
             const dataMeseVendite = await this.ottieniAndamentoVenditaAnnoMese(anno, i);
             const dataMeseSpese = await this.ottieniAndamentoSpesaAnnoMese(anno, i);
+            const dataMeseSospese = await this.ottieniAndamentoVenditaSospeseAnnoMese(anno, i);
 
             data.datasets[0].data[i - 1] = dataMeseVendite || 0;
             data.datasets[1].data[i - 1] = dataMeseSpese || 0;
+            data.datasets[2].data[i - 1] = dataMeseSospese || 0;
         }
 
         const options = {
@@ -259,6 +268,29 @@ const venditaRepository = {
                     [Op.between]: [primoGiornoMese, ultimoGiornoMese]
                 },
                 stato_spedizione: 3 // Consegnato
+            },
+            group: [fn('strftime', '%Y', col('data_vendita')), fn('strftime', '%m', col('data_vendita'))],
+        });
+
+        return data;
+    },
+
+    ottieniAndamentoVenditaSospeseAnnoMese: async function(anno, mese) {
+        let primoGiornoMese = new Date(anno, mese - 1, 1);
+        primoGiornoMese.setTime( primoGiornoMese.getTime() - primoGiornoMese.getTimezoneOffset()*60*1000 );
+
+        let ultimoGiornoMese = new Date(anno, mese, 0);
+        ultimoGiornoMese.setTime( ultimoGiornoMese.getTime() - ultimoGiornoMese.getTimezoneOffset()*60*1000 );
+
+        const data = await Vendita.sum('totale_vendita', {
+            where: {
+                deletedAt: null,
+                data_vendita: {
+                    [Op.between]: [primoGiornoMese, ultimoGiornoMese]
+                },
+                stato_spedizione: {
+                    [Op.in]: [0, 1, 2, 4]
+                }
             },
             group: [fn('strftime', '%Y', col('data_vendita')), fn('strftime', '%m', col('data_vendita'))],
         });

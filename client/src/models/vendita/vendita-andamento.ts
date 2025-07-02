@@ -6,4 +6,5 @@ export class VenditaAndamentoResponse implements ResponseInterface {
     data: Graph = {};
     totaleVendite: number = 0;
     totaleSpese: number = 0;
+    totaleSospese: number = 0;
 }

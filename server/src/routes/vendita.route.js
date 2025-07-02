@@ -392,12 +392,14 @@ router.get(
         const data = await VenditaRepository.ottieniAndamentoVendite(req.params.anno);
         const totaleVendite = data.data.datasets[0].data.reduce((acc, curr) => acc + curr, 0);
         const totaleSpese = data.data.datasets[1].data.reduce((acc, curr) => acc + curr, 0);
+        const totaleSospese = data.data.datasets[2].data.reduce((acc, curr) => acc + curr, 0);
 
         return res.status(200).json({
             success: true,
             data: data,
             totaleVendite: totaleVendite,
-            totaleSpese: totaleSpese
+            totaleSpese: totaleSpese,
+            totaleSospese: totaleSospese
         });
     })
 );
