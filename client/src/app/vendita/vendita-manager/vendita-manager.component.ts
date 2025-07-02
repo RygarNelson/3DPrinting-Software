@@ -93,26 +93,29 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
   ){
     this.clienteSubscription = this.applicationStateService.newCliente.subscribe((event) => {
       if (event.id != null) {
-        this.clienteRef?.destroy();
         this.vendita.cliente_id = event.id;
         this.applicationStateService.clienteLookupUpdate.next();
       }
+
+      this.clienteRef?.close();
     });
 
     this.modelloSubscription = this.applicationStateService.newModello.subscribe((event) => {
       if (event.id != null && event.index != null) {
-        this.modelloRef?.destroy();
         this.vendita.dettagli[event.index].modello_id = event.id;
         this.applicationStateService.modelloLookupUpdate.next();
       }
+
+      this.modelloRef?.close();
     });
 
     this.stampanteSubscription = this.applicationStateService.newStampante.subscribe((event) => {
       if (event.id != null && event.index != null) {
-        this.stampanteRef?.destroy();
         this.vendita.dettagli[event.index].stampante_id = event.id;
         this.applicationStateService.stampanteLookupUpdate.next();
       }
+
+      this.stampanteRef?.close();
     });
   }
 
