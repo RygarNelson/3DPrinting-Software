@@ -4,7 +4,11 @@
         <div class="flex items-center gap-2">
           <h2 class="text-xl font-semibold text-gray-800 pt-6 header-title">Gestione Vendite</h2>
           <div class="margin-left-auto header-title">
-            <h5 class="text-lg font-semibold">Ultimi 3 mesi: {{ ultimiTreMesi | currency:'EUR' }}</h5>
+            <h5 class="text-lg font-semibold">
+              Ultimi 3 mesi / 
+              Saldo: {{ ultimiTreMesi | currency:'EUR' }} <i class="pi pi-info-circle info-icon" tooltipPosition="bottom" [pTooltip]="'Il saldo viene calcolato come la somma delle vendite meno le spese, senza considerare le vendite in sospeso'"></i> - 
+              In Sospeso: {{ ultimiTreMesiSospese | currency:'EUR' }} <i class="pi pi-info-circle info-icon" tooltipPosition="bottom" [pTooltip]="'Il totale delle vendite in sospeso, senza considerare le spese'"></i>
+            </h5>
           </div>
         </div>
       </ng-template>

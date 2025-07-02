@@ -254,6 +254,23 @@ const venditaRepository = {
         return totaleVendite - totaleSpese;
     },
 
+    ottieniAndamentoUltimiTreMesiSospese: async function() {
+        let dataOggi = new Date();
+        dataOggi.setTime( dataOggi.getTime() - dataOggi.getTimezoneOffset()*60*1000 );
+
+        const anno = dataOggi.getFullYear();
+        
+        const mese = dataOggi.getMonth() + 1;
+        const mesePrecedente = mese - 1;
+        const mesePrecedentePrecedente = mesePrecedente - 1;
+
+        const venditeMese = await this.ottieniAndamentoVenditaSospeseAnnoMese(anno, mese) || 0;
+        const venditeMesePrecedente = await this.ottieniAndamentoVenditaSospeseAnnoMese(anno, mesePrecedente) || 0;
+        const venditeMesePrecedentePrecedente = await this.ottieniAndamentoVenditaSospeseAnnoMese(anno, mesePrecedentePrecedente) || 0;
+
+        return venditeMese + venditeMesePrecedente + venditeMesePrecedentePrecedente;
+    },
+
     ottieniAndamentoVenditaAnnoMese: async function(anno, mese) {
         let primoGiornoMese = new Date(anno, mese - 1, 1);
         primoGiornoMese.setTime( primoGiornoMese.getTime() - primoGiornoMese.getTimezoneOffset()*60*1000 );

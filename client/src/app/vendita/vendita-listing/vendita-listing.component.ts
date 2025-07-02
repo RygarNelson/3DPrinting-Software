@@ -60,6 +60,7 @@ export class VenditaListingComponent implements OnDestroy {
   // Data properties
   vendite: VenditaListingModel[] = [];
   ultimiTreMesi: number = 0;
+  ultimiTreMesiSospese: number = 0;
   totalRecords: number = 0;
   loading: boolean = false;
   expandedRows: any = {};
@@ -102,6 +103,7 @@ export class VenditaListingComponent implements OnDestroy {
           this.vendite = response.data;
           this.totalRecords = response.count;
           this.ultimiTreMesi = response.ultimiTreMesi;
+          this.ultimiTreMesiSospese = response.ultimiTreMesiSospese;
 
           window.clearTimeout(this.loadingTimeout);
           this.loading = false;
