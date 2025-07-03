@@ -88,6 +88,10 @@ const updateDatabase = async (dbVersion, DatabaseVersion, CURRENT_DATABASE_VERSI
                     await updateDatabaseToVersion5();
                     break;
                 }
+                case 5: {
+                    await updateDatabaseToVersion6();
+                    break;
+                }
                 default: {
                     console.log('Update to version', (version + 1), 'not implemented');
                     process.exit(1);
@@ -147,6 +151,17 @@ const updateDatabaseToVersion5 = async () => {
         await sequelize.query('UPDATE T_VENDITE_DETTAGLI SET stato_stampa = 7 WHERE stato_stampa = 2 or stato_stampa = 3');
     } catch (error) {
         console.log('Cannot update database to version 5');
+        process.exit(1);
+    }
+}
+
+const updateDatabaseToVersion6 = async () => {
+    try {
+        console.log('Updating database to version 6');
+
+        await sequelize.query('ALTER TABLE T_VENDITE ADD COLUMN data_scadenza_spedizione DATE NULL');
+    } catch (error) {
+        console.log('Cannot update database to version 6');
         process.exit(1);
     }
 }

@@ -200,6 +200,32 @@ export class VenditaListingComponent implements OnDestroy {
       this.filtri.data_scadenza = undefined;
     }
 
+    const dataScadenzaSpedizioneFilter: FilterMetadata | FilterMetadata[] | undefined = event.filters?.['data_scadenza_spedizione'];
+    if (dataScadenzaSpedizioneFilter) {
+      let value = null;
+      let operator = null;
+
+      if (dataScadenzaSpedizioneFilter instanceof Array) {
+        value = dataScadenzaSpedizioneFilter[0].value;
+        operator = dataScadenzaSpedizioneFilter[0].matchMode;
+      } else {
+        value = dataScadenzaSpedizioneFilter.value;
+        operator = dataScadenzaSpedizioneFilter.matchMode;
+      }
+
+      if (value && operator) {
+        this.filtri.data_scadenza_spedizione = {
+          value: value,
+          operator: operator
+        };
+      } else {
+        this.filtri.data_scadenza_spedizione = undefined;
+      }
+    }
+    else {
+      this.filtri.data_scadenza_spedizione = undefined;
+    }
+
     const totaleVenditaFilter: FilterMetadata | FilterMetadata[] | undefined = event.filters?.['totale_vendita'];
     if (totaleVenditaFilter) {
       let value = null;

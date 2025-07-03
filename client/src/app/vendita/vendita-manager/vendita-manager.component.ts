@@ -181,7 +181,16 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
   }
 
   impostaDateScadenze(): void {
-    this.vendita.data_scadenza = undefined;
+    if (this.vendita.data_vendita) {
+      this.vendita.data_scadenza = new Date(this.vendita.data_vendita);
+      this.vendita.data_scadenza_spedizione = new Date(this.vendita.data_vendita);
+
+      this.vendita.data_scadenza.setDate(this.vendita.data_vendita.getDate() + 6);
+      this.vendita.data_scadenza_spedizione.setDate(this.vendita.data_vendita.getDate() + 10);
+    } else {
+      this.vendita.data_scadenza = undefined;
+      this.vendita.data_scadenza_spedizione = undefined;
+    }
   }
 
   saveVendita(): void {

@@ -15,7 +15,7 @@ router.use(authenticate);
 router.get(
     '/vendita/:id',
     asyncHandler(async (req, res) => {
-        const projection = ['id', 'data_vendita', 'data_scadenza', 'cliente_id', 'totale_vendita', 'stato_spedizione', 'link_tracciamento'];
+        const projection = ['id', 'data_vendita', 'data_scadenza', 'data_scadenza_spedizione', 'cliente_id', 'totale_vendita', 'stato_spedizione', 'link_tracciamento'];
         // Pass an include option to also get all dettagli
         const include = [
             {
@@ -205,6 +205,28 @@ router.post(
                 }
             }
 
+            // Data scadenza spedizione
+            if (req.body.data_scadenza_spedizione && req.body.data_scadenza_spedizione.value && req.body.data_scadenza_spedizione.operator) {
+                switch (req.body.data_scadenza_spedizione.operator) {
+                    case 'dateIs': {
+                        whereOptions.data_scadenza_spedizione = { [Op.eq]: req.body.data_scadenza_spedizione.value };
+                        break;
+                    }
+                    case 'dateIsNot': {
+                        whereOptions.data_scadenza_spedizione = { [Op.ne]: req.body.data_scadenza_spedizione.value };
+                        break;
+                    }
+                    case 'dateBefore': {
+                        whereOptions.data_scadenza_spedizione = { [Op.lte]: req.body.data_scadenza_spedizione.value };
+                        break;
+                    }
+                    case 'dateAfter': {
+                        whereOptions.data_scadenza_spedizione = { [Op.gte]: req.body.data_scadenza_spedizione.value };
+                        break;
+                    }
+                }
+            }
+
             // Totale Vendita
             if (req.body.totale_vendita && req.body.totale_vendita.value && req.body.totale_vendita.operator) {
                 switch (req.body.totale_vendita.operator) {
@@ -243,6 +265,7 @@ router.post(
                 'id',
                 'data_vendita',
                 'data_scadenza',
+                'data_scadenza_spedizione',
                 'totale_vendita',
                 'stato_spedizione',
                 [literal(`

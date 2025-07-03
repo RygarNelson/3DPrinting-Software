@@ -20,6 +20,14 @@ const validationSchema = {
                 },
                 toDate: true
             },
+            data_scadenza_spedizione: {
+                optional: true,
+                isISO8601: {
+                    if: (value) => value !== undefined && value !== null && value !== '',
+                    errorMessage: 'La data di scadenza spedizione non è valida',
+                },
+                toDate: true
+            },
             cliente_id: {
                 optional: false,
                 isInt: {

@@ -35,8 +35,32 @@ export class FormInputDatetimeComponent extends FormInputGeneralComponent implem
   @Input() format: string = 'dd/mm/yy';
   @Input() showOnFocus: boolean = true;
   @Input() showButtonBar: boolean = true;
-  @Input() min: Date | undefined = undefined;
-  @Input() max: Date | undefined = undefined;
+
+  private _min: Date | undefined = undefined;
+  @Input()
+  get min(): Date | undefined {
+    return this._min;
+  }
+  set min(value: Date | undefined) {
+    if (value) {
+      this._min = new Date(value);
+    } else {
+      this._min = undefined;
+    }
+  }
+
+  private _max: Date | undefined = undefined;
+  @Input()
+  get max(): Date | undefined {
+    return this._max;
+  }
+  set max(value: Date | undefined) {
+    if (value) {
+      this._max = new Date(value);
+    } else {
+      this._max = undefined;
+    }
+  }
 
   get value(): any {
     return this.innerValue;
