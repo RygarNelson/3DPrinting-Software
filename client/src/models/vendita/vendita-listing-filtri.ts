@@ -21,6 +21,10 @@ export class VenditaListingFiltri implements ListingFilter {
         value?: Date;
         operator?: string;
     }
+    data_scadenza_spedizione?: {
+        value?: Date;
+        operator?: string;
+    }
     totale_vendita?: {
         value?: number;
         operator?: string;
