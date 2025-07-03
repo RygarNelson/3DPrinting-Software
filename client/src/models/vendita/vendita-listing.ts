@@ -8,6 +8,8 @@ export class VenditaListingModel {
     data_scadenza?: Date;
     data_scadenza_spedizione?: Date;
     totale_vendita: number = 0;
+    isInScadenza: boolean = false;
+    isScaduto: boolean = false;
     stato_spedizione: VenditaStatoSpedizioneEnum = VenditaStatoSpedizioneEnum.DaSpedire;
     cliente: VenditaListingClienteModel = new VenditaListingClienteModel();
     dettagli: VenditaListingDettaglioModel[] = [];

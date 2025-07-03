@@ -167,7 +167,7 @@
   
           <!-- Data Rows -->
           <ng-template #body let-vendita let-expanded="expanded">
-            <tr>
+            <tr [ngClass]="{'in-scadenza': vendita.isInScadenza, 'scaduto': vendita.isScaduto}">
                 <td>
                     <p-button type="button" pRipple [pRowToggler]="vendita" [text]="true" [rounded]="true" [plain]="true" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
                 </td>

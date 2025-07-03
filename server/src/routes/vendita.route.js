@@ -287,14 +287,14 @@ router.post(
                 [literal(`
                     CASE
                         WHEN stato_spedizione IN (0, 4)
-                            AND data_scadenza >= CURRENT_DATE
-                            AND data_scadenza_spedizione < CURRENT_DATE
+                            AND CURRENT_DATE >= data_scadenza
+                            AND CURRENT_DATE < data_scadenza_spedizione
                         THEN 1 ELSE 0 END
                 `), 'isInScadenza'],
                 [literal(`
                     CASE
                         WHEN stato_spedizione IN (0, 4)
-                            AND data_scadenza_spedizione >= CURRENT_DATE
+                            AND CURRENT_DATE >= data_scadenza_spedizione
                         THEN 1 ELSE 0 END
                 `), 'isScaduto'],
                 [literal(`
@@ -392,7 +392,7 @@ router.delete(
 router.post(
     '/vendita/stato/modifica',
     asyncHandler(async (req, res) => {
-        if (req.body.id > 0 && req.body.stato_avanzamento > 0) {
+        if (req.body.id > 0 && req.body.stato_avanzamento != null) {
             const data = await VenditaRepository.modificaStatoVendita(req.body.id, req.body.stato_avanzamento);
             return res.status(200).json({
                 success: true,

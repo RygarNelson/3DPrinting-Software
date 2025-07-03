@@ -13,6 +13,8 @@ export class VenditaListingFiltri implements ListingFilter {
     stato_spedizione?: VenditaStatoSpedizioneEnum = undefined;
     stato_stampa?: VenditaDettaglioStatoStampaEnum = undefined;
     cliente_id?: number = 0;
+    isInScadenza?: boolean = false;
+    isScaduto?: boolean = false;
     data_vendita?: {
         value?: Date;
         operator?: string;

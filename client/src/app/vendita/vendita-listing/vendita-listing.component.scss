@@ -1,0 +1,10 @@
+$in-scadenza-color: rgba(255, 152, 0, 0.25);
+$scaduto-color: rgba(255, 0, 0, 0.25);
+
+tr.in-scadenza td {
+    background-color: $in-scadenza-color;
+}
+
+tr.scaduto td {
+    background-color: $scaduto-color;
+}
