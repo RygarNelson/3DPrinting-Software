@@ -7,61 +7,76 @@
             @if (loading) {
                 <p-skeleton height="300px" width="100%" />
             } @else {
-                <div class="stato-grid">
-                    <div class="stato-box">
-                        <div class="stato-name">Da Stampare</div>
-                        <div class="stato-value">{{ stato.da_stampare }}</div>
+                <!-- Stato Stampa Row -->
+                <div class="stato-section">
+                    <h3 class="section-title">Stato Stampa</h3>
+                    <div class="stato-grid">
+                        <div class="stato-box stato-stampa da-stampare">
+                            <div class="stato-name">Da Stampare</div>
+                            <div class="stato-value">{{ stato.da_stampare }}</div>
+                        </div>
+                        <div class="stato-box stato-stampa stampa-in-corso">
+                            <div class="stato-name">Stampa in Corso</div>
+                            <div class="stato-value">{{ stato.stampa_in_corso }}</div>
+                        </div>
+                        <div class="stato-box stato-stampa da-controllare">
+                            <div class="stato-name">Da Controllare</div>
+                            <div class="stato-value">{{ stato.da_controllare }}</div>
+                        </div>
+                        <div class="stato-box stato-stampa terminato-senza-difetti">
+                            <div class="stato-name">Terminato Senza Difetti</div>
+                            <div class="stato-value">{{ stato.terminato_senza_difetti }}</div>
+                        </div>
+                        <div class="stato-box stato-stampa terminato-con-difetti">
+                            <div class="stato-name">Terminato Con Difetti</div>
+                            <div class="stato-value">{{ stato.terminato_con_difetti }}</div>
+                        </div>
+                        <div class="stato-box stato-stampa fallito">
+                            <div class="stato-name">Fallito</div>
+                            <div class="stato-value">{{ stato.fallito }}</div>
+                        </div>
                     </div>
-                    <div class="stato-box">
-                        <div class="stato-name">Stampa in Corso</div>
-                        <div class="stato-value">{{ stato.stampa_in_corso }}</div>
-                    </div>
-                    <div class="stato-box">
-                        <div class="stato-name">Terminato Senza Difetti</div>
-                        <div class="stato-value">{{ stato.terminato_senza_difetti }}</div>
-                    </div>
-                    <div class="stato-box">
-                        <div class="stato-name">Terminato Con Difetti</div>
-                        <div class="stato-value">{{ stato.terminato_con_difetti }}</div>
-                    </div>
-                    <div class="stato-box">
-                        <div class="stato-name">Fallito</div>
-                        <div class="stato-value">{{ stato.fallito }}</div>
-                    </div>
-                    <div class="stato-box">
-                        <div class="stato-name">Da Controllare</div>
-                        <div class="stato-value">{{ stato.da_controllare }}</div>
-                    </div>
-                    <div class="stato-box">
-                        <div class="stato-name">Da Spedire</div>
-                        <div class="stato-value">{{ stato.da_spedire }}</div>
-                    </div>
-                    <div class="stato-box">
-                        <div class="stato-name">Spedizione in Corso</div>
-                        <div class="stato-value">{{ stato.spedizione_in_corso }}</div>
-                    </div>
-                    <div class="stato-box">
-                        <div class="stato-name">Spedizione Terminata Parzialmente</div>
-                        <div class="stato-value">{{ stato.spedizione_terminata_parzialmente }}</div>
-                    </div>
-                    <div class="stato-box">
-                        <div class="stato-name">Spedizione Terminata Completamente</div>
-                        <div class="stato-value">{{ stato.spedizione_terminata_completamente }}</div>
-                    </div>
-                    <div class="stato-box">
-                        <div class="stato-name">Spedizione Fallita</div>
-                        <div class="stato-value">{{ stato.spedizione_fallita }}</div>
+                </div>
+
+                <!-- Stato Spedizione Row -->
+                <div class="stato-section">
+                    <h3 class="section-title">Stato Spedizione</h3>
+                    <div class="stato-grid">
+                        <div class="stato-box stato-spedizione da-spedire">
+                            <div class="stato-name">Da Spedire</div>
+                            <div class="stato-value">{{ stato.da_spedire }}</div>
+                        </div>
+                        <div class="stato-box stato-spedizione spedizione-in-corso">
+                            <div class="stato-name">Spedizione in Corso</div>
+                            <div class="stato-value">{{ stato.spedizione_in_corso }}</div>
+                        </div>
+                        <div class="stato-box stato-spedizione spedizione-terminata-parzialmente">
+                            <div class="stato-name">Spedizione Terminata Parzialmente</div>
+                            <div class="stato-value">{{ stato.spedizione_terminata_parzialmente }}</div>
+                        </div>
+                        <div class="stato-box stato-spedizione spedizione-terminata-completamente">
+                            <div class="stato-name">Spedizione Terminata Completamente</div>
+                            <div class="stato-value">{{ stato.spedizione_terminata_completamente }}</div>
+                        </div>
+                        <div class="stato-box stato-spedizione spedizione-fallita">
+                            <div class="stato-name">Spedizione Fallita</div>
+                            <div class="stato-value">{{ stato.spedizione_fallita }}</div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="stato-grid scadenza-row">
-                    <div class="stato-box in-scadenza">
-                        <div class="stato-name">In Scadenza</div>
-                        <div class="stato-value">{{ stato.in_scadenza }}</div>
-                    </div>
-                    <div class="stato-box scadute">
-                        <div class="stato-name">Scadute</div>
-                        <div class="stato-value">{{ stato.scadute }}</div>
+                <!-- Scadenza Row -->
+                <div class="stato-section">
+                    <h3 class="section-title">Scadenze</h3>
+                    <div class="stato-grid scadenza-row">
+                        <div class="stato-box in-scadenza">
+                            <div class="stato-name">In Scadenza</div>
+                            <div class="stato-value">{{ stato.in_scadenza }}</div>
+                        </div>
+                        <div class="stato-box scadute">
+                            <div class="stato-name">Scadute</div>
+                            <div class="stato-value">{{ stato.scadute }}</div>
+                        </div>
                     </div>
                 </div>
             }

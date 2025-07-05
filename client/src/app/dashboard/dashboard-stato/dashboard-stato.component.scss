@@ -1,3 +1,20 @@
+.stato-section {
+    margin-bottom: 2rem;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e5e7eb;
+}
+
 .stato-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -44,12 +61,101 @@
     margin-top: auto;
 }
 
+// Stato Stampa colors (from vendita-dettaglio-stato.component.ts)
+.da-stampare {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.25) 0%, rgba(255, 193, 7, 0.15) 100%);
+    border-color: rgba(255, 193, 7, 0.3);
+    
+    &:hover {
+        border-color: rgba(255, 193, 7, 0.5);
+        box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2);
+    }
+}
+
+.stampa-in-corso, .da-controllare {
+    background: linear-gradient(135deg, rgba(33, 150, 243, 0.25) 0%, rgba(33, 150, 243, 0.15) 100%);
+    border-color: rgba(33, 150, 243, 0.3);
+    
+    &:hover {
+        border-color: rgba(33, 150, 243, 0.5);
+        box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+    }
+}
+
+.terminato-senza-difetti {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.25) 0%, rgba(76, 175, 80, 0.15) 100%);
+    border-color: rgba(76, 175, 80, 0.3);
+    
+    &:hover {
+        border-color: rgba(76, 175, 80, 0.5);
+        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+    }
+}
+
+.terminato-con-difetti {
+    background: linear-gradient(135deg, rgba(255, 152, 0, 0.25) 0%, rgba(255, 152, 0, 0.15) 100%);
+    border-color: rgba(255, 152, 0, 0.3);
+    
+    &:hover {
+        border-color: rgba(255, 152, 0, 0.5);
+        box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);
+    }
+}
+
+.fallito {
+    background: linear-gradient(135deg, rgba(244, 67, 54, 0.25) 0%, rgba(244, 67, 54, 0.15) 100%);
+    border-color: rgba(244, 67, 54, 0.3);
+    
+    &:hover {
+        border-color: rgba(244, 67, 54, 0.5);
+        box-shadow: 0 4px 12px rgba(244, 67, 54, 0.2);
+    }
+}
+
+// Stato Spedizione colors (from vendita-stato.component.ts)
+.da-spedire {
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.25) 0%, rgba(255, 193, 7, 0.15) 100%);
+    border-color: rgba(255, 193, 7, 0.3);
+    
+    &:hover {
+        border-color: rgba(255, 193, 7, 0.5);
+        box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2);
+    }
+}
+
+.spedizione-in-corso, .spedizione-terminata-parzialmente {
+    background: linear-gradient(135deg, rgba(33, 150, 243, 0.25) 0%, rgba(33, 150, 243, 0.15) 100%);
+    border-color: rgba(33, 150, 243, 0.3);
+    
+    &:hover {
+        border-color: rgba(33, 150, 243, 0.5);
+        box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+    }
+}
+
+.spedizione-terminata-completamente {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.25) 0%, rgba(76, 175, 80, 0.15) 100%);
+    border-color: rgba(76, 175, 80, 0.3);
+    
+    &:hover {
+        border-color: rgba(76, 175, 80, 0.5);
+        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+    }
+}
+
+.spedizione-fallita {
+    background: linear-gradient(135deg, rgba(244, 67, 54, 0.25) 0%, rgba(244, 67, 54, 0.15) 100%);
+    border-color: rgba(244, 67, 54, 0.3);
+    
+    &:hover {
+        border-color: rgba(244, 67, 54, 0.5);
+        box-shadow: 0 4px 12px rgba(244, 67, 54, 0.2);
+    }
+}
+
 // Special styling for scadenza row
 .scadenza-row {
     grid-template-columns: repeat(2, 1fr);
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
-    border-top: 2px solid #e2e8f0;
 }
 
 .in-scadenza {
@@ -74,6 +180,15 @@
 
 // Responsive adjustments
 @media (max-width: 768px) {
+    .stato-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .section-title {
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+    }
+
     .stato-grid {
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
         gap: 0.75rem;
@@ -91,14 +206,18 @@
     .stato-value {
         font-size: 1.5rem;
     }
-
-    .scadenza-row {
-        margin-top: 1rem;
-        padding-top: 1rem;
-    }
 }
 
 @media (max-width: 480px) {
+    .stato-section {
+        margin-bottom: 1rem;
+    }
+
+    .section-title {
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+    }
+
     .stato-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 0.5rem;
@@ -116,10 +235,5 @@
 
     .stato-value {
         font-size: 1.25rem;
-    }
-
-    .scadenza-row {
-        margin-top: 0.75rem;
-        padding-top: 0.75rem;
     }
 }
