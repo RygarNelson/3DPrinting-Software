@@ -458,4 +458,15 @@ router.get(
     })
 );
 
+router.get(
+    '/stato',
+    asyncHandler(async (req, res) => {
+        const data = await VenditaRepository.ottieniStatoVendite();
+        return res.status(200).json({
+            success: true,
+            data: data
+        });
+    })
+);
+
 export default router;

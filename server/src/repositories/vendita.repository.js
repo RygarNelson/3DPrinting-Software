@@ -335,6 +335,79 @@ const venditaRepository = {
 
         return data;
     },
+
+    ottieniStatoVendite: async function() {
+        const da_stampare = await this.contaVenditeConDettagliStatoStampa(0);
+        const stampa_in_corso = await this.contaVenditeConDettagliStatoStampa(1);
+        const terminato_senza_difetti = await this.contaVenditeConDettagliStatoStampa(4);
+        const terminato_con_difetti = await this.contaVenditeConDettagliStatoStampa(5);
+        const fallito = await this.contaVenditeConDettagliStatoStampa(6);
+        const da_controllare = await this.contaVenditeConDettagliStatoStampa(7);
+        const da_spedire = await this.contaVenditeConStatoSpedizione(0);
+        const spedizione_in_corso = await this.contaVenditeConStatoSpedizione(1);
+        const spedizione_terminata_parzialmente = await this.contaVenditeConStatoSpedizione(2);
+        const spedizione_terminata_completamente = await this.contaVenditeConStatoSpedizione(3);
+        const spedizione_fallita = await this.contaVenditeConStatoSpedizione(4);
+        const in_scadenza = await this.contaVenditeInScadenza();
+        const scadute = await this.contaVenditeScadute();
+
+        return {
+            da_stampare,
+            stampa_in_corso,
+            terminato_senza_difetti,
+            terminato_con_difetti,
+            fallito,
+            da_controllare,
+            da_spedire,
+            spedizione_in_corso,
+            spedizione_terminata_parzialmente,
+            spedizione_terminata_completamente,
+            spedizione_fallita,
+            in_scadenza,
+            scadute
+        };
+    },
+
+    contaVenditeConDettagliStatoStampa: async function(stato_stampa) {
+        return VenditaDettaglio.count({
+            where: {
+                stato_stampa: stato_stampa
+            }
+        });
+    },
+
+    contaVenditeConStatoSpedizione: async function(stato_spedizione) {
+        return Vendita.count({
+            where: {
+                stato_spedizione: stato_spedizione
+            }
+        });
+    },
+
+    contaVenditeInScadenza: async function() {
+        let dataOggi = new Date();
+        dataOggi.setTime( dataOggi.getTime() - dataOggi.getTimezoneOffset()*60*1000 );
+
+        return Vendita.count({
+            where: {
+                data_scadenza: { [Op.gte]: dataOggi },
+                data_scadenza_spedizione: { [Op.lt]: dataOggi },
+                stato_spedizione: { [Op.in]: [0, 4] }
+            }
+        });
+    },
+
+    contaVenditeScadute: async function() {
+        let dataOggi = new Date();
+        dataOggi.setTime( dataOggi.getTime() - dataOggi.getTimezoneOffset()*60*1000 );
+
+        return Vendita.count({
+            where: {
+                data_scadenza_spedizione: { [Op.gte]: dataOggi },
+                stato_spedizione: { [Op.in]: [0, 4] }
+            }
+        });
+    },
 };
 
 export default venditaRepository; 
