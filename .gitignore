@@ -72,3 +72,4 @@ Thumbs.db
 out/
 client/.angular
 client/package-lock.json
+package-lock.json
