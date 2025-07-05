@@ -26,11 +26,11 @@
     background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
     border: 1px solid #e2e8f0;
     border-radius: 12px;
-    padding: 1.5rem;
+    padding: 0.5rem;
     text-align: center;
     transition: all 0.3s ease;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    min-height: 120px;
+    min-height: 60px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -48,7 +48,7 @@
     font-weight: 600;
     color: #475569;
     margin-bottom: 0.5rem;
-    line-height: 1.4;
+    line-height: 1.2;
     flex-grow: 1;
     display: flex;
     align-items: center;
@@ -56,7 +56,7 @@
 }
 
 .stato-value {
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: #1e293b;
     margin-top: auto;
@@ -197,7 +197,7 @@
 
     .stato-box {
         padding: 1rem;
-        min-height: 100px;
+        min-height: 60px;
     }
 
     .stato-name {
@@ -226,7 +226,7 @@
 
     .stato-box {
         padding: 0.75rem;
-        min-height: 80px;
+        min-height: 50px;
     }
 
     .stato-name {
