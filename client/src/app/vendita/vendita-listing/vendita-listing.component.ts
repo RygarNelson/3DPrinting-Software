@@ -26,6 +26,7 @@ import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.compo
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
 import { VenditaDettaglioStatoComponent } from '../vendita-dettaglio-stato/vendita-dettaglio-stato.component';
 import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component';
+import { FormInputRadiobuttonComponent } from 'src/shared/form-input-radiobutton/form-input-radiobutton.component';
 
 @Component({
   selector: 'app-vendita-listing',
@@ -45,6 +46,7 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
     VenditaDettaglioStatoComponent,
     AccordionModule,
     FormInputSelectComponent,
+    FormInputRadiobuttonComponent,
     ClienteLookupDirective,
     VenditaStatoSpedizioneLookupDirective,
     VenditaDettaglioStatoStampaLookupDirective
@@ -122,6 +124,19 @@ export class VenditaListingComponent implements OnDestroy {
           });
         }
       });
+  }
+
+  filterRadioButton(type: string): void {
+    if (type === 'in_scadenza') {
+      this.filtri.isInScadenza = true;
+      this.filtri.isScaduto = false;
+    }
+    else if (type === 'scaduto') {
+      this.filtri.isScaduto = true;
+      this.filtri.isInScadenza = false;
+    }
+
+    this.loadVendite();
   }
 
   loadData(event: TableLazyLoadEvent): void {

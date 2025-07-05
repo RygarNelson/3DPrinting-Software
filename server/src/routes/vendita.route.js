@@ -257,6 +257,22 @@ router.post(
                 }
             }
 
+            if (req.body.isInScadenza || req.body.isScaduto) {
+                let dataOggi = new Date();
+                dataOggi.setTime( dataOggi.getTime() - dataOggi.getTimezoneOffset()*60*1000 );
+
+                const valoriAmmessiStatoSpedizione = [0, 4];
+
+                if (req.body.isInScadenza) {
+                    whereOptions.data_scadenza = { [Op.gte]: dataOggi };
+                    whereOptions.data_scadenza_spedizione = { [Op.lt]: dataOggi };
+                } else {
+                    whereOptions.data_scadenza_spedizione = { [Op.gte]: dataOggi };
+                }
+
+                whereOptions.stato_spedizione = { [Op.in]: valoriAmmessiStatoSpedizione };
+            }
+
             const limit = req.body.limit ? parseInt(req.body.limit) : 10;
             const offset = req.body.offset ? parseInt(req.body.offset) : 0;
 
@@ -268,6 +284,19 @@ router.post(
                 'data_scadenza_spedizione',
                 'totale_vendita',
                 'stato_spedizione',
+                [literal(`
+                    CASE
+                        WHEN stato_spedizione IN (0, 4)
+                            AND CURRENT_DATE >= data_scadenza
+                            AND CURRENT_DATE < data_scadenza_spedizione
+                        THEN 1 ELSE 0 END
+                `), 'isInScadenza'],
+                [literal(`
+                    CASE
+                        WHEN stato_spedizione IN (0, 4)
+                            AND CURRENT_DATE >= data_scadenza_spedizione
+                        THEN 1 ELSE 0 END
+                `), 'isScaduto'],
                 [literal(`
                     CASE
                         WHEN stato_spedizione = 4 THEN 1
@@ -363,7 +392,7 @@ router.delete(
 router.post(
     '/vendita/stato/modifica',
     asyncHandler(async (req, res) => {
-        if (req.body.id > 0 && req.body.stato_avanzamento > 0) {
+        if (req.body.id > 0 && req.body.stato_avanzamento != null) {
             const data = await VenditaRepository.modificaStatoVendita(req.body.id, req.body.stato_avanzamento);
             return res.status(200).json({
                 success: true,

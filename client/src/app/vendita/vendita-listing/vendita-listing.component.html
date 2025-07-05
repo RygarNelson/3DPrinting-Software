@@ -103,7 +103,7 @@
                 <p-sortIcon field="data_scadenza_spedizione" />
                 <p-columnFilter field="data_scadenza_spedizione" [type]="'date'" display="menu" [showMatchModes]="true" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
               </th>
-              <th style="width: 150px;">
+              <th>
                 Cliente
                 <p-columnFilter field="cliente_id" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false">
                   <ng-template #filter let-value let-filter="filterCallback">
@@ -157,6 +157,20 @@
                           <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id" [isInSelect]="true" />
                         </ng-template>
                       </form-input-select>
+                      <form-input-radiobutton
+                        [label]="'In Scadenza'"
+                        [property]="'in_scadenza'"
+                        [name]="'scadenza'"
+                        [radioButtonValue]="true"
+                        [(ngModel)]="filtri.isInScadenza"
+                        (ngModelChange)="filterRadioButton('in_scadenza')" />
+                      <form-input-radiobutton
+                          [label]="'Scaduto'"
+                          [property]="'scaduto'"
+                          [name]="'scadenza'"
+                          [radioButtonValue]="true"
+                          [(ngModel)]="filtri.isScaduto"
+                          (ngModelChange)="filterRadioButton('scaduto')" />
                     </div>
                   </ng-template>
               </p-columnFilter>
@@ -167,7 +181,7 @@
   
           <!-- Data Rows -->
           <ng-template #body let-vendita let-expanded="expanded">
-            <tr>
+            <tr [ngClass]="{'in-scadenza': vendita.isInScadenza, 'scaduto': vendita.isScaduto}">
                 <td>
                     <p-button type="button" pRipple [pRowToggler]="vendita" [text]="true" [rounded]="true" [plain]="true" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
                 </td>
