@@ -386,7 +386,6 @@ const venditaRepository = {
 
     contaVenditeInScadenza: async function() {
         let dataOggi = new Date();
-        dataOggi.setTime( dataOggi.getTime() - dataOggi.getTimezoneOffset()*60*1000 );
 
         return Vendita.count({
             where: {
@@ -399,7 +398,6 @@ const venditaRepository = {
 
     contaVenditeScadute: async function() {
         let dataOggi = new Date();
-        dataOggi.setTime( dataOggi.getTime() - dataOggi.getTimezoneOffset()*60*1000 );
 
         return Vendita.count({
             where: {

@@ -259,9 +259,6 @@ router.post(
 
             if (req.body.isInScadenza || req.body.isScaduto) {
                 let dataOggi = new Date();
-                dataOggi.setTime( dataOggi.getTime() - dataOggi.getTimezoneOffset()*60*1000 );
-
-                const valoriAmmessiStatoSpedizione = [0, 4];
 
                 if (req.body.isInScadenza) {
                     whereOptions.data_scadenza = { [Op.lte]: dataOggi };
@@ -270,7 +267,7 @@ router.post(
                     whereOptions.data_scadenza_spedizione = { [Op.lte]: dataOggi };
                 }
 
-                whereOptions.stato_spedizione = { [Op.in]: valoriAmmessiStatoSpedizione };
+                whereOptions.stato_spedizione = { [Op.in]: [0, 4] };
             }
 
             const limit = req.body.limit ? parseInt(req.body.limit) : 10;
