@@ -1,8 +1,5 @@
 <div class="p-4">
     <p-card>
-        <ng-template pTemplate="header">
-            <h2 class="text-xl font-semibold text-gray-800 pt-6 header-title">Stato</h2>
-        </ng-template>
         <ng-template pTemplate="content">
             @if (loading) {
                 <p-skeleton height="300px" width="100%" />
@@ -11,27 +8,27 @@
                 <div class="stato-section">
                     <h3 class="section-title">Stato Stampa</h3>
                     <div class="stato-grid">
-                        <div class="stato-box stato-stampa da-stampare">
+                        <div class="stato-box stato-stampa da-stampare" (click)="goToVenditeStatoStampa(VenditaDettaglioStatoStampaEnum.DaStampare)">
                             <div class="stato-name">Da Stampare</div>
                             <div class="stato-value">{{ stato.da_stampare }}</div>
                         </div>
-                        <div class="stato-box stato-stampa stampa-in-corso">
+                        <div class="stato-box stato-stampa stampa-in-corso" (click)="goToVenditeStatoStampa(VenditaDettaglioStatoStampaEnum.StampaInCorso)">
                             <div class="stato-name">Stampa in Corso</div>
                             <div class="stato-value">{{ stato.stampa_in_corso }}</div>
                         </div>
-                        <div class="stato-box stato-stampa da-controllare">
+                        <div class="stato-box stato-stampa da-controllare" (click)="goToVenditeStatoStampa(VenditaDettaglioStatoStampaEnum.DaControllare)">
                             <div class="stato-name">Da Controllare</div>
                             <div class="stato-value">{{ stato.da_controllare }}</div>
                         </div>
-                        <div class="stato-box stato-stampa terminato-senza-difetti">
+                        <div class="stato-box stato-stampa terminato-senza-difetti" (click)="goToVenditeStatoStampa(VenditaDettaglioStatoStampaEnum.TerminatoSenzaDifetti)">
                             <div class="stato-name">Terminato Senza Difetti</div>
                             <div class="stato-value">{{ stato.terminato_senza_difetti }}</div>
                         </div>
-                        <div class="stato-box stato-stampa terminato-con-difetti">
+                        <div class="stato-box stato-stampa terminato-con-difetti" (click)="goToVenditeStatoStampa(VenditaDettaglioStatoStampaEnum.TerminatoConDifetti)">
                             <div class="stato-name">Terminato Con Difetti</div>
                             <div class="stato-value">{{ stato.terminato_con_difetti }}</div>
                         </div>
-                        <div class="stato-box stato-stampa fallito">
+                        <div class="stato-box stato-stampa fallito" (click)="goToVenditeStatoStampa(VenditaDettaglioStatoStampaEnum.Fallito)">
                             <div class="stato-name">Fallito</div>
                             <div class="stato-value">{{ stato.fallito }}</div>
                         </div>
@@ -42,24 +39,24 @@
                 <div class="stato-section">
                     <h3 class="section-title">Stato Spedizione</h3>
                     <div class="stato-grid">
-                        <div class="stato-box stato-spedizione da-spedire">
+                        <div class="stato-box stato-spedizione da-spedire" (click)="goToVenditeStatoSpedizione(VenditaStatoSpedizioneEnum.DaSpedire)">
                             <div class="stato-name">Da Spedire</div>
                             <div class="stato-value">{{ stato.da_spedire }}</div>
                         </div>
-                        <div class="stato-box stato-spedizione spedizione-in-corso">
-                            <div class="stato-name">Spedizione in Corso</div>
+                        <div class="stato-box stato-spedizione spedizione-in-corso" (click)="goToVenditeStatoSpedizione(VenditaStatoSpedizioneEnum.SpedizioneInCorso)">
+                            <div class="stato-name">in Corso</div>
                             <div class="stato-value">{{ stato.spedizione_in_corso }}</div>
                         </div>
-                        <div class="stato-box stato-spedizione spedizione-terminata-parzialmente">
-                            <div class="stato-name">Spedizione Terminata Parzialmente</div>
+                        <div class="stato-box stato-spedizione spedizione-terminata-parzialmente" (click)="goToVenditeStatoSpedizione(VenditaStatoSpedizioneEnum.SpedizioneTerminataParzialmente)">
+                            <div class="stato-name">Terminata Parzialmente</div>
                             <div class="stato-value">{{ stato.spedizione_terminata_parzialmente }}</div>
                         </div>
-                        <div class="stato-box stato-spedizione spedizione-terminata-completamente">
-                            <div class="stato-name">Spedizione Terminata Completamente</div>
+                        <div class="stato-box stato-spedizione spedizione-terminata-completamente" (click)="goToVenditeStatoSpedizione(VenditaStatoSpedizioneEnum.SpedizioneTerminataCompletamente)">
+                            <div class="stato-name">Terminata Completamente</div>
                             <div class="stato-value">{{ stato.spedizione_terminata_completamente }}</div>
                         </div>
-                        <div class="stato-box stato-spedizione spedizione-fallita">
-                            <div class="stato-name">Spedizione Fallita</div>
+                        <div class="stato-box stato-spedizione spedizione-fallita" (click)="goToVenditeStatoSpedizione(VenditaStatoSpedizioneEnum.SpedizioneFallita)">
+                            <div class="stato-name">Fallita</div>
                             <div class="stato-value">{{ stato.spedizione_fallita }}</div>
                         </div>
                     </div>
@@ -69,11 +66,11 @@
                 <div class="stato-section">
                     <h3 class="section-title">Scadenze</h3>
                     <div class="stato-grid scadenza-row">
-                        <div class="stato-box in-scadenza">
+                        <div class="stato-box in-scadenza" (click)="goToVenditeInScadenza()">
                             <div class="stato-name">In Scadenza</div>
                             <div class="stato-value">{{ stato.in_scadenza }}</div>
                         </div>
-                        <div class="stato-box scadute">
+                        <div class="stato-box scadute" (click)="goToVenditeScadute()">
                             <div class="stato-name">Scadute</div>
                             <div class="stato-value">{{ stato.scadute }}</div>
                         </div>

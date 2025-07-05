@@ -1,7 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { SkeletonModule } from 'primeng/skeleton';
 import { Subscription } from 'rxjs';
+import { VenditaDettaglioStatoStampaEnum } from 'src/enums/VenditaDettaglioStatoStampaEnum';
+import { VenditaStatoSpedizioneEnum } from 'src/enums/VenditaStatoSpedizioneEnum';
 import { VenditaStatoModel, VenditaStatoResponse } from 'src/models/vendita/vendita-stato';
 import { VenditaService } from 'src/services/vendita.service';
 
@@ -21,10 +24,16 @@ export class DashboardStatoComponent implements OnInit, OnDestroy {
   loading: boolean = false;
   stato: VenditaStatoModel = new VenditaStatoModel();
 
+  protected readonly VenditaDettaglioStatoStampaEnum = VenditaDettaglioStatoStampaEnum;
+  protected readonly VenditaStatoSpedizioneEnum = VenditaStatoSpedizioneEnum;
+
   private statoSubscription?: Subscription;
   private loadingTimeout?: number;
 
-  constructor(private venditaService: VenditaService) {}
+  constructor(
+    private venditaService: VenditaService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.getStatoVendite();
@@ -45,6 +54,38 @@ export class DashboardStatoComponent implements OnInit, OnDestroy {
 
       window.clearTimeout(this.loadingTimeout);
       this.loading = false;
+    });
+  }
+
+  goToVenditeStatoSpedizione(stato: VenditaStatoSpedizioneEnum): void {
+    this.router.navigate(['/vendita', 'listing'], {
+      queryParams: {
+        stato_spedizione: stato,
+      }
+    });
+  }
+
+  goToVenditeStatoStampa(stato: VenditaDettaglioStatoStampaEnum): void {
+    this.router.navigate(['/vendita', 'listing'], {
+      queryParams: {
+        stato_stampa: stato,
+      }
+    });
+  }
+
+  goToVenditeInScadenza(): void {
+    this.router.navigate(['/vendita', 'listing'], {
+      queryParams: {
+        isInScadenza: true,
+      }
+    });
+  }
+
+  goToVenditeScadute(): void {
+    this.router.navigate(['/vendita', 'listing'], {
+      queryParams: {
+        isScaduto: true,
+      }
     });
   }
 }

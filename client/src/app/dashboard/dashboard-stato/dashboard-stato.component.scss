@@ -1,5 +1,5 @@
 .stato-section {
-    margin-bottom: 2rem;
+    margin-bottom: 0.5rem;
 
     &:last-child {
         margin-bottom: 0;
@@ -34,6 +34,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    cursor: pointer;
 
     &:hover {
         transform: translateY(-2px);
