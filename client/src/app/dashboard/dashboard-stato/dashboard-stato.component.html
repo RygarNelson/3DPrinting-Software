@@ -7,7 +7,63 @@
             @if (loading) {
                 <p-skeleton height="300px" width="100%" />
             } @else {
+                <div class="stato-grid">
+                    <div class="stato-box">
+                        <div class="stato-name">Da Stampare</div>
+                        <div class="stato-value">{{ stato.da_stampare }}</div>
+                    </div>
+                    <div class="stato-box">
+                        <div class="stato-name">Stampa in Corso</div>
+                        <div class="stato-value">{{ stato.stampa_in_corso }}</div>
+                    </div>
+                    <div class="stato-box">
+                        <div class="stato-name">Terminato Senza Difetti</div>
+                        <div class="stato-value">{{ stato.terminato_senza_difetti }}</div>
+                    </div>
+                    <div class="stato-box">
+                        <div class="stato-name">Terminato Con Difetti</div>
+                        <div class="stato-value">{{ stato.terminato_con_difetti }}</div>
+                    </div>
+                    <div class="stato-box">
+                        <div class="stato-name">Fallito</div>
+                        <div class="stato-value">{{ stato.fallito }}</div>
+                    </div>
+                    <div class="stato-box">
+                        <div class="stato-name">Da Controllare</div>
+                        <div class="stato-value">{{ stato.da_controllare }}</div>
+                    </div>
+                    <div class="stato-box">
+                        <div class="stato-name">Da Spedire</div>
+                        <div class="stato-value">{{ stato.da_spedire }}</div>
+                    </div>
+                    <div class="stato-box">
+                        <div class="stato-name">Spedizione in Corso</div>
+                        <div class="stato-value">{{ stato.spedizione_in_corso }}</div>
+                    </div>
+                    <div class="stato-box">
+                        <div class="stato-name">Spedizione Terminata Parzialmente</div>
+                        <div class="stato-value">{{ stato.spedizione_terminata_parzialmente }}</div>
+                    </div>
+                    <div class="stato-box">
+                        <div class="stato-name">Spedizione Terminata Completamente</div>
+                        <div class="stato-value">{{ stato.spedizione_terminata_completamente }}</div>
+                    </div>
+                    <div class="stato-box">
+                        <div class="stato-name">Spedizione Fallita</div>
+                        <div class="stato-value">{{ stato.spedizione_fallita }}</div>
+                    </div>
+                </div>
                 
+                <div class="stato-grid scadenza-row">
+                    <div class="stato-box in-scadenza">
+                        <div class="stato-name">In Scadenza</div>
+                        <div class="stato-value">{{ stato.in_scadenza }}</div>
+                    </div>
+                    <div class="stato-box scadute">
+                        <div class="stato-name">Scadute</div>
+                        <div class="stato-value">{{ stato.scadute }}</div>
+                    </div>
+                </div>
             }
         </ng-template>
     </p-card>

@@ -1,0 +1,125 @@
+.stato-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    padding: 1rem 0;
+}
+
+.stato-box {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-color: #cbd5e1;
+    }
+}
+
+.stato-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stato-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-top: auto;
+}
+
+// Special styling for scadenza row
+.scadenza-row {
+    grid-template-columns: repeat(2, 1fr);
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid #e2e8f0;
+}
+
+.in-scadenza {
+    background: linear-gradient(135deg, rgba(255, 152, 0, 0.25) 0%, rgba(255, 152, 0, 0.15) 100%);
+    border-color: rgba(255, 152, 0, 0.3);
+    
+    &:hover {
+        border-color: rgba(255, 152, 0, 0.5);
+        box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);
+    }
+}
+
+.scadute {
+    background: linear-gradient(135deg, rgba(255, 0, 0, 0.25) 0%, rgba(255, 0, 0, 0.15) 100%);
+    border-color: rgba(255, 0, 0, 0.3);
+    
+    &:hover {
+        border-color: rgba(255, 0, 0, 0.5);
+        box-shadow: 0 4px 12px rgba(255, 0, 0, 0.2);
+    }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+    .stato-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .stato-box {
+        padding: 1rem;
+        min-height: 100px;
+    }
+
+    .stato-name {
+        font-size: 0.75rem;
+    }
+
+    .stato-value {
+        font-size: 1.5rem;
+    }
+
+    .scadenza-row {
+        margin-top: 1rem;
+        padding-top: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .stato-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+    }
+
+    .stato-box {
+        padding: 0.75rem;
+        min-height: 80px;
+    }
+
+    .stato-name {
+        font-size: 0.7rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .stato-value {
+        font-size: 1.25rem;
+    }
+
+    .scadenza-row {
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+    }
+}
