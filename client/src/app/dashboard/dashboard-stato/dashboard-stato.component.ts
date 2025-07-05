@@ -3,8 +3,8 @@ import { Router } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { SkeletonModule } from 'primeng/skeleton';
 import { Subscription } from 'rxjs';
-import { VenditaDettaglioStatoStampaEnum } from 'src/enums/VenditaDettaglioStatoStampaEnum';
-import { VenditaStatoSpedizioneEnum } from 'src/enums/VenditaStatoSpedizioneEnum';
+import { VenditaDettaglioStatoStampaEnum, VenditaDettaglioStatoStampaEnumRecord } from 'src/enums/VenditaDettaglioStatoStampaEnum';
+import { VenditaStatoSpedizioneEnum, VenditaStatoSpedizioneEnumRecord } from 'src/enums/VenditaStatoSpedizioneEnum';
 import { VenditaStatoModel, VenditaStatoResponse } from 'src/models/vendita/vendita-stato';
 import { VenditaService } from 'src/services/vendita.service';
 
@@ -26,6 +26,8 @@ export class DashboardStatoComponent implements OnInit, OnDestroy {
 
   protected readonly VenditaDettaglioStatoStampaEnum = VenditaDettaglioStatoStampaEnum;
   protected readonly VenditaStatoSpedizioneEnum = VenditaStatoSpedizioneEnum;
+  protected readonly VenditaDettaglioStatoStampaEnumRecord = VenditaDettaglioStatoStampaEnumRecord;
+  protected readonly VenditaStatoSpedizioneEnumRecord = VenditaStatoSpedizioneEnumRecord;
 
   private statoSubscription?: Subscription;
   private loadingTimeout?: number;

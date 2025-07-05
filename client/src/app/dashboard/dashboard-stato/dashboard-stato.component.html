@@ -9,27 +9,27 @@
                     <h3 class="section-title">Stato Stampa</h3>
                     <div class="stato-grid">
                         <div class="stato-box stato-stampa da-stampare" (click)="goToVenditeStatoStampa(VenditaDettaglioStatoStampaEnum.DaStampare)">
-                            <div class="stato-name">Da Stampare</div>
+                            <div class="stato-name">{{ VenditaDettaglioStatoStampaEnumRecord[VenditaDettaglioStatoStampaEnum.DaStampare] }}</div>
                             <div class="stato-value">{{ stato.da_stampare }}</div>
                         </div>
                         <div class="stato-box stato-stampa stampa-in-corso" (click)="goToVenditeStatoStampa(VenditaDettaglioStatoStampaEnum.StampaInCorso)">
-                            <div class="stato-name">Stampa in Corso</div>
+                            <div class="stato-name">{{ VenditaDettaglioStatoStampaEnumRecord[VenditaDettaglioStatoStampaEnum.StampaInCorso] }}</div>
                             <div class="stato-value">{{ stato.stampa_in_corso }}</div>
                         </div>
                         <div class="stato-box stato-stampa da-controllare" (click)="goToVenditeStatoStampa(VenditaDettaglioStatoStampaEnum.DaControllare)">
-                            <div class="stato-name">Da Controllare</div>
+                            <div class="stato-name">{{ VenditaDettaglioStatoStampaEnumRecord[VenditaDettaglioStatoStampaEnum.DaControllare] }}</div>
                             <div class="stato-value">{{ stato.da_controllare }}</div>
                         </div>
                         <div class="stato-box stato-stampa terminato-senza-difetti" (click)="goToVenditeStatoStampa(VenditaDettaglioStatoStampaEnum.TerminatoSenzaDifetti)">
-                            <div class="stato-name">Terminato Senza Difetti</div>
+                            <div class="stato-name">{{ VenditaDettaglioStatoStampaEnumRecord[VenditaDettaglioStatoStampaEnum.TerminatoSenzaDifetti] }}</div>
                             <div class="stato-value">{{ stato.terminato_senza_difetti }}</div>
                         </div>
                         <div class="stato-box stato-stampa terminato-con-difetti" (click)="goToVenditeStatoStampa(VenditaDettaglioStatoStampaEnum.TerminatoConDifetti)">
-                            <div class="stato-name">Terminato Con Difetti</div>
+                            <div class="stato-name">{{ VenditaDettaglioStatoStampaEnumRecord[VenditaDettaglioStatoStampaEnum.TerminatoConDifetti] }}</div>
                             <div class="stato-value">{{ stato.terminato_con_difetti }}</div>
                         </div>
                         <div class="stato-box stato-stampa fallito" (click)="goToVenditeStatoStampa(VenditaDettaglioStatoStampaEnum.Fallito)">
-                            <div class="stato-name">Fallito</div>
+                            <div class="stato-name">{{ VenditaDettaglioStatoStampaEnumRecord[VenditaDettaglioStatoStampaEnum.Fallito] }}</div>
                             <div class="stato-value">{{ stato.fallito }}</div>
                         </div>
                     </div>
@@ -40,23 +40,23 @@
                     <h3 class="section-title">Stato Spedizione</h3>
                     <div class="stato-grid">
                         <div class="stato-box stato-spedizione da-spedire" (click)="goToVenditeStatoSpedizione(VenditaStatoSpedizioneEnum.DaSpedire)">
-                            <div class="stato-name">Da Spedire</div>
+                            <div class="stato-name">{{ VenditaStatoSpedizioneEnumRecord[VenditaStatoSpedizioneEnum.DaSpedire] }}</div>
                             <div class="stato-value">{{ stato.da_spedire }}</div>
                         </div>
                         <div class="stato-box stato-spedizione spedizione-in-corso" (click)="goToVenditeStatoSpedizione(VenditaStatoSpedizioneEnum.SpedizioneInCorso)">
-                            <div class="stato-name">in Corso</div>
+                            <div class="stato-name">{{ VenditaStatoSpedizioneEnumRecord[VenditaStatoSpedizioneEnum.SpedizioneInCorso] }}</div>
                             <div class="stato-value">{{ stato.spedizione_in_corso }}</div>
                         </div>
                         <div class="stato-box stato-spedizione spedizione-terminata-parzialmente" (click)="goToVenditeStatoSpedizione(VenditaStatoSpedizioneEnum.SpedizioneTerminataParzialmente)">
-                            <div class="stato-name">Terminata Parzialmente</div>
+                            <div class="stato-name">{{ VenditaStatoSpedizioneEnumRecord[VenditaStatoSpedizioneEnum.SpedizioneTerminataParzialmente] }}</div>
                             <div class="stato-value">{{ stato.spedizione_terminata_parzialmente }}</div>
                         </div>
                         <div class="stato-box stato-spedizione spedizione-terminata-completamente" (click)="goToVenditeStatoSpedizione(VenditaStatoSpedizioneEnum.SpedizioneTerminataCompletamente)">
-                            <div class="stato-name">Terminata Completamente</div>
+                            <div class="stato-name">{{ VenditaStatoSpedizioneEnumRecord[VenditaStatoSpedizioneEnum.SpedizioneTerminataCompletamente] }}</div>
                             <div class="stato-value">{{ stato.spedizione_terminata_completamente }}</div>
                         </div>
                         <div class="stato-box stato-spedizione spedizione-fallita" (click)="goToVenditeStatoSpedizione(VenditaStatoSpedizioneEnum.SpedizioneFallita)">
-                            <div class="stato-name">Fallita</div>
+                            <div class="stato-name">{{ VenditaStatoSpedizioneEnumRecord[VenditaStatoSpedizioneEnum.SpedizioneFallita] }}</div>
                             <div class="stato-value">{{ stato.spedizione_fallita }}</div>
                         </div>
                     </div>
