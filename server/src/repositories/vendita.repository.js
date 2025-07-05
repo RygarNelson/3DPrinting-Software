@@ -390,8 +390,8 @@ const venditaRepository = {
 
         return Vendita.count({
             where: {
-                data_scadenza: { [Op.gte]: dataOggi },
-                data_scadenza_spedizione: { [Op.lt]: dataOggi },
+                data_scadenza: { [Op.lte]: dataOggi },
+                data_scadenza_spedizione: { [Op.gt]: dataOggi },
                 stato_spedizione: { [Op.in]: [0, 4] }
             }
         });
@@ -403,7 +403,7 @@ const venditaRepository = {
 
         return Vendita.count({
             where: {
-                data_scadenza_spedizione: { [Op.gte]: dataOggi },
+                data_scadenza_spedizione: { [Op.lte]: dataOggi },
                 stato_spedizione: { [Op.in]: [0, 4] }
             }
         });

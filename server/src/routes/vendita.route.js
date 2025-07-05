@@ -264,10 +264,10 @@ router.post(
                 const valoriAmmessiStatoSpedizione = [0, 4];
 
                 if (req.body.isInScadenza) {
-                    whereOptions.data_scadenza = { [Op.gte]: dataOggi };
-                    whereOptions.data_scadenza_spedizione = { [Op.lt]: dataOggi };
+                    whereOptions.data_scadenza = { [Op.lte]: dataOggi };
+                    whereOptions.data_scadenza_spedizione = { [Op.gt]: dataOggi };
                 } else {
-                    whereOptions.data_scadenza_spedizione = { [Op.gte]: dataOggi };
+                    whereOptions.data_scadenza_spedizione = { [Op.lte]: dataOggi };
                 }
 
                 whereOptions.stato_spedizione = { [Op.in]: valoriAmmessiStatoSpedizione };
