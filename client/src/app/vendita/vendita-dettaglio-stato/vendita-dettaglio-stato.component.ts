@@ -35,15 +35,9 @@ export class VenditaDettaglioStatoComponent implements OnChanges {
         this.color = '#2196F3';
         break;
       }
-      case VenditaDettaglioStatoStampaEnum.DaCurare: {
+      case VenditaDettaglioStatoStampaEnum.DaControllare: {
         this.icon = 'pi pi-camera';
-        this.descrizione = 'Da Curare';
-        this.color = '#2196F3';
-        break;
-      }
-      case VenditaDettaglioStatoStampaEnum.DaLavare: {
-        this.icon = 'pi pi-bookmark';
-        this.descrizione = 'Da Lavare';
+        this.descrizione = 'Da Controllare';
         this.color = '#2196F3';
         break;
       }

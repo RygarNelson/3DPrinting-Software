@@ -4,9 +4,12 @@ import { ResponseInterface } from "src/interfaces/response.interface";
 
 export class VenditaListingModel {
     id: number = 0;
-    data_vendita: Date = new Date();
-    data_scadenza: Date = new Date();
+    data_vendita?: Date;
+    data_scadenza?: Date;
+    data_scadenza_spedizione?: Date;
     totale_vendita: number = 0;
+    isInScadenza: boolean = false;
+    isScaduto: boolean = false;
     stato_spedizione: VenditaStatoSpedizioneEnum = VenditaStatoSpedizioneEnum.DaSpedire;
     cliente: VenditaListingClienteModel = new VenditaListingClienteModel();
     dettagli: VenditaListingDettaglioModel[] = [];
@@ -38,4 +41,5 @@ export class VenditaListingResponse implements ResponseInterface {
     data: VenditaListingModel[] = [];
     count: number = 0;
     ultimiTreMesi: number = 0;
+    ultimiTreMesiSospese: number = 0;
 }

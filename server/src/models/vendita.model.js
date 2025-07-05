@@ -19,6 +19,10 @@ const Vendita = sequelize.define('Vendita', {
         type: DataTypes.DATE,
         allowNull: true
     },
+    data_scadenza_spedizione: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
     cliente_id: {
         type: DataTypes.INTEGER,
         allowNull: true,
@@ -51,6 +55,11 @@ const Vendita = sequelize.define('Vendita', {
             name: 'IX_T_VENDITE_DATA_SCADENZA',
             unique: false,
             fields: ['data_scadenza']
+        },
+        {
+            name: 'IX_T_VENDITE_DATA_SCADENZA_SPEDIZIONE',
+            unique: false,
+            fields: ['data_scadenza_spedizione']
         },
         {
             name: 'IX_T_VENDITE_CLIENTE_ID',

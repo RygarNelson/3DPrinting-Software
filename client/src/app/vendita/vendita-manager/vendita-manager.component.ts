@@ -93,26 +93,29 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
   ){
     this.clienteSubscription = this.applicationStateService.newCliente.subscribe((event) => {
       if (event.id != null) {
-        this.clienteRef?.destroy();
         this.vendita.cliente_id = event.id;
         this.applicationStateService.clienteLookupUpdate.next();
       }
+
+      this.clienteRef?.close();
     });
 
     this.modelloSubscription = this.applicationStateService.newModello.subscribe((event) => {
       if (event.id != null && event.index != null) {
-        this.modelloRef?.destroy();
         this.vendita.dettagli[event.index].modello_id = event.id;
         this.applicationStateService.modelloLookupUpdate.next();
       }
+
+      this.modelloRef?.close();
     });
 
     this.stampanteSubscription = this.applicationStateService.newStampante.subscribe((event) => {
       if (event.id != null && event.index != null) {
-        this.stampanteRef?.destroy();
         this.vendita.dettagli[event.index].stampante_id = event.id;
         this.applicationStateService.stampanteLookupUpdate.next();
       }
+
+      this.stampanteRef?.close();
     });
   }
 
@@ -175,6 +178,19 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
         this.applicationStateService.clienteLookupUpdate.next();
       }
     });
+  }
+
+  impostaDateScadenze(): void {
+    if (this.vendita.data_vendita) {
+      this.vendita.data_scadenza = new Date(this.vendita.data_vendita);
+      this.vendita.data_scadenza_spedizione = new Date(this.vendita.data_vendita);
+
+      this.vendita.data_scadenza.setDate(this.vendita.data_vendita.getDate() + 6);
+      this.vendita.data_scadenza_spedizione.setDate(this.vendita.data_vendita.getDate() + 10);
+    } else {
+      this.vendita.data_scadenza = undefined;
+      this.vendita.data_scadenza_spedizione = undefined;
+    }
   }
 
   saveVendita(): void {

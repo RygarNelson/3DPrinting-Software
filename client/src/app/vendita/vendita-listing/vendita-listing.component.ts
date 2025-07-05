@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AccordionModule } from 'primeng/accordion';
 import { ConfirmationService, FilterMetadata, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -26,6 +26,7 @@ import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.compo
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
 import { VenditaDettaglioStatoComponent } from '../vendita-dettaglio-stato/vendita-dettaglio-stato.component';
 import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component';
+import { FormInputRadiobuttonComponent } from 'src/shared/form-input-radiobutton/form-input-radiobutton.component';
 
 @Component({
   selector: 'app-vendita-listing',
@@ -45,6 +46,7 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
     VenditaDettaglioStatoComponent,
     AccordionModule,
     FormInputSelectComponent,
+    FormInputRadiobuttonComponent,
     ClienteLookupDirective,
     VenditaStatoSpedizioneLookupDirective,
     VenditaDettaglioStatoStampaLookupDirective
@@ -56,10 +58,11 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
   templateUrl: './vendita-listing.component.html',
   styleUrl: './vendita-listing.component.scss'
 })
-export class VenditaListingComponent implements OnDestroy {
+export class VenditaListingComponent implements OnInit, OnDestroy {
   // Data properties
   vendite: VenditaListingModel[] = [];
   ultimiTreMesi: number = 0;
+  ultimiTreMesiSospese: number = 0;
   totalRecords: number = 0;
   loading: boolean = false;
   expandedRows: any = {};
@@ -82,8 +85,29 @@ export class VenditaListingComponent implements OnDestroy {
     private router: Router,
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private activatedRoute: ActivatedRoute
   ) {}
+
+  ngOnInit(): void {
+    this.activatedRoute.queryParams.subscribe((params: any) => {
+      if (params.stato_spedizione) {
+        this.filtri.stato_spedizione = params.stato_spedizione;
+      }
+
+      if (params.stato_stampa) {
+        this.filtri.stato_stampa = params.stato_stampa;
+      }
+
+      if (params.isInScadenza) {
+        this.filtri.isInScadenza = true;
+      }
+
+      if (params.isScaduto) {
+        this.filtri.isScaduto = true;
+      }
+    });
+  }
 
   ngOnDestroy(): void {
     this.venditeSubscription?.unsubscribe();
@@ -102,6 +126,7 @@ export class VenditaListingComponent implements OnDestroy {
           this.vendite = response.data;
           this.totalRecords = response.count;
           this.ultimiTreMesi = response.ultimiTreMesi;
+          this.ultimiTreMesiSospese = response.ultimiTreMesiSospese;
 
           window.clearTimeout(this.loadingTimeout);
           this.loading = false;
@@ -120,6 +145,19 @@ export class VenditaListingComponent implements OnDestroy {
           });
         }
       });
+  }
+
+  filterRadioButton(type: string): void {
+    if (type === 'in_scadenza') {
+      this.filtri.isInScadenza = true;
+      this.filtri.isScaduto = false;
+    }
+    else if (type === 'scaduto') {
+      this.filtri.isScaduto = true;
+      this.filtri.isInScadenza = false;
+    }
+
+    this.loadVendite();
   }
 
   loadData(event: TableLazyLoadEvent): void {
@@ -196,6 +234,32 @@ export class VenditaListingComponent implements OnDestroy {
     }
     else {
       this.filtri.data_scadenza = undefined;
+    }
+
+    const dataScadenzaSpedizioneFilter: FilterMetadata | FilterMetadata[] | undefined = event.filters?.['data_scadenza_spedizione'];
+    if (dataScadenzaSpedizioneFilter) {
+      let value = null;
+      let operator = null;
+
+      if (dataScadenzaSpedizioneFilter instanceof Array) {
+        value = dataScadenzaSpedizioneFilter[0].value;
+        operator = dataScadenzaSpedizioneFilter[0].matchMode;
+      } else {
+        value = dataScadenzaSpedizioneFilter.value;
+        operator = dataScadenzaSpedizioneFilter.matchMode;
+      }
+
+      if (value && operator) {
+        this.filtri.data_scadenza_spedizione = {
+          value: value,
+          operator: operator
+        };
+      } else {
+        this.filtri.data_scadenza_spedizione = undefined;
+      }
+    }
+    else {
+      this.filtri.data_scadenza_spedizione = undefined;
     }
 
     const totaleVenditaFilter: FilterMetadata | FilterMetadata[] | undefined = event.filters?.['totale_vendita'];

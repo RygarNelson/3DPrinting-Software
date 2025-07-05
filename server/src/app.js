@@ -9,6 +9,7 @@ import morgan from 'morgan';
 import path from 'path';
 import * as rfs from 'rotating-file-stream';
 import { fileURLToPath } from 'url';
+import './cron.js';
 import { connectToDatabase, initializeDatabase } from './db.js';
 import authRoute from './routes/auth.route.js';
 import clienteRoute from './routes/cliente.route.js';

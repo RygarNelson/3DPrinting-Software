@@ -35,10 +35,11 @@ const venditaRepository = {
     insertOne: async function(req) {
         const t = await sequelize.transaction();
         try {
-            const { data_vendita, data_scadenza, stato_spedizione, link_tracciamento, cliente_id, dettagli } = req.body;
+            const { data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, dettagli } = req.body;
             const vendita = await Vendita.create({
                 data_vendita,
                 data_scadenza,
+                data_scadenza_spedizione,
                 stato_spedizione,
                 link_tracciamento,
                 cliente_id
@@ -70,10 +71,10 @@ const venditaRepository = {
     updateOne: async function(req) {
         const t = await sequelize.transaction();
         try {
-            const { id, data_vendita, data_scadenza, stato_spedizione, link_tracciamento, cliente_id, dettagli } = req.body;
+            const { id, data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, dettagli } = req.body;
             const vendita = await Vendita.findByPk(id, { include: [{ model: VenditaDettaglio, as: 'dettagli' }], transaction: t });
             if (!vendita) throw new Error('Vendita non trovata');
-            await vendita.update({ data_vendita, data_scadenza, stato_spedizione, link_tracciamento, cliente_id }, { transaction: t });
+            await vendita.update({ data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id }, { transaction: t });
 
             // Handle dettagli
             const existingDettagli = vendita.dettagli || [];
@@ -200,16 +201,25 @@ const venditaRepository = {
                     backgroundColor: 'rgba(255, 99, 132, 1)',
                     borderColor: 'rgba(255, 99, 132, 0.69)',
                     borderWidth: 1,
-                }
+                },
+                {
+                    label: 'In Sospeso',
+                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    backgroundColor: 'rgba(240, 173, 78, 1)',
+                    borderColor: 'rgba(240, 173, 78, 0.69)',
+                    borderWidth: 1,
+                },
             ]
         };
 
         for (let i = 1; i <= 12; i++) {
             const dataMeseVendite = await this.ottieniAndamentoVenditaAnnoMese(anno, i);
             const dataMeseSpese = await this.ottieniAndamentoSpesaAnnoMese(anno, i);
+            const dataMeseSospese = await this.ottieniAndamentoVenditaSospeseAnnoMese(anno, i);
 
             data.datasets[0].data[i - 1] = dataMeseVendite || 0;
             data.datasets[1].data[i - 1] = dataMeseSpese || 0;
+            data.datasets[2].data[i - 1] = dataMeseSospese || 0;
         }
 
         const options = {
@@ -245,6 +255,23 @@ const venditaRepository = {
         return totaleVendite - totaleSpese;
     },
 
+    ottieniAndamentoUltimiTreMesiSospese: async function() {
+        let dataOggi = new Date();
+        dataOggi.setTime( dataOggi.getTime() - dataOggi.getTimezoneOffset()*60*1000 );
+
+        const anno = dataOggi.getFullYear();
+        
+        const mese = dataOggi.getMonth() + 1;
+        const mesePrecedente = mese - 1;
+        const mesePrecedentePrecedente = mesePrecedente - 1;
+
+        const venditeMese = await this.ottieniAndamentoVenditaSospeseAnnoMese(anno, mese) || 0;
+        const venditeMesePrecedente = await this.ottieniAndamentoVenditaSospeseAnnoMese(anno, mesePrecedente) || 0;
+        const venditeMesePrecedentePrecedente = await this.ottieniAndamentoVenditaSospeseAnnoMese(anno, mesePrecedentePrecedente) || 0;
+
+        return venditeMese + venditeMesePrecedente + venditeMesePrecedentePrecedente;
+    },
+
     ottieniAndamentoVenditaAnnoMese: async function(anno, mese) {
         let primoGiornoMese = new Date(anno, mese - 1, 1);
         primoGiornoMese.setTime( primoGiornoMese.getTime() - primoGiornoMese.getTimezoneOffset()*60*1000 );
@@ -259,6 +286,29 @@ const venditaRepository = {
                     [Op.between]: [primoGiornoMese, ultimoGiornoMese]
                 },
                 stato_spedizione: 3 // Consegnato
+            },
+            group: [fn('strftime', '%Y', col('data_vendita')), fn('strftime', '%m', col('data_vendita'))],
+        });
+
+        return data;
+    },
+
+    ottieniAndamentoVenditaSospeseAnnoMese: async function(anno, mese) {
+        let primoGiornoMese = new Date(anno, mese - 1, 1);
+        primoGiornoMese.setTime( primoGiornoMese.getTime() - primoGiornoMese.getTimezoneOffset()*60*1000 );
+
+        let ultimoGiornoMese = new Date(anno, mese, 0);
+        ultimoGiornoMese.setTime( ultimoGiornoMese.getTime() - ultimoGiornoMese.getTimezoneOffset()*60*1000 );
+
+        const data = await Vendita.sum('totale_vendita', {
+            where: {
+                deletedAt: null,
+                data_vendita: {
+                    [Op.between]: [primoGiornoMese, ultimoGiornoMese]
+                },
+                stato_spedizione: {
+                    [Op.in]: [0, 1, 2, 4]
+                }
             },
             group: [fn('strftime', '%Y', col('data_vendita')), fn('strftime', '%m', col('data_vendita'))],
         });
@@ -284,6 +334,79 @@ const venditaRepository = {
         });
 
         return data;
+    },
+
+    ottieniStatoVendite: async function() {
+        const da_stampare = await this.contaVenditeConDettagliStatoStampa(0);
+        const stampa_in_corso = await this.contaVenditeConDettagliStatoStampa(1);
+        const terminato_senza_difetti = await this.contaVenditeConDettagliStatoStampa(4);
+        const terminato_con_difetti = await this.contaVenditeConDettagliStatoStampa(5);
+        const fallito = await this.contaVenditeConDettagliStatoStampa(6);
+        const da_controllare = await this.contaVenditeConDettagliStatoStampa(7);
+        const da_spedire = await this.contaVenditeConStatoSpedizione(0);
+        const spedizione_in_corso = await this.contaVenditeConStatoSpedizione(1);
+        const spedizione_terminata_parzialmente = await this.contaVenditeConStatoSpedizione(2);
+        const spedizione_terminata_completamente = await this.contaVenditeConStatoSpedizione(3);
+        const spedizione_fallita = await this.contaVenditeConStatoSpedizione(4);
+        const in_scadenza = await this.contaVenditeInScadenza();
+        const scadute = await this.contaVenditeScadute();
+
+        return {
+            da_stampare,
+            stampa_in_corso,
+            terminato_senza_difetti,
+            terminato_con_difetti,
+            fallito,
+            da_controllare,
+            da_spedire,
+            spedizione_in_corso,
+            spedizione_terminata_parzialmente,
+            spedizione_terminata_completamente,
+            spedizione_fallita,
+            in_scadenza,
+            scadute
+        };
+    },
+
+    contaVenditeConDettagliStatoStampa: async function(stato_stampa) {
+        return VenditaDettaglio.count({
+            where: {
+                stato_stampa: stato_stampa
+            }
+        });
+    },
+
+    contaVenditeConStatoSpedizione: async function(stato_spedizione) {
+        return Vendita.count({
+            where: {
+                stato_spedizione: stato_spedizione
+            }
+        });
+    },
+
+    contaVenditeInScadenza: async function() {
+        let dataOggi = new Date();
+        dataOggi.setTime( dataOggi.getTime() - dataOggi.getTimezoneOffset()*60*1000 );
+
+        return Vendita.count({
+            where: {
+                data_scadenza: { [Op.gte]: dataOggi },
+                data_scadenza_spedizione: { [Op.lt]: dataOggi },
+                stato_spedizione: { [Op.in]: [0, 4] }
+            }
+        });
+    },
+
+    contaVenditeScadute: async function() {
+        let dataOggi = new Date();
+        dataOggi.setTime( dataOggi.getTime() - dataOggi.getTimezoneOffset()*60*1000 );
+
+        return Vendita.count({
+            where: {
+                data_scadenza_spedizione: { [Op.gte]: dataOggi },
+                stato_spedizione: { [Op.in]: [0, 4] }
+            }
+        });
     },
 };
 

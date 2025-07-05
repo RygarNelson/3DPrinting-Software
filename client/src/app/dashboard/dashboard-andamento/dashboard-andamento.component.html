@@ -7,6 +7,7 @@
                     <p-skeleton height="30px" width="100px" />
                 } @else {
                     <div class="flex items-center gap-2 margin-left-auto header-title">
+                        <h5 class="text-lg font-semibold mr-3">In Sospeso: {{ totaleSospese | currency:'EUR' }}</h5>
                         <h5 class="text-lg font-semibold mr-3">Vendite: {{ totaleVendite | currency:'EUR' }}</h5>
                         <h5 class="text-lg font-semibold mr-3">Spese: {{ totaleSpese | currency:'EUR' }}</h5>
                         <form-input-select

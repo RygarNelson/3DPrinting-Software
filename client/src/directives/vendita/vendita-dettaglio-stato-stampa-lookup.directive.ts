@@ -1,5 +1,5 @@
 import { Directive, OnInit } from '@angular/core';
-import { VenditaDettaglioStatoStampaEnumRecord } from 'src/enums/VenditaDettaglioStatoStampaEnum';
+import { VenditaDettaglioStatoStampaEnumOrder, VenditaDettaglioStatoStampaEnumRecord } from 'src/enums/VenditaDettaglioStatoStampaEnum';
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
 
 @Directive({
@@ -12,9 +12,9 @@ export class VenditaDettaglioStatoStampaLookupDirective implements OnInit {
   ) { } 
 
   ngOnInit(): void {
-    this.component.data = Object.entries(VenditaDettaglioStatoStampaEnumRecord).map(([key, value]) => ({
-      id: parseInt(key),
-      etichetta: value
+    this.component.data = VenditaDettaglioStatoStampaEnumOrder.map(key => ({
+      id: key,
+      etichetta: VenditaDettaglioStatoStampaEnumRecord[key]
     }));
   }
 

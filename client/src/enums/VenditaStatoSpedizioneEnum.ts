@@ -8,8 +8,8 @@ export enum VenditaStatoSpedizioneEnum {
 
 export const VenditaStatoSpedizioneEnumRecord: Record<VenditaStatoSpedizioneEnum, string> = {
     [VenditaStatoSpedizioneEnum.DaSpedire]: 'Da Spedire',
-    [VenditaStatoSpedizioneEnum.SpedizioneInCorso]: 'Spedizione In Corso',
-    [VenditaStatoSpedizioneEnum.SpedizioneTerminataParzialmente]: 'Spedizione Terminata Parzialmente',
-    [VenditaStatoSpedizioneEnum.SpedizioneTerminataCompletamente]: 'Spedizione Terminata Completamente',
-    [VenditaStatoSpedizioneEnum.SpedizioneFallita]: 'Spedizione Fallita'
+    [VenditaStatoSpedizioneEnum.SpedizioneInCorso]: 'In Corso',
+    [VenditaStatoSpedizioneEnum.SpedizioneTerminataParzialmente]: 'Terminata Parzialmente',
+    [VenditaStatoSpedizioneEnum.SpedizioneTerminataCompletamente]: 'Terminata Completamente',
+    [VenditaStatoSpedizioneEnum.SpedizioneFallita]: 'Fallita'
 }

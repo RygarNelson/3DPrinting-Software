@@ -4,7 +4,11 @@
         <div class="flex items-center gap-2">
           <h2 class="text-xl font-semibold text-gray-800 pt-6 header-title">Gestione Vendite</h2>
           <div class="margin-left-auto header-title">
-            <h5 class="text-lg font-semibold">Ultimi 3 mesi: {{ ultimiTreMesi | currency:'EUR' }}</h5>
+            <h5 class="text-lg font-semibold">
+              Ultimi 3 mesi / 
+              Saldo: {{ ultimiTreMesi | currency:'EUR' }} <i class="pi pi-info-circle info-icon" tooltipPosition="bottom" [pTooltip]="'Il saldo viene calcolato come la somma delle vendite meno le spese, senza considerare le vendite in sospeso'"></i> - 
+              In Sospeso: {{ ultimiTreMesiSospese | currency:'EUR' }} <i class="pi pi-info-circle info-icon" tooltipPosition="bottom" [pTooltip]="'Il totale delle vendite in sospeso, senza considerare le spese'"></i>
+            </h5>
           </div>
         </div>
       </ng-template>
@@ -84,15 +88,20 @@
           <ng-template #header>
             <tr>
               <th style="width: 5rem"></th>
-              <th pSortableColumn="data_vendita">
-                Data Vendita 
+              <th pSortableColumn="data_vendita" style="width: 150px;">
+                Vendita 
                 <p-sortIcon field="data_vendita" />
                 <p-columnFilter field="data_vendita" [type]="'date'" display="menu" [showMatchModes]="true" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
               </th>
-              <th pSortableColumn="data_scadenza">
-                Data Scadenza 
+              <th pSortableColumn="data_scadenza" style="width: 160px;">
+                Scadenza 
                 <p-sortIcon field="data_scadenza" />
                 <p-columnFilter field="data_scadenza" [type]="'date'" display="menu" [showMatchModes]="true" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
+              </th>
+              <th pSortableColumn="data_scadenza_spedizione" style="width: 250px;">
+                Scadenza Spedizione 
+                <p-sortIcon field="data_scadenza_spedizione" />
+                <p-columnFilter field="data_scadenza_spedizione" [type]="'date'" display="menu" [showMatchModes]="true" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
               </th>
               <th>
                 Cliente
@@ -107,12 +116,15 @@
                   </ng-template>
               </p-columnFilter>
               </th>
-              <th pSortableColumn="totale_vendita">
+              <th style="min-width: 200px;">
+                Dettagli
+              </th>
+              <th pSortableColumn="totale_vendita" style="width: 200px;">
                 Totale Vendita 
                 <p-sortIcon field="totale_vendita" />
                 <p-columnFilter field="totale_vendita" [type]="'numeric'" currency="EUR" display="menu" minFractionDigits="2" [showMatchModes]="true" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
               </th>
-              <th style="width: 300px;">
+              <th style="width: 270px;">
                 Stato
                 <p-columnFilter display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false">
                   <ng-template #filter let-value let-filter="filterCallback">
@@ -145,6 +157,20 @@
                           <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id" [isInSelect]="true" />
                         </ng-template>
                       </form-input-select>
+                      <form-input-radiobutton
+                        [label]="'In Scadenza'"
+                        [property]="'in_scadenza'"
+                        [name]="'scadenza'"
+                        [radioButtonValue]="true"
+                        [(ngModel)]="filtri.isInScadenza"
+                        (ngModelChange)="filterRadioButton('in_scadenza')" />
+                      <form-input-radiobutton
+                          [label]="'Scaduto'"
+                          [property]="'scaduto'"
+                          [name]="'scadenza'"
+                          [radioButtonValue]="true"
+                          [(ngModel)]="filtri.isScaduto"
+                          (ngModelChange)="filterRadioButton('scaduto')" />
                     </div>
                   </ng-template>
               </p-columnFilter>
@@ -155,13 +181,25 @@
   
           <!-- Data Rows -->
           <ng-template #body let-vendita let-expanded="expanded">
-            <tr>
+            <tr [ngClass]="{'in-scadenza': vendita.isInScadenza, 'scaduto': vendita.isScaduto}">
                 <td>
                     <p-button type="button" pRipple [pRowToggler]="vendita" [text]="true" [rounded]="true" [plain]="true" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
                 </td>
               <td class="font-medium">{{ vendita.data_vendita | date:'dd/MM/yyyy' }}</td>
               <td>{{ vendita.data_scadenza | date:'dd/MM/yyyy' }}</td>
+              <td>{{ vendita.data_scadenza_spedizione | date:'dd/MM/yyyy' }}</td>
               <td>{{ vendita.cliente?.etichetta }}</td>
+              <td>
+              @if (vendita.dettagli && vendita.dettagli.length > 0) {
+                <ul class="pl-4" style="list-style: disc;">
+                  <li *ngFor="let dettaglio of vendita.dettagli">
+                    {{ dettaglio.modello?.nome }}
+                  </li>
+                </ul>
+              } @else {
+                <p class="text-gray-500">Nessun dettaglio</p>
+              }
+              </td>
               <td>Totale: {{ vendita.totale_vendita | currency:'EUR' }}</td>
               <td>
                 <form-input-select
@@ -220,7 +258,7 @@
           </ng-template>
           <ng-template #expandedrow let-vendita>
             <tr>
-              <td colspan="7">
+              <td colspan="9">
                 <div class="my-3">
                     <h3 class="text-lg font-semibold text-gray-800 mb-2">Dettagli</h3>
                     <p-table 
@@ -281,7 +319,7 @@
           <!-- Empty State -->
           <ng-template pTemplate="emptymessage">
             <tr>
-              <td colspan="7" class="text-center py-8">
+              <td colspan="9" class="text-center py-8">
                   @if (loading) {
                       <p-skeleton height="100px" width="100%" />
                   } @else {
