@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AccordionModule } from 'primeng/accordion';
 import { ConfirmationService, FilterMetadata, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -58,7 +58,7 @@ import { FormInputRadiobuttonComponent } from 'src/shared/form-input-radiobutton
   templateUrl: './vendita-listing.component.html',
   styleUrl: './vendita-listing.component.scss'
 })
-export class VenditaListingComponent implements OnDestroy {
+export class VenditaListingComponent implements OnInit, OnDestroy {
   // Data properties
   vendite: VenditaListingModel[] = [];
   ultimiTreMesi: number = 0;
@@ -85,8 +85,29 @@ export class VenditaListingComponent implements OnDestroy {
     private router: Router,
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private activatedRoute: ActivatedRoute
   ) {}
+
+  ngOnInit(): void {
+    this.activatedRoute.queryParams.subscribe((params: any) => {
+      if (params.stato_spedizione) {
+        this.filtri.stato_spedizione = params.stato_spedizione;
+      }
+
+      if (params.stato_stampa) {
+        this.filtri.stato_stampa = params.stato_stampa;
+      }
+
+      if (params.isInScadenza) {
+        this.filtri.isInScadenza = true;
+      }
+
+      if (params.isScaduto) {
+        this.filtri.isScaduto = true;
+      }
+    });
+  }
 
   ngOnDestroy(): void {
     this.venditeSubscription?.unsubscribe();

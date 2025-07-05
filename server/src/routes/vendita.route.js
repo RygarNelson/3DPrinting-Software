@@ -448,6 +448,11 @@ router.get(
         const totaleSpese = data.data.datasets[1].data.reduce((acc, curr) => acc + curr, 0);
         const totaleSospese = data.data.datasets[2].data.reduce((acc, curr) => acc + curr, 0);
 
+        // Per ogni elemento del dataset delle vendite in sospeso, sommare il totale delle vendite
+        data.data.datasets[2].data = data.data.datasets[2].data.map((item, index) => {
+            return item + data.data.datasets[0].data[index];
+        });
+
         return res.status(200).json({
             success: true,
             data: data,

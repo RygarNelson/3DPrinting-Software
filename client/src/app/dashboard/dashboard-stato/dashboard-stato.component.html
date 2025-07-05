@@ -1,0 +1,82 @@
+<div class="p-4">
+    <p-card>
+        <ng-template pTemplate="content">
+            @if (loading) {
+                <p-skeleton height="300px" width="100%" />
+            } @else {
+                <!-- Stato Stampa Row -->
+                <div class="stato-section">
+                    <h3 class="section-title">Stato Stampa</h3>
+                    <div class="stato-grid">
+                        <div class="stato-box stato-stampa da-stampare" (click)="goToVenditeStatoStampa(VenditaDettaglioStatoStampaEnum.DaStampare)">
+                            <div class="stato-name">{{ VenditaDettaglioStatoStampaEnumRecord[VenditaDettaglioStatoStampaEnum.DaStampare] }}</div>
+                            <div class="stato-value">{{ stato.da_stampare }}</div>
+                        </div>
+                        <div class="stato-box stato-stampa stampa-in-corso" (click)="goToVenditeStatoStampa(VenditaDettaglioStatoStampaEnum.StampaInCorso)">
+                            <div class="stato-name">{{ VenditaDettaglioStatoStampaEnumRecord[VenditaDettaglioStatoStampaEnum.StampaInCorso] }}</div>
+                            <div class="stato-value">{{ stato.stampa_in_corso }}</div>
+                        </div>
+                        <div class="stato-box stato-stampa da-controllare" (click)="goToVenditeStatoStampa(VenditaDettaglioStatoStampaEnum.DaControllare)">
+                            <div class="stato-name">{{ VenditaDettaglioStatoStampaEnumRecord[VenditaDettaglioStatoStampaEnum.DaControllare] }}</div>
+                            <div class="stato-value">{{ stato.da_controllare }}</div>
+                        </div>
+                        <div class="stato-box stato-stampa terminato-senza-difetti" (click)="goToVenditeStatoStampa(VenditaDettaglioStatoStampaEnum.TerminatoSenzaDifetti)">
+                            <div class="stato-name">{{ VenditaDettaglioStatoStampaEnumRecord[VenditaDettaglioStatoStampaEnum.TerminatoSenzaDifetti] }}</div>
+                            <div class="stato-value">{{ stato.terminato_senza_difetti }}</div>
+                        </div>
+                        <div class="stato-box stato-stampa terminato-con-difetti" (click)="goToVenditeStatoStampa(VenditaDettaglioStatoStampaEnum.TerminatoConDifetti)">
+                            <div class="stato-name">{{ VenditaDettaglioStatoStampaEnumRecord[VenditaDettaglioStatoStampaEnum.TerminatoConDifetti] }}</div>
+                            <div class="stato-value">{{ stato.terminato_con_difetti }}</div>
+                        </div>
+                        <div class="stato-box stato-stampa fallito" (click)="goToVenditeStatoStampa(VenditaDettaglioStatoStampaEnum.Fallito)">
+                            <div class="stato-name">{{ VenditaDettaglioStatoStampaEnumRecord[VenditaDettaglioStatoStampaEnum.Fallito] }}</div>
+                            <div class="stato-value">{{ stato.fallito }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stato Spedizione Row -->
+                <div class="stato-section">
+                    <h3 class="section-title">Stato Spedizione</h3>
+                    <div class="stato-grid">
+                        <div class="stato-box stato-spedizione da-spedire" (click)="goToVenditeStatoSpedizione(VenditaStatoSpedizioneEnum.DaSpedire)">
+                            <div class="stato-name">{{ VenditaStatoSpedizioneEnumRecord[VenditaStatoSpedizioneEnum.DaSpedire] }}</div>
+                            <div class="stato-value">{{ stato.da_spedire }}</div>
+                        </div>
+                        <div class="stato-box stato-spedizione spedizione-in-corso" (click)="goToVenditeStatoSpedizione(VenditaStatoSpedizioneEnum.SpedizioneInCorso)">
+                            <div class="stato-name">{{ VenditaStatoSpedizioneEnumRecord[VenditaStatoSpedizioneEnum.SpedizioneInCorso] }}</div>
+                            <div class="stato-value">{{ stato.spedizione_in_corso }}</div>
+                        </div>
+                        <div class="stato-box stato-spedizione spedizione-terminata-parzialmente" (click)="goToVenditeStatoSpedizione(VenditaStatoSpedizioneEnum.SpedizioneTerminataParzialmente)">
+                            <div class="stato-name">{{ VenditaStatoSpedizioneEnumRecord[VenditaStatoSpedizioneEnum.SpedizioneTerminataParzialmente] }}</div>
+                            <div class="stato-value">{{ stato.spedizione_terminata_parzialmente }}</div>
+                        </div>
+                        <div class="stato-box stato-spedizione spedizione-terminata-completamente" (click)="goToVenditeStatoSpedizione(VenditaStatoSpedizioneEnum.SpedizioneTerminataCompletamente)">
+                            <div class="stato-name">{{ VenditaStatoSpedizioneEnumRecord[VenditaStatoSpedizioneEnum.SpedizioneTerminataCompletamente] }}</div>
+                            <div class="stato-value">{{ stato.spedizione_terminata_completamente }}</div>
+                        </div>
+                        <div class="stato-box stato-spedizione spedizione-fallita" (click)="goToVenditeStatoSpedizione(VenditaStatoSpedizioneEnum.SpedizioneFallita)">
+                            <div class="stato-name">{{ VenditaStatoSpedizioneEnumRecord[VenditaStatoSpedizioneEnum.SpedizioneFallita] }}</div>
+                            <div class="stato-value">{{ stato.spedizione_fallita }}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Scadenza Row -->
+                <div class="stato-section">
+                    <h3 class="section-title">Scadenze</h3>
+                    <div class="stato-grid scadenza-row">
+                        <div class="stato-box in-scadenza" (click)="goToVenditeInScadenza()">
+                            <div class="stato-name">In Scadenza</div>
+                            <div class="stato-value">{{ stato.in_scadenza }}</div>
+                        </div>
+                        <div class="stato-box scadute" (click)="goToVenditeScadute()">
+                            <div class="stato-name">Scadute</div>
+                            <div class="stato-value">{{ stato.scadute }}</div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </ng-template>
+    </p-card>
+</div>
