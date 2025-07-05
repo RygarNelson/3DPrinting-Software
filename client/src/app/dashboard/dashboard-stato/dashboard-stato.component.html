@@ -1,0 +1,14 @@
+<div class="p-4">
+    <p-card>
+        <ng-template pTemplate="header">
+            <h2 class="text-xl font-semibold text-gray-800 pt-6 header-title">Stato</h2>
+        </ng-template>
+        <ng-template pTemplate="content">
+            @if (loading) {
+                <p-skeleton height="300px" width="100%" />
+            } @else {
+                
+            }
+        </ng-template>
+    </p-card>
+</div>

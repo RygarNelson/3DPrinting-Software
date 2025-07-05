@@ -6,6 +6,7 @@ import { VenditaAnniResponse } from 'src/models/vendita/vendita-anni';
 import { VenditaListingResponse } from 'src/models/vendita/vendita-listing';
 import { VenditaListingFiltri } from 'src/models/vendita/vendita-listing-filtri';
 import { VenditaManagerModel, VenditaManagerResponse } from 'src/models/vendita/vendita-manager';
+import { VenditaStatoResponse } from 'src/models/vendita/vendita-stato';
 
 @Injectable()
 export class VenditaService {
@@ -52,5 +53,9 @@ export class VenditaService {
       id,
       stato_avanzamento
     });
+  }
+
+  getStatoVendite(): Observable<VenditaStatoResponse> {
+    return this.http.get<VenditaStatoResponse>(`${this.api}/stato`);
   }
 }
