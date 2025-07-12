@@ -17,6 +17,7 @@ import modelloRoute from './routes/modello.route.js';
 import spesaRoute from './routes/spesa.route.js';
 import stampanteRoute from './routes/stampante.route.js';
 import venditaRoute from './routes/vendita.route.js';
+import contoBancarioRoute from './routes/conto-bancario.route.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -91,6 +92,7 @@ app.use('/api/modello', modelloRoute);
 app.use('/api/cliente', clienteRoute);
 app.use('/api/vendita', venditaRoute);
 app.use('/api/spesa', spesaRoute);
+app.use('/api/conto-bancario', contoBancarioRoute);
 
 /* STATIC FILES - Angular App */
 // Check if Angular static files directory exists

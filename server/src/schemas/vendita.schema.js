@@ -7,25 +7,17 @@ const validationSchema = {
         return checkSchema({
             data_vendita: {
                 optional: false,
-                isISO8601: {
+                notEmpty: {
                     errorMessage: 'La data di vendita non è valida',
                 },
                 toDate: true
             },
             data_scadenza: {
                 optional: true,
-                isISO8601: {
-                    if: (value) => value !== undefined && value !== null && value !== '',
-                    errorMessage: 'La data di scadenza non è valida',
-                },
                 toDate: true
             },
             data_scadenza_spedizione: {
                 optional: true,
-                isISO8601: {
-                    if: (value) => value !== undefined && value !== null && value !== '',
-                    errorMessage: 'La data di scadenza spedizione non è valida',
-                },
                 toDate: true
             },
             cliente_id: {

@@ -35,14 +35,15 @@ const venditaRepository = {
     insertOne: async function(req) {
         const t = await sequelize.transaction();
         try {
-            const { data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, dettagli } = req.body;
+            const { data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, dettagli, conto_bancario_id } = req.body;
             const vendita = await Vendita.create({
                 data_vendita,
                 data_scadenza,
                 data_scadenza_spedizione,
                 stato_spedizione,
                 link_tracciamento,
-                cliente_id
+                cliente_id,
+                conto_bancario_id
             }, { transaction: t });
 
             let totale = 0;
@@ -71,10 +72,10 @@ const venditaRepository = {
     updateOne: async function(req) {
         const t = await sequelize.transaction();
         try {
-            const { id, data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, dettagli } = req.body;
+            const { id, data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, dettagli, conto_bancario_id } = req.body;
             const vendita = await Vendita.findByPk(id, { include: [{ model: VenditaDettaglio, as: 'dettagli' }], transaction: t });
             if (!vendita) throw new Error('Vendita non trovata');
-            await vendita.update({ data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id }, { transaction: t });
+            await vendita.update({ data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, conto_bancario_id }, { transaction: t });
 
             // Handle dettagli
             const existingDettagli = vendita.dettagli || [];

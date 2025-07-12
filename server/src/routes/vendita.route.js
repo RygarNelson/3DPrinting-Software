@@ -15,7 +15,7 @@ router.use(authenticate);
 router.get(
     '/vendita/:id',
     asyncHandler(async (req, res) => {
-        const projection = ['id', 'data_vendita', 'data_scadenza', 'data_scadenza_spedizione', 'cliente_id', 'totale_vendita', 'stato_spedizione', 'link_tracciamento'];
+        const projection = ['id', 'data_vendita', 'data_scadenza', 'data_scadenza_spedizione', 'cliente_id', 'totale_vendita', 'stato_spedizione', 'link_tracciamento', 'conto_bancario_id'];
         // Pass an include option to also get all dettagli
         const include = [
             {
@@ -52,12 +52,16 @@ router.post(
                 attributes: ['id', 'quantita', 'prezzo', 'stato_stampa', 'modello_id', 'stampante_id'],
                 include: [includeDettagliModello, includeDettagliStampante]
             };
+            let includeContoBancario = { association: 'conto_bancario', required: false, attributes: ['iban'], where: { deletedAt: null } };
 
             if (req.body.stato_spedizione != null) {
                 whereOptions.stato_spedizione = req.body.stato_spedizione;
             }
             if (req.body.cliente_id != null) {
                 whereOptions.cliente_id = req.body.cliente_id;
+            }
+            if (req.body.conto_bancario_id != null) {
+                whereOptions.conto_bancario_id = req.body.conto_bancario_id;
             }
 
             if ((req.body.search && req.body.search.trim() !== '') || (req.body.stato_stampa != null)) {
@@ -138,6 +142,25 @@ router.post(
                         }]
                     );
                     venditeByStampante.rows.forEach(v => venditeIds.add(v.id));
+
+                    // Search 4: By conto_bancario
+                    const venditeByContoBancario = await VenditaRepository.find(
+                        { ...whereOptions },
+                        null,
+                        null,
+                        null,
+                        ['id'],
+                        [{
+                            association: 'conto_bancario',
+                            required: true,
+                            attributes: [],
+                            where: { 
+                                iban: { [Op.like]: `%${search}%` },
+                                deletedAt: null
+                            }
+                        }]
+                    );
+                    venditeByContoBancario.rows.forEach(v => venditeIds.add(v.id));
                 }
 
                 // Stato stampa
@@ -305,7 +328,7 @@ router.post(
                     END
                 `), 'rank']
             ];
-            const include = [includeCliente, includeDettagli];
+            const include = [includeCliente, includeDettagli, includeContoBancario];
 
             // Default order: by rank, then by id
             let order = [[literal('rank'), 'ASC'], ['id', 'ASC']];

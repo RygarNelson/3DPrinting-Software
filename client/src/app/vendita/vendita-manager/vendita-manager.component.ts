@@ -1,4 +1,5 @@
 import { ClienteManagerComponent } from '@/cliente/cliente-manager/cliente-manager.component';
+import { ContoBancarioManagerComponent } from '@/conto-bancario/conto-bancario-manager/conto-bancario-manager.component';
 import { ModelloManagerComponent } from '@/modello/modello-manager/modello-manager.component';
 import { ModelloTipoComponent } from '@/modello/modello-tipo/modello-tipo.component';
 import { StampanteManagerComponent } from '@/stampante/stampante-manager/stampante-manager.component';
@@ -16,6 +17,7 @@ import { TabsModule } from 'primeng/tabs';
 import { TooltipModule } from 'primeng/tooltip';
 import { Subscription } from 'rxjs';
 import { ClienteLookupDirective } from 'src/directives/cliente/cliente-lookup.directive';
+import { ContoBancarioLookupDirective } from 'src/directives/conto-bancario/conto-bancario-lookup.directive';
 import { ModelloLookupDirective } from 'src/directives/modello/modello-lookup.directive';
 import { StampanteLookupDirective } from 'src/directives/stampante/stampante-lookup.directive';
 import { VenditaDettaglioStatoStampaLookupDirective } from 'src/directives/vendita/vendita-dettaglio-stato-stampa-lookup.directive';
@@ -56,7 +58,8 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
     VenditaDettaglioStatoComponent,
     VenditaStatoComponent,
     ModelloTipoComponent,
-    TooltipModule
+    TooltipModule,
+    ContoBancarioLookupDirective
   ],
   providers: [
     VenditaService,
@@ -75,9 +78,11 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
   private clienteRef?: DynamicDialogRef;
   private modelloRef?: DynamicDialogRef;
   private stampanteRef?: DynamicDialogRef;
+  private contoBancarioRef?: DynamicDialogRef;
   private clienteSubscription?: Subscription;
   private modelloSubscription?: Subscription;
   private stampanteSubscription?: Subscription;
+  private contoBancarioSubscription?: Subscription;
 
   protected ModelloTipoEnum = ModelloTipoEnum;
 
@@ -116,6 +121,15 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
       }
 
       this.stampanteRef?.close();
+    });
+
+    this.contoBancarioSubscription = this.applicationStateService.newContoBancario.subscribe((event) => {
+      if (event.id != null) {
+        this.vendita.conto_bancario_id = event.id;
+        this.applicationStateService.contoBancarioLookupUpdate.next();
+      }
+
+      this.contoBancarioRef?.close();
     });
   }
 
@@ -286,6 +300,24 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
       modal: true,
       inputValues: {
         venditaIndex: index,
+        isExternal: true
+      }
+    });
+  }
+
+  addContoBancario(): void {
+    this.contoBancarioRef = this.dialogService.open(ContoBancarioManagerComponent, {
+      showHeader: false,
+      closeOnEscape: true,
+      dismissableMask: true,
+      style: {
+        width: '75%'
+      },
+      contentStyle: {
+        padding: '0px'
+      },
+      modal: true,
+      inputValues: {
         isExternal: true
       }
     });
