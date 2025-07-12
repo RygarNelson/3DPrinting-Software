@@ -113,6 +113,26 @@ export const appRoutes: Routes = [
                 path: 'spesa/manager/:id',
                 loadComponent: () => import('./app/spesa/spesa-manager/spesa-manager.component').then(c => c.SpesaManagerComponent),
                 data: { breadcrumb: 'Modifica Spesa' },
+            },
+            {
+                path: 'conto-bancario',
+                redirectTo: 'conto-bancario/listing',
+                pathMatch: 'full',
+            },
+            {
+                path: 'conto-bancario/listing',
+                loadComponent: () => import('./app/conto-bancario/conto-bancario-listing/conto-bancario-listing.component').then(c => c.ContoBancarioListingComponent),
+                data: { breadcrumb: 'Conti Bancari' },
+            },
+            {
+                path: 'conto-bancario/manager',
+                loadComponent: () => import('./app/conto-bancario/conto-bancario-manager/conto-bancario-manager.component').then(c => c.ContoBancarioManagerComponent),
+                data: { breadcrumb: 'Nuovo Conto Bancario' },
+            },
+            {
+                path: 'conto-bancario/manager/:id',
+                loadComponent: () => import('./app/conto-bancario/conto-bancario-manager/conto-bancario-manager.component').then(c => c.ContoBancarioManagerComponent),
+                data: { breadcrumb: 'Modifica Conto Bancario' },
             }
         ]
     },
