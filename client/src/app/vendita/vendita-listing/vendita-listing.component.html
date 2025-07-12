@@ -116,6 +116,9 @@
                   </ng-template>
               </p-columnFilter>
               </th>
+              <th>
+                Conto Bancario
+              </th>
               <th style="min-width: 200px;">
                 Dettagli
               </th>
@@ -189,6 +192,7 @@
               <td>{{ vendita.data_scadenza | date:'dd/MM/yyyy' }}</td>
               <td>{{ vendita.data_scadenza_spedizione | date:'dd/MM/yyyy' }}</td>
               <td>{{ vendita.cliente?.etichetta }}</td>
+              <td>{{ vendita.conto_bancario?.iban }}</td>
               <td>
               @if (vendita.dettagli && vendita.dettagli.length > 0) {
                 <ul class="pl-4" style="list-style: disc;">
@@ -258,7 +262,7 @@
           </ng-template>
           <ng-template #expandedrow let-vendita>
             <tr>
-              <td colspan="9">
+              <td colspan="10">
                 <div class="my-3">
                     <h3 class="text-lg font-semibold text-gray-800 mb-2">Dettagli</h3>
                     <p-table 
@@ -319,7 +323,7 @@
           <!-- Empty State -->
           <ng-template pTemplate="emptymessage">
             <tr>
-              <td colspan="9" class="text-center py-8">
+              <td colspan="10" class="text-center py-8">
                   @if (loading) {
                       <p-skeleton height="100px" width="100%" />
                   } @else {

@@ -328,7 +328,7 @@ router.post(
                     END
                 `), 'rank']
             ];
-            const include = [includeCliente, includeDettagli];
+            const include = [includeCliente, includeDettagli, includeContoBancario];
 
             // Default order: by rank, then by id
             let order = [[literal('rank'), 'ASC'], ['id', 'ASC']];
