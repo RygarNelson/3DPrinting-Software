@@ -148,6 +148,9 @@ const venditaRepository = {
 
     modificaStatoVendita: async function(id, stato_avanzamento) {
         const vendita = await Vendita.findByPk(id);
+        const dettagli = await VenditaDettaglio.findAll({ where: { vendita_id: id } });
+
+        const isStatoSpedizioneDaSpedire = vendita.stato_spedizione == 0;
 
         if (!vendita) {
             throw new Error('Vendita non trovata');
@@ -158,6 +161,14 @@ const venditaRepository = {
 
         await vendita.update({ stato_spedizione: stato_avanzamento });
 
+        if (isStatoSpedizioneDaSpedire) {
+            for (const dettaglio of dettagli) {
+                if (dettaglio.stato_stampa == 0) {
+                    await dettaglio.update({ stato_stampa: 4 });
+                }
+            }
+        }
+        
         return vendita;
     },
 

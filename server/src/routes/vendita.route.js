@@ -409,7 +409,7 @@ router.post(
 router.post(
     '/dettaglio/stato/modifica',
     asyncHandler(async (req, res) => {
-        if (req.body.id > 0 && req.body.stato_avanzamento > 0) {
+        if (req.body.id > 0 && req.body.stato_avanzamento != null) {
             const data = await VenditaRepository.modificaStatoDettaglio(req.body.id, req.body.stato_avanzamento);
             return res.status(200).json({
                 success: true,
