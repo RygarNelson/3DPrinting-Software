@@ -418,6 +418,19 @@ const venditaRepository = {
             }
         });
     },
+
+    sommaVenditePerContoBancarioAnno: async function(anno, conto_bancario_id) {
+        const primoGiornoAnno = new Date(anno, 0, 1);
+        const ultimoGiornoAnno = new Date(anno, 11, 31);
+
+        return Vendita.sum('totale_vendita', {
+            where: {
+                deletedAt: null,
+                data_vendita: { [Op.between]: [primoGiornoAnno, ultimoGiornoAnno] },
+                conto_bancario_id: conto_bancario_id
+            }
+        });
+    }
 };
 
 export default venditaRepository; 
