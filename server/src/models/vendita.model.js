@@ -4,6 +4,7 @@ import { DataTypes } from 'sequelize';
 import { sequelize } from '../config/database.js';
 import Cliente from './cliente.model.js';
 import VenditaDettaglio from './venditaDettaglio.model.js';
+import ContoBancario from './conto-bancario.model.js';
 
 const Vendita = sequelize.define('Vendita', {
     id: {
@@ -42,6 +43,14 @@ const Vendita = sequelize.define('Vendita', {
     link_tracciamento: {
         type: DataTypes.STRING(500),
         allowNull: true
+    },
+    conto_bancario_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+            model: 'T_CONTI_BANCARI',
+            key: 'id'
+        }
     }
 }, {
     tableName: 'T_VENDITE',
@@ -90,6 +99,11 @@ VenditaDettaglio.belongsTo(Vendita, {
 Vendita.belongsTo(Cliente, {
     foreignKey: 'cliente_id',
     as: 'cliente'
+});
+
+Vendita.belongsTo(ContoBancario, {
+    foreignKey: 'conto_bancario_id',
+    as: 'conto_bancario'
 });
 
 export default Vendita; 

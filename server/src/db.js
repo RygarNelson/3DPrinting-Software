@@ -92,6 +92,10 @@ const updateDatabase = async (dbVersion, DatabaseVersion, CURRENT_DATABASE_VERSI
                     await updateDatabaseToVersion6();
                     break;
                 }
+                case 6: {
+                    await updateDatabaseToVersion7();
+                    break;
+                }
                 default: {
                     console.log('Update to version', (version + 1), 'not implemented');
                     process.exit(1);
@@ -162,6 +166,40 @@ const updateDatabaseToVersion6 = async () => {
         await sequelize.query('ALTER TABLE T_VENDITE ADD COLUMN data_scadenza_spedizione DATE NULL');
     } catch (error) {
         console.log('Cannot update database to version 6');
+        process.exit(1);
+    }
+}
+
+const updateDatabaseToVersion7 = async () => {
+    try {
+        console.log('Updating database to version 7');
+
+        // Create table T_CONTI_BANCARI
+        // Check if table exists
+        const tableExists = await sequelize.query('SELECT name FROM sqlite_master WHERE type="table" AND name="T_CONTI_BANCARI"');
+        if (tableExists.length === 0) {
+            console.log('Creating table T_CONTI_BANCARI');
+            await sequelize.query('CREATE TABLE T_CONTI_BANCARI (id INTEGER PRIMARY KEY AUTOINCREMENT, nome_proprietario VARCHAR(60) NULL, cognome_proprietario VARCHAR(60) NULL, iban VARCHAR(27) NULL)');
+        }
+
+        // Add column conto_bancario_id to table T_VENDITE
+        // check if column exists
+        const columnExists = await sequelize.query('SELECT name FROM sqlite_master WHERE type="table" AND name="T_VENDITE" AND sql LIKE "%conto_bancario_id%"');
+        if (columnExists.length === 0) {
+            console.log('Adding column conto_bancario_id to table T_VENDITE');
+            await sequelize.query('ALTER TABLE T_VENDITE ADD COLUMN conto_bancario_id INTEGER NULL');
+        }
+
+        // Add foreign key conto_bancario_id to table T_VENDITE
+        // check if foreign key exists
+        const foreignKeyExists = await sequelize.query('SELECT name FROM sqlite_master WHERE type="table" AND name="T_VENDITE" AND sql LIKE "%fk_t_vendite_t_conti_bancari_id%"');
+        if (foreignKeyExists.length === 0) {
+            console.log('Adding foreign key fk_t_vendite_t_conti_bancari_id to table T_VENDITE');
+            await sequelize.query('ALTER TABLE T_VENDITE ADD FOREIGN KEY (fk_t_vendite_t_conti_bancari_id) REFERENCES T_CONTI_BANCARI(id)');
+        }
+    } catch (error) {
+        console.log('Cannot update database to version 7');
+        console.error(error);
         process.exit(1);
     }
 }
