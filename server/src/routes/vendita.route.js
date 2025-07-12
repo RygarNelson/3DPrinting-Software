@@ -15,7 +15,7 @@ router.use(authenticate);
 router.get(
     '/vendita/:id',
     asyncHandler(async (req, res) => {
-        const projection = ['id', 'data_vendita', 'data_scadenza', 'data_scadenza_spedizione', 'cliente_id', 'totale_vendita', 'stato_spedizione', 'link_tracciamento'];
+        const projection = ['id', 'data_vendita', 'data_scadenza', 'data_scadenza_spedizione', 'cliente_id', 'totale_vendita', 'stato_spedizione', 'link_tracciamento', 'conto_bancario_id'];
         // Pass an include option to also get all dettagli
         const include = [
             {
