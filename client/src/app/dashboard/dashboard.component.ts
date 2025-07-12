@@ -31,8 +31,9 @@ import { DashboardStatoComponent } from './dashboard-stato/dashboard-stato.compo
             [placeholder]="'Seleziona un anno'"
             [(ngModel)]="anno" />
         </div>
-        <div class="grid grid-cols-1 gap-8 w-full mt-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full mt-4">
             <dashboard-stato></dashboard-stato>
+             <!-- TODO: Aggiungere box totale conti bancari per anno selezionato -->
         </div>
         <div class="grid grid-cols-1 gap-8 w-full mt-4">
             <dashboard-andamento [anno]="anno"></dashboard-andamento>
