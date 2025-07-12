@@ -1,6 +1,7 @@
 import { Directive, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ContoBancarioLookupFiltri } from 'src/models/conto-bancario/conto-bancario-lookup.filtri';
+import { ApplicationStateService } from 'src/services/application-state.service';
 import { ContoBancarioService } from 'src/services/conto-bancario.service';
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
 
@@ -16,8 +17,13 @@ export class ContoBancarioLookupDirective implements OnInit, OnDestroy {
 
   constructor(
     private contoBancarioService: ContoBancarioService,
-    private component: FormInputSelectComponent
-  ) { }
+    private component: FormInputSelectComponent,
+    private applicationStateService: ApplicationStateService
+  ) {
+    this.applicationStateService.contoBancarioLookupUpdate.subscribe(() => {
+      this.loadLookup();
+    });
+  }
 
   ngOnInit(): void {
     this.loadLookup();

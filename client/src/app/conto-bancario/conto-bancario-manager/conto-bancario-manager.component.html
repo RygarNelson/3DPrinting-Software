@@ -1,1 +1,71 @@
-<p>conto-bancario-manager works!</p>
+<div class="p-4">
+    <p-card>
+        <ng-template pTemplate="header">
+            <div class="flex items-center flex-wrap header-title">
+                <h2 class="text-xl font-semibold text-gray-800">{{conto_bancario.id ? 'Modifica' : 'Nuovo'}} Conto Bancario</h2>
+                <div class="flex items-center gap-2 margin-left-auto">
+                    @if (loading) {
+                        <p-button 
+                            icon="pi pi-spinner pi-spin"
+                            label="Indietro"
+                            [disabled]="true"
+                            [severity]="'secondary'"
+                        />
+                        <p-button 
+                            icon="pi pi-spinner pi-spin"
+                            label="Salva"
+                            [disabled]="true"
+                            [severity]="'primary'"
+                        />
+                    }
+                    @else {
+                        <p-button 
+                            icon="pi pi-arrow-left"
+                            label="Indietro"
+                            (click)="indietro()"
+                            [severity]="'secondary'"
+                        />
+                        <p-button 
+                            icon="pi pi-save"
+                            label="Salva"
+                            (click)="saveContoBancario()"
+                            [severity]="'primary'"
+                        />
+                    }
+                    
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="content">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <form-input-text 
+                    [label]="'Nome Proprietario'"
+                    [property]="'nome_proprietario'"
+                    [obligatory]="true"
+                    [infoMessage]="'Indica il nome del proprietario del conto bancario'"
+                    [maxlength]="60"
+                    [listaErrori]="listaErrori"
+                    [(ngModel)]="conto_bancario.nome_proprietario"/>
+                <form-input-text 
+                    [label]="'Cognome Proprietario'"
+                    [property]="'cognome_proprietario'"
+                    [obligatory]="true"
+                    [infoMessage]="'Indica il cognome del proprietario del conto bancario'"
+                    [maxlength]="60"
+                    [listaErrori]="listaErrori"
+                    [(ngModel)]="conto_bancario.cognome_proprietario"/>
+            </div>
+            <div class="grid grid-cols-1 mt-4">
+                <form-input-text 
+                    [label]="'IBAN'"
+                    [property]="'iban'"
+                    [obligatory]="true"
+                    [infoMessage]="'Indica l\'IBAN del conto bancario'"
+                    [maxlength]="27"
+                    [listaErrori]="listaErrori"
+                    [(ngModel)]="conto_bancario.iban"/>
+            </div>
+        </ng-template>
+    </p-card>
+</div>
+

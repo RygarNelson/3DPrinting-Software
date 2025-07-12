@@ -41,8 +41,14 @@ const contoBancarioRepository = {
     },
 
     isUsed: async function(id) {
-        const isVendita = await Vendita.findOne({ where: { conto_bancario_id: id } });
-        return isVendita ? true : false;
+        try {
+            const isVendita = await Vendita.findOne({ where: { conto_bancario_id: id, deletedAt: null } });
+            return isVendita ? true : false;
+        }
+        catch (error) {
+            console.error(error);
+            return false;
+        }
     }
 };
 

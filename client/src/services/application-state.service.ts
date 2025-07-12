@@ -14,4 +14,7 @@ export class ApplicationStateService {
 
   stampanteLookupUpdate: Subject<void> = new Subject<void>();
   newStampante: Subject<SaveFromDialogEventInterface> = new Subject<SaveFromDialogEventInterface>();
+
+  contoBancarioLookupUpdate: Subject<void> = new Subject<void>();
+  newContoBancario: Subject<SaveFromDialogEventInterface> = new Subject<SaveFromDialogEventInterface>();
 }
