@@ -16,6 +16,7 @@ import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import { Subscription } from 'rxjs';
 import { ClienteLookupDirective } from 'src/directives/cliente/cliente-lookup.directive';
+import { ContoBancarioLookupDirective } from 'src/directives/conto-bancario/conto-bancario-lookup.directive';
 import { VenditaDettaglioStatoStampaLookupDirective } from 'src/directives/vendita/vendita-dettaglio-stato-stampa-lookup.directive';
 import { VenditaStatoSpedizioneLookupDirective } from 'src/directives/vendita/vendita-stato-spedizione-lookup.directive';
 import { VenditaDettaglioStatoStampaEnum } from 'src/enums/VenditaDettaglioStatoStampaEnum';
@@ -23,10 +24,10 @@ import { VenditaListingDettaglioModel, VenditaListingModel, VenditaListingRespon
 import { VenditaListingFiltri } from 'src/models/vendita/vendita-listing-filtri';
 import { VenditaService } from 'src/services/vendita.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
+import { FormInputRadiobuttonComponent } from 'src/shared/form-input-radiobutton/form-input-radiobutton.component';
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
 import { VenditaDettaglioStatoComponent } from '../vendita-dettaglio-stato/vendita-dettaglio-stato.component';
 import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component';
-import { FormInputRadiobuttonComponent } from 'src/shared/form-input-radiobutton/form-input-radiobutton.component';
 
 @Component({
   selector: 'app-vendita-listing',
@@ -48,6 +49,7 @@ import { FormInputRadiobuttonComponent } from 'src/shared/form-input-radiobutton
     FormInputSelectComponent,
     FormInputRadiobuttonComponent,
     ClienteLookupDirective,
+    ContoBancarioLookupDirective,
     VenditaStatoSpedizioneLookupDirective,
     VenditaDettaglioStatoStampaLookupDirective
   ],
@@ -105,6 +107,10 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
 
       if (params.isScaduto) {
         this.filtri.isScaduto = true;
+      }
+
+      if (params.conto_bancario_id) {
+        this.filtri.conto_bancario_id = params.conto_bancario_id;
       }
     });
   }

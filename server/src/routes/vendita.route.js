@@ -4,6 +4,7 @@ import express from 'express';
 import { validationResult } from 'express-validator';
 import { Op, literal } from 'sequelize';
 import { authenticate } from '../middleware/authenticate.js';
+import ContoBancarioRepository from '../repositories/conto-bancario.repository.js';
 import VenditaRepository from '../repositories/vendita.repository.js';
 import validationSchema from '../schemas/vendita.schema.js';
 import asyncHandler from '../utils/asyncHandler.js';
@@ -479,6 +480,28 @@ router.get(
             totaleVendite: totaleVendite,
             totaleSpese: totaleSpese,
             totaleSospese: totaleSospese
+        });
+    })
+);
+
+router.get(
+    '/conti-bancari/:anno',
+    asyncHandler(async (req, res) => {
+        let result = [];
+
+        const contiBancari = await ContoBancarioRepository.getAll();
+        for (const contoBancario of contiBancari) {
+            const totaleVendite = await VenditaRepository.sommaVenditePerContoBancarioAnno(req.params.anno, contoBancario.id);
+            result.push({
+                id: contoBancario.id,
+                iban: contoBancario.iban,
+                totale_vendite: totaleVendite
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: result
         });
     })
 );
