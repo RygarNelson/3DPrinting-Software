@@ -118,6 +118,16 @@
               </th>
               <th>
                 Conto Bancario
+                <p-columnFilter field="conto_bancario_id" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false">
+                  <ng-template #filter let-value let-filter="filterCallback">
+                      <form-input-select
+                        conto-bancario-lookup
+                        property="conto_bancario_id"
+                        label="Conto Bancario"
+                        [(ngModel)]="filtri.conto_bancario_id"
+                        (ngModelChange)="filter($event)" />
+                  </ng-template>
+              </p-columnFilter>
               </th>
               <th style="min-width: 200px;">
                 Dettagli

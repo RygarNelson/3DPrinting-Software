@@ -31,4 +31,5 @@ export class VenditaListingFiltri implements ListingFilter {
         value?: number;
         operator?: string;
     }
+    conto_bancario_id?: number;
 }
