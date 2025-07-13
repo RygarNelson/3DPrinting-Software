@@ -108,6 +108,10 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
       if (params.isScaduto) {
         this.filtri.isScaduto = true;
       }
+
+      if (params.conto_bancario_id) {
+        this.filtri.conto_bancario_id = params.conto_bancario_id;
+      }
     });
   }
 

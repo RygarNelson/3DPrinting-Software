@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Router } from '@angular/router';
 import { CardModule } from 'primeng/card';
 import { SkeletonModule } from 'primeng/skeleton';
 import { Subscription } from 'rxjs';
@@ -30,7 +31,8 @@ export class DashboardContiBancariComponent implements OnInit, OnDestroy, OnChan
   private loadingTimeout?: number;
 
   constructor(
-    private venditaService: VenditaService
+    private venditaService: VenditaService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -64,5 +66,9 @@ export class DashboardContiBancariComponent implements OnInit, OnDestroy, OnChan
         this.loading = false;
       }
     });
+  }
+
+  goToVenditaListing(contoBancarioId: number): void {
+    this.router.navigate(['/vendita', 'listing'], { queryParams: { conto_bancario_id: contoBancarioId } });
   }
 }

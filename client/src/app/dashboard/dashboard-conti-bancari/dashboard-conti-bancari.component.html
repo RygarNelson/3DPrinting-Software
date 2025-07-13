@@ -10,7 +10,7 @@
                         @if (contiBancari != null && contiBancari.length > 0) {
                             @for (contoBancario of contiBancari; track contoBancario.id) {
                                 <div class="conto-bancario-box">
-                                    <div class="conto-bancario-box-wrapper">
+                                    <div class="conto-bancario-box-wrapper" (click)="goToVenditaListing(contoBancario.id)">
                                         <div class="conto-bancario-name">{{ contoBancario.iban }}</div>
                                         <div class="conto-bancario-value">{{ contoBancario.totale_vendite | currency:'EUR' }}</div>
                                     </div>
