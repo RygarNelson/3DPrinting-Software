@@ -1,0 +1,30 @@
+<div class="p-4">
+    <p-card>
+        <ng-template pTemplate="content">
+            @if (loading) {
+                <p-skeleton height="300px" width="100%" />
+            } @else {
+                <div class="conto-bancario-section">
+                    <h3 class="section-title">Conti Bancari</h3>
+                    <div class="conto-bancario-grid">
+                        @if (contiBancari != null && contiBancari.length > 0) {
+                            @for (contoBancario of contiBancari; track contoBancario.id) {
+                                <div class="conto-bancario-box">
+                                    <div class="conto-bancario-box-wrapper">
+                                        <div class="conto-bancario-name">{{ contoBancario.iban }}</div>
+                                        <div class="conto-bancario-value">{{ contoBancario.totale_vendite | currency:'EUR' }}</div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        @else {
+                            <div class="conto-bancario-box">
+                                <div class="conto-bancario-name">Nessun conto bancario trovato</div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </ng-template>
+    </p-card>
+</div>

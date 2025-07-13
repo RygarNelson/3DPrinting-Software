@@ -8,6 +8,7 @@ import { AuthService } from 'src/services/auth.service';
 import { VenditaService } from 'src/services/vendita.service';
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
 import { DashboardAndamentoComponent } from './dashboard-andamento/dashboard-andamento.component';
+import { DashboardContiBancariComponent } from './dashboard-conti-bancari/dashboard-conti-bancari.component';
 import { DashboardStatoComponent } from './dashboard-stato/dashboard-stato.component';
 
 @Component({
@@ -16,6 +17,7 @@ import { DashboardStatoComponent } from './dashboard-stato/dashboard-stato.compo
     imports: [
         DashboardAndamentoComponent,
         DashboardStatoComponent,
+        DashboardContiBancariComponent,
         FormInputSelectComponent,
         FormsModule
     ],
@@ -33,7 +35,7 @@ import { DashboardStatoComponent } from './dashboard-stato/dashboard-stato.compo
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full mt-4">
             <dashboard-stato></dashboard-stato>
-             <!-- TODO: Aggiungere box totale conti bancari per anno selezionato -->
+            <dashboard-conti-bancari [anno]="anno"></dashboard-conti-bancari>
         </div>
         <div class="grid grid-cols-1 gap-8 w-full mt-4">
             <dashboard-andamento [anno]="anno"></dashboard-andamento>

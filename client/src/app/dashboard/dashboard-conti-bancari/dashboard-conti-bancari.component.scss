@@ -1,0 +1,109 @@
+.section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.conto-bancario-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1rem;
+    padding: 1rem 0;
+}
+
+.conto-bancario-box {
+    background: linear-gradient(135deg, rgba(33, 150, 243, 0.25) 0%, rgba(33, 150, 243, 0.15) 100%);
+    border: 1px solid rgba(33, 150, 243, 0.3);
+    border-radius: 12px;
+    padding: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    margin-bottom: 0.5rem;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+
+    &:hover {
+        transform: translateY(-2px);
+        border-color: rgba(33, 150, 243, 0.5);
+        box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+    }
+}
+
+.conto-bancario-box-wrapper {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.conto-bancario-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #475569;
+}
+
+.conto-bancario-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+// Special styling for scadenza row
+.scadenza-row {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+    .conto-bancario-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .section-title {
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .conto-bancario-box {
+        padding: 1rem;
+        min-height: 60px;
+    }
+
+    .conto-bancario-name {
+        font-size: 0.75rem;
+    }
+
+    .conto-bancario-value {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .conto-bancario-section {
+        margin-bottom: 1rem;
+    }
+
+    .section-title {
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .conto-bancario-box {
+        padding: 0.75rem;
+        min-height: 50px;
+    }
+
+    .conto-bancario-name {
+        font-size: 0.7rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .conto-bancario-value {
+        font-size: 1.25rem;
+    }
+}
