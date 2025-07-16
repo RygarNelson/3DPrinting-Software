@@ -489,24 +489,33 @@ const venditaRepository = {
                     result[month][key] = {
                         modello_nome,
                         tipo,
+                        quantita: 0,
                         prezzo_totale: 0
                     };
                 }
+                result[month][key].quantita += dettaglio.quantita;
                 result[month][key].prezzo_totale += prezzo;
             });
         });
 
-        // Convert to sorted arrays with month name
-        const finalResult = result.map((monthObj, idx) => {
-            const modelli = Object.values(monthObj)
-                .sort((a, b) => b.prezzo_totale - a.prezzo_totale);
-            return {
-                mese: mesi[idx],
-                modelli
-            };
+        // Normalize to a flat array
+        const normalized = [];
+        result.forEach((monthObj, idx) => {
+            Object.values(monthObj)
+                .sort((a, b) => b.prezzo_totale - a.prezzo_totale)
+                .forEach(modello => {
+                    normalized.push({
+                        mese_numero: idx,
+                        mese: mesi[idx],
+                        modello_nome: modello.modello_nome,
+                        tipo: modello.tipo,
+                        quantita: modello.quantita,
+                        prezzo_totale: modello.prezzo_totale
+                    });
+                });
         });
 
-        return finalResult;
+        return normalized;
     }
 };
 

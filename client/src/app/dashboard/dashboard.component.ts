@@ -9,6 +9,7 @@ import { VenditaService } from 'src/services/vendita.service';
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
 import { DashboardAndamentoComponent } from './dashboard-andamento/dashboard-andamento.component';
 import { DashboardContiBancariComponent } from './dashboard-conti-bancari/dashboard-conti-bancari.component';
+import { DashboardRiepilogoModelliComponent } from './dashboard-riepilogo-modelli/dashboard-riepilogo-modelli.component';
 import { DashboardStatoComponent } from './dashboard-stato/dashboard-stato.component';
 
 @Component({
@@ -19,7 +20,8 @@ import { DashboardStatoComponent } from './dashboard-stato/dashboard-stato.compo
         DashboardStatoComponent,
         DashboardContiBancariComponent,
         FormInputSelectComponent,
-        FormsModule
+        FormsModule,
+        DashboardRiepilogoModelliComponent
     ],
     providers: [
         VenditaService
@@ -39,6 +41,9 @@ import { DashboardStatoComponent } from './dashboard-stato/dashboard-stato.compo
         </div>
         <div class="grid grid-cols-1 gap-8 w-full mt-4">
             <dashboard-andamento [anno]="anno"></dashboard-andamento>
+        </div>
+        <div class="grid grid-cols-1 gap-8 w-full mt-4">
+            <dashboard-riepilogo-modelli [anno]="anno"></dashboard-riepilogo-modelli>
         </div>
     `
 })

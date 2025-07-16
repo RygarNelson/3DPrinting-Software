@@ -7,6 +7,7 @@ import { VenditaContoBancarioResponse } from 'src/models/vendita/vendita-conti-b
 import { VenditaListingResponse } from 'src/models/vendita/vendita-listing';
 import { VenditaListingFiltri } from 'src/models/vendita/vendita-listing-filtri';
 import { VenditaManagerModel, VenditaManagerResponse } from 'src/models/vendita/vendita-manager';
+import { VenditaRiepilogoModelliResponse } from 'src/models/vendita/vendita-riepilogo-modelli';
 import { VenditaStatoResponse } from 'src/models/vendita/vendita-stato';
 
 @Injectable()
@@ -62,5 +63,9 @@ export class VenditaService {
 
   getStatoContiBancari(anno: number): Observable<VenditaContoBancarioResponse> {
     return this.http.get<VenditaContoBancarioResponse>(`${this.api}/conti-bancari/${anno}`);
+  }
+
+  getRiepilogoModelli(anno: number): Observable<VenditaRiepilogoModelliResponse> {
+    return this.http.get<VenditaRiepilogoModelliResponse>(`${this.api}/riepilogo/modelli/${anno}`);
   }
 }
