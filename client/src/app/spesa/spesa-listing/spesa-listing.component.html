@@ -67,6 +67,7 @@
           <!-- ID Column -->
           <ng-template #header>
             <tr>
+              <th>Numero</th>
               <th pSortableColumn="data_spesa">
                 Data Spesa
                 <p-sortIcon field="data_spesa" />
@@ -120,6 +121,7 @@
           <!-- Data Rows -->
           <ng-template #body let-spesa>
             <tr>
+              <td class="font-medium">{{ spesa.id }}</td>
               <td class="font-medium">{{ spesa.data_spesa | date:'dd/MM/yyyy' }}</td>
               <td>{{ spesa.descrizione }}</td>
               <td>{{ spesa.quantita | number : "0.4-4" }}</td>
