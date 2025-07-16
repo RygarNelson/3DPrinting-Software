@@ -1,33 +1,39 @@
+import { ModelloTipoComponent } from '@/modello/modello-tipo/modello-tipo.component';
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
+import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { SkeletonModule } from 'primeng/skeleton';
+import { TableModule } from 'primeng/table';
 import { Subscription } from 'rxjs';
-import { VenditaContoBancarioModel } from 'src/models/vendita/vendita-conti-bancari';
+import { VenditaRiepilogoModelli } from 'src/models/vendita/vendita-riepilogo-modelli';
 import { VenditaService } from 'src/services/vendita.service';
 
 @Component({
-  selector: 'dashboard-conti-bancari',
+  selector: 'dashboard-riepilogo-modelli',
   imports: [
     CommonModule,
     CardModule,
-    SkeletonModule
+    SkeletonModule,
+    TableModule,
+    ModelloTipoComponent,
+    ButtonModule
   ],
   providers: [
     VenditaService
   ],
-  templateUrl: './dashboard-conti-bancari.component.html',
-  styleUrl: './dashboard-conti-bancari.component.scss'
+  templateUrl: './dashboard-riepilogo-modelli.component.html',
+  styleUrl: './dashboard-riepilogo-modelli.component.scss'
 })
-export class DashboardContiBancariComponent implements OnInit, OnDestroy, OnChanges {
+export class DashboardRiepilogoModelliComponent implements OnInit, OnDestroy, OnChanges {
 
   @Input() anno?: number = 0;
 
   loading: boolean = false;
-  contiBancari: VenditaContoBancarioModel[] = [];
+  riepilogo: VenditaRiepilogoModelli[] = [];  
 
-  private contiBancariSubscription?: Subscription;
+  private riepilogoSubscription?: Subscription;
   private loadingTimeout?: number;
 
   constructor(
@@ -37,46 +43,41 @@ export class DashboardContiBancariComponent implements OnInit, OnDestroy, OnChan
 
   ngOnInit(): void {
     if (this.anno != null && this.anno != 0) {
-      this.getStatoContiBancari();
+      this.getRiepilogo();
     }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.anno != null && this.anno != 0) {
-      this.getStatoContiBancari();
+      this.getRiepilogo();
     }
   }
 
   ngOnDestroy(): void {
-    this.contiBancariSubscription?.unsubscribe();
+    this.riepilogoSubscription?.unsubscribe();
     clearTimeout(this.loadingTimeout);
     this.loadingTimeout = undefined;
   }
 
-  getStatoContiBancari(): void {
+  getRiepilogo(): void {
     if (this.loadingTimeout == null) {
       this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
     }
-
-    this.contiBancariSubscription = this.venditaService.getStatoContiBancari(this.anno!).subscribe({
+    this.riepilogoSubscription = this.venditaService.getRiepilogoModelli(this.anno!).subscribe({
       next: (response) => {
-        this.contiBancari = response.data;
+        this.riepilogo = response.data;
 
-        clearTimeout(this.loadingTimeout);
+        window.clearTimeout(this.loadingTimeout);
         this.loadingTimeout = undefined;
         this.loading = false;
       },
       error: (error) => {
         console.error(error);
-        
-        clearTimeout(this.loadingTimeout);
+
+        window.clearTimeout(this.loadingTimeout);
         this.loadingTimeout = undefined;
         this.loading = false;
       }
     });
-  }
-
-  goToVenditaListing(contoBancarioId: number): void {
-    this.router.navigate(['/vendita', 'listing'], { queryParams: { conto_bancario_id: contoBancarioId } });
   }
 }

@@ -430,6 +430,92 @@ const venditaRepository = {
                 conto_bancario_id: conto_bancario_id
             }
         });
+    },
+
+    ottieniRiepilogoVenditeModelliPerMese: async function(anno) {
+        const primoGiornoAnno = new Date(anno, 0, 1);
+        const ultimoGiornoAnno = new Date(anno, 11, 31);
+
+        // Fetch all delivered sales for the year, including their details and model
+        const vendite = await Vendita.findAll({
+            where: {
+                deletedAt: null,
+                data_vendita: { [Op.between]: [primoGiornoAnno, ultimoGiornoAnno] },
+                stato_spedizione: 3 // Consegnato
+            },
+            include: [
+                {
+                    model: VenditaDettaglio,
+                    as: 'dettagli',
+                    required: true,
+                    include: [
+                        {
+                            association: 'modello',
+                            attributes: ['id','nome', 'tipo']
+                        }
+                    ]
+                }
+            ]
+        });
+
+        // Italian month names
+        const mesi = [
+            'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno',
+            'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'
+        ];
+
+        // Prepare 12 months
+        const result = Array.from({ length: 12 }, () => ({}));
+
+        // Aggregate
+        vendite.forEach(vendita => {
+            const month = new Date(vendita.data_vendita).getMonth(); // 0-based
+
+            if (!vendita.dettagli) {
+                return;
+            }
+
+            vendita.dettagli.forEach(dettaglio => {
+                if (dettaglio.modello == null) {
+                    return;
+                }
+
+                const modello_nome = dettaglio.modello.nome;
+                const tipo = dettaglio.modello.tipo;
+                const prezzo = parseFloat(dettaglio.prezzo) || 0;
+
+                const key = dettaglio.modello.id;
+                if (!result[month][key]) {
+                    result[month][key] = {
+                        modello_nome,
+                        tipo,
+                        quantita: 0,
+                        prezzo_totale: 0
+                    };
+                }
+                result[month][key].quantita += dettaglio.quantita;
+                result[month][key].prezzo_totale += prezzo;
+            });
+        });
+
+        // Normalize to a flat array
+        const normalized = [];
+        result.forEach((monthObj, idx) => {
+            Object.values(monthObj)
+                .sort((a, b) => b.prezzo_totale - a.prezzo_totale)
+                .forEach(modello => {
+                    normalized.push({
+                        mese_numero: idx,
+                        mese: mesi[idx],
+                        modello_nome: modello.modello_nome,
+                        tipo: modello.tipo,
+                        quantita: modello.quantita,
+                        prezzo_totale: modello.prezzo_totale
+                    });
+                });
+        });
+
+        return normalized;
     }
 };
 

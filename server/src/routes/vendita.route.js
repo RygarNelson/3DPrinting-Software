@@ -507,6 +507,18 @@ router.get(
 );
 
 router.get(
+    '/riepilogo/modelli/:anno',
+    asyncHandler(async (req, res) => {
+        const riepilogo = await VenditaRepository.ottieniRiepilogoVenditeModelliPerMese(req.params.anno);
+        
+        return res.status(200).json({
+            success: true,
+            data: riepilogo
+        });
+    })
+);
+
+router.get(
     '/stato',
     asyncHandler(async (req, res) => {
         const data = await VenditaRepository.ottieniStatoVendite();
