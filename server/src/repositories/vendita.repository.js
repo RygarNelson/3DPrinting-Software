@@ -518,6 +518,14 @@ const venditaRepository = {
         });
 
         return normalized;
+    },
+
+    modificaContoBancarioVendite: async function(vendite_ids, conto_bancario_id) {
+        await Vendita.update({ conto_bancario_id: conto_bancario_id }, {
+            where: {
+                id: { [Op.in]: vendite_ids }
+            }
+        });
     }
 };
 
