@@ -55,7 +55,8 @@ const venditaRepository = {
                         stampante_id: d.stampante_id,
                         stato_stampa: d.stato_stampa,
                         quantita: d.quantita,
-                        prezzo: d.prezzo
+                        prezzo: d.prezzo,
+                        descrizione: d.descrizione
                     }, { transaction: t });
                     if (d.prezzo) {
                         totale += parseFloat(d.prezzo);
@@ -89,7 +90,7 @@ const venditaRepository = {
             for (const det of existingDettagli) {
                 if (dettagliMap.has(det.id)) {
                     const d = dettagliMap.get(det.id);
-                    await det.update({ modello_id: d.modello_id, stampante_id: d.stampante_id, stato_stampa: d.stato_stampa, quantita: d.quantita, prezzo: d.prezzo }, { transaction: t });
+                    await det.update({ modello_id: d.modello_id, stampante_id: d.stampante_id, stato_stampa: d.stato_stampa, quantita: d.quantita, prezzo: d.prezzo, descrizione: d.descrizione }, { transaction: t });
                     dettagliMap.delete(det.id);
                 } else {
                     await det.destroy({ transaction: t });
@@ -106,7 +107,8 @@ const venditaRepository = {
                             stampante_id: d.stampante_id,
                             stato_stampa: d.stato_stampa,
                             quantita: d.quantita,
-                            prezzo: d.prezzo
+                            prezzo: d.prezzo,
+                            descrizione: d.descrizione
                         }, { transaction: t });
                     }
                     if (d.prezzo) {

@@ -21,7 +21,7 @@ router.get(
         const include = [
             {
                 association: 'dettagli',
-                attributes: ['id', 'modello_id', 'quantita', 'prezzo', 'vendita_id', 'stampante_id', 'stato_stampa'], // projection for dettagli
+                attributes: ['id', 'modello_id', 'quantita', 'prezzo', 'vendita_id', 'stampante_id', 'stato_stampa', 'descrizione'], // projection for dettagli
                 where: { deletedAt: null },
                 required: false, // so that vendite with no non-deleted dettagli are still included
             }
@@ -50,7 +50,7 @@ router.post(
                 association: 'dettagli',
                 where: { deletedAt: null },
                 required: false,
-                attributes: ['id', 'quantita', 'prezzo', 'stato_stampa', 'modello_id', 'stampante_id'],
+                attributes: ['id', 'quantita', 'prezzo', 'stato_stampa', 'modello_id', 'stampante_id', 'descrizione'],
                 include: [includeDettagliModello, includeDettagliStampante]
             };
             let includeContoBancario = { association: 'conto_bancario', required: false, attributes: ['iban'], where: { deletedAt: null } };
@@ -135,7 +135,7 @@ router.post(
                                 association: 'stampante',
                                 required: true,
                                 attributes: [],
-                                where: { 
+                                where: {
                                     nome: { [Op.like]: `%${search}%` },
                                     deletedAt: null 
                                 }
@@ -162,6 +162,22 @@ router.post(
                         }]
                     );
                     venditeByContoBancario.rows.forEach(v => venditeIds.add(v.id));
+
+                    // Search 5: By dettagli.descrizione
+                    const venditeByDescrizione = await VenditaRepository.find(
+                        { ...whereOptions },
+                        null,
+                        null,
+                        null,
+                        ['id'],
+                        [{
+                            association: 'dettagli',
+                            required: true,
+                            attributes: [],
+                            where: { deletedAt: null, descrizione: { [Op.like]: `%${search}%` } },
+                        }]
+                    );
+                    venditeByDescrizione.rows.forEach(v => venditeIds.add(v.id));
                 }
 
                 // Stato stampa
