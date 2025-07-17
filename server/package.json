@@ -1,6 +1,6 @@
 {
   "name": "3d-printing-software-server",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "3D Printing Software Server",
   "main": "server.js",
   "type": "module",
