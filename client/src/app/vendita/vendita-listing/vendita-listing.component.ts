@@ -3,7 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AccordionModule } from 'primeng/accordion';
-import { ConfirmationService, FilterMetadata, MessageService } from 'primeng/api';
+import { ConfirmationService, FilterMetadata, MenuItem, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
@@ -11,6 +11,7 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
+import { MenuModule } from 'primeng/menu';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
@@ -51,7 +52,8 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
     ClienteLookupDirective,
     ContoBancarioLookupDirective,
     VenditaStatoSpedizioneLookupDirective,
-    VenditaDettaglioStatoStampaLookupDirective
+    VenditaDettaglioStatoStampaLookupDirective,
+    MenuModule
   ],
   providers: [
     ConfirmationService,
@@ -68,6 +70,7 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
   totalRecords: number = 0;
   loading: boolean = false;
   expandedRows: any = {};
+  selectedVendite: VenditaListingModel[] = [];
 
   // Filter properties
   filtri: VenditaListingFiltri = {
@@ -75,6 +78,16 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
     limit: 10,
     search: ''
   };
+
+  multipleAzioni: MenuItem[] = [
+    {
+      label: 'Modifica conto bancario',
+      icon: 'pi pi-credit-card',
+      command: () => {
+        this.modificaContoBancarioVendite();
+      }
+    }
+  ];
 
   private venditeSubscription?: Subscription;
   private venditaDeleteSubscription?: Subscription;
@@ -442,5 +455,9 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
           console.error('Error avanzando stato dettaglio:', error);
         }
       });
+  }
+
+  modificaContoBancarioVendite(): void {
+    // TODO: Implementazione modifica conto bancario
   }
 }

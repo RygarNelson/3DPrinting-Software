@@ -31,6 +31,7 @@
           [sortOrder]="-1"
           dataKey="id"
           [expandedRowKeys]="expandedRows"
+          [(selection)]="selectedVendite"
           [lazy]="true"
           (onLazyLoad)="loadData($event)">
           
@@ -63,6 +64,12 @@
                 </div>
                   
                   <div class="flex items-center gap-2 margin-left-auto">
+                    <p-menu #menu appendTo="body" [model]="multipleAzioni" [popup]="true"></p-menu>
+                    <p-button
+                      [label]="'Azioni'"
+                      [icon]="menu.visible ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
+                      [disabled]="selectedVendite == null || (selectedVendite != null && selectedVendite.length == 0)"
+                      (onClick)="menu.toggle($event)" />
                     <p-button 
                       icon="pi pi-refresh" 
                       severity="warn" 
@@ -87,6 +94,7 @@
           <!-- ID Column -->
           <ng-template #header>
             <tr>
+              <th style="width: 4rem"><p-tableHeaderCheckbox /></th>
               <th style="width: 5rem"></th>
               <th>Numero</th>
               <th pSortableColumn="data_vendita" style="width: 150px;">
@@ -196,6 +204,9 @@
           <!-- Data Rows -->
           <ng-template #body let-vendita let-expanded="expanded">
             <tr [ngClass]="{'in-scadenza': vendita.isInScadenza, 'scaduto': vendita.isScaduto}">
+              <td>
+                <p-tableCheckbox [value]="vendita" />
+              </td>
               <td>
                   <p-button type="button" pRipple [pRowToggler]="vendita" [text]="true" [rounded]="true" [plain]="true" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
               </td>
