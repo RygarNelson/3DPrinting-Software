@@ -208,9 +208,13 @@
               <td>
               @if (vendita.dettagli && vendita.dettagli.length > 0) {
                 <ul class="pl-4" style="list-style: disc;">
-                  <li *ngFor="let dettaglio of vendita.dettagli">
-                    {{ dettaglio.modello?.nome }}
-                  </li>
+                  @for (dettaglio of vendita.dettagli; track dettaglio.id) {
+                    @if (dettaglio.modello) {
+                      <li>{{ dettaglio.modello?.nome }}</li>
+                    } @else {
+                      <li>{{ dettaglio.descrizione }}</li>
+                    }
+                  }
                 </ul>
               } @else {
                 <p class="text-gray-500">Nessun dettaglio</p>
@@ -282,7 +286,7 @@
                       [value]="vendita.dettagli">
                         <ng-template #header>
                           <tr>
-                            <th class="text-center">Modello</th>
+                            <th class="text-center">Modello / Descrizione</th>
                             <th class="text-center">Stampante</th>
                             <th class="text-center">Quantità</th>
                             <th class="text-center">Prezzo</th>
@@ -291,7 +295,13 @@
                         </ng-template>
                         <ng-template #body let-dettaglio>
                           <tr>
-                            <td class="text-center">{{ dettaglio?.modello?.nome }}</td>
+                            <td class="text-center">
+                              @if (dettaglio?.modello) {
+                                {{ dettaglio?.modello?.nome }}
+                              } @else {
+                                {{ dettaglio?.descrizione }}
+                              }
+                            </td>
                             <td class="text-center">{{ dettaglio?.stampante?.nome }}</td>
                             <td class="text-center">{{ dettaglio?.quantita }}</td>
                             <td class="text-center">

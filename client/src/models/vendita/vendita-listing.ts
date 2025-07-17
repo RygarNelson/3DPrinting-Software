@@ -27,6 +27,7 @@ export class VenditaListingDettaglioModel {
     stato_stampa: VenditaDettaglioStatoStampaEnum = VenditaDettaglioStatoStampaEnum.DaStampare;
     modello: VenditaListingDettaglioModelloModel = new VenditaListingDettaglioModelloModel();
     stampante: VenditaListingDettaglioStampanteModel = new VenditaListingDettaglioStampanteModel();
+    descrizione?: string;
 }
 
 export class VenditaListingDettaglioModelloModel {
