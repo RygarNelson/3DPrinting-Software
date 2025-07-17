@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { DialogService } from 'primeng/dynamicdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
@@ -29,7 +28,6 @@ import { ContoBancarioListingEliminaMessaggioPipe } from '../pipes/conto-bancari
     ButtonModule,
     TableModule,
     InputTextModule,
-    ConfirmPopupModule,
     IconFieldModule,
     InputIconModule,
     SkeletonModule,
@@ -37,7 +35,6 @@ import { ContoBancarioListingEliminaMessaggioPipe } from '../pipes/conto-bancari
     ContoBancarioListingEliminaMessaggioPipe
   ],
   providers: [
-    ConfirmationService,
     ContoBancarioService
   ],
   templateUrl: './conto-bancario-listing.component.html',

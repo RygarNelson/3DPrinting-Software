@@ -7,7 +7,6 @@ import { ConfirmationService, FilterMetadata, MenuItem, MessageService } from 'p
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { ConfirmDialog, ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { DialogService } from 'primeng/dynamicdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
@@ -41,7 +40,6 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
     ButtonModule,
     TableModule,
     InputTextModule,
-    ConfirmPopupModule,
     IconFieldModule,
     InputIconModule,
     SkeletonModule,
@@ -59,7 +57,6 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
     ConfirmDialogModule
   ],
   providers: [
-    ConfirmationService,
     VenditaService
   ],
   templateUrl: './vendita-listing.component.html',

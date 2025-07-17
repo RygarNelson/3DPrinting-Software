@@ -64,7 +64,6 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
   providers: [
     VenditaService,
     ClienteService,
-    ConfirmationService
   ],
   templateUrl: './vendita-manager.component.html',
   styleUrl: './vendita-manager.component.scss'

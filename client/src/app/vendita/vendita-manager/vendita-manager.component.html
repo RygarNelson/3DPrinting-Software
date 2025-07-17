@@ -5,99 +5,50 @@
                 <h2 class="text-xl font-semibold text-gray-800">{{vendita.id ? 'Modifica' : 'Nuova'}} Vendita</h2>
                 <div class="flex items-center gap-2 margin-left-auto">
                     @if (loading) {
-                        <p-button 
-                            icon="pi pi-spinner pi-spin"
-                            label="Indietro"
-                            [disabled]="true"
-                            [severity]="'secondary'"
-                        />
-                        <p-button 
-                            icon="pi pi-spinner pi-spin"
-                            label="Salva"
-                            [disabled]="true"
-                            [severity]="'primary'"
-                        />
+                    <p-button icon="pi pi-spinner pi-spin" label="Indietro" [disabled]="true"
+                        [severity]="'secondary'" />
+                    <p-button icon="pi pi-spinner pi-spin" label="Salva" [disabled]="true" [severity]="'primary'" />
                     }
                     @else {
-                        <p-button 
-                            icon="pi pi-arrow-left"
-                            label="Indietro"
-                            (click)="indietro()"
-                            [severity]="'secondary'"
-                        />
-                        <p-button 
-                            icon="pi pi-save"
-                            label="Salva"
-                            (click)="saveVendita()"
-                            [severity]="'primary'"
-                        />
+                    <p-button icon="pi pi-arrow-left" label="Indietro" (click)="indietro()" [severity]="'secondary'" />
+                    <p-button icon="pi pi-save" label="Salva" (click)="saveVendita()" [severity]="'primary'" />
                     }
-                    
+
                 </div>
             </div>
         </ng-template>
         <ng-template pTemplate="content">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <form-input-datetime
-                    property="data_vendita"
-                    label="Data Vendita"
-                    [obligatory]="true"
-                    [listaErrori]="listaErrori"
-                    [(ngModel)]="vendita.data_vendita"
+                <form-input-datetime property="data_vendita" label="Data Vendita" [obligatory]="true"
+                    [listaErrori]="listaErrori" [(ngModel)]="vendita.data_vendita"
                     (ngModelChange)="impostaDateScadenze()" />
-                <form-input-datetime
-                    property="data_scadenza"
-                    label="Data Scadenza"
-                    [min]="vendita.data_vendita"
-                    [listaErrori]="listaErrori"
-                    [(ngModel)]="vendita.data_scadenza" />
-                <form-input-datetime
-                    property="data_scadenza_spedizione"
-                    label="Data Scadenza Spedizione"
-                    [min]="vendita.data_vendita"
-                    [listaErrori]="listaErrori"
+                <form-input-datetime property="data_scadenza" label="Data Scadenza" [min]="vendita.data_vendita"
+                    [listaErrori]="listaErrori" [(ngModel)]="vendita.data_scadenza" />
+                <form-input-datetime property="data_scadenza_spedizione" label="Data Scadenza Spedizione"
+                    [min]="vendita.data_vendita" [listaErrori]="listaErrori"
                     [(ngModel)]="vendita.data_scadenza_spedizione" />
             </div>
             <div class="grid grid-cols-2 gap-4 mt-4">
-                <form-input-select
-                    cliente-lookup
-                    property="cliente_id"
-                    label="Cliente"
-                    [obligatory]="true"
-                    [listaErrori]="listaErrori"
-                    [showAdd]="true"
-                    (add)="addCliente()"
+                <form-input-select cliente-lookup property="cliente_id" label="Cliente" [obligatory]="true"
+                    [listaErrori]="listaErrori" [showAdd]="true" (add)="addCliente()"
                     [(ngModel)]="vendita.cliente_id" />
-                <form-input-select
-                    conto-bancario-lookup
-                    property="conto_bancario_id"
-                    label="Conto Bancario"
-                    [listaErrori]="listaErrori"
-                    [showAdd]="true"
-                    (add)="addContoBancario()"
+                <form-input-select conto-bancario-lookup property="conto_bancario_id" label="Conto Bancario"
+                    [listaErrori]="listaErrori" [showAdd]="true" (add)="addContoBancario()"
                     [(ngModel)]="vendita.conto_bancario_id" />
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <form-input-select
-                    vendita-stato-spedizione-lookup
-                    property="stato_spedizione"
-                    label="Stato Spedizione"
-                    [obligatory]="true"
-                    [filter]="false"
-                    [showClear]="false"
-                    [listaErrori]="listaErrori"
+                <form-input-select vendita-stato-spedizione-lookup property="stato_spedizione" label="Stato Spedizione"
+                    [obligatory]="true" [filter]="false" [showClear]="false" [listaErrori]="listaErrori"
                     [(ngModel)]="vendita.stato_spedizione">
                     <ng-template #selectedItem let-item>
-                      <vendita-stato class="w-full" [stato_spedizione]="vendita.stato_spedizione" [isInSelect]="true" />
+                        <vendita-stato class="w-full" [stato_spedizione]="vendita.stato_spedizione"
+                            [isInSelect]="true" />
                     </ng-template>
                     <ng-template #item let-item>
-                      <vendita-stato class="w-full" [stato_spedizione]="item.id" [isInSelect]="true" />
+                        <vendita-stato class="w-full" [stato_spedizione]="item.id" [isInSelect]="true" />
                     </ng-template>
                 </form-input-select>
-                <form-input-text
-                    property="link_tracciamento"
-                    label="Link Tracciamento"
-                    [listaErrori]="listaErrori"
+                <form-input-text property="link_tracciamento" label="Link Tracciamento" [listaErrori]="listaErrori"
                     [(ngModel)]="vendita.link_tracciamento" />
             </div>
         </ng-template>
@@ -110,32 +61,19 @@
                     <h2 class="text-xl font-semibold text-gray-800">Dettagli</h2>
                     <div class="flex items-center gap-2 margin-left-auto">
                         @if (loading) {
-                            <p-button 
-                                icon="pi pi-spinner pi-spin" 
-                                label="Aggiungi Dettaglio"
-                                severity="success" 
-                                [disabled]="true"
-                            />
+                        <p-button icon="pi pi-spinner pi-spin" label="Aggiungi Dettaglio" severity="success"
+                            [disabled]="true" />
                         }
                         @else {
-                            <p-button 
-                                icon="pi pi-plus" 
-                                label="Aggiungi Dettaglio"
-                                severity="success" 
-                                (click)="addDettaglio()"
-                                pTooltip="Aggiungi nuovo dettaglio"
-                                tooltipPosition="top"
-                            />
+                        <p-button icon="pi pi-plus" label="Aggiungi Dettaglio" severity="success"
+                            (click)="addDettaglio()" pTooltip="Aggiungi nuovo dettaglio" tooltipPosition="top" />
                         }
-                        
+
                     </div>
                 </div>
             </ng-template>
             <ng-template pTemplate="content">
-                <p-table 
-                    [value]="vendita.dettagli"
-                    [paginator]="true" 
-                    [rows]="10"
+                <p-table [value]="vendita.dettagli" [paginator]="true" [rows]="10"
                     [totalRecords]="vendita.dettagli.length">
                     <ng-template pTemplate="header">
                         <tr>
@@ -144,7 +82,8 @@
                             <th style="width: 200px;">Quantità</th>
                             <th style="width: 200px;">
                                 Prezzo
-                                <i class="pi pi-info-circle info-icon" pTooltip="Il prezzo è il prezzo totale del dettaglio, NON UNITARIO"></i>
+                                <i class="pi pi-info-circle info-icon"
+                                    pTooltip="Il prezzo è il prezzo totale del dettaglio, NON UNITARIO"></i>
                             </th>
                             <th style="width: 300px;">Stato Stampa</th>
                             <th style="width: 100px;"></th>
@@ -154,100 +93,58 @@
                         <tr>
                             <td>
                                 <div class="flex flex-col items-center gap-2">
-                                    <form-input-select
-                                        modello-lookup
-                                        class="w-full"
-                                        property="modello_id"
-                                        [label]="'Modello'"
-                                        [listaErrori]="listaErrori"
-                                        [parent]="'dettagli'"
-                                        [index]="rowIndex"
-                                        [showAdd]="true"
-                                        (add)="addModello(rowIndex)"
+                                    <form-input-select modello-lookup class="w-full" property="modello_id"
+                                        [label]="'Modello'" [listaErrori]="listaErrori" [parent]="'dettagli'"
+                                        [index]="rowIndex" [showAdd]="true" (add)="addModello(rowIndex)"
                                         [(ngModel)]="dettaglio.modello_id">
                                         <ng-template #selectedItem let-item>
-                                            <modello-tipo class="w-full" [tipo]="item.altriDati.tipo" [descrizioneModello]="item.etichetta" [isInSelect]="true" />
+                                            <modello-tipo class="w-full" [tipo]="item.altriDati.tipo"
+                                                [descrizioneModello]="item.etichetta" [isInSelect]="true" />
                                         </ng-template>
                                         <ng-template #item let-item>
-                                            <modello-tipo class="w-full" [tipo]="item.altriDati.tipo" [descrizioneModello]="item.etichetta" [isInSelect]="true" />
+                                            <modello-tipo class="w-full" [tipo]="item.altriDati.tipo"
+                                                [descrizioneModello]="item.etichetta" [isInSelect]="true" />
                                         </ng-template>
                                     </form-input-select>
-                                    <form-input-text
-                                        property="descrizione"
-                                        class="w-full"
-                                        label="Descrizione"
-                                        [listaErrori]="listaErrori"
-                                        [parent]="'dettagli'"
-                                        [index]="rowIndex"
+                                    <form-input-text property="descrizione" class="w-full" label="Descrizione"
+                                        [listaErrori]="listaErrori" [parent]="'dettagli'" [index]="rowIndex"
                                         [(ngModel)]="dettaglio.descrizione" />
                                 </div>
                             </td>
                             <td>
-                                <form-input-select
-                                    stampante-lookup
-                                    property="stampante_id"
-                                    [listaErrori]="listaErrori"
-                                    [parent]="'dettagli'"
-                                    [index]="rowIndex"
-                                    [showAdd]="true"
-                                    (add)="addStampante(rowIndex)"
-                                    [(ngModel)]="dettaglio.stampante_id" />
+                                <form-input-select stampante-lookup property="stampante_id" [listaErrori]="listaErrori"
+                                    [parent]="'dettagli'" [index]="rowIndex" [showAdd]="true"
+                                    (add)="addStampante(rowIndex)" [(ngModel)]="dettaglio.stampante_id" />
                             </td>
                             <td>
-                                <form-input-number
-                                    property="quantita"
-                                    [min]="0"
-                                    [step]="1"
-                                    [mode]="'decimal'"
-                                    [minFractionDigits]="4"
-                                    [maxFractionDigits]="4"
-                                    [listaErrori]="listaErrori"
-                                    [parent]="'dettagli'"
-                                    [index]="rowIndex"
-                                    [(ngModel)]="dettaglio.quantita" />
+                                <form-input-number property="quantita" [min]="0" [step]="1" [mode]="'decimal'"
+                                    [minFractionDigits]="4" [maxFractionDigits]="4" [listaErrori]="listaErrori"
+                                    [parent]="'dettagli'" [index]="rowIndex" [(ngModel)]="dettaglio.quantita" />
                             </td>
                             <td>
-                                <form-input-number
-                                    property="prezzo"
-                                    [min]="0"
-                                    [step]="1"
-                                    [mode]="'decimal'"
-                                    [minFractionDigits]="5"
-                                    [maxFractionDigits]="5"
-                                    [suffix]="'€'"
-                                    [showButtons]="true"
-                                    [listaErrori]="listaErrori"
-                                    [parent]="'dettagli'"
-                                    [index]="rowIndex"
+                                <form-input-number property="prezzo" [min]="0" [step]="1" [mode]="'decimal'"
+                                    [minFractionDigits]="5" [maxFractionDigits]="5" [suffix]="'€'" [showButtons]="true"
+                                    [listaErrori]="listaErrori" [parent]="'dettagli'" [index]="rowIndex"
                                     [(ngModel)]="dettaglio.prezzo" />
                             </td>
                             <td>
-                                <form-input-select
-                                    vendita-dettaglio-stato-stampa-lookup
-                                    property="stato_stampa"
-                                    [filter]="false"
-                                    [showClear]="false"
-                                    [listaErrori]="listaErrori"
-                                    [parent]="'dettagli'"
-                                    [index]="rowIndex"
-                                    [(ngModel)]="dettaglio.stato_stampa">
+                                <form-input-select vendita-dettaglio-stato-stampa-lookup property="stato_stampa"
+                                    [filter]="false" [showClear]="false" [listaErrori]="listaErrori"
+                                    [parent]="'dettagli'" [index]="rowIndex" [(ngModel)]="dettaglio.stato_stampa">
                                     <ng-template #selectedItem let-item>
-                                        <vendita-dettaglio-stato class="w-full" [stato_stampa]="dettaglio.stato_stampa" [isInSelect]="true" />
-                                        </ng-template>
-                                        <ng-template #item let-item>
-                                        <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id" [isInSelect]="true" />
-                                        </ng-template>
+                                        <vendita-dettaglio-stato class="w-full" [stato_stampa]="dettaglio.stato_stampa"
+                                            [isInSelect]="true" />
+                                    </ng-template>
+                                    <ng-template #item let-item>
+                                        <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id"
+                                            [isInSelect]="true" />
+                                    </ng-template>
                                 </form-input-select>
                             </td>
                             <td>
-                                <p-button 
-                                    icon="pi pi-trash" 
-                                    severity="danger" 
-                                    size="small"
-                                    pTooltip="Elimina dettaglio"
-                                    tooltipPosition="top" 
-                                    (click)="confirmDeleteDettaglio($event, dettaglio, rowIndex)"
-                                />
+                                <p-button icon="pi pi-trash" severity="danger" size="small" pTooltip="Elimina dettaglio"
+                                    tooltipPosition="top"
+                                    (click)="confirmDeleteDettaglio($event, dettaglio, rowIndex)" />
                             </td>
                         </tr>
                     </ng-template>
@@ -255,7 +152,4 @@
             </ng-template>
         </p-card>
     </div>
-
-    <!-- Confirm Popup for Delete -->
-    <p-confirmpopup />
 </div>
