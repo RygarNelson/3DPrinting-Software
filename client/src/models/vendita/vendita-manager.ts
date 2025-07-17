@@ -22,6 +22,7 @@ export class VenditaDettaglioManagerModel {
     vendita_id?: number;
     stampante_id?: number;
     stato_stampa?: VenditaDettaglioStatoStampaEnum = VenditaDettaglioStatoStampaEnum.DaStampare;
+    descrizione?: string;
 }
 
 export class VenditaManagerResponse implements ResponseInterface {

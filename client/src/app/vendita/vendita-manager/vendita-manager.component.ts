@@ -83,6 +83,7 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
   private modelloSubscription?: Subscription;
   private stampanteSubscription?: Subscription;
   private contoBancarioSubscription?: Subscription;
+  private contoBancarioLookupSubscription?: Subscription;
 
   protected ModelloTipoEnum = ModelloTipoEnum;
 
@@ -96,51 +97,69 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
     private applicationStateService: ApplicationStateService,
     private clienteService: ClienteService
   ){
-    this.clienteSubscription = this.applicationStateService.newCliente.subscribe((event) => {
-      if (event.id != null) {
-        this.vendita.cliente_id = event.id;
-        this.applicationStateService.clienteLookupUpdate.next();
+    this.clienteSubscription = this.applicationStateService.newCliente.subscribe({
+      next: (event) => {
+        if (event.id != null) {
+          this.vendita.cliente_id = event.id;
+          this.applicationStateService.clienteLookupUpdate.next();
+        }
+  
+        this.clienteRef?.close();
       }
-
-      this.clienteRef?.close();
     });
 
-    this.modelloSubscription = this.applicationStateService.newModello.subscribe((event) => {
-      if (event.id != null && event.index != null) {
-        this.vendita.dettagli[event.index].modello_id = event.id;
-        this.applicationStateService.modelloLookupUpdate.next();
+    this.modelloSubscription = this.applicationStateService.newModello.subscribe({
+      next: (event) => {
+        if (event.id != null && event.index != null) {
+          this.vendita.dettagli[event.index].modello_id = event.id;
+          this.applicationStateService.modelloLookupUpdate.next();
+        }
+  
+        this.modelloRef?.close();
       }
-
-      this.modelloRef?.close();
     });
 
-    this.stampanteSubscription = this.applicationStateService.newStampante.subscribe((event) => {
-      if (event.id != null && event.index != null) {
-        this.vendita.dettagli[event.index].stampante_id = event.id;
-        this.applicationStateService.stampanteLookupUpdate.next();
+    this.stampanteSubscription = this.applicationStateService.newStampante.subscribe({
+      next: (event) => {
+        if (event.id != null && event.index != null) {
+          this.vendita.dettagli[event.index].stampante_id = event.id;
+          this.applicationStateService.stampanteLookupUpdate.next();
+        }
+  
+        this.stampanteRef?.close();
       }
-
-      this.stampanteRef?.close();
     });
 
-    this.contoBancarioSubscription = this.applicationStateService.newContoBancario.subscribe((event) => {
-      if (event.id != null) {
-        this.vendita.conto_bancario_id = event.id;
-        this.applicationStateService.contoBancarioLookupUpdate.next();
+    this.contoBancarioSubscription = this.applicationStateService.newContoBancario.subscribe({
+      next: (event) => {
+        if (event.id != null) {
+          this.vendita.conto_bancario_id = event.id;
+          this.applicationStateService.contoBancarioLookupUpdate.next();
+        }
+  
+        this.contoBancarioRef?.close();
       }
+    });
 
-      this.contoBancarioRef?.close();
+    this.contoBancarioLookupSubscription = this.applicationStateService.contoBancarioLookup.subscribe({
+      next: (event) => {
+        if (event != null && event.length == 1) {
+          this.vendita.conto_bancario_id = event[0].id;
+        }
+      }
     });
   }
 
   ngOnInit(): void {
     // Get router params
-    this.route.params.subscribe(params => {
-      this.vendita.id = params['id'] ? Number(params['id']) : 0;
-      if (this.vendita.id) {
-        this.getVendita();
-      } else {
-        this.getClienteVintedId();
+    this.route.params.subscribe({
+      next: (params) => {
+        this.vendita.id = params['id'] ? Number(params['id']) : 0;
+        if (this.vendita.id) {
+          this.getVendita();
+        } else {
+          this.getClienteVintedId();
+        }
       }
     });
   }
@@ -150,6 +169,8 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
     this.clienteSubscription?.unsubscribe();
     this.modelloSubscription?.unsubscribe();
     this.stampanteSubscription?.unsubscribe();
+    this.contoBancarioSubscription?.unsubscribe();
+    this.contoBancarioLookupSubscription?.unsubscribe();
     this.clienteRef?.destroy();
     this.modelloRef?.destroy();
     this.stampanteRef?.destroy();

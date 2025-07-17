@@ -39,6 +39,8 @@ export class ContoBancarioLookupDirective implements OnInit, OnDestroy {
       next: (response) => {
         this.component.data = response.data;
         this.component.loading = false;
+
+        this.applicationStateService.contoBancarioLookup.next(response.data);
       },
       error: (error) => {
         console.error(error);

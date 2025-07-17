@@ -139,7 +139,7 @@
                     [totalRecords]="vendita.dettagli.length">
                     <ng-template pTemplate="header">
                         <tr>
-                            <th>Modello</th>
+                            <th>Modello / Descrizione</th>
                             <th>Stampante</th>
                             <th style="width: 200px;">Quantità</th>
                             <th style="width: 200px;">
@@ -153,22 +153,34 @@
                     <ng-template pTemplate="body" let-dettaglio let-rowIndex="rowIndex">
                         <tr>
                             <td>
-                                <form-input-select
-                                    modello-lookup
-                                    property="modello_id"
-                                    [listaErrori]="listaErrori"
-                                    [parent]="'dettagli'"
-                                    [index]="rowIndex"
-                                    [showAdd]="true"
-                                    (add)="addModello(rowIndex)"
-                                    [(ngModel)]="dettaglio.modello_id">
-                                    <ng-template #selectedItem let-item>
-                                        <modello-tipo class="w-full" [tipo]="item.altriDati.tipo" [descrizioneModello]="item.etichetta" [isInSelect]="true" />
-                                      </ng-template>
-                                      <ng-template #item let-item>
-                                        <modello-tipo class="w-full" [tipo]="item.altriDati.tipo" [descrizioneModello]="item.etichetta" [isInSelect]="true" />
-                                      </ng-template>
-                                </form-input-select>
+                                <div class="flex flex-col items-center gap-2">
+                                    <form-input-select
+                                        modello-lookup
+                                        class="w-full"
+                                        property="modello_id"
+                                        [label]="'Modello'"
+                                        [listaErrori]="listaErrori"
+                                        [parent]="'dettagli'"
+                                        [index]="rowIndex"
+                                        [showAdd]="true"
+                                        (add)="addModello(rowIndex)"
+                                        [(ngModel)]="dettaglio.modello_id">
+                                        <ng-template #selectedItem let-item>
+                                            <modello-tipo class="w-full" [tipo]="item.altriDati.tipo" [descrizioneModello]="item.etichetta" [isInSelect]="true" />
+                                        </ng-template>
+                                        <ng-template #item let-item>
+                                            <modello-tipo class="w-full" [tipo]="item.altriDati.tipo" [descrizioneModello]="item.etichetta" [isInSelect]="true" />
+                                        </ng-template>
+                                    </form-input-select>
+                                    <form-input-text
+                                        property="descrizione"
+                                        class="w-full"
+                                        label="Descrizione"
+                                        [listaErrori]="listaErrori"
+                                        [parent]="'dettagli'"
+                                        [index]="rowIndex"
+                                        [(ngModel)]="dettaglio.descrizione" />
+                                </div>
                             </td>
                             <td>
                                 <form-input-select

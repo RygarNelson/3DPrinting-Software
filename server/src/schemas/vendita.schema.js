@@ -55,11 +55,26 @@ const validationSchema = {
                 }
             },
             'dettagli.*.modello_id': {
-                optional: false,
+                optional: true,
                 isInt: {
                     errorMessage: 'Il modello non è valido',
                 },
-                toInt: true
+                toInt: true,
+                custom: {
+                    options: async (value) => {
+                        console.log(value);
+
+                        return true;
+                    },
+                    errorMessage: 'Selezione un modello o scrivi una descrizione'
+                }
+            },
+            'dettagli.*.descrizione': {
+                optional: true,
+                isLength: {
+                    options: { max: 500 },
+                    errorMessage: 'La descrizione non può superare i 500 caratteri'
+                }
             },
             'dettagli.*.stampante_id': {
                 optional: false,
