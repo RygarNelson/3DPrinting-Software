@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AccordionModule } from 'primeng/accordion';
 import { ConfirmationService, FilterMetadata, MenuItem, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
+import { ConfirmDialog, ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { DialogService } from 'primeng/dynamicdialog';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -23,6 +24,7 @@ import { VenditaStatoSpedizioneLookupDirective } from 'src/directives/vendita/ve
 import { VenditaDettaglioStatoStampaEnum } from 'src/enums/VenditaDettaglioStatoStampaEnum';
 import { VenditaListingDettaglioModel, VenditaListingModel, VenditaListingResponse } from 'src/models/vendita/vendita-listing';
 import { VenditaListingFiltri } from 'src/models/vendita/vendita-listing-filtri';
+import { VenditaModificaContoBancarioModel } from 'src/models/vendita/vendita_modifica_conto_bancario';
 import { VenditaService } from 'src/services/vendita.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { FormInputRadiobuttonComponent } from 'src/shared/form-input-radiobutton/form-input-radiobutton.component';
@@ -53,7 +55,8 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
     ContoBancarioLookupDirective,
     VenditaStatoSpedizioneLookupDirective,
     VenditaDettaglioStatoStampaLookupDirective,
-    MenuModule
+    MenuModule,
+    ConfirmDialogModule
   ],
   providers: [
     ConfirmationService,
@@ -84,10 +87,18 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
       label: 'Modifica conto bancario',
       icon: 'pi pi-credit-card',
       command: () => {
-        this.modificaContoBancarioVendite();
+        this.modificaContoBancarioVisible = true;
       }
     }
   ];
+
+  modificaContoBancarioVisible: boolean = false;
+  modificaContoBancarioModel: VenditaModificaContoBancarioModel = {
+    vendite_ids: [],
+    conto_bancario_id: 0
+  };
+
+  @ViewChild('confirmDialogModificaContoBancario') confirmDialogModificaContoBancario?: ConfirmDialog;
 
   private venditeSubscription?: Subscription;
   private venditaDeleteSubscription?: Subscription;
@@ -458,6 +469,34 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
   }
 
   modificaContoBancarioVendite(): void {
-    // TODO: Implementazione modifica conto bancario
+    this.modificaContoBancarioModel.vendite_ids = this.selectedVendite.map(vendita => vendita.id);
+
+    this.venditaService.modificaContoBancarioVendite(this.modificaContoBancarioModel).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Conto bancario modificato con successo'
+        });
+
+        this.loadVendite();
+      },
+      error: (error) => {
+        this.dialogService.open(DialogErrorComponent, {
+          inputValues: {
+            error: error
+          },
+          modal: true
+        });
+      },
+      complete: () => {
+        this.modificaContoBancarioModel = {
+          vendite_ids: [],
+          conto_bancario_id: 0
+        };
+        this.modificaContoBancarioVisible = false;
+        this.selectedVendite = [];
+      }
+    });
   }
 }
