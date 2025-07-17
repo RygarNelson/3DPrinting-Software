@@ -2,6 +2,8 @@ import { LayoutService } from '@/layout/service/layout.service';
 import { CommonModule } from '@angular/common';
 import { Component, Renderer2, ViewChild } from '@angular/core';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { ConfirmationService } from 'primeng/api';
+import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { ToastModule } from 'primeng/toast';
 import { filter, Subscription } from 'rxjs';
 import { AppConfigurator } from '../configurator/configurator.component';
@@ -19,7 +21,11 @@ import { AppTopbar } from '../topbar/topbar.component';
         RouterModule,
         AppConfigurator,
         AppProfileSidebar,
-        ToastModule
+        ToastModule,
+        ConfirmPopupModule
+    ],
+    providers: [
+        ConfirmationService
     ],
     template: `
     <div class="layout-container" [ngClass]="containerClass">
@@ -34,7 +40,9 @@ import { AppTopbar } from '../topbar/topbar.component';
         <app-configurator></app-configurator>
         <div class="layout-mask animate-fadein"></div>
     </div>
-    <p-toast />`,
+    <p-toast />
+    <p-confirmpopup />
+    `,
 })
 export class AppLayout {
     overlayMenuOpenSubscription: Subscription;

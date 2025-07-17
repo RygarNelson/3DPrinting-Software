@@ -1,7 +1,7 @@
 'use strict'
 
-import jwt from 'jsonwebtoken'
-import { secret } from '../config/jwtOptions.js'
+import jwt from 'jsonwebtoken';
+import { secret } from '../config/jwtOptions.js';
 
 const authenticate = async (req, res, next) => {
     if (req.headers.token) {
@@ -30,4 +30,5 @@ const authenticate = async (req, res, next) => {
     }
 }
 
-export { authenticate }
+export { authenticate };
+

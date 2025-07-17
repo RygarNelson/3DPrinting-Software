@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { DialogService } from 'primeng/dynamicdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
@@ -32,7 +31,6 @@ import { ModelloListingEliminaMessaggioPipe } from '../pipes/modello-listing-eli
     ButtonModule,
     TableModule,
     InputTextModule,
-    ConfirmPopupModule,
     IconFieldModule,
     InputIconModule,
     SkeletonModule,
@@ -43,7 +41,6 @@ import { ModelloListingEliminaMessaggioPipe } from '../pipes/modello-listing-eli
     ModelloTipoComponent
   ],
   providers: [
-    ConfirmationService,
     ModelloService
   ],
   templateUrl: './modello-listing.component.html',

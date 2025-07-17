@@ -1,4 +1,5 @@
 import { ClienteManagerComponent } from '@/cliente/cliente-manager/cliente-manager.component';
+import { ContoBancarioManagerComponent } from '@/conto-bancario/conto-bancario-manager/conto-bancario-manager.component';
 import { ModelloManagerComponent } from '@/modello/modello-manager/modello-manager.component';
 import { ModelloTipoComponent } from '@/modello/modello-tipo/modello-tipo.component';
 import { StampanteManagerComponent } from '@/stampante/stampante-manager/stampante-manager.component';
@@ -16,6 +17,7 @@ import { TabsModule } from 'primeng/tabs';
 import { TooltipModule } from 'primeng/tooltip';
 import { Subscription } from 'rxjs';
 import { ClienteLookupDirective } from 'src/directives/cliente/cliente-lookup.directive';
+import { ContoBancarioLookupDirective } from 'src/directives/conto-bancario/conto-bancario-lookup.directive';
 import { ModelloLookupDirective } from 'src/directives/modello/modello-lookup.directive';
 import { StampanteLookupDirective } from 'src/directives/stampante/stampante-lookup.directive';
 import { VenditaDettaglioStatoStampaLookupDirective } from 'src/directives/vendita/vendita-dettaglio-stato-stampa-lookup.directive';
@@ -56,12 +58,12 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
     VenditaDettaglioStatoComponent,
     VenditaStatoComponent,
     ModelloTipoComponent,
-    TooltipModule
+    TooltipModule,
+    ContoBancarioLookupDirective
   ],
   providers: [
     VenditaService,
     ClienteService,
-    ConfirmationService
   ],
   templateUrl: './vendita-manager.component.html',
   styleUrl: './vendita-manager.component.scss'
@@ -75,9 +77,12 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
   private clienteRef?: DynamicDialogRef;
   private modelloRef?: DynamicDialogRef;
   private stampanteRef?: DynamicDialogRef;
+  private contoBancarioRef?: DynamicDialogRef;
   private clienteSubscription?: Subscription;
   private modelloSubscription?: Subscription;
   private stampanteSubscription?: Subscription;
+  private contoBancarioSubscription?: Subscription;
+  private contoBancarioLookupSubscription?: Subscription;
 
   protected ModelloTipoEnum = ModelloTipoEnum;
 
@@ -91,42 +96,69 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
     private applicationStateService: ApplicationStateService,
     private clienteService: ClienteService
   ){
-    this.clienteSubscription = this.applicationStateService.newCliente.subscribe((event) => {
-      if (event.id != null) {
-        this.vendita.cliente_id = event.id;
-        this.applicationStateService.clienteLookupUpdate.next();
+    this.clienteSubscription = this.applicationStateService.newCliente.subscribe({
+      next: (event) => {
+        if (event.id != null) {
+          this.vendita.cliente_id = event.id;
+          this.applicationStateService.clienteLookupUpdate.next();
+        }
+  
+        this.clienteRef?.close();
       }
-
-      this.clienteRef?.close();
     });
 
-    this.modelloSubscription = this.applicationStateService.newModello.subscribe((event) => {
-      if (event.id != null && event.index != null) {
-        this.vendita.dettagli[event.index].modello_id = event.id;
-        this.applicationStateService.modelloLookupUpdate.next();
+    this.modelloSubscription = this.applicationStateService.newModello.subscribe({
+      next: (event) => {
+        if (event.id != null && event.index != null) {
+          this.vendita.dettagli[event.index].modello_id = event.id;
+          this.applicationStateService.modelloLookupUpdate.next();
+        }
+  
+        this.modelloRef?.close();
       }
-
-      this.modelloRef?.close();
     });
 
-    this.stampanteSubscription = this.applicationStateService.newStampante.subscribe((event) => {
-      if (event.id != null && event.index != null) {
-        this.vendita.dettagli[event.index].stampante_id = event.id;
-        this.applicationStateService.stampanteLookupUpdate.next();
+    this.stampanteSubscription = this.applicationStateService.newStampante.subscribe({
+      next: (event) => {
+        if (event.id != null && event.index != null) {
+          this.vendita.dettagli[event.index].stampante_id = event.id;
+          this.applicationStateService.stampanteLookupUpdate.next();
+        }
+  
+        this.stampanteRef?.close();
       }
+    });
 
-      this.stampanteRef?.close();
+    this.contoBancarioSubscription = this.applicationStateService.newContoBancario.subscribe({
+      next: (event) => {
+        if (event.id != null) {
+          this.vendita.conto_bancario_id = event.id;
+          this.applicationStateService.contoBancarioLookupUpdate.next();
+        }
+  
+        this.contoBancarioRef?.close();
+      }
+    });
+
+    this.contoBancarioLookupSubscription = this.applicationStateService.contoBancarioLookup.subscribe({
+      next: (event) => {
+        if (event != null && event.length == 1) {
+          this.vendita.conto_bancario_id = event[0].id;
+        }
+      }
     });
   }
 
   ngOnInit(): void {
     // Get router params
-    this.route.params.subscribe(params => {
-      this.vendita.id = params['id'] ? Number(params['id']) : 0;
-      if (this.vendita.id) {
-        this.getVendita();
-      } else {
-        this.getClienteVintedId();
+    this.route.params.subscribe({
+      next: (params) => {
+        this.vendita.id = params['id'] ? Number(params['id']) : 0;
+        if (this.vendita.id) {
+          this.getVendita();
+        } else {
+          this.getClienteVintedId();
+        }
       }
     });
   }
@@ -136,6 +168,8 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
     this.clienteSubscription?.unsubscribe();
     this.modelloSubscription?.unsubscribe();
     this.stampanteSubscription?.unsubscribe();
+    this.contoBancarioSubscription?.unsubscribe();
+    this.contoBancarioLookupSubscription?.unsubscribe();
     this.clienteRef?.destroy();
     this.modelloRef?.destroy();
     this.stampanteRef?.destroy();
@@ -286,6 +320,24 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
       modal: true,
       inputValues: {
         venditaIndex: index,
+        isExternal: true
+      }
+    });
+  }
+
+  addContoBancario(): void {
+    this.contoBancarioRef = this.dialogService.open(ContoBancarioManagerComponent, {
+      showHeader: false,
+      closeOnEscape: true,
+      dismissableMask: true,
+      style: {
+        width: '75%'
+      },
+      contentStyle: {
+        padding: '0px'
+      },
+      modal: true,
+      inputValues: {
         isExternal: true
       }
     });

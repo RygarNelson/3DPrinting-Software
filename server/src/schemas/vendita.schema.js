@@ -7,25 +7,17 @@ const validationSchema = {
         return checkSchema({
             data_vendita: {
                 optional: false,
-                isISO8601: {
+                notEmpty: {
                     errorMessage: 'La data di vendita non è valida',
                 },
                 toDate: true
             },
             data_scadenza: {
                 optional: true,
-                isISO8601: {
-                    if: (value) => value !== undefined && value !== null && value !== '',
-                    errorMessage: 'La data di scadenza non è valida',
-                },
                 toDate: true
             },
             data_scadenza_spedizione: {
                 optional: true,
-                isISO8601: {
-                    if: (value) => value !== undefined && value !== null && value !== '',
-                    errorMessage: 'La data di scadenza spedizione non è valida',
-                },
                 toDate: true
             },
             cliente_id: {
@@ -63,11 +55,26 @@ const validationSchema = {
                 }
             },
             'dettagli.*.modello_id': {
-                optional: false,
+                optional: true,
                 isInt: {
                     errorMessage: 'Il modello non è valido',
                 },
-                toInt: true
+                toInt: true,
+                custom: {
+                    options: async (value) => {
+                        console.log(value);
+
+                        return true;
+                    },
+                    errorMessage: 'Selezione un modello o scrivi una descrizione'
+                }
+            },
+            'dettagli.*.descrizione': {
+                optional: true,
+                isLength: {
+                    options: { max: 500 },
+                    errorMessage: 'La descrizione non può superare i 500 caratteri'
+                }
             },
             'dettagli.*.stampante_id': {
                 optional: false,

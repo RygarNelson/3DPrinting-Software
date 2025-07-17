@@ -12,6 +12,7 @@ export class VenditaListingModel {
     isScaduto: boolean = false;
     stato_spedizione: VenditaStatoSpedizioneEnum = VenditaStatoSpedizioneEnum.DaSpedire;
     cliente: VenditaListingClienteModel = new VenditaListingClienteModel();
+    conto_bancario: VenditaListingContoBancarioModel = new VenditaListingContoBancarioModel();
     dettagli: VenditaListingDettaglioModel[] = [];
 }
 
@@ -26,6 +27,7 @@ export class VenditaListingDettaglioModel {
     stato_stampa: VenditaDettaglioStatoStampaEnum = VenditaDettaglioStatoStampaEnum.DaStampare;
     modello: VenditaListingDettaglioModelloModel = new VenditaListingDettaglioModelloModel();
     stampante: VenditaListingDettaglioStampanteModel = new VenditaListingDettaglioStampanteModel();
+    descrizione?: string;
 }
 
 export class VenditaListingDettaglioModelloModel {
@@ -34,6 +36,10 @@ export class VenditaListingDettaglioModelloModel {
 
 export class VenditaListingDettaglioStampanteModel {
     nome: string = '';
+}
+
+export class VenditaListingContoBancarioModel {
+    iban: string = '';
 }
 
 export class VenditaListingResponse implements ResponseInterface {

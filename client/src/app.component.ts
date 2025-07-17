@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { it } from 'primelocale/js/it.js';
 import { PrimeNG } from 'primeng/config';
 
 @Component({
@@ -16,8 +15,14 @@ import { PrimeNG } from 'primeng/config';
 export class AppComponent implements OnInit {
     constructor(private config: PrimeNG) {}
 
-    ngOnInit() {
-        this.config.setTranslation(it);
+    async ngOnInit() {
+        try {
+            // Try to load the Italian locale from CommonJS version
+            const itModule = await import('primelocale/cjs/it.js');
+            this.config.setTranslation(itModule.it as any);
+        } catch (error) {
+            console.warn('Could not load Italian locale, using default:', error);
+        }
     }
 }
 

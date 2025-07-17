@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { ConfirmationService, FilterMetadata, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { DialogService } from 'primeng/dynamicdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
@@ -33,7 +32,6 @@ import { SpesaUnitaMisuraPipe } from '../spesa-unita-misura.pipe';
     ButtonModule,
     TableModule,
     InputTextModule,
-    ConfirmPopupModule,
     IconFieldModule,
     InputIconModule,
     SkeletonModule,
@@ -45,7 +43,6 @@ import { SpesaUnitaMisuraPipe } from '../spesa-unita-misura.pipe';
     FormInputSelectComponent
   ],
   providers: [
-    ConfirmationService,
     SpesaService,
   ],
   templateUrl: './spesa-listing.component.html',

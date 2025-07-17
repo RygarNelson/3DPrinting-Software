@@ -10,13 +10,6 @@
                         <h5 class="text-lg font-semibold mr-3">In Sospeso: {{ totaleSospese | currency:'EUR' }}</h5>
                         <h5 class="text-lg font-semibold mr-3">Vendite: {{ totaleVendite | currency:'EUR' }}</h5>
                         <h5 class="text-lg font-semibold mr-3">Spese: {{ totaleSpese | currency:'EUR' }}</h5>
-                        <form-input-select
-                            [data]="anni"
-                            [filter]="false"
-                            [showClear]="false"
-                            [placeholder]="'Seleziona un anno'"
-                            [(ngModel)]="anno"
-                            (ngModelChange)="preparaGrafico()" />
                     </div>
                     
                 }

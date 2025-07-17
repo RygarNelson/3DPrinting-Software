@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { SaveFromDialogEventInterface } from 'src/interfaces/save-from-dialog-event-interface';
+import { ContoBancarioLookup } from 'src/models/conto-bancario/conto-bancario-lookup';
 
 @Injectable({
   providedIn: 'root'
@@ -14,4 +15,8 @@ export class ApplicationStateService {
 
   stampanteLookupUpdate: Subject<void> = new Subject<void>();
   newStampante: Subject<SaveFromDialogEventInterface> = new Subject<SaveFromDialogEventInterface>();
+
+  contoBancarioLookupUpdate: Subject<void> = new Subject<void>();
+  contoBancarioLookup: Subject<ContoBancarioLookup[]> = new Subject<ContoBancarioLookup[]>();
+  newContoBancario: Subject<SaveFromDialogEventInterface> = new Subject<SaveFromDialogEventInterface>();
 }

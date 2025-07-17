@@ -46,6 +46,10 @@ const VenditaDettaglio = sequelize.define('VenditaDettaglio', {
     stato_stampa: {
         type: DataTypes.INTEGER,
         allowNull: true
+    },
+    descrizione: {
+        type: DataTypes.STRING(500),
+        allowNull: true
     }
 }, {
     tableName: 'T_VENDITE_DETTAGLI',

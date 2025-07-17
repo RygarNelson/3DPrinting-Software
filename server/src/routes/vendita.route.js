@@ -4,6 +4,7 @@ import express from 'express';
 import { validationResult } from 'express-validator';
 import { Op, literal } from 'sequelize';
 import { authenticate } from '../middleware/authenticate.js';
+import ContoBancarioRepository from '../repositories/conto-bancario.repository.js';
 import VenditaRepository from '../repositories/vendita.repository.js';
 import validationSchema from '../schemas/vendita.schema.js';
 import asyncHandler from '../utils/asyncHandler.js';
@@ -15,12 +16,12 @@ router.use(authenticate);
 router.get(
     '/vendita/:id',
     asyncHandler(async (req, res) => {
-        const projection = ['id', 'data_vendita', 'data_scadenza', 'data_scadenza_spedizione', 'cliente_id', 'totale_vendita', 'stato_spedizione', 'link_tracciamento'];
+        const projection = ['id', 'data_vendita', 'data_scadenza', 'data_scadenza_spedizione', 'cliente_id', 'totale_vendita', 'stato_spedizione', 'link_tracciamento', 'conto_bancario_id'];
         // Pass an include option to also get all dettagli
         const include = [
             {
                 association: 'dettagli',
-                attributes: ['id', 'modello_id', 'quantita', 'prezzo', 'vendita_id', 'stampante_id', 'stato_stampa'], // projection for dettagli
+                attributes: ['id', 'modello_id', 'quantita', 'prezzo', 'vendita_id', 'stampante_id', 'stato_stampa', 'descrizione'], // projection for dettagli
                 where: { deletedAt: null },
                 required: false, // so that vendite with no non-deleted dettagli are still included
             }
@@ -49,15 +50,19 @@ router.post(
                 association: 'dettagli',
                 where: { deletedAt: null },
                 required: false,
-                attributes: ['id', 'quantita', 'prezzo', 'stato_stampa', 'modello_id', 'stampante_id'],
+                attributes: ['id', 'quantita', 'prezzo', 'stato_stampa', 'modello_id', 'stampante_id', 'descrizione'],
                 include: [includeDettagliModello, includeDettagliStampante]
             };
+            let includeContoBancario = { association: 'conto_bancario', required: false, attributes: ['iban'], where: { deletedAt: null } };
 
             if (req.body.stato_spedizione != null) {
                 whereOptions.stato_spedizione = req.body.stato_spedizione;
             }
             if (req.body.cliente_id != null) {
                 whereOptions.cliente_id = req.body.cliente_id;
+            }
+            if (req.body.conto_bancario_id != null) {
+                whereOptions.conto_bancario_id = req.body.conto_bancario_id;
             }
 
             if ((req.body.search && req.body.search.trim() !== '') || (req.body.stato_stampa != null)) {
@@ -130,7 +135,7 @@ router.post(
                                 association: 'stampante',
                                 required: true,
                                 attributes: [],
-                                where: { 
+                                where: {
                                     nome: { [Op.like]: `%${search}%` },
                                     deletedAt: null 
                                 }
@@ -138,6 +143,41 @@ router.post(
                         }]
                     );
                     venditeByStampante.rows.forEach(v => venditeIds.add(v.id));
+
+                    // Search 4: By conto_bancario
+                    const venditeByContoBancario = await VenditaRepository.find(
+                        { ...whereOptions },
+                        null,
+                        null,
+                        null,
+                        ['id'],
+                        [{
+                            association: 'conto_bancario',
+                            required: true,
+                            attributes: [],
+                            where: { 
+                                iban: { [Op.like]: `%${search}%` },
+                                deletedAt: null
+                            }
+                        }]
+                    );
+                    venditeByContoBancario.rows.forEach(v => venditeIds.add(v.id));
+
+                    // Search 5: By dettagli.descrizione
+                    const venditeByDescrizione = await VenditaRepository.find(
+                        { ...whereOptions },
+                        null,
+                        null,
+                        null,
+                        ['id'],
+                        [{
+                            association: 'dettagli',
+                            required: true,
+                            attributes: [],
+                            where: { deletedAt: null, descrizione: { [Op.like]: `%${search}%` } },
+                        }]
+                    );
+                    venditeByDescrizione.rows.forEach(v => venditeIds.add(v.id));
                 }
 
                 // Stato stampa
@@ -259,18 +299,15 @@ router.post(
 
             if (req.body.isInScadenza || req.body.isScaduto) {
                 let dataOggi = new Date();
-                dataOggi.setTime( dataOggi.getTime() - dataOggi.getTimezoneOffset()*60*1000 );
-
-                const valoriAmmessiStatoSpedizione = [0, 4];
 
                 if (req.body.isInScadenza) {
-                    whereOptions.data_scadenza = { [Op.gte]: dataOggi };
-                    whereOptions.data_scadenza_spedizione = { [Op.lt]: dataOggi };
+                    whereOptions.data_scadenza = { [Op.lte]: dataOggi };
+                    whereOptions.data_scadenza_spedizione = { [Op.gt]: dataOggi };
                 } else {
-                    whereOptions.data_scadenza_spedizione = { [Op.gte]: dataOggi };
+                    whereOptions.data_scadenza_spedizione = { [Op.lte]: dataOggi };
                 }
 
-                whereOptions.stato_spedizione = { [Op.in]: valoriAmmessiStatoSpedizione };
+                whereOptions.stato_spedizione = { [Op.in]: [0, 4] };
             }
 
             const limit = req.body.limit ? parseInt(req.body.limit) : 10;
@@ -308,7 +345,7 @@ router.post(
                     END
                 `), 'rank']
             ];
-            const include = [includeCliente, includeDettagli];
+            const include = [includeCliente, includeDettagli, includeContoBancario];
 
             // Default order: by rank, then by id
             let order = [[literal('rank'), 'ASC'], ['id', 'ASC']];
@@ -412,7 +449,7 @@ router.post(
 router.post(
     '/dettaglio/stato/modifica',
     asyncHandler(async (req, res) => {
-        if (req.body.id > 0 && req.body.stato_avanzamento > 0) {
+        if (req.body.id > 0 && req.body.stato_avanzamento != null) {
             const data = await VenditaRepository.modificaStatoDettaglio(req.body.id, req.body.stato_avanzamento);
             return res.status(200).json({
                 success: true,
@@ -464,12 +501,57 @@ router.get(
 );
 
 router.get(
+    '/conti-bancari/:anno',
+    asyncHandler(async (req, res) => {
+        let result = [];
+
+        const contiBancari = await ContoBancarioRepository.getAll();
+        for (const contoBancario of contiBancari) {
+            const totaleVendite = await VenditaRepository.sommaVenditePerContoBancarioAnno(req.params.anno, contoBancario.id);
+            result.push({
+                id: contoBancario.id,
+                iban: contoBancario.iban,
+                totale_vendite: totaleVendite
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: result
+        });
+    })
+);
+
+router.get(
+    '/riepilogo/modelli/:anno',
+    asyncHandler(async (req, res) => {
+        const riepilogo = await VenditaRepository.ottieniRiepilogoVenditeModelliPerMese(req.params.anno);
+        
+        return res.status(200).json({
+            success: true,
+            data: riepilogo
+        });
+    })
+);
+
+router.get(
     '/stato',
     asyncHandler(async (req, res) => {
         const data = await VenditaRepository.ottieniStatoVendite();
         return res.status(200).json({
             success: true,
             data: data
+        });
+    })
+);
+
+router.post(
+    '/conto-bancario/modifica',
+    asyncHandler(async (req, res) => {
+        await VenditaRepository.modificaContoBancarioVendite(req.body.vendite_ids, req.body.conto_bancario_id);
+        return res.status(200).json({
+            success: true,
+            data: 'Conto bancario aggiornato con successo!',
         });
     })
 );

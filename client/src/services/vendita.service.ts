@@ -3,10 +3,13 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { VenditaAndamentoResponse } from 'src/models/vendita/vendita-andamento';
 import { VenditaAnniResponse } from 'src/models/vendita/vendita-anni';
+import { VenditaContoBancarioResponse } from 'src/models/vendita/vendita-conti-bancari';
 import { VenditaListingResponse } from 'src/models/vendita/vendita-listing';
 import { VenditaListingFiltri } from 'src/models/vendita/vendita-listing-filtri';
 import { VenditaManagerModel, VenditaManagerResponse } from 'src/models/vendita/vendita-manager';
+import { VenditaRiepilogoModelliResponse } from 'src/models/vendita/vendita-riepilogo-modelli';
 import { VenditaStatoResponse } from 'src/models/vendita/vendita-stato';
+import { VenditaModificaContoBancarioModel } from 'src/models/vendita/vendita_modifica_conto_bancario';
 
 @Injectable()
 export class VenditaService {
@@ -57,5 +60,17 @@ export class VenditaService {
 
   getStatoVendite(): Observable<VenditaStatoResponse> {
     return this.http.get<VenditaStatoResponse>(`${this.api}/stato`);
+  }
+
+  getStatoContiBancari(anno: number): Observable<VenditaContoBancarioResponse> {
+    return this.http.get<VenditaContoBancarioResponse>(`${this.api}/conti-bancari/${anno}`);
+  }
+
+  getRiepilogoModelli(anno: number): Observable<VenditaRiepilogoModelliResponse> {
+    return this.http.get<VenditaRiepilogoModelliResponse>(`${this.api}/riepilogo/modelli/${anno}`);
+  }
+
+  modificaContoBancarioVendite(request: VenditaModificaContoBancarioModel): Observable<any> {
+    return this.http.post<any>(`${this.api}/conto-bancario/modifica`, request);
   }
 }

@@ -45,6 +45,11 @@ export class AppMenu {
                         icon: 'pi pi-fw pi-users',
                         routerLink: ['/cliente/listing'],
                     },
+                    {
+                        label: 'Conti Bancari',
+                        icon: 'pi pi-fw pi-credit-card',
+                        routerLink: ['/conto-bancario/listing'],
+                    },
                 ]
             },
             {

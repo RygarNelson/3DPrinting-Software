@@ -1,0 +1,12 @@
+$separatore-aumentato-raggruppamenti-width: 4px;
+$separatore-aumentato-raggruppamenti-color: rgba(0, 0, 0, 0.2);
+
+.separatore-aumentato-raggruppamenti > td {
+    border-bottom-width: $separatore-aumentato-raggruppamenti-width;
+    border-bottom-color: $separatore-aumentato-raggruppamenti-color;
+}
+
+.separatore-aumentato-raggruppamenti-singolo {
+    border-bottom-width: $separatore-aumentato-raggruppamenti-width;
+    border-bottom-color: $separatore-aumentato-raggruppamenti-color;
+}

@@ -1,32 +1,35 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AccordionModule } from 'primeng/accordion';
-import { ConfirmationService, FilterMetadata, MessageService } from 'primeng/api';
+import { ConfirmationService, FilterMetadata, MenuItem, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { ConfirmPopupModule } from 'primeng/confirmpopup';
+import { ConfirmDialog, ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogService } from 'primeng/dynamicdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
+import { MenuModule } from 'primeng/menu';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import { Subscription } from 'rxjs';
 import { ClienteLookupDirective } from 'src/directives/cliente/cliente-lookup.directive';
+import { ContoBancarioLookupDirective } from 'src/directives/conto-bancario/conto-bancario-lookup.directive';
 import { VenditaDettaglioStatoStampaLookupDirective } from 'src/directives/vendita/vendita-dettaglio-stato-stampa-lookup.directive';
 import { VenditaStatoSpedizioneLookupDirective } from 'src/directives/vendita/vendita-stato-spedizione-lookup.directive';
 import { VenditaDettaglioStatoStampaEnum } from 'src/enums/VenditaDettaglioStatoStampaEnum';
 import { VenditaListingDettaglioModel, VenditaListingModel, VenditaListingResponse } from 'src/models/vendita/vendita-listing';
 import { VenditaListingFiltri } from 'src/models/vendita/vendita-listing-filtri';
+import { VenditaModificaContoBancarioModel } from 'src/models/vendita/vendita_modifica_conto_bancario';
 import { VenditaService } from 'src/services/vendita.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
+import { FormInputRadiobuttonComponent } from 'src/shared/form-input-radiobutton/form-input-radiobutton.component';
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
 import { VenditaDettaglioStatoComponent } from '../vendita-dettaglio-stato/vendita-dettaglio-stato.component';
 import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component';
-import { FormInputRadiobuttonComponent } from 'src/shared/form-input-radiobutton/form-input-radiobutton.component';
 
 @Component({
   selector: 'app-vendita-listing',
@@ -37,7 +40,6 @@ import { FormInputRadiobuttonComponent } from 'src/shared/form-input-radiobutton
     ButtonModule,
     TableModule,
     InputTextModule,
-    ConfirmPopupModule,
     IconFieldModule,
     InputIconModule,
     SkeletonModule,
@@ -48,11 +50,13 @@ import { FormInputRadiobuttonComponent } from 'src/shared/form-input-radiobutton
     FormInputSelectComponent,
     FormInputRadiobuttonComponent,
     ClienteLookupDirective,
+    ContoBancarioLookupDirective,
     VenditaStatoSpedizioneLookupDirective,
-    VenditaDettaglioStatoStampaLookupDirective
+    VenditaDettaglioStatoStampaLookupDirective,
+    MenuModule,
+    ConfirmDialogModule
   ],
   providers: [
-    ConfirmationService,
     VenditaService
   ],
   templateUrl: './vendita-listing.component.html',
@@ -66,6 +70,7 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
   totalRecords: number = 0;
   loading: boolean = false;
   expandedRows: any = {};
+  selectedVendite: VenditaListingModel[] = [];
 
   // Filter properties
   filtri: VenditaListingFiltri = {
@@ -73,6 +78,24 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
     limit: 10,
     search: ''
   };
+
+  multipleAzioni: MenuItem[] = [
+    {
+      label: 'Modifica conto bancario',
+      icon: 'pi pi-credit-card',
+      command: () => {
+        this.modificaContoBancarioVisible = true;
+      }
+    }
+  ];
+
+  modificaContoBancarioVisible: boolean = false;
+  modificaContoBancarioModel: VenditaModificaContoBancarioModel = {
+    vendite_ids: [],
+    conto_bancario_id: 0
+  };
+
+  @ViewChild('confirmDialogModificaContoBancario') confirmDialogModificaContoBancario?: ConfirmDialog;
 
   private venditeSubscription?: Subscription;
   private venditaDeleteSubscription?: Subscription;
@@ -105,6 +128,10 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
 
       if (params.isScaduto) {
         this.filtri.isScaduto = true;
+      }
+
+      if (params.conto_bancario_id) {
+        this.filtri.conto_bancario_id = params.conto_bancario_id;
       }
     });
   }
@@ -436,5 +463,37 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
           console.error('Error avanzando stato dettaglio:', error);
         }
       });
+  }
+
+  modificaContoBancarioVendite(): void {
+    this.modificaContoBancarioModel.vendite_ids = this.selectedVendite.map(vendita => vendita.id);
+
+    this.venditaService.modificaContoBancarioVendite(this.modificaContoBancarioModel).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Conto bancario modificato con successo'
+        });
+
+        this.loadVendite();
+      },
+      error: (error) => {
+        this.dialogService.open(DialogErrorComponent, {
+          inputValues: {
+            error: error
+          },
+          modal: true
+        });
+      },
+      complete: () => {
+        this.modificaContoBancarioModel = {
+          vendite_ids: [],
+          conto_bancario_id: 0
+        };
+        this.modificaContoBancarioVisible = false;
+        this.selectedVendite = [];
+      }
+    });
   }
 }

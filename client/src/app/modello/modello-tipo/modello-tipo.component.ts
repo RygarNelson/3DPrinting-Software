@@ -21,7 +21,7 @@ export class ModelloTipoComponent implements OnChanges {
   protected readonly ModelloTipoEnum: typeof ModelloTipoEnum = ModelloTipoEnum;
   protected icon: string = 'pi pi-circle';
   protected descrizione: string = 'PLA';
-  protected color: string = '#0a0a0a';
+  protected color: string = '#22c55e';
 
   ngOnChanges(changes: SimpleChanges): void {
     switch (this.tipo) {
@@ -32,7 +32,7 @@ export class ModelloTipoComponent implements OnChanges {
         } else {
           this.descrizione = 'PLA';
         }
-        this.color = '#0a0a0a';
+        this.color = '#22c55e';
         break;
       }
       case ModelloTipoEnum.RESINA: {
@@ -42,7 +42,7 @@ export class ModelloTipoComponent implements OnChanges {
         } else {
           this.descrizione = 'Resina';
         }
-        this.color = '#808080';
+        this.color = '#2563eb';
         break;
       }
       default: {

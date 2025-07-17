@@ -32,9 +32,9 @@ export class FormInputNumberComponent extends FormInputGeneralComponent implemen
   //The internal data model
   private innerValue: number | undefined = undefined;
 
-  @Input() min: number | undefined = undefined;
-  @Input() max: number | undefined = undefined;
-  @Input() step: number | undefined = undefined;
+  @Input() min: number = Number.MIN_SAFE_INTEGER;
+  @Input() max: number = Number.MAX_SAFE_INTEGER;
+  @Input() step: number = 1;
   @Input() mode: 'decimal' | 'currency' | 'percent' = 'decimal';
   @Input() minFractionDigits: number | undefined = undefined;
   @Input() maxFractionDigits: number | undefined = undefined;

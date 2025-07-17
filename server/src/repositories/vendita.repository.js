@@ -35,14 +35,15 @@ const venditaRepository = {
     insertOne: async function(req) {
         const t = await sequelize.transaction();
         try {
-            const { data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, dettagli } = req.body;
+            const { data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, dettagli, conto_bancario_id } = req.body;
             const vendita = await Vendita.create({
                 data_vendita,
                 data_scadenza,
                 data_scadenza_spedizione,
                 stato_spedizione,
                 link_tracciamento,
-                cliente_id
+                cliente_id,
+                conto_bancario_id
             }, { transaction: t });
 
             let totale = 0;
@@ -54,7 +55,8 @@ const venditaRepository = {
                         stampante_id: d.stampante_id,
                         stato_stampa: d.stato_stampa,
                         quantita: d.quantita,
-                        prezzo: d.prezzo
+                        prezzo: d.prezzo,
+                        descrizione: d.descrizione
                     }, { transaction: t });
                     if (d.prezzo) {
                         totale += parseFloat(d.prezzo);
@@ -71,10 +73,10 @@ const venditaRepository = {
     updateOne: async function(req) {
         const t = await sequelize.transaction();
         try {
-            const { id, data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, dettagli } = req.body;
+            const { id, data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, dettagli, conto_bancario_id } = req.body;
             const vendita = await Vendita.findByPk(id, { include: [{ model: VenditaDettaglio, as: 'dettagli' }], transaction: t });
             if (!vendita) throw new Error('Vendita non trovata');
-            await vendita.update({ data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id }, { transaction: t });
+            await vendita.update({ data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, conto_bancario_id }, { transaction: t });
 
             // Handle dettagli
             const existingDettagli = vendita.dettagli || [];
@@ -88,7 +90,7 @@ const venditaRepository = {
             for (const det of existingDettagli) {
                 if (dettagliMap.has(det.id)) {
                     const d = dettagliMap.get(det.id);
-                    await det.update({ modello_id: d.modello_id, stampante_id: d.stampante_id, stato_stampa: d.stato_stampa, quantita: d.quantita, prezzo: d.prezzo }, { transaction: t });
+                    await det.update({ modello_id: d.modello_id, stampante_id: d.stampante_id, stato_stampa: d.stato_stampa, quantita: d.quantita, prezzo: d.prezzo, descrizione: d.descrizione }, { transaction: t });
                     dettagliMap.delete(det.id);
                 } else {
                     await det.destroy({ transaction: t });
@@ -105,7 +107,8 @@ const venditaRepository = {
                             stampante_id: d.stampante_id,
                             stato_stampa: d.stato_stampa,
                             quantita: d.quantita,
-                            prezzo: d.prezzo
+                            prezzo: d.prezzo,
+                            descrizione: d.descrizione
                         }, { transaction: t });
                     }
                     if (d.prezzo) {
@@ -148,6 +151,9 @@ const venditaRepository = {
 
     modificaStatoVendita: async function(id, stato_avanzamento) {
         const vendita = await Vendita.findByPk(id);
+        const dettagli = await VenditaDettaglio.findAll({ where: { vendita_id: id } });
+
+        const isStatoSpedizioneDaSpedire = vendita.stato_spedizione == 0;
 
         if (!vendita) {
             throw new Error('Vendita non trovata');
@@ -158,6 +164,14 @@ const venditaRepository = {
 
         await vendita.update({ stato_spedizione: stato_avanzamento });
 
+        if (isStatoSpedizioneDaSpedire) {
+            for (const dettaglio of dettagli) {
+                if (dettaglio.stato_stampa == 0) {
+                    await dettaglio.update({ stato_stampa: 4 });
+                }
+            }
+        }
+        
         return vendita;
     },
 
@@ -386,12 +400,11 @@ const venditaRepository = {
 
     contaVenditeInScadenza: async function() {
         let dataOggi = new Date();
-        dataOggi.setTime( dataOggi.getTime() - dataOggi.getTimezoneOffset()*60*1000 );
 
         return Vendita.count({
             where: {
-                data_scadenza: { [Op.gte]: dataOggi },
-                data_scadenza_spedizione: { [Op.lt]: dataOggi },
+                data_scadenza: { [Op.lte]: dataOggi },
+                data_scadenza_spedizione: { [Op.gt]: dataOggi },
                 stato_spedizione: { [Op.in]: [0, 4] }
             }
         });
@@ -399,15 +412,121 @@ const venditaRepository = {
 
     contaVenditeScadute: async function() {
         let dataOggi = new Date();
-        dataOggi.setTime( dataOggi.getTime() - dataOggi.getTimezoneOffset()*60*1000 );
 
         return Vendita.count({
             where: {
-                data_scadenza_spedizione: { [Op.gte]: dataOggi },
+                data_scadenza_spedizione: { [Op.lte]: dataOggi },
                 stato_spedizione: { [Op.in]: [0, 4] }
             }
         });
     },
+
+    sommaVenditePerContoBancarioAnno: async function(anno, conto_bancario_id) {
+        const primoGiornoAnno = new Date(anno, 0, 1);
+        const ultimoGiornoAnno = new Date(anno, 11, 31);
+
+        return Vendita.sum('totale_vendita', {
+            where: {
+                deletedAt: null,
+                data_vendita: { [Op.between]: [primoGiornoAnno, ultimoGiornoAnno] },
+                conto_bancario_id: conto_bancario_id
+            }
+        });
+    },
+
+    ottieniRiepilogoVenditeModelliPerMese: async function(anno) {
+        const primoGiornoAnno = new Date(anno, 0, 1);
+        const ultimoGiornoAnno = new Date(anno, 11, 31);
+
+        // Fetch all delivered sales for the year, including their details and model
+        const vendite = await Vendita.findAll({
+            where: {
+                deletedAt: null,
+                data_vendita: { [Op.between]: [primoGiornoAnno, ultimoGiornoAnno] },
+                stato_spedizione: 3 // Consegnato
+            },
+            include: [
+                {
+                    model: VenditaDettaglio,
+                    as: 'dettagli',
+                    required: true,
+                    include: [
+                        {
+                            association: 'modello',
+                            attributes: ['id','nome', 'tipo']
+                        }
+                    ]
+                }
+            ]
+        });
+
+        // Italian month names
+        const mesi = [
+            'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno',
+            'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'
+        ];
+
+        // Prepare 12 months
+        const result = Array.from({ length: 12 }, () => ({}));
+
+        // Aggregate
+        vendite.forEach(vendita => {
+            const month = new Date(vendita.data_vendita).getMonth(); // 0-based
+
+            if (!vendita.dettagli) {
+                return;
+            }
+
+            vendita.dettagli.forEach(dettaglio => {
+                if (dettaglio.modello == null) {
+                    return;
+                }
+
+                const modello_nome = dettaglio.modello.nome;
+                const tipo = dettaglio.modello.tipo;
+                const prezzo = parseFloat(dettaglio.prezzo) || 0;
+
+                const key = dettaglio.modello.id;
+                if (!result[month][key]) {
+                    result[month][key] = {
+                        modello_nome,
+                        tipo,
+                        quantita: 0,
+                        prezzo_totale: 0
+                    };
+                }
+                result[month][key].quantita += dettaglio.quantita;
+                result[month][key].prezzo_totale += prezzo;
+            });
+        });
+
+        // Normalize to a flat array
+        const normalized = [];
+        result.forEach((monthObj, idx) => {
+            Object.values(monthObj)
+                .sort((a, b) => b.prezzo_totale - a.prezzo_totale)
+                .forEach(modello => {
+                    normalized.push({
+                        mese_numero: idx,
+                        mese: mesi[idx],
+                        modello_nome: modello.modello_nome,
+                        tipo: modello.tipo,
+                        quantita: modello.quantita,
+                        prezzo_totale: modello.prezzo_totale
+                    });
+                });
+        });
+
+        return normalized;
+    },
+
+    modificaContoBancarioVendite: async function(vendite_ids, conto_bancario_id) {
+        await Vendita.update({ conto_bancario_id: conto_bancario_id }, {
+            where: {
+                id: { [Op.in]: vendite_ids }
+            }
+        });
+    }
 };
 
 export default venditaRepository; 
