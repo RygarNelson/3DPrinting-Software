@@ -545,4 +545,15 @@ router.get(
     })
 );
 
+router.post(
+    '/conto-bancario/modifica',
+    asyncHandler(async (req, res) => {
+        await VenditaRepository.modificaContoBancarioVendite(req.body.vendite_ids, req.body.conto_bancario_id);
+        return res.status(200).json({
+            success: true,
+            data: 'Conto bancario aggiornato con successo!',
+        });
+    })
+);
+
 export default router;
