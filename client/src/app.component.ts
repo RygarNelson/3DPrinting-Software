@@ -19,10 +19,9 @@ export class AppComponent implements OnInit {
         try {
             // Try to load the Italian locale from CommonJS version
             const itModule = await import('primelocale/cjs/it.js');
-            this.config.setTranslation(itModule as any);
+            this.config.setTranslation(itModule.it as any);
         } catch (error) {
             console.warn('Could not load Italian locale, using default:', error);
-            // Continue without Italian locale - PrimeNG will use default
         }
     }
 }
