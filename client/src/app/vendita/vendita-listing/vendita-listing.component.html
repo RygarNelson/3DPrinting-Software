@@ -305,11 +305,10 @@
 
 <!-- Confirm Popup for Delete -->
 <p-confirmPopup></p-confirmPopup>
-<p-confirmDialog #confirmDialogModificaContoBancario [visible]="modificaContoBancarioVisible">
+<p-confirmDialog #confirmDialogModificaContoBancario [visible]="modificaContoBancarioVisible" [dismissableMask]="true" (onHide)="modificaContoBancarioVisible = false">
   <ng-template #headless let-message>
     <div class="p-4">
       <div class="flex flex-col items-center gap-2">
-        <i class="pi pi-exclamation-triangle text-2xl text-yellow-500"></i>
         <p class="text-gray-800">Modifica il conto bancario delle vendite selezionate</p>
       </div>
       <form-input-select conto-bancario-lookup property="conto_bancario_id"
@@ -319,7 +318,7 @@
           [disabled]="modificaContoBancarioModel == null || (modificaContoBancarioModel != null && !modificaContoBancarioModel.conto_bancario_id)"
           (onClick)="modificaContoBancarioVendite()"></p-button>
         <p-button label="Annulla" [outlined]="true" styleClass="w-32"
-          (onClick)="modificaContoBancarioVisible = false"></p-button>
+          (onClick)="confirmDialogModificaContoBancario?.hide()"></p-button>
       </div>
     </div>
 
