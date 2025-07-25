@@ -21,6 +21,14 @@ const Modello = sequelize.define('Modello', {
         type: DataTypes.INTEGER,
         allowNull: true,
         defaultValue: 0
+    },
+    basetta_dimensione: {
+        type: DataTypes.STRING(500),
+        allowNull: true,
+    },
+    basetta_quantita: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
     }
 }, {
     tableName: "T_MODELLI",

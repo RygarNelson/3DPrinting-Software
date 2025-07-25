@@ -22,7 +22,9 @@ const modelloRepository = {
         return Modello.create({
             nome: req.body.nome,
             descrizione: req.body.descrizione,
-            tipo: req.body.tipo
+            tipo: req.body.tipo,
+            basetta_dimensione: req.body.basetta_dimensione,
+            basetta_quantita: req.body.basetta_quantita
         });
     },
 
@@ -30,7 +32,9 @@ const modelloRepository = {
         return Modello.update({
             nome: req.body.nome,
             descrizione: req.body.descrizione,
-            tipo: req.body.tipo
+            tipo: req.body.tipo,
+            basetta_dimensione: req.body.basetta_dimensione,
+            basetta_quantita: req.body.basetta_quantita
         }, {
             where: { id: req.body.id }
         });

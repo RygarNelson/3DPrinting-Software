@@ -100,6 +100,10 @@ const updateDatabase = async (dbVersion, DatabaseVersion, CURRENT_DATABASE_VERSI
                     await updateDatabaseToVersion8();
                     break;
                 }
+                case 8: {
+                    await updateDatabaseToVersion9();
+                    break;
+                }
                 default: {
                     console.log('Update to version', (version + 1), 'not implemented');
                     process.exit(1);
@@ -202,6 +206,18 @@ const updateDatabaseToVersion8 = async () => {
         await sequelize.query('ALTER TABLE T_VENDITE_DETTAGLI ADD COLUMN descrizione VARCHAR(500) NULL');
     } catch (error) {
         console.log('Cannot update database to version 8');
+    }
+}
+
+const updateDatabaseToVersion9 = async () => {
+    try {
+        console.log('Updating database to version 9');
+
+        await sequelize.query('ALTER TABLE T_MODELLI ADD COLUMN basetta_dimensione VARCHAR(500) NULL');
+        await sequelize.query('ALTER TABLE T_MODELLI ADD COLUMN basetta_quantita INTEGER NULL');
+        
+    } catch (error) {
+        console.log('Cannot update database to version 9');
     }
 }
 
