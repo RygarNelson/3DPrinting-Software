@@ -8,6 +8,8 @@ export class ModelloListingModel {
     updatedAt: Date = new Date();
     isUsed: boolean = false;
     tipo: ModelloTipoEnum = ModelloTipoEnum.PLA;
+    basetta_dimensione?: string;
+    basetta_quantita?: number;
 }
 
 export class ModelloListingResponse implements ResponseInterface {

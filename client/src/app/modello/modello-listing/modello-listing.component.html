@@ -60,6 +60,7 @@
                 </ng-template>
               </p-columnFilter>
             </th>
+            <th>Basetta</th>
             <th class="text-center" style="width: 120px;"></th>
           </tr>
         </ng-template>
@@ -71,6 +72,14 @@
             <td>{{ modello.descrizione }}</td>
             <td>{{ modello.updatedAt | date:'dd/MM/yyyy HH:mm' }}</td>
             <td><modello-tipo [tipo]="modello.tipo" /></td>
+            <td>
+              @if (modello.basetta_dimensione && modello.basetta_quantita) {
+                {{ modello.basetta_dimensione }} x {{ modello.basetta_quantita }}
+              }
+              @else {
+                -
+              }
+            </td>
             <td class="text-center">
               <div class="flex justify-center gap-2">
                 @if (loading) {

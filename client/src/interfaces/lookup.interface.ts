@@ -1,5 +1,5 @@
 export interface LookupInterface {
-    id: number;
+    id: number | string;
     etichetta: string;
     informazioniAggiuntive?: string;
     altriDati?: any;

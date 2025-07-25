@@ -87,7 +87,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     this.anni = res.data;
 
                     if (this.anni != null && this.anni.length > 0) {
-                        this.anno = this.anni[0].id;
+                        this.anno = this.anni[0].id as number;
                     }
                 }
             },
