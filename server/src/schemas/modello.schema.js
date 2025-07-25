@@ -30,6 +30,21 @@ const validationSchema = {
                 isInt: {
                     errorMessage: 'Il tipo non è valido'
                 }
+            },
+            basetta_dimensione: {
+                escape: true,
+                optional: true,
+                isLength: {
+                    options: { max: 500 },
+                    errorMessage: 'La dimensione della basetta non può superare i 500 caratteri'
+                }
+            },
+            basetta_quantita: {
+                escape: true,
+                optional: true,
+                isInt: {
+                    errorMessage: 'La quantità di basette non è valida'
+                }
             }
         });
     }

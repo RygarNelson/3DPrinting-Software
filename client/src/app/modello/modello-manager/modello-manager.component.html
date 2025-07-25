@@ -72,6 +72,24 @@
                     [listaErrori]="listaErrori"
                     [(ngModel)]="modello.descrizione"/>
             </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <form-input-select
+                    modello-basetta-dimensione
+                    [label]="'Dimensione basetta'"
+                    [property]="'basetta_dimensione'"
+                    [infoMessage]="'Dimensione della basetta'"
+                    [listaErrori]="listaErrori"
+                    [(ngModel)]="modello.basetta_dimensione"
+                />
+                 <form-input-number
+                    [label]="'Quantità basette'"
+                    [property]="'basetta_quantita'"
+                    [infoMessage]="'Quantità della basetta'"
+                    [step]="1"
+                    [min]="1"
+                    [listaErrori]="listaErrori"
+                    [(ngModel)]="modello.basetta_quantita"/>
+            </div>
         </ng-template>
     </p-card>
 </div>

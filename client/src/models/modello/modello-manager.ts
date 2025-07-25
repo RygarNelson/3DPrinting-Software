@@ -6,6 +6,8 @@ export class ModelloManagerModel {
     nome: string = '';
     descrizione: string = '';
     tipo: ModelloTipoEnum = ModelloTipoEnum.PLA;
+    basetta_dimensione?: string;
+    basetta_quantita?: number;
 }
 
 export class ModelloManagerResponse implements ResponseInterface {

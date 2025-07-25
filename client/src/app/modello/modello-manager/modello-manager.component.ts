@@ -6,13 +6,16 @@ import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DialogService } from 'primeng/dynamicdialog';
+import { ModelloBasettaDimensioneDirective } from 'src/directives/modello/modello-basetta-dimensione.directive';
 import { ModelloTipoEnum } from 'src/enums/ModelloTipoEnum';
 import { ErrorsViewModel } from 'src/models/ErrorsViewModel';
 import { ModelloManagerModel } from 'src/models/modello/modello-manager';
 import { ApplicationStateService } from 'src/services/application-state.service';
 import { ModelloService } from 'src/services/modello.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
+import { FormInputNumberComponent } from "src/shared/form-input-number/form-input-number.component";
 import { FormInputRadiobuttonComponent } from 'src/shared/form-input-radiobutton/form-input-radiobutton.component';
+import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
 import { FormInputTextComponent } from 'src/shared/form-input-text/form-input-text.component';
 import { FormInputTextareaComponent } from 'src/shared/form-input-textarea/form-input-textarea.component';
 
@@ -24,8 +27,11 @@ import { FormInputTextareaComponent } from 'src/shared/form-input-textarea/form-
     FormInputTextComponent,
     FormInputTextareaComponent,
     FormInputRadiobuttonComponent,
+    FormInputNumberComponent,
+    FormInputSelectComponent,
     CardModule,
-    ButtonModule
+    ButtonModule,
+    ModelloBasettaDimensioneDirective
   ],
   providers: [
     ModelloService
