@@ -45,6 +45,20 @@ const validationSchema = {
                 isInt: {
                     errorMessage: 'La quantità di basette non è valida'
                 }
+            },
+            vinted_vendibile: {
+                escape: true,
+                optional: false,
+                isBoolean: {
+                    errorMessage: 'Il campo Vinted Vendibile non è valido'
+                }
+            },
+            vinted_is_in_vendita: {
+                escape: true,
+                optional: false,
+                isBoolean: {
+                    errorMessage: 'Il campo Vinted Is In Vendita non è valido'
+                }
             }
         });
     }
