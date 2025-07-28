@@ -162,9 +162,9 @@ router.post(
                 vinted_vendibile: true,
             };
 
-            let order = [['vinted_is_in_vendita', 'DESC'], ['id', 'ASC']];
+            let order = [['vinted_is_in_vendita', 'ASC'], ['id', 'ASC']];
 
-            const projection = ['id', 'nome', 'descrizione', 'tipo', 'basetta_dimensione', 'basetta_quantita', 'vinted_is_in_vendita', 'updatedAt'];
+            const projection = ['id', 'nome', 'descrizione', 'tipo', 'basetta_dimensione', 'basetta_quantita', 'vinted_vendibile', 'vinted_is_in_vendita', 'updatedAt'];
 
             const modelli = await ModelloRepository.find(whereOptions, undefined, undefined, order, projection);
 
@@ -178,6 +178,7 @@ router.post(
                     tipo: modello.dataValues.tipo,
                     basetta_dimensione: modello.dataValues.basetta_dimensione,
                     basetta_quantita: modello.dataValues.basetta_quantita,
+                    vinted_vendibile: modello.dataValues.vinted_vendibile,
                     vinted_is_in_vendita: modello.dataValues.vinted_is_in_vendita
                 }
             }));

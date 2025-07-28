@@ -60,6 +60,9 @@ filtri: ModelloListingFiltri = {
   search: ''
 };
 
+// Array reference for template
+Array = Array;
+
 private modelliTableSubscription?: Subscription;
 private modelliGridSubscription?: Subscription;
 private modelloDeleteSubscription?: Subscription;
@@ -145,6 +148,7 @@ loadDataTable(event: TableLazyLoadEvent): void {
   }
 
   this.loadModelliTable();
+  this.loadModelliGrid();
 }
 
 pulisciFiltri(): void {
@@ -163,17 +167,21 @@ pulisciFiltri(): void {
 
 refreshTable(): void {
   this.loadModelliTable();
+  this.loadModelliGrid();
 }
 
 addNewModello(): void {
   this.router.navigate(['/modello/manager']);
 }
 
-editModello(modello: ModelloListingTableModel | ModelloListingGridModel): void {
+editModello(event: Event, modello: ModelloListingTableModel | ModelloListingGridModel): void {
+  event.stopPropagation();
   this.router.navigate(['/modello/manager', modello.id]);
 }
 
 confirmDelete(event: Event, modello: ModelloListingTableModel | ModelloListingGridModel): void {
+  event.stopPropagation();
+
   this.confirmationService.confirm({
     target: event.target as EventTarget,
     message: `Sei sicuro di voler eliminare il modello "${modello.nome}"?`,
@@ -209,6 +217,7 @@ private deleteModello(id: number): void {
         });
 
         this.loadModelliTable();
+        this.loadModelliGrid();
       },
       error: (error) => {
         window.clearTimeout(this.loadingTimeout);
@@ -225,4 +234,11 @@ private deleteModello(id: number): void {
       }
     });
 }
+
+  // Cross interaction methods
+  impostaModelloVendibileVinted(modello: ModelloListingGridModel): void {
+    if (modello != null && modello.id != null && modello.vinted_vendibile) {
+      
+    }
+  }
 }

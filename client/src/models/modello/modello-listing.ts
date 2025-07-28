@@ -22,6 +22,7 @@ export class ModelloListingGridModel {
     basetta_dimensione?: string;
     basetta_quantita?: number;
     vinted_is_in_vendita?: boolean;
+    vinted_vendibile?: boolean;
 }
 
 export class ModelloListingTableResponse implements ResponseInterface {
