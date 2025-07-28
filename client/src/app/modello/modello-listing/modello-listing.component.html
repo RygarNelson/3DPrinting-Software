@@ -6,10 +6,19 @@
 
     <ng-template pTemplate="content">
       <!-- Table -->
-      <p-table #dataTable currentPageReportTemplate="Mostrando da {first} a {last} di {totalRecords} modelli"
-        styleClass="p-datatable-sm" responsiveLayout="scroll" [value]="modelli" [paginator]="true" [rows]="filtri.limit"
-        [totalRecords]="totalRecords" [first]="filtri.offset" [showCurrentPageReport]="true"
-        [rowsPerPageOptions]="[10, 20, 50, 100]" [lazy]="true" (onLazyLoad)="loadData($event)">
+      <p-table 
+        #dataTable
+        currentPageReportTemplate="Mostrando da {first} a {last} di {totalRecords} modelli"
+        styleClass="p-datatable-sm" responsiveLayout="scroll"
+        [value]="modelliTable"
+        [paginator]="true"
+        [rows]="filtri.limit"
+        [totalRecords]="totalRecords"
+        [first]="filtri.offset"
+        [showCurrentPageReport]="true"
+        [rowsPerPageOptions]="[10, 20, 50, 100]"
+        [lazy]="true"
+        (onLazyLoad)="loadDataTable($event)">
 
         <ng-template pTemplate="caption">
           <div class="flex items-center flex-wrap gap-2">

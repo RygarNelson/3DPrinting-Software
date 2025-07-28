@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ModelloListingResponse } from 'src/models/modello/modello-listing';
+import { ModelloListingGridResponse, ModelloListingTableResponse } from 'src/models/modello/modello-listing';
 import { ModelloListingFiltri } from 'src/models/modello/modello-listing-filtri';
 import { ModelloLookupFiltri } from 'src/models/modello/modello-lookup.filtri';
 import { ModelloManagerModel, ModelloManagerResponse } from 'src/models/modello/modello-manager';
@@ -20,8 +20,12 @@ export class ModelloService {
     return this.http.post<ModelloLookupResponse>(`${this.api}/lookup`, filtri);
   }
 
-  getListing(filtri: ModelloListingFiltri): Observable<ModelloListingResponse> {
-    return this.http.post<ModelloListingResponse>(`${this.api}/listing`, filtri);
+  getListingTable(filtri: ModelloListingFiltri): Observable<ModelloListingTableResponse> {
+    return this.http.post<ModelloListingTableResponse>(`${this.api}/listing/table`, filtri);
+  }
+
+  getListingGrid(filtri: ModelloListingFiltri): Observable<ModelloListingGridResponse> {
+    return this.http.post<ModelloListingGridResponse>(`${this.api}/listing/grid`, filtri);
   }
 
   getModello(id: number): Observable<ModelloManagerResponse> {
