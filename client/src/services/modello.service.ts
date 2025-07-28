@@ -5,6 +5,7 @@ import { ModelloListingGridResponse, ModelloListingTableResponse } from 'src/mod
 import { ModelloListingFiltri } from 'src/models/modello/modello-listing-filtri';
 import { ModelloLookupFiltri } from 'src/models/modello/modello-lookup.filtri';
 import { ModelloManagerModel, ModelloManagerResponse } from 'src/models/modello/modello-manager';
+import { ModelloVintedImpostaInVenditaRequest } from 'src/models/modello/modello-vinted-imposta-in-vendita';
 import { ModelloLookupResponse } from 'src/models/modello/modello.lookup';
 
 @Injectable()
@@ -38,5 +39,9 @@ export class ModelloService {
 
   delete(id: number): Observable<any> {
     return this.http.delete(`${this.api}/${id}`);
+  }
+
+  impostaInVenditaVinted(request: ModelloVintedImpostaInVenditaRequest): Observable<any> {
+    return this.http.post(`${this.api}/vinted/imposta-in-vendita`, request);
   }
 }

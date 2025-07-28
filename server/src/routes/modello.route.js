@@ -241,4 +241,16 @@ router.delete(
     })
 );
 
+router.post(
+    '/vinted/imposta-in-vendita',
+    asyncHandler(async (req, res) => {
+        const data = await ModelloRepository.impostaInVenditaVinted(req.body.id);
+        return res.status(200).json({
+            success: true,
+            data: 'Modello impostato in vendita su Vinted con successo!',
+            technical_data: data
+        });
+    })
+);
+
 export default router;

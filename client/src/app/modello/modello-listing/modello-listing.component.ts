@@ -66,6 +66,7 @@ Array = Array;
 private modelliTableSubscription?: Subscription;
 private modelliGridSubscription?: Subscription;
 private modelloDeleteSubscription?: Subscription;
+private modelloImpostaInVenditaVintedSubscription?: Subscription;
 private loadingTimeout?: number;
 
 constructor(
@@ -83,7 +84,10 @@ ngOnDestroy(): void {
   this.modelliTableSubscription?.unsubscribe();
   this.modelliGridSubscription?.unsubscribe();
   this.modelloDeleteSubscription?.unsubscribe();
+  this.modelloImpostaInVenditaVintedSubscription?.unsubscribe();
+
   clearTimeout(this.loadingTimeout);
+  this.loadingTimeout = undefined;
 }
 
 loadModelliTable(): void {
@@ -96,12 +100,14 @@ loadModelliTable(): void {
         this.totalRecords = response.count;
 
         window.clearTimeout(this.loadingTimeout);
+        this.loadingTimeout = undefined;
         this.loading = false;
       },
       error: (error) => {
         console.error('Error loading stampanti:', error);
 
         window.clearTimeout(this.loadingTimeout);
+        this.loadingTimeout = undefined;
         this.loading = false;
       }
     });
@@ -119,6 +125,7 @@ loadModelliGrid(): void {
         this.totalRecords = response.count;
 
         window.clearTimeout(this.loadingTimeout);
+        this.loadingTimeout = undefined;
         this.loading = false;
       }
     });
@@ -208,6 +215,7 @@ private deleteModello(id: number): void {
     .subscribe({
       next: () => {
         window.clearTimeout(this.loadingTimeout);
+        this.loadingTimeout = undefined;
         this.loading = false;
 
         this.messageService.add({
@@ -221,6 +229,7 @@ private deleteModello(id: number): void {
       },
       error: (error) => {
         window.clearTimeout(this.loadingTimeout);
+        this.loadingTimeout = undefined;
         this.loading = false;
 
         this.dialogService.open(DialogErrorComponent, {
@@ -237,8 +246,27 @@ private deleteModello(id: number): void {
 
   // Cross interaction methods
   impostaModelloVendibileVinted(modello: ModelloListingGridModel): void {
-    if (modello != null && modello.id != null && modello.vinted_vendibile) {
-      
+    if (modello != null && modello.id != null && modello.vinted_vendibile && !modello.vinted_is_in_vendita) {
+      if (this.loadingTimeout == null) {
+        this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+      }
+
+      this.modelloImpostaInVenditaVintedSubscription = this.modelloService.impostaInVenditaVinted({ id: modello.id })
+        .subscribe({
+          next: () => {
+            window.clearTimeout(this.loadingTimeout);
+            this.loadingTimeout = undefined;
+            this.loading = false;
+
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: 'Modello impostato in vendita su Vinted con successo'
+            });
+
+            this.loadModelliGrid();
+          }
+        });
     }
   }
 }

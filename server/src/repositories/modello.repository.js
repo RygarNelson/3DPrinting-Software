@@ -51,6 +51,10 @@ const modelloRepository = {
     isUsed: async function(id) {
         const isDettaglioVendita = await VenditaDettaglio.findOne({ where: { modello_id: id } });
         return isDettaglioVendita ? true : false;
+    },
+
+    impostaInVenditaVinted: async function(id) {
+        return Modello.update({ vinted_is_in_vendita: true }, { where: { id: id } });
     }
 };
 

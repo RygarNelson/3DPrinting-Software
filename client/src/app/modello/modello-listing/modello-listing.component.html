@@ -143,8 +143,8 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         @for (modello of modelliGrid; track modello.id) {
         <div
-          class="relative bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer grid-card"
-          [ngClass]="{'modello-content-non-vendita': modello.vinted_is_in_vendita === false}"
+          class="relative bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow grid-card"
+          [ngClass]="{'cursor-pointer modello-content-non-vendita': modello.vinted_is_in_vendita === false}"
           (click)="impostaModelloVendibileVinted(modello)">
           <div class="modello-grid-box-wrapper">
             <div class="modello-content">
