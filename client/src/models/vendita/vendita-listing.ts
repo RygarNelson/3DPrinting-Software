@@ -28,6 +28,8 @@ export class VenditaListingDettaglioModel {
     modello: VenditaListingDettaglioModelloModel = new VenditaListingDettaglioModelloModel();
     stampante: VenditaListingDettaglioStampanteModel = new VenditaListingDettaglioStampanteModel();
     descrizione?: string;
+    stampa_is_pezzo_singolo: boolean = false;
+    stampa_is_parziale: boolean = false;
 }
 
 export class VenditaListingDettaglioModelloModel {

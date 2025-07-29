@@ -29,6 +29,7 @@ import { ApplicationStateService } from 'src/services/application-state.service'
 import { ClienteService } from 'src/services/cliente.service';
 import { VenditaService } from 'src/services/vendita.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
+import { FormInputCheckboxComponent } from 'src/shared/form-input-checkbox/form-input-checkbox.component';
 import { FormInputDatetimeComponent } from 'src/shared/form-input-datetime/form-input-datetime.component';
 import { FormInputNumberComponent } from 'src/shared/form-input-number/form-input-number.component';
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
@@ -48,6 +49,7 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
     FormInputNumberComponent,
     FormInputDatetimeComponent,
     FormInputSelectComponent,
+    FormInputCheckboxComponent,
     ClienteLookupDirective,
     VenditaStatoSpedizioneLookupDirective,
     TableModule,
@@ -374,6 +376,15 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
 
   deleteDettaglio(dettaglio: VenditaDettaglioManagerModel, index: number): void {
     this.vendita.dettagli.splice(index, 1);
+  }
+
+  checkDettaglio(dettaglio: VenditaDettaglioManagerModel): void {
+    if (dettaglio.stampa_is_pezzo_singolo && dettaglio.stampa_is_parziale) {
+      setTimeout(() => {
+        dettaglio.stampa_is_pezzo_singolo = true;
+        dettaglio.stampa_is_parziale = false;
+      });
+    }
   }
 
   indietro(): void {
