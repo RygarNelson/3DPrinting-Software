@@ -2,6 +2,7 @@
 
 import { col, fn, Op } from 'sequelize';
 import { sequelize } from '../config/database.js';
+import Modello from '../models/modello.model.js';
 import Spesa from '../models/spesa.model.js';
 import Vendita from '../models/vendita.model.js';
 import VenditaDettaglio from '../models/venditaDettaglio.model.js';
@@ -33,7 +34,7 @@ const venditaRepository = {
     },
 
     insertOne: async function(req) {
-        const t = await sequelize.transaction();
+        const transaction = await sequelize.transaction();
         try {
             const { data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, dettagli, conto_bancario_id } = req.body;
             const vendita = await Vendita.create({
@@ -44,93 +45,115 @@ const venditaRepository = {
                 link_tracciamento,
                 cliente_id,
                 conto_bancario_id
-            }, { transaction: t });
+            }, { transaction: transaction });
 
             let totale = 0;
             if (Array.isArray(dettagli)) {
-                for (const d of dettagli) {
-                    const det = await VenditaDettaglio.create({
+                for (const dettaglio of dettagli) {
+                    await VenditaDettaglio.create({
                         vendita_id: vendita.id,
-                        modello_id: d.modello_id,
-                        stampante_id: d.stampante_id,
-                        stato_stampa: d.stato_stampa,
-                        quantita: d.quantita,
-                        prezzo: d.prezzo,
-                        descrizione: d.descrizione
-                    }, { transaction: t });
-                    if (d.prezzo) {
-                        totale += parseFloat(d.prezzo);
+                        modello_id: dettaglio.modello_id,
+                        stampante_id: dettaglio.stampante_id,
+                        stato_stampa: dettaglio.stato_stampa,
+                        quantita: dettaglio.quantita,
+                        prezzo: dettaglio.prezzo,
+                        descrizione: dettaglio.descrizione
+                    }, { transaction: transaction });
+                    if (dettaglio.prezzo) {
+                        totale += parseFloat(dettaglio.prezzo);
                     }
                 }
             }
-            await vendita.update({ totale_vendita: totale }, { transaction: t });
-            await t.commit();
+            await vendita.update({ totale_vendita: totale }, { transaction: transaction });
+
+            // For each dettaglio, if the modello is not null and is vendibile on vinted, set is in vendita to false
+            for (const dettaglio of dettagli) {
+                const modello = await Modello.findByPk(dettaglio.modello_id);
+                if (modello != null && modello.vinted_vendibile) {
+                    await modello.update({ vinted_is_in_vendita: false }, { transaction: transaction });
+                }
+            }
+
+            await transaction.commit();
         } catch (error) {
-            await t.rollback();
+            await transaction.rollback();
         }
     },
 
     updateOne: async function(req) {
-        const t = await sequelize.transaction();
+        const transaction = await sequelize.transaction();
         try {
             const { id, data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, dettagli, conto_bancario_id } = req.body;
-            const vendita = await Vendita.findByPk(id, { include: [{ model: VenditaDettaglio, as: 'dettagli' }], transaction: t });
+            const vendita = await Vendita.findByPk(id, { include: [{ model: VenditaDettaglio, as: 'dettagli' }], transaction: transaction });
             if (!vendita) throw new Error('Vendita non trovata');
-            await vendita.update({ data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, conto_bancario_id }, { transaction: t });
+            await vendita.update({ data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, conto_bancario_id }, { transaction: transaction });
 
             // Handle dettagli
             const existingDettagli = vendita.dettagli || [];
             const dettagliMap = new Map();
             if (Array.isArray(dettagli)) {
-                for (const d of dettagli) {
-                    if (d.id) dettagliMap.set(d.id, d);
+                for (const dettaglio of dettagli) {
+                    if (dettaglio.id) {
+                        dettagliMap.set(dettaglio.id, dettaglio);
+                    }
                 }
             }
             // Update or delete existing dettagli
-            for (const det of existingDettagli) {
-                if (dettagliMap.has(det.id)) {
-                    const d = dettagliMap.get(det.id);
-                    await det.update({ modello_id: d.modello_id, stampante_id: d.stampante_id, stato_stampa: d.stato_stampa, quantita: d.quantita, prezzo: d.prezzo, descrizione: d.descrizione }, { transaction: t });
-                    dettagliMap.delete(det.id);
+            for (const existingDettaglio of existingDettagli) {
+                if (dettagliMap.has(existingDettaglio.id)) {
+                    const dettaglio = dettagliMap.get(existingDettaglio.id);
+                    await existingDettaglio.update({ modello_id: dettaglio.modello_id, stampante_id: dettaglio.stampante_id, stato_stampa: dettaglio.stato_stampa, quantita: dettaglio.quantita, prezzo: dettaglio.prezzo, descrizione: dettaglio.descrizione }, { transaction: transaction });
+                    dettagliMap.delete(existingDettaglio.id);
                 } else {
-                    await det.destroy({ transaction: t });
+                    await existingDettaglio.destroy({ transaction: transaction });
                 }
             }
             // Insert new dettagli
             let totale = 0;
             if (Array.isArray(dettagli)) {
-                for (const d of dettagli) {
-                    if (!d.id) {
+                for (const dettaglio of dettagli) {
+                    if (!dettaglio.id) {
                         await VenditaDettaglio.create({
                             vendita_id: vendita.id,
-                            modello_id: d.modello_id,
-                            stampante_id: d.stampante_id,
-                            stato_stampa: d.stato_stampa,
-                            quantita: d.quantita,
-                            prezzo: d.prezzo,
-                            descrizione: d.descrizione
-                        }, { transaction: t });
+                            modello_id: dettaglio.modello_id,
+                            stampante_id: dettaglio.stampante_id,
+                            stato_stampa: dettaglio.stato_stampa,
+                            quantita: dettaglio.quantita,
+                            prezzo: dettaglio.prezzo,
+                            descrizione: dettaglio.descrizione
+                        }, { transaction: transaction });
                     }
-                    if (d.prezzo) {
-                        totale += parseFloat(d.prezzo);
+                    if (dettaglio.prezzo) {
+                        totale += parseFloat(dettaglio.prezzo);
                     }
                 }
             }
-            await vendita.update({ totale_vendita: totale }, { transaction: t });
-            await t.commit();
+            await vendita.update({ totale_vendita: totale }, { transaction: transaction });
+
+            // For each dettaglio, if the modello is not null and is vendibile on vinted, set is in vendita to false
+            for (const dettaglio of dettagli) {
+                if (dettaglio.modello_id) {
+                    const modello = await Modello.findByPk(dettaglio.modello_id);
+                    if (modello != null && modello.vinted_vendibile) {
+                        await modello.update({ vinted_is_in_vendita: false }, { transaction: transaction });
+                    }
+                }
+            }
+
+            await transaction.commit();
         } catch (error) {
-            await t.rollback();
+            await transaction.rollback();
         }
     },
 
     deleteOne: async function(id) {
-        const t = await sequelize.transaction();
+        const transaction = await sequelize.transaction();
         try {
-            await VenditaDettaglio.destroy({ where: { vendita_id: id }, transaction: t });
-            await Vendita.destroy({ where: { id }, transaction: t });
-            await t.commit();
+            await VenditaDettaglio.destroy({ where: { vendita_id: id }, transaction: transaction });
+            await Vendita.destroy({ where: { id }, transaction: transaction });
+            await transaction.commit();
         } catch (error) {
-            await t.rollback();
+            await transaction.rollback();
         }
     },
 

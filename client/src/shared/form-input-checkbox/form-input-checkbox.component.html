@@ -1,0 +1,35 @@
+<div class="flex align-items-center">
+    @if (labelPosition === 'left') {
+        <label [htmlFor]="property" class="block mr-2">{{label}}</label>
+        @if (obligatory) {
+            <span class="obligatory">*</span>
+        }
+        @if(infoMessage) {
+            <i class="pi pi-info-circle info-icon" [pTooltip]="infoMessage"></i>
+        }
+    }
+</div>
+<div class="flex align-items-center">
+    <p-checkbox 
+        [id]="property"
+        [binary]="binary"
+        [disabled]="disabled"
+        [ngClass]="{'input-error' : property | showError: listaErrori : parent : index}"
+        [(ngModel)]="value"
+        (onBlur)="onBlur()">
+    </p-checkbox>
+    @if (labelPosition === 'right') {
+        <label [htmlFor]="property" class="ml-2">{{label}}</label>
+        @if (obligatory) {
+            <span class="obligatory">*</span>
+        }
+        @if(infoMessage) {
+            <i class="pi pi-info-circle info-icon ml-2" [pTooltip]="infoMessage"></i>
+        }
+    }
+</div>
+@if(property | showError: listaErrori : parent : index) {
+    @for(error of property | errorMessages: listaErrori : parent : index; track error) {
+        <small id="help" class="message-error block">{{error}}</small>
+    }
+} 

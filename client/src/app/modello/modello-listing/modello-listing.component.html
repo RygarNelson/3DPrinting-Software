@@ -1,15 +1,91 @@
 <div class="p-4">
+  <!-- Grid View Card -->
   <p-card>
     <ng-template pTemplate="header">
-      <h2 class="text-xl font-semibold text-gray-800 pt-6 header-title">Gestione Modelli</h2>
+      <h2 class="text-xl font-semibold text-gray-800 pt-6 header-title">Modelli Vendibili su Vinted</h2>
+    </ng-template>
+
+    <ng-template pTemplate="content">
+      @if (loading) {
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        @for (item of Array(6); track $index) {
+        <div class="bg-gray-100 rounded-lg p-4 h-32 animate-pulse">
+          <div class="h-4 bg-gray-300 rounded mb-2"></div>
+          <div class="h-3 bg-gray-300 rounded mb-1"></div>
+          <div class="h-3 bg-gray-300 rounded w-2/3"></div>
+        </div>
+        }
+      </div>
+      } @else {
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        @for (modello of modelliGrid; track modello.id) {
+        <div
+          class="relative bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow grid-card"
+          [ngClass]="{'cursor-pointer modello-content-non-vendita': modello.vinted_is_in_vendita === false}"
+          (click)="impostaModelloVendibileVinted(modello)">
+          <div class="modello-grid-box-wrapper">
+            <div class="modello-content">
+              <div class="relative z-20">
+                <div class="flex flex-col">
+                  <!-- Red exclamation icon for items not in vendita -->
+                  @if (modello.vinted_is_in_vendita === false) {
+                  <div class="icona-non-vendita-wrapper">
+                    <i class="pi pi-exclamation-circle icona-non-vendita mb-2" pTooltip="Non in vendita">
+                    </i>
+                  </div>
+                  }
+                  <div class="flex items-center">
+                    <modello-tipo [tipo]="modello.tipo" />
+                    <h3 class="font-semibold text-gray-800 truncate ml-1">{{ modello.nome }}</h3>
+                  </div>
+
+                </div>
+
+                <p class="text-sm text-gray-600 mb-2 line-clamp-2">{{ modello.descrizione }}</p>
+
+                @if (modello.basetta_dimensione && modello.basetta_quantita) {
+                <div class="text-sm text-gray-600">
+                  Basetta: {{ modello.basetta_dimensione }} x {{ modello.basetta_quantita }}
+                </div>
+                }
+              </div>
+            </div>
+
+            <div class="modello-actions">
+              <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editModello($event, modello)"
+                pTooltip="Modifica modello" tooltipPosition="top" class="mr-2">
+              </p-button>
+              <p-button icon="pi pi-trash" severity="danger" size="small" [disabled]="modello.isUsed"
+                (click)="confirmDelete($event, modello)" [pTooltip]="modello.isUsed | modelloListingEliminaMessaggio"
+                tooltipPosition="top">
+              </p-button>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+
+      @if (modelliGrid.length === 0 && !loading) {
+      <div class="flex flex-col items-center gap-2 py-8">
+        <i class="pi pi-inbox text-4xl text-gray-400"></i>
+        <p class="text-gray-500">Nessun modello trovato</p>
+      </div>
+      }
+      }
+    </ng-template>
+  </p-card>
+
+  <p-card class="mt-4">
+    <ng-template pTemplate="header">
+      <h2 class="text-xl font-semibold text-gray-800 pt-6 header-title">Modelli NON Vendibili su Vinted</h2>
     </ng-template>
 
     <ng-template pTemplate="content">
       <!-- Table -->
       <p-table #dataTable currentPageReportTemplate="Mostrando da {first} a {last} di {totalRecords} modelli"
-        styleClass="p-datatable-sm" responsiveLayout="scroll" [value]="modelli" [paginator]="true" [rows]="filtri.limit"
-        [totalRecords]="totalRecords" [first]="filtri.offset" [showCurrentPageReport]="true"
-        [rowsPerPageOptions]="[10, 20, 50, 100]" [lazy]="true" (onLazyLoad)="loadData($event)">
+        styleClass="p-datatable-sm" responsiveLayout="scroll" [value]="modelliTable" [paginator]="true"
+        [rows]="filtri.limit" [totalRecords]="totalRecords" [first]="filtri.offset" [showCurrentPageReport]="true"
+        [rowsPerPageOptions]="[10, 20, 50, 100]" [lazy]="true" (onLazyLoad)="loadDataTable($event)">
 
         <ng-template pTemplate="caption">
           <div class="flex items-center flex-wrap gap-2">
@@ -74,10 +150,10 @@
             <td><modello-tipo [tipo]="modello.tipo" /></td>
             <td>
               @if (modello.basetta_dimensione && modello.basetta_quantita) {
-                {{ modello.basetta_dimensione }} x {{ modello.basetta_quantita }}
+              {{ modello.basetta_dimensione }} x {{ modello.basetta_quantita }}
               }
               @else {
-                -
+              -
               }
             </td>
             <td class="text-center">
@@ -89,7 +165,7 @@
                 </p-button>
                 }
                 @else {
-                <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editModello(modello)"
+                <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editModello($event, modello)"
                   pTooltip="Modifica modello" tooltipPosition="top">
                 </p-button>
                 <p-button icon="pi pi-trash" severity="danger" size="small" [disabled]="modello.isUsed"

@@ -24,7 +24,9 @@ const modelloRepository = {
             descrizione: req.body.descrizione,
             tipo: req.body.tipo,
             basetta_dimensione: req.body.basetta_dimensione,
-            basetta_quantita: req.body.basetta_quantita
+            basetta_quantita: req.body.basetta_quantita,
+            vinted_vendibile: req.body.vinted_vendibile,
+            vinted_is_in_vendita: req.body.vinted_is_in_vendita
         });
     },
 
@@ -34,7 +36,9 @@ const modelloRepository = {
             descrizione: req.body.descrizione,
             tipo: req.body.tipo,
             basetta_dimensione: req.body.basetta_dimensione,
-            basetta_quantita: req.body.basetta_quantita
+            basetta_quantita: req.body.basetta_quantita,
+            vinted_vendibile: req.body.vinted_vendibile,
+            vinted_is_in_vendita: req.body.vinted_is_in_vendita
         }, {
             where: { id: req.body.id }
         });
@@ -47,6 +51,10 @@ const modelloRepository = {
     isUsed: async function(id) {
         const isDettaglioVendita = await VenditaDettaglio.findOne({ where: { modello_id: id } });
         return isDettaglioVendita ? true : false;
+    },
+
+    impostaInVenditaVinted: async function(id) {
+        return Modello.update({ vinted_is_in_vendita: true }, { where: { id: id } });
     }
 };
 
