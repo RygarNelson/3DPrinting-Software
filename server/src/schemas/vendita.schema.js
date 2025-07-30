@@ -95,6 +95,20 @@ const validationSchema = {
                     errorMessage: 'Lo stato stampa non è valido',
                 },
                 toInt: true
+            },
+            'dettagli.*.stampa_is_pezzo_singolo': {
+                optional: false,
+                isBoolean: {
+                    errorMessage: 'La stampa è pezzo singolo non è valida',
+                },
+                toBoolean: true
+            },
+            'dettagli.*.stampa_is_parziale': {
+                optional: false,
+                isBoolean: {
+                    errorMessage: 'La stampa è parziale non è valida',
+                },
+                toBoolean: true
             }
         });
     }

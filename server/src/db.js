@@ -108,6 +108,10 @@ const updateDatabase = async (dbVersion, DatabaseVersion, CURRENT_DATABASE_VERSI
                     await updateDatabaseToVersion10();
                     break;
                 }
+                case 10: {
+                    await updateDatabaseToVersion11();
+                    break;
+                }
                 default: {
                     console.log('Update to version', (version + 1), 'not implemented');
                     process.exit(1);
@@ -233,6 +237,17 @@ const updateDatabaseToVersion10 = async () => {
         await sequelize.query('ALTER TABLE T_MODELLI ADD COLUMN vinted_is_in_vendita BOOLEAN NOT NULL DEFAULT FALSE');
     } catch (error) {
         console.log('Cannot update database to version 10');
+    }
+}
+
+const updateDatabaseToVersion11 = async () => {
+    try {
+        console.log('Updating database to version 11');
+
+        await sequelize.query('ALTER TABLE T_VENDITE_DETTAGLI ADD COLUMN stampa_is_pezzo_singolo BOOLEAN NOT NULL DEFAULT FALSE');
+        await sequelize.query('ALTER TABLE T_VENDITE_DETTAGLI ADD COLUMN stampa_is_parziale BOOLEAN NOT NULL DEFAULT FALSE');
+    } catch (error) {
+        console.log('Cannot update database to version 11');
     }
 }
 

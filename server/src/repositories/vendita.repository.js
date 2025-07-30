@@ -57,7 +57,9 @@ const venditaRepository = {
                         stato_stampa: dettaglio.stato_stampa,
                         quantita: dettaglio.quantita,
                         prezzo: dettaglio.prezzo,
-                        descrizione: dettaglio.descrizione
+                        descrizione: dettaglio.descrizione,
+                        stampa_is_pezzo_singolo: dettaglio.stampa_is_pezzo_singolo,
+                        stampa_is_parziale: dettaglio.stampa_is_parziale
                     }, { transaction: transaction });
                     if (dettaglio.prezzo) {
                         totale += parseFloat(dettaglio.prezzo);
@@ -102,7 +104,16 @@ const venditaRepository = {
             for (const existingDettaglio of existingDettagli) {
                 if (dettagliMap.has(existingDettaglio.id)) {
                     const dettaglio = dettagliMap.get(existingDettaglio.id);
-                    await existingDettaglio.update({ modello_id: dettaglio.modello_id, stampante_id: dettaglio.stampante_id, stato_stampa: dettaglio.stato_stampa, quantita: dettaglio.quantita, prezzo: dettaglio.prezzo, descrizione: dettaglio.descrizione }, { transaction: transaction });
+                    await existingDettaglio.update({ 
+                        modello_id: dettaglio.modello_id, 
+                        stampante_id: dettaglio.stampante_id, 
+                        stato_stampa: dettaglio.stato_stampa, 
+                        quantita: dettaglio.quantita, 
+                        prezzo: dettaglio.prezzo, 
+                        descrizione: dettaglio.descrizione,
+                        stampa_is_pezzo_singolo: dettaglio.stampa_is_pezzo_singolo,
+                        stampa_is_parziale: dettaglio.stampa_is_parziale
+                    }, { transaction: transaction });
                     dettagliMap.delete(existingDettaglio.id);
                 } else {
                     await existingDettaglio.destroy({ transaction: transaction });
@@ -120,7 +131,9 @@ const venditaRepository = {
                             stato_stampa: dettaglio.stato_stampa,
                             quantita: dettaglio.quantita,
                             prezzo: dettaglio.prezzo,
-                            descrizione: dettaglio.descrizione
+                            descrizione: dettaglio.descrizione,
+                            stampa_is_pezzo_singolo: dettaglio.stampa_is_pezzo_singolo,
+                            stampa_is_parziale: dettaglio.stampa_is_parziale
                         }, { transaction: transaction });
                     }
                     if (dettaglio.prezzo) {

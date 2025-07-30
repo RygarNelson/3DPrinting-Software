@@ -16,12 +16,33 @@ router.use(authenticate);
 router.get(
     '/vendita/:id',
     asyncHandler(async (req, res) => {
-        const projection = ['id', 'data_vendita', 'data_scadenza', 'data_scadenza_spedizione', 'cliente_id', 'totale_vendita', 'stato_spedizione', 'link_tracciamento', 'conto_bancario_id'];
+        const projection = [
+            'id', 
+            'data_vendita', 
+            'data_scadenza', 
+            'data_scadenza_spedizione', 
+            'cliente_id', 
+            'totale_vendita', 
+            'stato_spedizione', 
+            'link_tracciamento', 
+            'conto_bancario_id'
+        ];
         // Pass an include option to also get all dettagli
         const include = [
             {
                 association: 'dettagli',
-                attributes: ['id', 'modello_id', 'quantita', 'prezzo', 'vendita_id', 'stampante_id', 'stato_stampa', 'descrizione'], // projection for dettagli
+                attributes: [
+                    'id', 
+                    'modello_id', 
+                    'quantita', 
+                    'prezzo', 
+                    'vendita_id', 
+                    'stampante_id', 
+                    'stato_stampa', 
+                    'descrizione', 
+                    'stampa_is_pezzo_singolo', 
+                    'stampa_is_parziale'
+                ], // projection for dettagli
                 where: { deletedAt: null },
                 required: false, // so that vendite with no non-deleted dettagli are still included
             }
@@ -50,7 +71,17 @@ router.post(
                 association: 'dettagli',
                 where: { deletedAt: null },
                 required: false,
-                attributes: ['id', 'quantita', 'prezzo', 'stato_stampa', 'modello_id', 'stampante_id', 'descrizione'],
+                attributes: [
+                    'id',
+                    'quantita', 
+                    'prezzo', 
+                    'stato_stampa', 
+                    'modello_id', 
+                    'stampante_id', 
+                    'descrizione', 
+                    'stampa_is_pezzo_singolo', 
+                    'stampa_is_parziale'
+                ],
                 include: [includeDettagliModello, includeDettagliStampante]
             };
             let includeContoBancario = { association: 'conto_bancario', required: false, attributes: ['iban'], where: { deletedAt: null } };

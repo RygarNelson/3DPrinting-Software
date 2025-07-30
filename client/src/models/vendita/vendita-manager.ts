@@ -23,6 +23,8 @@ export class VenditaDettaglioManagerModel {
     stampante_id?: number;
     stato_stampa?: VenditaDettaglioStatoStampaEnum = VenditaDettaglioStatoStampaEnum.DaStampare;
     descrizione?: string;
+    stampa_is_pezzo_singolo?: boolean = false;
+    stampa_is_parziale?: boolean = false;
 }
 
 export class VenditaManagerResponse implements ResponseInterface {
