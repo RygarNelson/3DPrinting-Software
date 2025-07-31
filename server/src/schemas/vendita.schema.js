@@ -109,6 +109,33 @@ const validationSchema = {
                     errorMessage: 'La stampa è parziale non è valida',
                 },
                 toBoolean: true
+            },
+            'basette': {
+                optional: true,
+                isArray: {
+                    errorMessage: 'Le basette non sono valide',
+                }
+            },
+            'basette.*.dimensione': {
+                optional: true,
+                isLength: {
+                    options: { max: 500 },
+                    errorMessage: 'La dimensione non può superare i 500 caratteri'
+                }
+            },
+            'basette.*.quantita': {
+                optional: false,
+                isInt: {
+                    errorMessage: 'La quantita deve essere un intero',
+                },
+                toInt: true
+            },
+            'basette.*.stato_stampa': {
+                optional: false,
+                isInt: {
+                    errorMessage: 'Lo stato stampa non è valido',
+                },
+                toInt: true
             }
         });
     }
