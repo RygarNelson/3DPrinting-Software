@@ -12,6 +12,7 @@ export class VenditaManagerModel {
     link_tracciamento?: string;
     stato_spedizione?: VenditaStatoSpedizioneEnum = VenditaStatoSpedizioneEnum.DaSpedire;
     dettagli: VenditaDettaglioManagerModel[] = [];
+    basette: VenditaDettaglioBasettaManagerModel[] = [];
 }
 
 export class VenditaDettaglioManagerModel {
@@ -25,6 +26,15 @@ export class VenditaDettaglioManagerModel {
     descrizione?: string;
     stampa_is_pezzo_singolo?: boolean = false;
     stampa_is_parziale?: boolean = false;
+    basetta_dimensione?: string;
+    basetta_quantita?: number;
+}
+
+export class VenditaDettaglioBasettaManagerModel {
+    id: number = 0;
+    dimensione: string = '';
+    quantita: number = 0;
+    stato_stampa: VenditaDettaglioStatoStampaEnum = VenditaDettaglioStatoStampaEnum.DaStampare;
 }
 
 export class VenditaManagerResponse implements ResponseInterface {

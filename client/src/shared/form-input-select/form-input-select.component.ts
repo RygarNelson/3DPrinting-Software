@@ -51,6 +51,7 @@ export class FormInputSelectComponent extends FormInputGeneralComponent implemen
   @Input() showAdd: boolean = false;
 
   @Output() add = new EventEmitter<void>();
+  @Output() selected = new EventEmitter<LookupInterface | null>();
 
   @ContentChild('item') itemTemplate: TemplateRef<any> | null = null;
   @ContentChild('selectedItem') selectedItemTemplate: TemplateRef<any> | null = null;
@@ -87,6 +88,14 @@ export class FormInputSelectComponent extends FormInputGeneralComponent implemen
 
   onBlur() {
     this.onTouchedCallback();
+  }
+
+  onSelect() {
+    if (this.value != null) {
+      this.selected.emit(this.data.find(d => d.id == this.value));
+    } else {
+      this.selected.emit(null);
+    }
   }
 
   private onTouchedCallback = () => {};

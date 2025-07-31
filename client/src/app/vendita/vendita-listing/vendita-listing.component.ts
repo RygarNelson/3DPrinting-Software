@@ -21,7 +21,7 @@ import { ContoBancarioLookupDirective } from 'src/directives/conto-bancario/cont
 import { VenditaDettaglioStatoStampaLookupDirective } from 'src/directives/vendita/vendita-dettaglio-stato-stampa-lookup.directive';
 import { VenditaStatoSpedizioneLookupDirective } from 'src/directives/vendita/vendita-stato-spedizione-lookup.directive';
 import { VenditaDettaglioStatoStampaEnum } from 'src/enums/VenditaDettaglioStatoStampaEnum';
-import { VenditaListingDettaglioModel, VenditaListingModel, VenditaListingResponse } from 'src/models/vendita/vendita-listing';
+import { VenditaListingDettaglioBasettaModel, VenditaListingDettaglioModel, VenditaListingModel, VenditaListingResponse } from 'src/models/vendita/vendita-listing';
 import { VenditaListingFiltri } from 'src/models/vendita/vendita-listing-filtri';
 import { VenditaModificaContoBancarioModel } from 'src/models/vendita/vendita_modifica_conto_bancario';
 import { VenditaService } from 'src/services/vendita.service';
@@ -455,6 +455,43 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
           });
 
           console.error('Error avanzando stato dettaglio:', error);
+        }
+      });
+  }
+
+  modificaStatoBasetta(basetta: VenditaListingDettaglioBasettaModel): void {
+    if (this.loadingTimeout == null) {
+      this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    }
+
+    this.venditaService.modificaStatoBasetta(basetta.id, basetta.stato_stampa)
+      .subscribe({
+        next: () => {
+          window.clearTimeout(this.loadingTimeout);
+          this.loadingTimeout = undefined;
+          this.loading = false;
+
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Stato di stampa basetta modificato con successo'
+          });
+
+          this.loadVendite();
+        },
+        error: (error) => {
+          window.clearTimeout(this.loadingTimeout);
+          this.loadingTimeout = undefined;
+          this.loading = false;
+
+          this.dialogService.open(DialogErrorComponent, {
+            inputValues: {
+              error: error
+            },
+            modal: true
+          });
+
+          console.error('Errore avanzamento stato basetta:', error);
         }
       });
   }

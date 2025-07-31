@@ -27,7 +27,8 @@
         [checkmark]="checkmark"
         [loading]="loading"
         (onBlur)="onBlur()"
-        [(ngModel)]="value">
+        [(ngModel)]="value"
+        (ngModelChange)="onSelect()">
         @if(selectedItemTemplate) {
             <ng-template #selectedItem let-item>
                 <ng-container *ngTemplateOutlet="selectedItemTemplate; context: { $implicit: item }"></ng-container>
