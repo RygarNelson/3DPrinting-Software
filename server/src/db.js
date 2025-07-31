@@ -116,6 +116,10 @@ const updateDatabase = async (dbVersion, DatabaseVersion, CURRENT_DATABASE_VERSI
                     await updateDatabaseToVersion12();
                     break;
                 }
+                case 12: {
+                    await updateDatabaseToVersion13();
+                    break;
+                }
                 default: {
                     console.log('Update to version', (version + 1), 'not implemented');
                     process.exit(1);
@@ -270,6 +274,17 @@ const updateDatabaseToVersion12 = async () => {
         console.log('Cannot update database to version 12');
         console.error(error);
         process.exit(1);
+    }
+}
+
+const updateDatabaseToVersion13 = async () => {
+    try {
+        console.log('Updating database to version 13');
+
+        await sequelize.query('ALTER TABLE T_VENDITE_DETTAGLI ADD COLUMN basetta_dimensione VARCHAR(500) NULL');
+        await sequelize.query('ALTER TABLE T_VENDITE_DETTAGLI ADD COLUMN basetta_quantita INTEGER NULL');
+    } catch (error) {
+        console.log('Cannot update database to version 13');
     }
 }
 

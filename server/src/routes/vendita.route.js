@@ -41,7 +41,9 @@ router.get(
                     'stato_stampa', 
                     'descrizione', 
                     'stampa_is_pezzo_singolo', 
-                    'stampa_is_parziale'
+                    'stampa_is_parziale',
+                    'basetta_dimensione',
+                    'basetta_quantita'
                 ], // projection for dettagli
                 where: { deletedAt: null },
                 required: false, // so that vendite with no non-deleted dettagli are still included
@@ -92,7 +94,9 @@ router.post(
                     'stampante_id', 
                     'descrizione', 
                     'stampa_is_pezzo_singolo', 
-                    'stampa_is_parziale'
+                    'stampa_is_parziale',
+                    'basetta_dimensione',
+                    'basetta_quantita'
                 ],
                 include: [includeDettagliModello, includeDettagliStampante]
             };

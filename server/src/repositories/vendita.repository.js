@@ -61,7 +61,9 @@ const venditaRepository = {
                         prezzo: dettaglio.prezzo,
                         descrizione: dettaglio.descrizione,
                         stampa_is_pezzo_singolo: dettaglio.stampa_is_pezzo_singolo,
-                        stampa_is_parziale: dettaglio.stampa_is_parziale
+                        stampa_is_parziale: dettaglio.stampa_is_parziale,
+                        basetta_dimensione: dettaglio.basetta_dimensione,
+                        basetta_quantita: dettaglio.basetta_quantita
                     }, { transaction: transaction });
                     if (dettaglio.prezzo) {
                         totale += parseFloat(dettaglio.prezzo);
@@ -133,7 +135,9 @@ const venditaRepository = {
                         prezzo: dettaglio.prezzo, 
                         descrizione: dettaglio.descrizione,
                         stampa_is_pezzo_singolo: dettaglio.stampa_is_pezzo_singolo,
-                        stampa_is_parziale: dettaglio.stampa_is_parziale
+                        stampa_is_parziale: dettaglio.stampa_is_parziale,
+                        basetta_dimensione: dettaglio.basetta_dimensione,
+                        basetta_quantita: dettaglio.basetta_quantita
                     }, { transaction: transaction });
                     dettagliMap.delete(existingDettaglio.id);
                 } else {
@@ -154,7 +158,9 @@ const venditaRepository = {
                             prezzo: dettaglio.prezzo,
                             descrizione: dettaglio.descrizione,
                             stampa_is_pezzo_singolo: dettaglio.stampa_is_pezzo_singolo,
-                            stampa_is_parziale: dettaglio.stampa_is_parziale
+                            stampa_is_parziale: dettaglio.stampa_is_parziale,
+                            basetta_dimensione: dettaglio.basetta_dimensione,
+                            basetta_quantita: dettaglio.basetta_quantita
                         }, { transaction: transaction });
                     }
                     if (dettaglio.prezzo) {
