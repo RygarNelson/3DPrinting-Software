@@ -16,14 +16,49 @@ router.use(authenticate);
 router.get(
     '/vendita/:id',
     asyncHandler(async (req, res) => {
-        const projection = ['id', 'data_vendita', 'data_scadenza', 'data_scadenza_spedizione', 'cliente_id', 'totale_vendita', 'stato_spedizione', 'link_tracciamento', 'conto_bancario_id'];
-        // Pass an include option to also get all dettagli
+        const projection = [
+            'id', 
+            'data_vendita', 
+            'data_scadenza', 
+            'data_scadenza_spedizione', 
+            'cliente_id', 
+            'totale_vendita', 
+            'stato_spedizione', 
+            'link_tracciamento', 
+            'conto_bancario_id'
+        ];
+        // Pass an include option to also get all dettagli and basette
         const include = [
             {
                 association: 'dettagli',
-                attributes: ['id', 'modello_id', 'quantita', 'prezzo', 'vendita_id', 'stampante_id', 'stato_stampa', 'descrizione'], // projection for dettagli
+                attributes: [
+                    'id', 
+                    'modello_id', 
+                    'quantita', 
+                    'prezzo', 
+                    'vendita_id', 
+                    'stampante_id', 
+                    'stato_stampa', 
+                    'descrizione', 
+                    'stampa_is_pezzo_singolo', 
+                    'stampa_is_parziale',
+                    'basetta_dimensione',
+                    'basetta_quantita'
+                ], // projection for dettagli
                 where: { deletedAt: null },
                 required: false, // so that vendite with no non-deleted dettagli are still included
+            },
+            {
+                association: 'basette',
+                attributes: [
+                    'id',
+                    'vendita_id',
+                    'dimensione', 
+                    'quantita', 
+                    'stato_stampa'
+                ], // projection for basette
+                where: { deletedAt: null },
+                required: false, // so that vendite with no non-deleted basette are still included
             }
         ];
         const vendita = await VenditaRepository.findOne(req.params.id, projection, include);
@@ -50,10 +85,33 @@ router.post(
                 association: 'dettagli',
                 where: { deletedAt: null },
                 required: false,
-                attributes: ['id', 'quantita', 'prezzo', 'stato_stampa', 'modello_id', 'stampante_id', 'descrizione'],
+                attributes: [
+                    'id',
+                    'quantita', 
+                    'prezzo', 
+                    'stato_stampa', 
+                    'modello_id', 
+                    'stampante_id', 
+                    'descrizione', 
+                    'stampa_is_pezzo_singolo', 
+                    'stampa_is_parziale',
+                    'basetta_dimensione',
+                    'basetta_quantita'
+                ],
                 include: [includeDettagliModello, includeDettagliStampante]
             };
             let includeContoBancario = { association: 'conto_bancario', required: false, attributes: ['iban'], where: { deletedAt: null } };
+            let includeBasette = {
+                association: 'basette',
+                where: { deletedAt: null },
+                required: false,
+                attributes: [
+                    'id',
+                    'dimensione', 
+                    'quantita', 
+                    'stato_stampa'
+                ]
+            };
 
             if (req.body.stato_spedizione != null) {
                 whereOptions.stato_spedizione = req.body.stato_spedizione;
@@ -178,6 +236,25 @@ router.post(
                         }]
                     );
                     venditeByDescrizione.rows.forEach(v => venditeIds.add(v.id));
+
+                    // Search 6: By basette.dimensione
+                    const venditeByBasetta = await VenditaRepository.find(
+                        { ...whereOptions },
+                        null,
+                        null,
+                        null,
+                        ['id'],
+                        [{
+                            association: 'basette',
+                            required: true,
+                            attributes: [],
+                            where: { 
+                                deletedAt: null, 
+                                dimensione: { [Op.like]: `%${search}%` } 
+                            },
+                        }]
+                    );
+                    venditeByBasetta.rows.forEach(v => venditeIds.add(v.id));
                 }
 
                 // Stato stampa
@@ -196,6 +273,24 @@ router.post(
                         }]
                     );
                     venditeByDettaglioConStatoStampa.rows.forEach(v => venditeIds.add(v.id));
+                }
+
+                // Stato stampa basette
+                if (req.body.basetta_stato_stampa != null) {
+                    const venditeByBasettaConStatoStampa = await VenditaRepository.find(
+                        { ...whereOptions },
+                        null, // no limit
+                        null, // no offset
+                        null, // no order
+                        ['id'], // only get IDs
+                        [{
+                            association: 'basette',
+                            required: true,
+                            attributes: [],
+                            where: { deletedAt: null, stato_stampa: req.body.basetta_stato_stampa },
+                        }]
+                    );
+                    venditeByBasettaConStatoStampa.rows.forEach(v => venditeIds.add(v.id));
                 }
 
                 whereOptions.id = { [Op.in]: Array.from(venditeIds) };
@@ -345,7 +440,7 @@ router.post(
                     END
                 `), 'rank']
             ];
-            const include = [includeCliente, includeDettagli, includeContoBancario];
+            const include = [includeCliente, includeDettagli, includeContoBancario, includeBasette];
 
             // Default order: by rank, then by id
             let order = [[literal('rank'), 'ASC'], ['id', 'ASC']];
@@ -460,6 +555,26 @@ router.post(
             return res.status(400).json({
                 success: false,
                 error: 'Specificare l\'id del dettaglio e lo stato di avanzamento',
+                technical_data: 'Nessun parametro di ricerca specificato'
+            });
+        }
+    })
+);
+
+router.post(
+    '/basetta/stato/modifica',
+    asyncHandler(async (req, res) => {
+        if (req.body.id > 0 && req.body.stato_avanzamento != null) {
+            const data = await VenditaRepository.modificaStatoBasetta(req.body.id, req.body.stato_avanzamento);
+            return res.status(200).json({
+                success: true,
+                data: 'Stato stampa basetta modificato con successo!',
+                technical_data: data
+            });
+        } else {
+            return res.status(400).json({
+                success: false,
+                error: 'Specificare l\'id della basetta e lo stato di avanzamento',
                 technical_data: 'Nessun parametro di ricerca specificato'
             });
         }

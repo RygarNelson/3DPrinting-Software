@@ -2,9 +2,10 @@
 
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../config/database.js';
+import Basetta from './basetta.model.js';
 import Cliente from './cliente.model.js';
-import VenditaDettaglio from './venditaDettaglio.model.js';
 import ContoBancario from './conto-bancario.model.js';
+import VenditaDettaglio from './venditaDettaglio.model.js';
 
 const Vendita = sequelize.define('Vendita', {
     id: {
@@ -104,6 +105,17 @@ Vendita.belongsTo(Cliente, {
 Vendita.belongsTo(ContoBancario, {
     foreignKey: 'conto_bancario_id',
     as: 'conto_bancario'
+});
+
+Vendita.hasMany(Basetta, {
+    foreignKey: 'vendita_id',
+    as: 'basette',
+    onDelete: 'CASCADE',
+    hooks: true
+});
+Basetta.belongsTo(Vendita, {
+    foreignKey: 'vendita_id',
+    as: 'vendita'
 });
 
 export default Vendita; 

@@ -6,6 +6,10 @@ export class ModelloManagerModel {
     nome: string = '';
     descrizione: string = '';
     tipo: ModelloTipoEnum = ModelloTipoEnum.PLA;
+    basetta_dimensione?: string;
+    basetta_quantita?: number;
+    vinted_vendibile?: boolean;
+    vinted_is_in_vendita?: boolean;
 }
 
 export class ModelloManagerResponse implements ResponseInterface {

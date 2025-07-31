@@ -59,15 +59,7 @@ const validationSchema = {
                 isInt: {
                     errorMessage: 'Il modello non è valido',
                 },
-                toInt: true,
-                custom: {
-                    options: async (value) => {
-                        console.log(value);
-
-                        return true;
-                    },
-                    errorMessage: 'Selezione un modello o scrivi una descrizione'
-                }
+                toInt: true
             },
             'dettagli.*.descrizione': {
                 optional: true,
@@ -98,6 +90,61 @@ const validationSchema = {
                 }
             },
             'dettagli.*.stato_stampa': {
+                optional: false,
+                isInt: {
+                    errorMessage: 'Lo stato stampa non è valido',
+                },
+                toInt: true
+            },
+            'dettagli.*.stampa_is_pezzo_singolo': {
+                optional: false,
+                isBoolean: {
+                    errorMessage: 'La stampa è pezzo singolo non è valida',
+                },
+                toBoolean: true
+            },
+            'dettagli.*.stampa_is_parziale': {
+                optional: false,
+                isBoolean: {
+                    errorMessage: 'La stampa è parziale non è valida',
+                },
+                toBoolean: true
+            },
+            'dettagli.*.basetta_dimensione': {
+                optional: true,
+                isLength: {
+                    options: { max: 500 },
+                    errorMessage: 'La dimensione della basetta non può superare i 500 caratteri'
+                }
+            },
+            'dettagli.*.basetta_quantita': {
+                optional: true,
+                isInt: {
+                    errorMessage: 'La quantita della basette deve essere un intero',
+                },
+                toInt: true
+            },
+            'basette': {
+                optional: true,
+                isArray: {
+                    errorMessage: 'Le basette non sono valide',
+                }
+            },
+            'basette.*.dimensione': {
+                optional: true,
+                isLength: {
+                    options: { max: 500 },
+                    errorMessage: 'La dimensione non può superare i 500 caratteri'
+                }
+            },
+            'basette.*.quantita': {
+                optional: false,
+                isInt: {
+                    errorMessage: 'La quantita deve essere un intero',
+                },
+                toInt: true
+            },
+            'basette.*.stato_stampa': {
                 optional: false,
                 isInt: {
                     errorMessage: 'Lo stato stampa non è valido',

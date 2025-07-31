@@ -50,7 +50,25 @@ const VenditaDettaglio = sequelize.define('VenditaDettaglio', {
     descrizione: {
         type: DataTypes.STRING(500),
         allowNull: true
-    }
+    },
+    stampa_is_pezzo_singolo: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    },
+    stampa_is_parziale: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    },
+    basetta_dimensione: {
+        type: DataTypes.STRING(500),
+        allowNull: true
+    },
+    basetta_quantita: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
 }, {
     tableName: 'T_VENDITE_DETTAGLI',
     indexes: [

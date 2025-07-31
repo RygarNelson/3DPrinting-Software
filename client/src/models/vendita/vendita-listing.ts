@@ -14,6 +14,7 @@ export class VenditaListingModel {
     cliente: VenditaListingClienteModel = new VenditaListingClienteModel();
     conto_bancario: VenditaListingContoBancarioModel = new VenditaListingContoBancarioModel();
     dettagli: VenditaListingDettaglioModel[] = [];
+    basette: VenditaListingDettaglioBasettaModel[] = [];
 }
 
 export class VenditaListingClienteModel {
@@ -28,6 +29,8 @@ export class VenditaListingDettaglioModel {
     modello: VenditaListingDettaglioModelloModel = new VenditaListingDettaglioModelloModel();
     stampante: VenditaListingDettaglioStampanteModel = new VenditaListingDettaglioStampanteModel();
     descrizione?: string;
+    stampa_is_pezzo_singolo: boolean = false;
+    stampa_is_parziale: boolean = false;
 }
 
 export class VenditaListingDettaglioModelloModel {
@@ -40,6 +43,13 @@ export class VenditaListingDettaglioStampanteModel {
 
 export class VenditaListingContoBancarioModel {
     iban: string = '';
+}
+
+export class VenditaListingDettaglioBasettaModel {
+    id: number = 0;
+    dimensione: string = '';
+    quantita: number = 0;
+    stato_stampa: VenditaDettaglioStatoStampaEnum = VenditaDettaglioStatoStampaEnum.DaStampare;
 }
 
 export class VenditaListingResponse implements ResponseInterface {

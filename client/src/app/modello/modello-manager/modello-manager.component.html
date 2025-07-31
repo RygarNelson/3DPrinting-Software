@@ -72,6 +72,40 @@
                     [listaErrori]="listaErrori"
                     [(ngModel)]="modello.descrizione"/>
             </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <form-input-select
+                    modello-basetta-dimensione
+                    [label]="'Dimensione basetta'"
+                    [property]="'basetta_dimensione'"
+                    [infoMessage]="'Dimensione della basetta'"
+                    [listaErrori]="listaErrori"
+                    [(ngModel)]="modello.basetta_dimensione"
+                />
+                 <form-input-number
+                    [label]="'Quantità basette'"
+                    [property]="'basetta_quantita'"
+                    [infoMessage]="'Quantità della basetta'"
+                    [step]="1"
+                    [min]="1"
+                    [listaErrori]="listaErrori"
+                    [(ngModel)]="modello.basetta_quantita"/>
+            </div>
+            <div class="grid grid-cols-1 gap-4 mt-4">
+                <form-input-checkbox
+                    [label]="'Vendibile su Vinted'"
+                    [property]="'vinted_vendibile'"
+                    [infoMessage]="'Indica se il modello è vendibile su Vinted'"
+                    [listaErrori]="listaErrori"
+                    [(ngModel)]="modello.vinted_vendibile"
+                />
+                <form-input-checkbox
+                    [label]="'In vendita su Vinted'"
+                    [property]="'vinted_is_in_vendita'"
+                    [infoMessage]="'Indica se il modello è attualmente in vendita su Vinted'"
+                    [listaErrori]="listaErrori"
+                    [(ngModel)]="modello.vinted_is_in_vendita"
+                />
+            </div>
         </ng-template>
     </p-card>
 </div>

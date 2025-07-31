@@ -21,6 +21,24 @@ const Modello = sequelize.define('Modello', {
         type: DataTypes.INTEGER,
         allowNull: true,
         defaultValue: 0
+    },
+    basetta_dimensione: {
+        type: DataTypes.STRING(500),
+        allowNull: true,
+    },
+    basetta_quantita: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+    },
+    vinted_vendibile: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    },
+    vinted_is_in_vendita: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
     }
 }, {
     tableName: "T_MODELLI",

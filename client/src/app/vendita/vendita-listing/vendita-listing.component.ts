@@ -21,7 +21,7 @@ import { ContoBancarioLookupDirective } from 'src/directives/conto-bancario/cont
 import { VenditaDettaglioStatoStampaLookupDirective } from 'src/directives/vendita/vendita-dettaglio-stato-stampa-lookup.directive';
 import { VenditaStatoSpedizioneLookupDirective } from 'src/directives/vendita/vendita-stato-spedizione-lookup.directive';
 import { VenditaDettaglioStatoStampaEnum } from 'src/enums/VenditaDettaglioStatoStampaEnum';
-import { VenditaListingDettaglioModel, VenditaListingModel, VenditaListingResponse } from 'src/models/vendita/vendita-listing';
+import { VenditaListingDettaglioBasettaModel, VenditaListingDettaglioModel, VenditaListingModel, VenditaListingResponse } from 'src/models/vendita/vendita-listing';
 import { VenditaListingFiltri } from 'src/models/vendita/vendita-listing-filtri';
 import { VenditaModificaContoBancarioModel } from 'src/models/vendita/vendita_modifica_conto_bancario';
 import { VenditaService } from 'src/services/vendita.service';
@@ -95,7 +95,12 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
     conto_bancario_id: 0
   };
 
+  // Delete dialog properties
+  deleteDialogVisible: boolean = false;
+  venditaToDelete?: VenditaListingModel;
+
   @ViewChild('confirmDialogModificaContoBancario') confirmDialogModificaContoBancario?: ConfirmDialog;
+  @ViewChild('confirmDialogDelete') confirmDialogDelete?: ConfirmDialog;
 
   private venditeSubscription?: Subscription;
   private venditaDeleteSubscription?: Subscription;
@@ -347,26 +352,11 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
   }
 
   confirmDelete(event: Event, vendita: VenditaListingModel): void {
-    this.confirmationService.confirm({
-      target: event.target as EventTarget,
-      message: `Sei sicuro di voler eliminare la vendita nr."${vendita.id}"?`,
-      icon: 'pi pi-exclamation-triangle',
-      acceptLabel: 'Si',
-      rejectLabel: 'No',
-      acceptIcon: 'pi pi-exclamation-triangle',
-      rejectIcon: 'pi pi-times',
-      acceptButtonStyleClass: 'p-button-danger',
-      rejectButtonStyleClass: 'p-button-secondary',
-      accept: () => {
-        this.deleteVendita(vendita.id);
-      },
-      reject: () => {
-        // User rejected the deletion
-      }
-    });
+    this.venditaToDelete = vendita;
+    this.deleteDialogVisible = true;
   }
 
-  private deleteVendita(id: number): void {
+  deleteVendita(id: number): void {
     this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
 
     this.venditaDeleteSubscription = this.venditaService.delete(id)
@@ -380,6 +370,10 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
             summary: 'Success',
             detail: 'Vendita cancellata con successo'
           });
+
+          // Hide dialog and clear venditaToDelete
+          this.deleteDialogVisible = false;
+          this.venditaToDelete = undefined;
 
           this.loadVendite();
         },
@@ -461,6 +455,43 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
           });
 
           console.error('Error avanzando stato dettaglio:', error);
+        }
+      });
+  }
+
+  modificaStatoBasetta(basetta: VenditaListingDettaglioBasettaModel): void {
+    if (this.loadingTimeout == null) {
+      this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    }
+
+    this.venditaService.modificaStatoBasetta(basetta.id, basetta.stato_stampa)
+      .subscribe({
+        next: () => {
+          window.clearTimeout(this.loadingTimeout);
+          this.loadingTimeout = undefined;
+          this.loading = false;
+
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Stato di stampa basetta modificato con successo'
+          });
+
+          this.loadVendite();
+        },
+        error: (error) => {
+          window.clearTimeout(this.loadingTimeout);
+          this.loadingTimeout = undefined;
+          this.loading = false;
+
+          this.dialogService.open(DialogErrorComponent, {
+            inputValues: {
+              error: error
+            },
+            modal: true
+          });
+
+          console.error('Errore avanzamento stato basetta:', error);
         }
       });
   }

@@ -15,7 +15,7 @@ router.use(authenticate);
 router.get(
     '/:id',
     asyncHandler(async (req, res) => {
-        const projection = ['id', 'nome', 'descrizione', 'tipo'];
+        const projection = ['id', 'nome', 'descrizione', 'tipo', 'basetta_dimensione', 'basetta_quantita', 'vinted_vendibile', 'vinted_is_in_vendita'];
         const modello = await ModelloRepository.findOne(req.params.id, projection);
         res.status(200).json({
             success: true,
@@ -35,7 +35,7 @@ router.post(
         const offset = undefined;
         const order = [['tipo', 'DESC'], ['nome', 'ASC']];
 
-        const projection = ['id', 'nome', 'descrizione', 'tipo'];
+        const projection = ['id', 'nome', 'descrizione', 'tipo', 'basetta_dimensione', 'basetta_quantita', 'vinted_vendibile', 'vinted_is_in_vendita'];
 
         const data = await ModelloRepository.find(whereOptions, limit, offset, order, projection);
 
@@ -45,7 +45,11 @@ router.post(
                 etichetta: modello.dataValues.nome,
                 informazioniAggiuntive: modello.dataValues.descrizione,
                 altriDati: {
-                    tipo: modello.dataValues.tipo
+                    tipo: modello.dataValues.tipo,
+                    basetta_dimensione: modello.dataValues.basetta_dimensione,
+                    basetta_quantita: modello.dataValues.basetta_quantita,
+                    vinted_vendibile: modello.dataValues.vinted_vendibile,
+                    vinted_is_in_vendita: modello.dataValues.vinted_is_in_vendita
                 }
             };
         });
@@ -57,11 +61,12 @@ router.post(
 );
 
 router.post(
-    '/listing',
+    '/listing/table',
     asyncHandler(async (req, res) => {
         if (req != null && req.body != null) {
             let whereOptions = {
-                deletedAt: null
+                deletedAt: null,
+                vinted_vendibile: false,
             };
             
             if (req.body.nome && req.body.nome.trim() !== '') {
@@ -88,6 +93,11 @@ router.post(
                             descrizione: {
                                 [Op.like]: `%${req.body.search}%`
                             }
+                        },
+                        {
+                            basetta_dimensione: {
+                                [Op.like]: `%${req.body.search}%`
+                            }
                         }
                     ]
                 };
@@ -110,7 +120,7 @@ router.post(
                 order = [[req.body.order.column, req.body.order.direction]];
             }
 
-            const projection = ['id', 'nome', 'descrizione', 'tipo', 'updatedAt'];
+            const projection = ['id', 'nome', 'descrizione', 'tipo', 'basetta_dimensione', 'basetta_quantita', 'updatedAt'];
 
             const modelli = await ModelloRepository.find(whereOptions, limit, offset, order, projection);
 
@@ -121,7 +131,55 @@ router.post(
                     descrizione: modello.dataValues.descrizione,
                     updatedAt: modello.dataValues.updatedAt,
                     isUsed: await ModelloRepository.isUsed(modello.dataValues.id),
-                    tipo: modello.dataValues.tipo
+                    tipo: modello.dataValues.tipo,
+                    basetta_dimensione: modello.dataValues.basetta_dimensione,
+                    basetta_quantita: modello.dataValues.basetta_quantita
+                }
+            }));
+
+            res.status(200).json({
+                success: true,
+                data: result,
+                count: modelli.count
+            });
+        }
+        else {
+            return res.status(400).json({
+                success: false,
+                error: 'Specificare i parametri di ricerca',
+                technical_data: 'Nessun parametro di ricerca specificato'
+            });
+        }
+    })
+);
+
+router.post(
+    '/listing/grid',
+    asyncHandler(async (req, res) => {
+        if (req != null && req.body != null) {
+            let whereOptions = {
+                deletedAt: null,
+                vinted_vendibile: true,
+            };
+
+            let order = [['vinted_is_in_vendita', 'ASC'], ['id', 'ASC']];
+
+            const projection = ['id', 'nome', 'descrizione', 'tipo', 'basetta_dimensione', 'basetta_quantita', 'vinted_vendibile', 'vinted_is_in_vendita', 'updatedAt'];
+
+            const modelli = await ModelloRepository.find(whereOptions, undefined, undefined, order, projection);
+
+            const result = await Promise.all(modelli.rows.map(async (modello) => {
+                return {
+                    id: modello.dataValues.id,
+                    nome: modello.dataValues.nome,
+                    descrizione: modello.dataValues.descrizione,
+                    updatedAt: modello.dataValues.updatedAt,
+                    isUsed: await ModelloRepository.isUsed(modello.dataValues.id),
+                    tipo: modello.dataValues.tipo,
+                    basetta_dimensione: modello.dataValues.basetta_dimensione,
+                    basetta_quantita: modello.dataValues.basetta_quantita,
+                    vinted_vendibile: modello.dataValues.vinted_vendibile,
+                    vinted_is_in_vendita: modello.dataValues.vinted_is_in_vendita
                 }
             }));
 
@@ -178,6 +236,18 @@ router.delete(
         return res.status(200).json({
             success: true,
             data: 'Modello eliminato con successo!',
+            technical_data: data
+        });
+    })
+);
+
+router.post(
+    '/vinted/imposta-in-vendita',
+    asyncHandler(async (req, res) => {
+        const data = await ModelloRepository.impostaInVenditaVinted(req.body.id);
+        return res.status(200).json({
+            success: true,
+            data: 'Modello impostato in vendita su Vinted con successo!',
             technical_data: data
         });
     })

@@ -23,12 +23,15 @@ import { StampanteLookupDirective } from 'src/directives/stampante/stampante-loo
 import { VenditaDettaglioStatoStampaLookupDirective } from 'src/directives/vendita/vendita-dettaglio-stato-stampa-lookup.directive';
 import { VenditaStatoSpedizioneLookupDirective } from 'src/directives/vendita/vendita-stato-spedizione-lookup.directive';
 import { ModelloTipoEnum } from 'src/enums/ModelloTipoEnum';
+import { VenditaDettaglioStatoStampaEnum } from 'src/enums/VenditaDettaglioStatoStampaEnum';
+import { LookupInterface } from 'src/interfaces/lookup.interface';
 import { ErrorsViewModel } from 'src/models/ErrorsViewModel';
 import { VenditaDettaglioManagerModel, VenditaManagerModel } from 'src/models/vendita/vendita-manager';
 import { ApplicationStateService } from 'src/services/application-state.service';
 import { ClienteService } from 'src/services/cliente.service';
 import { VenditaService } from 'src/services/vendita.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
+import { FormInputCheckboxComponent } from 'src/shared/form-input-checkbox/form-input-checkbox.component';
 import { FormInputDatetimeComponent } from 'src/shared/form-input-datetime/form-input-datetime.component';
 import { FormInputNumberComponent } from 'src/shared/form-input-number/form-input-number.component';
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
@@ -48,6 +51,7 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
     FormInputNumberComponent,
     FormInputDatetimeComponent,
     FormInputSelectComponent,
+    FormInputCheckboxComponent,
     ClienteLookupDirective,
     VenditaStatoSpedizioneLookupDirective,
     TableModule,
@@ -219,7 +223,9 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
       this.vendita.data_scadenza = new Date(this.vendita.data_vendita);
       this.vendita.data_scadenza_spedizione = new Date(this.vendita.data_vendita);
 
-      this.vendita.data_scadenza.setDate(this.vendita.data_vendita.getDate() + 6);
+      // 8 giorni per la scadenza
+      this.vendita.data_scadenza.setDate(this.vendita.data_vendita.getDate() + 8);
+      // 10 giorni per la spedizione
       this.vendita.data_scadenza_spedizione.setDate(this.vendita.data_vendita.getDate() + 10);
     } else {
       this.vendita.data_scadenza = undefined;
@@ -372,6 +378,76 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
 
   deleteDettaglio(dettaglio: VenditaDettaglioManagerModel, index: number): void {
     this.vendita.dettagli.splice(index, 1);
+  }
+
+  checkDettaglio(dettaglio: VenditaDettaglioManagerModel): void {
+    if (dettaglio.stampa_is_pezzo_singolo && dettaglio.stampa_is_parziale) {
+      setTimeout(() => {
+        dettaglio.stampa_is_pezzo_singolo = true;
+        dettaglio.stampa_is_parziale = false;
+      });
+    }
+  }
+
+  impostaDettaglioBasetta(modello: LookupInterface | null, index: number): void {
+    if (modello != null && modello.altriDati != null) {
+      this.vendita.dettagli[index].basetta_dimensione = modello.altriDati.basetta_dimensione;
+      this.vendita.dettagli[index].basetta_quantita = modello.altriDati.basetta_quantita;
+    } else {
+      this.vendita.dettagli[index].basetta_dimensione = undefined;
+      this.vendita.dettagli[index].basetta_quantita = undefined;
+    }
+
+    this.ricalcolaBasette();
+  }
+
+  ricalcolaBasette(): void {
+    // First take all dettagli which have basetta_dimensione and basetta_quantita and quantita
+    const dettagliCalcolabili = this.vendita.dettagli.filter(d => d.basetta_dimensione != null && d.basetta_quantita != null && d.quantita != null);
+
+    if (dettagliCalcolabili != null && dettagliCalcolabili.length > 0) {
+      // Second, create a record for each dimension with the total quantity which is the multiplication of basetta_quantita and quantita
+      let basette: Record<string, number> = {};
+
+      dettagliCalcolabili.forEach((dettaglio) => {
+        const dimensione = dettaglio.basetta_dimensione!;
+        if (!basette[dimensione]) {
+          basette[dimensione] = 0;
+        }
+
+        basette[dimensione] += dettaglio.basetta_quantita! * dettaglio.quantita!;
+      });
+
+      // Third, manipulate basette based on the record
+      // If it doesn't have any entry, remove all basette which stato_stampa is not da_stampare
+      if (Object.keys(basette).length === 0) {
+        this.vendita.basette = this.vendita.basette.filter(b => b.stato_stampa != VenditaDettaglioStatoStampaEnum.DaStampare);
+      } else {
+        // Fourth, remove all basette which stato_stampa is not da_stampare that are not in the record
+        this.vendita.basette = this.vendita.basette.filter(b => {
+          return basette[b.dimensione] != null || (basette[b.dimensione] == null && b.stato_stampa != VenditaDettaglioStatoStampaEnum.DaStampare);
+        });
+
+        // Fifth, for each entry in the record, for loop
+        Object.entries(basette).forEach(([dimensione, quantita]) => {
+          // Check if the basetta already exists
+          const basetta = this.vendita.basette.find(b => b.dimensione == dimensione);
+          if (basetta != null && basetta.quantita != quantita) {
+            // If it exists, update the quantity if the quantity is different
+            basetta.quantita = quantita;
+            basetta.stato_stampa = VenditaDettaglioStatoStampaEnum.DaStampare;
+          } else if (basetta == null) {
+            // If it doesn't exist, create a new basetta
+            this.vendita.basette.push({
+              id: 0,
+              dimensione: dimensione,
+              quantita: quantita,
+              stato_stampa: VenditaDettaglioStatoStampaEnum.DaStampare
+            });
+          }
+        });
+      }
+    }
   }
 
   indietro(): void {
