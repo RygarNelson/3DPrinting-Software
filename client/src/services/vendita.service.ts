@@ -58,6 +58,13 @@ export class VenditaService {
     });
   }
 
+  modificaStatoBasetta(id: number, stato_avanzamento?: number): Observable<any> {
+    return this.http.post<any>(`${this.api}/basetta/stato/modifica`, {
+      id,
+      stato_avanzamento
+    });
+  }
+
   getStatoVendite(): Observable<VenditaStatoResponse> {
     return this.http.get<VenditaStatoResponse>(`${this.api}/stato`);
   }

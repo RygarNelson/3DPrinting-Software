@@ -9,7 +9,7 @@ $info-color: #337bbe;
 }
 
 form-input-datetime {
-  .input-error > .p-datepicker.p-component.p-inputwrapper > .p-inputtext {
+  .input-error.p-datepicker .p-inputtext {
     border: 1px solid $error-color !important;
   }
 }

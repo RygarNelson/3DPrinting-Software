@@ -180,9 +180,11 @@
               <ul class="pl-4" style="list-style: disc;">
                 @for (dettaglio of vendita.dettagli; track dettaglio.id) {
                 @if (dettaglio.modello) {
-                <li>{{ dettaglio.modello?.nome }} {{ dettaglio.stampa_is_pezzo_singolo ? '(Pezzo singolo)' : '' }} {{ dettaglio.stampa_is_parziale ? '(Parziale)' : '' }}</li>
+                <li>{{ dettaglio.modello?.nome }} {{ dettaglio.stampa_is_pezzo_singolo ? '(Pezzo singolo)' : '' }} {{
+                  dettaglio.stampa_is_parziale ? '(Parziale)' : '' }}</li>
                 } @else {
-                <li>{{ dettaglio.descrizione }} {{ dettaglio.stampa_is_pezzo_singolo ? '(Pezzo singolo)' : '' }} {{ dettaglio.stampa_is_parziale ? '(Parziale)' : '' }}</li>
+                <li>{{ dettaglio.descrizione }} {{ dettaglio.stampa_is_pezzo_singolo ? '(Pezzo singolo)' : '' }} {{
+                  dettaglio.stampa_is_parziale ? '(Parziale)' : '' }}</li>
                 }
                 }
               </ul>
@@ -226,7 +228,7 @@
         </ng-template>
         <ng-template #expandedrow let-vendita>
           <tr>
-            <td colspan="11">
+            <td colspan="12">
               <div class="my-3">
                 <h3 class="text-lg font-semibold text-gray-800 mb-2">Dettagli</h3>
                 <p-table showGridlines [value]="vendita.dettagli">
@@ -280,6 +282,47 @@
         </ng-template>
       </p-table>
 </div>
+
+<div class="my-3">
+  <h3 class="text-lg font-semibold text-gray-800 mb-2">Basette</h3>
+  <p-table showGridlines [value]="vendita.basette">
+    <ng-template #header>
+      <tr>
+        <th class="text-center">Dimensione</th>
+        <th class="text-center">Quantità</th>
+        <th class="text-center" style="width: 300px;">Stato Stampa</th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-basetta>
+      <tr>
+        <td class="text-center">
+          {{ basetta?.dimensione }}
+        </td>
+        <td class="text-center">{{ basetta?.quantita }}</td>
+        <td class="text-center">
+          <form-input-select vendita-dettaglio-stato-stampa-lookup property="stato_stampa" [filter]="false"
+            [showClear]="false" [(ngModel)]="basetta.stato_stampa"
+            (ngModelChange)="modificaStatoBasetta(basetta)">
+            <ng-template #selectedItem let-item>
+              <vendita-dettaglio-stato class="w-full" [stato_stampa]="basetta.stato_stampa" [isInSelect]="true" />
+            </ng-template>
+            <ng-template #item let-item>
+              <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id" [isInSelect]="true" />
+            </ng-template>
+          </form-input-select>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <td colspan="3" class="text-center py-8">
+        <div class="flex flex-col items-center gap-2">
+          <i class="pi pi-inbox text-4xl text-gray-400"></i>
+          <p class="text-gray-500">Non ci sono basette per questa vendita</p>
+        </div>
+      </td>
+    </ng-template>
+  </p-table>
+</div>
 </td>
 </tr>
 </ng-template>
@@ -303,7 +346,8 @@
 </ng-template>
 </p-card>
 
-<p-confirmDialog #confirmDialogModificaContoBancario [visible]="modificaContoBancarioVisible" [dismissableMask]="true" (onHide)="modificaContoBancarioVisible = false">
+<p-confirmDialog #confirmDialogModificaContoBancario [visible]="modificaContoBancarioVisible" [dismissableMask]="true"
+  (onHide)="modificaContoBancarioVisible = false">
   <ng-template #headless let-message>
     <div class="p-4">
       <div class="flex flex-col items-center gap-2">
@@ -323,12 +367,14 @@
   </ng-template>
 </p-confirmDialog>
 
-<p-confirmDialog #confirmDialogDelete [visible]="deleteDialogVisible" [dismissableMask]="true" (onHide)="deleteDialogVisible = false">
+<p-confirmDialog #confirmDialogDelete [visible]="deleteDialogVisible" [dismissableMask]="true"
+  (onHide)="deleteDialogVisible = false">
   <ng-template #headless let-message>
     <div class="p-4">
       <div class="flex flex-col items-center gap-2">
         <i class="pi pi-exclamation-triangle text-4xl text-red-500"></i>
-        <p class="text-gray-800 text-center">Sei sicuro di voler eliminare la vendita nr."{{ venditaToDelete?.id }}"?</p>
+        <p class="text-gray-800 text-center">Sei sicuro di voler eliminare la vendita nr."{{ venditaToDelete?.id }}"?
+        </p>
       </div>
       <div class="flex items-center gap-2 mt-6">
         <p-button label="Si" styleClass="w-32 p-button-danger" icon="pi pi-exclamation-triangle"

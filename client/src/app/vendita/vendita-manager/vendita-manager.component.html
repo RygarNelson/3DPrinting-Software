@@ -93,10 +93,18 @@
                         <tr>
                             <td>
                                 <div class="flex flex-col items-center gap-2">
-                                    <form-input-select modello-lookup class="w-full" property="modello_id"
-                                        [label]="'Modello'" [listaErrori]="listaErrori" [parent]="'dettagli'"
-                                        [index]="rowIndex" [showAdd]="true" (add)="addModello(rowIndex)"
-                                        [(ngModel)]="dettaglio.modello_id">
+                                    <form-input-select
+                                        modello-lookup
+                                        class="w-full"
+                                        property="modello_id"
+                                        [label]="'Modello'"
+                                        [listaErrori]="listaErrori"
+                                        [parent]="'dettagli'"
+                                        [index]="rowIndex"
+                                        [showAdd]="true"
+                                        (add)="addModello(rowIndex)"
+                                        [(ngModel)]="dettaglio.modello_id"
+                                        (selected)="impostaDettaglioBasetta($event, rowIndex)">
                                         <ng-template #selectedItem let-item>
                                             <modello-tipo class="w-full" [tipo]="item.altriDati.tipo"
                                                 [descrizioneModello]="item.etichetta" [isInSelect]="true" />
@@ -106,31 +114,16 @@
                                                 [descrizioneModello]="item.etichetta" [isInSelect]="true" />
                                         </ng-template>
                                     </form-input-select>
-                                    <form-input-text 
-                                        property="descrizione" 
-                                        label="Descrizione"
-                                        class="w-full"
-                                        [listaErrori]="listaErrori" 
-                                        [parent]="'dettagli'" 
-                                        [index]="rowIndex"
+                                    <form-input-text property="descrizione" label="Descrizione" class="w-full"
+                                        [listaErrori]="listaErrori" [parent]="'dettagli'" [index]="rowIndex"
                                         [(ngModel)]="dettaglio.descrizione" />
-                                    <form-input-checkbox 
-                                        property="stampa_is_pezzo_singolo"
-                                        label="Stampa pezzo singolo"
-                                        class="w-full"
-                                        [listaErrori]="listaErrori"
-                                        [parent]="'dettagli'" 
-                                        [index]="rowIndex" 
-                                        [(ngModel)]="dettaglio.stampa_is_pezzo_singolo"
+                                    <form-input-checkbox property="stampa_is_pezzo_singolo" label="Stampa pezzo singolo"
+                                        class="w-full" [listaErrori]="listaErrori" [parent]="'dettagli'"
+                                        [index]="rowIndex" [(ngModel)]="dettaglio.stampa_is_pezzo_singolo"
                                         (ngModelChange)="checkDettaglio(dettaglio)" />
-                                    <form-input-checkbox 
-                                        property="stampa_is_parziale" 
-                                        label="Stampa parziale" 
-                                        class="w-full"
-                                        [listaErrori]="listaErrori"
-                                        [parent]="'dettagli'"
-                                        [index]="rowIndex"
-                                        [(ngModel)]="dettaglio.stampa_is_parziale"
+                                    <form-input-checkbox property="stampa_is_parziale" label="Stampa parziale"
+                                        class="w-full" [listaErrori]="listaErrori" [parent]="'dettagli'"
+                                        [index]="rowIndex" [(ngModel)]="dettaglio.stampa_is_parziale"
                                         (ngModelChange)="checkDettaglio(dettaglio)" />
                                 </div>
                             </td>
@@ -141,19 +134,14 @@
                             </td>
                             <td>
                                 <div class="flex flex-col items-center gap-2">
-                                    <form-input-number 
-                                        property="quantita" 
-                                        label="Quantità" 
-                                        [min]="0" 
-                                        [step]="1" 
-                                        [mode]="'decimal'"
-                                        [minFractionDigits]="4" 
-                                        [maxFractionDigits]="4" 
-                                        [listaErrori]="listaErrori"
-                                        [parent]="'dettagli'" [index]="rowIndex" [(ngModel)]="dettaglio.quantita" />
-                                    
+                                    <form-input-number property="quantita" label="Quantità" [min]="0" [step]="1"
+                                        [mode]="'decimal'" [minFractionDigits]="4" [maxFractionDigits]="4"
+                                        [listaErrori]="listaErrori" [parent]="'dettagli'" [index]="rowIndex"
+                                        [(ngModel)]="dettaglio.quantita"
+                                        (ngModelChange)="ricalcolaBasette()" />
+
                                 </div>
-                                
+
                             </td>
                             <td>
                                 <form-input-number property="prezzo" [min]="0" [step]="1" [mode]="'decimal'"
@@ -179,6 +167,54 @@
                                 <p-button icon="pi pi-trash" severity="danger" size="small" pTooltip="Elimina dettaglio"
                                     tooltipPosition="top"
                                     (click)="confirmDeleteDettaglio($event, dettaglio, rowIndex)" />
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </ng-template>
+        </p-card>
+    </div>
+
+    <div class="mt-4">
+        <p-card>
+            <ng-template pTemplate="header">
+                <div class="flex items-center flex-wrap header-title">
+                    <h2 class="text-xl font-semibold text-gray-800">Basette</h2>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="content">
+                <p-table [value]="vendita.basette" [paginator]="true" [rows]="10"
+                    [totalRecords]="vendita.basette.length">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>Dimensione</th>
+                            <th>Quantità</th>
+                            <th>Stato Stampa</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-basetta let-rowIndex="rowIndex">
+                        <tr>
+                            <td>
+                                <div class="flex flex-col items-center gap-2">
+                                    {{ basetta?.dimensione }}
+                                </div>
+                            </td>
+                            <td>
+                                {{ basetta?.quantita }}
+                            </td>
+                            <td>
+                                <form-input-select vendita-dettaglio-stato-stampa-lookup property="stato_stampa"
+                                    [filter]="false" [showClear]="false" [listaErrori]="listaErrori"
+                                    [parent]="'basette'" [index]="rowIndex" [(ngModel)]="basetta.stato_stampa">
+                                    <ng-template #selectedItem let-item>
+                                        <vendita-dettaglio-stato class="w-full" [stato_stampa]="basetta.stato_stampa"
+                                            [isInSelect]="true" />
+                                    </ng-template>
+                                    <ng-template #item let-item>
+                                        <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id"
+                                            [isInSelect]="true" />
+                                    </ng-template>
+                                </form-input-select>
                             </td>
                         </tr>
                     </ng-template>

@@ -2,6 +2,7 @@
 
 import { col, fn, Op } from 'sequelize';
 import { sequelize } from '../config/database.js';
+import Basetta from '../models/basetta.model.js';
 import Modello from '../models/modello.model.js';
 import Spesa from '../models/spesa.model.js';
 import Vendita from '../models/vendita.model.js';
@@ -12,7 +13,8 @@ const venditaRepository = {
         return Vendita.findAll({
             include: [
                 { association: 'dettagli', where: { deletedAt: null }, required: false },
-                { association: 'cliente', where: { deletedAt: null }, required: false }
+                { association: 'cliente', where: { deletedAt: null }, required: false },
+                { association: 'basette', where: { deletedAt: null }, required: false }
             ]
         });
     },
@@ -36,7 +38,7 @@ const venditaRepository = {
     insertOne: async function(req) {
         const transaction = await sequelize.transaction();
         try {
-            const { data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, dettagli, conto_bancario_id } = req.body;
+            const { data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, dettagli, basette, conto_bancario_id } = req.body;
             const vendita = await Vendita.create({
                 data_vendita,
                 data_scadenza,
@@ -59,13 +61,28 @@ const venditaRepository = {
                         prezzo: dettaglio.prezzo,
                         descrizione: dettaglio.descrizione,
                         stampa_is_pezzo_singolo: dettaglio.stampa_is_pezzo_singolo,
-                        stampa_is_parziale: dettaglio.stampa_is_parziale
+                        stampa_is_parziale: dettaglio.stampa_is_parziale,
+                        basetta_dimensione: dettaglio.basetta_dimensione,
+                        basetta_quantita: dettaglio.basetta_quantita
                     }, { transaction: transaction });
                     if (dettaglio.prezzo) {
                         totale += parseFloat(dettaglio.prezzo);
                     }
                 }
             }
+
+            // Create basette
+            if (Array.isArray(basette)) {
+                for (const basetta of basette) {
+                    await Basetta.create({
+                        vendita_id: vendita.id,
+                        dimensione: basetta.dimensione,
+                        quantita: basetta.quantita,
+                        stato_stampa: basetta.stato_stampa
+                    }, { transaction: transaction });
+                }
+            }
+
             await vendita.update({ totale_vendita: totale }, { transaction: transaction });
 
             // For each dettaglio, if the modello is not null and is vendibile on vinted, set is in vendita to false
@@ -85,8 +102,14 @@ const venditaRepository = {
     updateOne: async function(req) {
         const transaction = await sequelize.transaction();
         try {
-            const { id, data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, dettagli, conto_bancario_id } = req.body;
-            const vendita = await Vendita.findByPk(id, { include: [{ model: VenditaDettaglio, as: 'dettagli' }], transaction: transaction });
+            const { id, data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, dettagli, basette, conto_bancario_id } = req.body;
+            const vendita = await Vendita.findByPk(id, { 
+                include: [
+                    { model: VenditaDettaglio, as: 'dettagli' },
+                    { model: Basetta, as: 'basette' }
+                ], 
+                transaction: transaction 
+            });
             if (!vendita) throw new Error('Vendita non trovata');
             await vendita.update({ data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, conto_bancario_id }, { transaction: transaction });
 
@@ -112,7 +135,9 @@ const venditaRepository = {
                         prezzo: dettaglio.prezzo, 
                         descrizione: dettaglio.descrizione,
                         stampa_is_pezzo_singolo: dettaglio.stampa_is_pezzo_singolo,
-                        stampa_is_parziale: dettaglio.stampa_is_parziale
+                        stampa_is_parziale: dettaglio.stampa_is_parziale,
+                        basetta_dimensione: dettaglio.basetta_dimensione,
+                        basetta_quantita: dettaglio.basetta_quantita
                     }, { transaction: transaction });
                     dettagliMap.delete(existingDettaglio.id);
                 } else {
@@ -133,7 +158,9 @@ const venditaRepository = {
                             prezzo: dettaglio.prezzo,
                             descrizione: dettaglio.descrizione,
                             stampa_is_pezzo_singolo: dettaglio.stampa_is_pezzo_singolo,
-                            stampa_is_parziale: dettaglio.stampa_is_parziale
+                            stampa_is_parziale: dettaglio.stampa_is_parziale,
+                            basetta_dimensione: dettaglio.basetta_dimensione,
+                            basetta_quantita: dettaglio.basetta_quantita
                         }, { transaction: transaction });
                     }
                     if (dettaglio.prezzo) {
@@ -141,6 +168,45 @@ const venditaRepository = {
                     }
                 }
             }
+
+            // Handle basette
+            const existingBasette = vendita.basette || [];
+            const basetteMap = new Map();
+            if (Array.isArray(basette)) {
+                for (const basetta of basette) {
+                    if (basetta.id) {
+                        basetteMap.set(basetta.id, basetta);
+                    }
+                }
+            }
+            // Update or delete existing basette
+            for (const existingBasetta of existingBasette) {
+                if (basetteMap.has(existingBasetta.id)) {
+                    const basetta = basetteMap.get(existingBasetta.id);
+                    await existingBasetta.update({ 
+                        dimensione: basetta.dimensione, 
+                        quantita: basetta.quantita, 
+                        stato_stampa: basetta.stato_stampa
+                    }, { transaction: transaction });
+                    basetteMap.delete(existingBasetta.id);
+                } else {
+                    await existingBasetta.destroy({ transaction: transaction });
+                }
+            }
+            // Insert new basette
+            if (Array.isArray(basette)) {
+                for (const basetta of basette) {
+                    if (!basetta.id) {
+                        await Basetta.create({
+                            vendita_id: vendita.id,
+                            dimensione: basetta.dimensione,
+                            quantita: basetta.quantita,
+                            stato_stampa: basetta.stato_stampa
+                        }, { transaction: transaction });
+                    }
+                }
+            }
+
             await vendita.update({ totale_vendita: totale }, { transaction: transaction });
 
             // For each dettaglio, if the modello is not null and is vendibile on vinted, set is in vendita to false
@@ -163,6 +229,7 @@ const venditaRepository = {
         const transaction = await sequelize.transaction();
         try {
             await VenditaDettaglio.destroy({ where: { vendita_id: id }, transaction: transaction });
+            await Basetta.destroy({ where: { vendita_id: id }, transaction: transaction });
             await Vendita.destroy({ where: { id }, transaction: transaction });
             await transaction.commit();
         } catch (error) {
@@ -185,9 +252,25 @@ const venditaRepository = {
         return dettaglio;
     },
 
+    modificaStatoBasetta: async function(id, stato_avanzamento) {
+        const basetta = await Basetta.findByPk(id);
+
+        if (!basetta) {
+            throw new Error('Basetta non trovata');
+        }
+        if (stato_avanzamento == null) {
+            throw new Error('Stato di avanzamento non specificato');
+        }
+
+        await basetta.update({ stato_stampa: stato_avanzamento });
+
+        return basetta;
+    },
+
     modificaStatoVendita: async function(id, stato_avanzamento) {
         const vendita = await Vendita.findByPk(id);
         const dettagli = await VenditaDettaglio.findAll({ where: { vendita_id: id } });
+        const basette = await Basetta.findAll({ where: { vendita_id: id } });
 
         const isStatoSpedizioneDaSpedire = vendita.stato_spedizione == 0;
 
@@ -204,6 +287,11 @@ const venditaRepository = {
             for (const dettaglio of dettagli) {
                 if (dettaglio.stato_stampa == 0) {
                     await dettaglio.update({ stato_stampa: 4 });
+                }
+            }
+            for (const basetta of basette) {
+                if (basetta.stato_stampa == 0) {
+                    await basetta.update({ stato_stampa: 4 });
                 }
             }
         }

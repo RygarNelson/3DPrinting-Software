@@ -112,6 +112,14 @@ const updateDatabase = async (dbVersion, DatabaseVersion, CURRENT_DATABASE_VERSI
                     await updateDatabaseToVersion11();
                     break;
                 }
+                case 11: {
+                    await updateDatabaseToVersion12();
+                    break;
+                }
+                case 12: {
+                    await updateDatabaseToVersion13();
+                    break;
+                }
                 default: {
                     console.log('Update to version', (version + 1), 'not implemented');
                     process.exit(1);
@@ -248,6 +256,35 @@ const updateDatabaseToVersion11 = async () => {
         await sequelize.query('ALTER TABLE T_VENDITE_DETTAGLI ADD COLUMN stampa_is_parziale BOOLEAN NOT NULL DEFAULT FALSE');
     } catch (error) {
         console.log('Cannot update database to version 11');
+    }
+}
+
+const updateDatabaseToVersion12 = async () => {
+    try {
+        console.log('Updating database to version 12');
+
+        // Create table T_BASETTE
+        await sequelize.query('CREATE TABLE T_BASETTE (id INTEGER PRIMARY KEY AUTOINCREMENT, vendita_id INTEGER NOT NULL, dimensione VARCHAR(500) NULL, quantita INTEGER NULL, stato_stampa INTEGER NULL, createdAt DATETIME NOT NULL, updatedAt DATETIME NOT NULL, deletedAt DATETIME NULL)');
+
+        // Note: SQLite doesn't support adding foreign key constraints via ALTER TABLE
+        // The foreign key relationship will be handled by Sequelize model associations
+        // and enforced at the application level
+        console.log('Foreign key constraint will be handled by Sequelize model associations');
+    } catch (error) {
+        console.log('Cannot update database to version 12');
+        console.error(error);
+        process.exit(1);
+    }
+}
+
+const updateDatabaseToVersion13 = async () => {
+    try {
+        console.log('Updating database to version 13');
+
+        await sequelize.query('ALTER TABLE T_VENDITE_DETTAGLI ADD COLUMN basetta_dimensione VARCHAR(500) NULL');
+        await sequelize.query('ALTER TABLE T_VENDITE_DETTAGLI ADD COLUMN basetta_quantita INTEGER NULL');
+    } catch (error) {
+        console.log('Cannot update database to version 13');
     }
 }
 

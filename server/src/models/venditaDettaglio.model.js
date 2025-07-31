@@ -60,7 +60,15 @@ const VenditaDettaglio = sequelize.define('VenditaDettaglio', {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
-    }
+    },
+    basetta_dimensione: {
+        type: DataTypes.STRING(500),
+        allowNull: true
+    },
+    basetta_quantita: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
 }, {
     tableName: 'T_VENDITE_DETTAGLI',
     indexes: [
