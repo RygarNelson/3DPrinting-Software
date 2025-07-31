@@ -32,6 +32,12 @@ form-input-text {
   }
 }
 
+form-input-checkbox {
+  .input-error .p-checkbox-box {
+    border: 1px solid $error-color !important;
+  }
+}
+
 .message-error {
     color: $error-color;
 }
