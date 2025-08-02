@@ -103,13 +103,24 @@ import { AuthService } from 'src/services/auth.service';
                         />
                     </p-iconfield>
                     
-                    <button
-                        pButton
-                        pRipple
-                        label="Log In"
-                        class="w-full"
-                        (click)="login()"
-                    ></button>
+                    @if (loading) {
+                        <button
+                            pButton
+                            pRipple
+                            label="Log In"
+                            class="w-full"
+                            icon="pi pi-spin pi-spinner"
+                            [disabled]="true"></button>
+                    }
+                    @else {
+                        <button
+                            pButton
+                            pRipple
+                            label="Log In"
+                            class="w-full"
+                            (click)="login()"></button>
+                    }
+                    
                 </div>
             </div>
         </div>
@@ -127,9 +138,11 @@ export class Login {
     messageService = inject(MessageService);
     router = inject(Router);
 
+    loading: boolean = false;
     isDarkTheme = computed(() => this.LayoutService.isDarkTheme());
 
     login(): void {
+        this.loading = true;
 		this.authService.login(this.email, this.password).subscribe({
 			next: (result) => {
 				this.authService.registerLocalStorage(result.data);
@@ -139,6 +152,7 @@ export class Login {
                     life: 3000
 				}), 100);
 				this.router.navigate(['/']);
+                this.loading = false;
 			},
 			error: (error) => {
 				this.messageService.add({
@@ -148,6 +162,7 @@ export class Login {
                     life: undefined,
                     sticky: true
 				});
+                this.loading = false;
 			}
 		});
 	}
