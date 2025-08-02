@@ -443,7 +443,7 @@ router.post(
             const include = [includeCliente, includeDettagli, includeContoBancario, includeBasette];
 
             // Default order: by rank, then by id
-            let order = [[literal('rank'), 'ASC'], ['id', 'ASC']];
+            let order = [[literal('rank'), 'ASC'], ['id', 'DESC']];
             if (
                 req.body.order && 
                 req.body.order.column && 
