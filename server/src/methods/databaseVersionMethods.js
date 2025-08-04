@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
  * @param {number} dbVersion - The version found in the database
  * @returns {boolean} - True if compatible, false if incompatible
  */
-export const CURRENT_DATABASE_VERSION = 14;
+export const CURRENT_DATABASE_VERSION = 15;
 
 export const checkDatabaseVersion = (dbVersion) => {
     console.log(`Database version: ${dbVersion}, Server expects version: ${CURRENT_DATABASE_VERSION}`);

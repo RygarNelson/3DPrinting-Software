@@ -124,6 +124,10 @@ const updateDatabase = async (dbVersion, DatabaseVersion, CURRENT_DATABASE_VERSI
                     await updateDatabaseToVersion14();
                     break;
                 }
+                case 14: {
+                    await updateDatabaseToVersion15();
+                    break;
+                }
                 default: {
                     console.log('Update to version', (version + 1), 'not implemented');
                     process.exit(1);
@@ -321,6 +325,16 @@ const updateDatabaseToVersion14 = async () => {
         console.log('Cannot update database to version 14');
         console.error(error);
         process.exit(1);
+    }
+}
+
+const updateDatabaseToVersion15 = async () => {
+    try {
+        console.log('Updating database to version 15');
+
+        await sequelize.query('ALTER TABLE T_LOGS ADD COLUMN group_id INTEGER NULL');
+    } catch (error) {
+        console.log('Cannot update database to version 15');
     }
 }
 

@@ -8,7 +8,8 @@ class LoggingService {
             user_id: null,
             ip_address: null,
             user_agent: null,
-            session_id: null
+            session_id: null,
+            group_id: null
         };
     }
 
@@ -18,6 +19,8 @@ class LoggingService {
      */
     setContext(context) {
         this.currentContext = { ...this.currentContext, ...context };
+        // Always set the group id as the current timestamp in milliseconds
+        this.currentContext.group_id = Date.now();
     }
 
     /**
@@ -28,7 +31,8 @@ class LoggingService {
             user_id: null,
             ip_address: null,
             user_agent: null,
-            session_id: null
+            session_id: null,
+            group_id: null
         };
     }
 
@@ -65,7 +69,8 @@ class LoggingService {
                 ip_address: this.currentContext.ip_address,
                 user_agent: this.currentContext.user_agent,
                 session_id: this.currentContext.session_id,
-                additional_data: additional_data ? JSON.stringify(additional_data) : null
+                additional_data: additional_data ? JSON.stringify(additional_data) : null,
+                group_id: this.currentContext.group_id
             };
 
             return await Log.create(logData, { transaction: transaction });

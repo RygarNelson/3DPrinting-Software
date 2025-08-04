@@ -23,6 +23,7 @@ class LogRepository extends BaseRepository {
             user_id,
             date_from,
             date_to,
+            group_id,
             limit = 100,
             offset = 0,
             order = [['createdAt', 'DESC']]
@@ -40,6 +41,10 @@ class LogRepository extends BaseRepository {
 
         if (filters.operation) {
             whereClause.operation = filters.operation;
+        }
+
+        if (filters.group_id) {
+            whereClause.group_id = filters.group_id;
         }
 
         if (filters.user_id) {

@@ -73,6 +73,11 @@ const Log = sequelize.define('Log', {
         type: DataTypes.TEXT,
         allowNull: true,
         comment: 'Additional context data as JSON'
+    },
+    group_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        comment: 'ID that groups the logs together'
     }
 }, {
     tableName: "T_LOGS",
