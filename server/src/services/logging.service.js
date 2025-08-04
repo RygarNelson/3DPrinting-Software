@@ -201,8 +201,18 @@ class LoggingService {
             const oldValue = old_record?.[field];
             const newValue = new_record?.[field];
 
+            // Check if both values are dates
+            if (oldValue instanceof Date && newValue instanceof Date) {
+                if (oldValue.getTime() != newValue.getTime()) {
+                    changedFields.push({
+                        name: field,
+                        old_value: oldValue,
+                        new_value: newValue
+                    });
+                }
+            }
             // Compare values (handling null/undefined)
-            if (oldValue !== newValue) {
+            else if (oldValue != newValue) {
                 changedFields.push({
                     name: field,
                     old_value: oldValue,
