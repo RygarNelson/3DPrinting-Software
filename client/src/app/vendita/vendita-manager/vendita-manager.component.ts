@@ -378,6 +378,7 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
 
   deleteDettaglio(dettaglio: VenditaDettaglioManagerModel, index: number): void {
     this.vendita.dettagli.splice(index, 1);
+    this.ricalcolaBasette();
   }
 
   checkDettaglio(dettaglio: VenditaDettaglioManagerModel): void {
@@ -447,6 +448,8 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
           }
         });
       }
+    } else {
+      this.vendita.basette = [];
     }
   }
 
