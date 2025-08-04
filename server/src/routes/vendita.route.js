@@ -4,6 +4,7 @@ import express from 'express';
 import { validationResult } from 'express-validator';
 import { Op, literal } from 'sequelize';
 import { authenticate } from '../middleware/authenticate.js';
+import { clearLoggingContext, setLoggingContext } from '../middleware/loggingContext.js';
 import ContoBancarioRepository from '../repositories/conto-bancario.repository.js';
 import VenditaRepository from '../repositories/vendita.repository.js';
 import validationSchema from '../schemas/vendita.schema.js';
@@ -12,6 +13,8 @@ import asyncHandler from '../utils/asyncHandler.js';
 const router = express.Router();
 
 router.use(authenticate);
+router.use(setLoggingContext);
+router.use(clearLoggingContext);
 
 router.get(
     '/vendita/:id',
