@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { DialogService } from 'primeng/dynamicdialog';
+import { DialogService, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
@@ -13,6 +13,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import { Subscription } from 'rxjs';
+import { AuditLogComponent } from 'src/shared/audit-log/audit-log.component';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { ClienteListingModel, ClienteListingResponse } from '../../../models/cliente/cliente-listing';
 import { ClienteListingFiltri } from '../../../models/cliente/cliente-listing-filtri';
@@ -123,6 +124,27 @@ export class ClienteListingComponent implements OnDestroy {
 
   editCliente(cliente: ClienteListingModel): void {
     this.router.navigate(['/cliente/manager', cliente.id]);
+  }
+
+  viewAuditLog(cliente: ClienteListingModel): void {
+    let config: DynamicDialogConfig = {
+      width: '90%',
+      height: '80%',
+      modal: true,
+      dismissableMask: true,
+      closable: true,
+      showHeader: false,
+      contentStyle: {
+        'height': '100%',
+        'width': '100%',
+        'padding': '0px'
+      },
+      data: {
+        tableName: 'T_CLIENTI',
+        recordId: cliente.id
+      }
+    };
+    this.dialogService.open(AuditLogComponent, config);
   }
 
   confirmDelete(event: Event, cliente: ClienteListingModel): void {

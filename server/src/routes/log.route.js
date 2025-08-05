@@ -11,10 +11,10 @@ const router = express.Router();
 router.use(authenticate);
 
 /**
- * GET /api/logs
+ * POST /api/logs
  * Get logs with filtering and pagination
  */
-router.get('/', asyncHandler(async (req, res) => {
+router.post('/', asyncHandler(async (req, res) => {
     const {
         table_name,
         record_id,
@@ -25,7 +25,8 @@ router.get('/', asyncHandler(async (req, res) => {
         limit = 100,
         offset = 0,
         order = 'DESC'
-    } = req.query;
+    } = req.body;
+    console.log(req.body);
 
     const filters = {
         table_name,

@@ -54,6 +54,9 @@
                 </p-button>
                 }
                 @else {
+                <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(cliente)"
+                  pTooltip="Visualizza log di audit" tooltipPosition="top">
+                </p-button>
                 <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editCliente(cliente)"
                   pTooltip="Modifica cliente" tooltipPosition="top">
                 </p-button>

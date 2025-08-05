@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { DialogService } from 'primeng/dynamicdialog';
+import { DialogService, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
@@ -13,6 +13,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import { Subscription } from 'rxjs';
+import { AuditLogComponent } from 'src/shared/audit-log/audit-log.component';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { StampanteListingModel, StampanteListingResponse } from '../../../models/stampante/stampante-listing';
 import { StampanteListingFiltri } from '../../../models/stampante/stampante-listing-filtri';
@@ -127,10 +128,31 @@ export class StampanteListingComponent implements OnDestroy {
   }
 
   editStampante(stampante: StampanteListingModel): void {
-    this.router.navigate(['/stampante/manager', stampante.id]);
-  }
+  this.router.navigate(['/stampante/manager', stampante.id]);
+}
 
-  confirmDelete(event: Event, stampante: StampanteListingModel): void {
+viewAuditLog(stampante: StampanteListingModel): void {
+  let config: DynamicDialogConfig = {
+    width: '90%',
+    height: '80%',
+    modal: true,  
+    dismissableMask: true,
+    closable: true,
+    showHeader: false,
+    contentStyle: {
+      'height': '100%',
+      'width': '100%',
+      'padding': '0px'
+    },
+    data: {
+      tableName: 'T_STAMPANTI',
+      recordId: stampante.id
+    }
+  };
+  this.dialogService.open(AuditLogComponent, config);
+}
+
+confirmDelete(event: Event, stampante: StampanteListingModel): void {
     this.confirmationService.confirm({
       target: event.target as EventTarget,
       message: `Sei sicuro di voler eliminare la stampante "${stampante.nome}"?`,

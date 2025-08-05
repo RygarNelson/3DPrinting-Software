@@ -63,6 +63,9 @@
                 </p-button>
                 }
                 @else {
+                <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(conto_bancario)"
+                  pTooltip="Visualizza log di audit" tooltipPosition="top">
+                </p-button>
                 <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editContoBancario(conto_bancario)"
                   pTooltip="Modifica conto bancario" tooltipPosition="top">
                 </p-button>

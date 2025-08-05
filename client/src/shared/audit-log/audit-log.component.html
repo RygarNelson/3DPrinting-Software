@@ -1,0 +1,114 @@
+<p-card>
+    <ng-template pTemplate="header">
+      <div class="flex justify-between items-center pt-6">
+        <h2 class="text-xl font-semibold text-gray-800 header-title">
+          Log di Audit - {{ config.data?.tableName || 'Record' }} #{{ config.data?.recordId }}
+        </h2>
+        <div class="header-title margin-left-auto">
+            <p-button
+                class="" 
+                icon="pi pi-times" 
+                severity="secondary"
+                (click)="close()"
+                pTooltip="Chiudi"
+                tooltipPosition="left">
+                </p-button>
+        </div>
+      </div>
+    </ng-template>
+    
+    <ng-template pTemplate="content">
+      <p-table 
+        #dataTable 
+        [value]="logs" 
+        [loading]="loading"
+        responsiveLayout="scroll">
+        
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Data/Ora</th>
+            <th>Operazione</th>
+            <th>Client</th>
+            <th>Dettagli</th>
+          </tr>
+        </ng-template>
+        
+        <ng-template pTemplate="body" let-log>
+          <tr>
+            <td>
+              <div class="text-sm">
+                {{ log.createdAt | date:'dd/MM/yyyy' }}
+                <br>
+                <span class="text-gray-500">{{ log.createdAt | date:'HH:mm:ss' }}</span>
+              </div>
+            </td>
+            <td>
+              <p-tag 
+                [value]="getOperationLabel(log.operation)" 
+                [severity]="getOperationSeverity(log.operation)"
+                [style]="{'font-size': '0.75rem'}">
+              </p-tag>
+            </td>
+            <td>
+              <div class="text-sm">
+                <span class="font-medium">{{ log.additional_data | json }}</span>
+                <br>
+                <span class="text-gray-500">IP: {{ log.ip_address }}</span>
+                <br>
+                <span class="text-gray-500">User agent: {{ log.user_agent }}</span>
+              </div>
+            </td>
+            <td>
+              <div class="text-sm max-w-xs">
+                @if (log.old_value || log.new_value) {
+                  <div class="space-y-1">
+                    @if (log.old_value) {
+                      <div class="text-red-600">
+                        <strong>Vecchi valori:</strong>
+                        <pre class="text-xs mt-1 bg-red-50 p-2 rounded">{{ log.old_value | json }}</pre>
+                      </div>
+                    }
+                    @if (log.new_value) {
+                      <div class="text-green-600">
+                        <strong>Nuovi valori:</strong>
+                        <pre class="text-xs mt-1 bg-green-50 p-2 rounded">{{ log.new_value | json }}</pre>
+                      </div>
+                    }
+                  </div>
+                } @else if (log.old_record) {
+                    <div class="text-red-600">
+                        <strong>Vecchio record:</strong>
+                        <pre class="text-xs mt-1 bg-red-50 p-2 rounded">{{ log.old_record | json }}</pre>
+                    </div>
+                } @else if (log.new_record) {
+                    <div class="text-green-600">
+                        <strong>Nuovo record:</strong>
+                        <pre class="text-xs mt-1 bg-green-50 p-2 rounded">{{ log.new_record | json }}</pre>
+                    </div>
+                }
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+        
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="5" class="text-center py-8">
+              @if (loading) {
+                <div class="space-y-2">
+                  <p-skeleton height="20px" width="100%" />
+                  <p-skeleton height="20px" width="80%" />
+                  <p-skeleton height="20px" width="60%" />
+                </div>
+              } @else {
+                <div class="flex flex-col items-center gap-2">
+                  <i class="pi pi-history text-4xl text-gray-400"></i>
+                  <p class="text-gray-500">Nessun log di audit trovato</p>
+                </div>
+              }
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </ng-template>
+  </p-card>
