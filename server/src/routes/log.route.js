@@ -26,7 +26,6 @@ router.post('/', asyncHandler(async (req, res) => {
         offset = 0,
         order = 'DESC'
     } = req.body;
-    console.log(req.body);
 
     const filters = {
         table_name,
