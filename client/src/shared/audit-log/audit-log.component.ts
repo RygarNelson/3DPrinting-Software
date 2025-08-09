@@ -10,6 +10,16 @@ import { TooltipModule } from 'primeng/tooltip';
 import { Subscription } from 'rxjs';
 import { AuditLog, LogService } from '../../services/log.service';
 import { DialogErrorComponent } from '../dialog-error/dialog-error.component';
+import { GroupClientInfoPipe } from '../pipes/group-client-info.pipe';
+import { GroupNewRecordPipe } from '../pipes/group-new-record.pipe';
+import { GroupNewValuesPipe } from '../pipes/group-new-values.pipe';
+import { GroupOldRecordPipe } from '../pipes/group-old-record.pipe';
+import { GroupOldValuesPipe } from '../pipes/group-old-values.pipe';
+import { GroupOperationPipe } from '../pipes/group-operation.pipe';
+import { GroupTimestampPipe } from '../pipes/group-timestamp.pipe';
+import { ObjectKeysLengthPipe } from '../pipes/object-keys-length.pipe';
+import { OperationLabelPipe } from '../pipes/operation-label.pipe';
+import { OperationSeverityPipe } from '../pipes/operation-severity.pipe';
 import { PrettyJsonPipe } from '../pipes/pretty-json.pipe';
 
 @Component({
@@ -23,7 +33,17 @@ import { PrettyJsonPipe } from '../pipes/pretty-json.pipe';
     TagModule,
     TooltipModule,
     SkeletonModule,
-    PrettyJsonPipe
+    PrettyJsonPipe,
+    GroupTimestampPipe,
+    GroupOperationPipe,
+    GroupClientInfoPipe,
+    GroupOldValuesPipe,
+    GroupNewValuesPipe,
+    GroupOldRecordPipe,
+    GroupNewRecordPipe,
+    ObjectKeysLengthPipe,
+    OperationLabelPipe,
+    OperationSeverityPipe
   ],
   templateUrl: './audit-log.component.html',
   styleUrl: './audit-log.component.scss',
@@ -79,28 +99,6 @@ export class AuditLogComponent implements OnInit, OnDestroy {
       });
   }
 
-  getOperationLabel(operation: string): string {
-    const labels: { [key: string]: string } = {
-      'INSERT': 'Inserimento',
-      'UPDATE': 'Modifica',
-      'DELETE': 'Eliminazione',
-      'SOFT_DELETE': 'Soft Delete',
-      'RESTORE': 'Ripristino'
-    };
-    return labels[operation] || operation;
-  }
-
-  getOperationSeverity(operation: string): string {
-    const severities: { [key: string]: string } = {
-      'INSERT': 'success',
-      'UPDATE': 'info',
-      'DELETE': 'danger',
-      'SOFT_DELETE': 'danger',
-      'RESTORE': 'secondary'
-    };
-    return severities[operation] || 'info';
-  }
-
   private groupLogsByGroupId(): void {
     this.groupedLogs = {};
     
@@ -127,73 +125,6 @@ export class AuditLogComponent implements OnInit, OnDestroy {
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       );
     });
-  }
-
-  getGroupOperationSummary(logs: AuditLog[]): string {
-    const operations = logs.map(log => this.getOperationLabel(log.operation));
-    const uniqueOperations = [...new Set(operations)];
-    return uniqueOperations.join(', ');
-  }
-
-  getGroupTimestamp(logs: AuditLog[]): string {
-    // Return the timestamp of the first log in the group (since they're sorted)
-    return logs[0]?.createdAt || '';
-  }
-
-  getGroupOperation(logs: AuditLog[]): AuditLog {
-    // Return the first log to get shared operation info
-    return logs[0];
-  }
-
-  getGroupClientInfo(logs: AuditLog[]): { ip_address?: string; user_agent?: string; additional_data?: any } {
-    // Return shared client info from the first log
-    const firstLog = logs[0];
-    return {
-      ip_address: firstLog?.ip_address,
-      user_agent: firstLog?.user_agent,
-      additional_data: firstLog?.additional_data
-    };
-  }
-
-  getGroupOldValues(logs: AuditLog[]): any {
-    // Aggregate all old values from the group into a single object
-    const oldValues: any = {};
-    logs.forEach(log => {
-      if (log.old_value !== undefined && log.old_value !== null) {
-        const fieldName = log.field_name || 'value';
-        oldValues[fieldName] = log.old_value;
-      }
-    });
-    return Object.keys(oldValues).length > 0 ? oldValues : null;
-  }
-
-  getGroupNewValues(logs: AuditLog[]): any {
-    // Aggregate all new values from the group into a single object
-    const newValues: any = {};
-    logs.forEach(log => {
-      if (log.new_value !== undefined && log.new_value !== null) {
-        const fieldName = log.field_name || 'value';
-        newValues[fieldName] = log.new_value;
-      }
-    });
-    return Object.keys(newValues).length > 0 ? newValues : null;
-  }
-
-  getGroupOldRecord(logs: AuditLog[]): any {
-    // Return the old record if any log has it
-    const logWithOldRecord = logs.find(log => log.old_record);
-    return logWithOldRecord?.old_record || null;
-  }
-
-  getGroupNewRecord(logs: AuditLog[]): any {
-    // Return the new record if any log has it
-    const logWithNewRecord = logs.find(log => log.new_record);
-    return logWithNewRecord?.new_record || null;
-  }
-
-  getObjectKeysLength(obj: any): number {
-    // Helper method to get the number of keys in an object
-    return obj ? Object.keys(obj).length : 0;
   }
 
   close(): void {
