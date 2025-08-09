@@ -169,6 +169,20 @@
       
       .consolidated-changes {
         // Apply change item styling for consolidated view
+        .additional-data {
+            background: linear-gradient(
+                135deg,
+                #dbeafe 0%,
+                #bfdbfe 100%);
+            border: 1px solid #93c5fd;
+            
+            &.json-container {
+                //background: rgba(130, 240, 255, 0.8);
+                border-left: 4px solid #007bff;
+                height: 100%;
+            }
+        }
+
         .change-item {
           border-radius: 8px;
           border: 1px solid transparent;
@@ -195,6 +209,18 @@
             .json-container {
               background: rgba(240, 253, 244, 0.8);
               border-left: 4px solid #059669;
+              height: 100%;
+            }
+          }
+          
+          &.additional-data {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-color: #93c5fd;
+            border-width: 2px;
+            
+            .json-container {
+              background: rgba(239, 246, 255, 0.8);
+              border-left: 4px solid #3b82f6;
               height: 100%;
             }
           }
