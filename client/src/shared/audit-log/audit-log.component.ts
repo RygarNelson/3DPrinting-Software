@@ -53,6 +53,7 @@ export class AuditLogComponent implements OnInit, OnDestroy {
   logs: AuditLog[] = [];
   groupedLogs: { [key: number]: AuditLog[] } = {};
   groupedLogKeys: number[] = [];
+  collapsedGroups: { [key: number]: boolean } = {};
   loading: boolean = false;
   private subscription?: Subscription;
 
@@ -124,6 +125,35 @@ export class AuditLogComponent implements OnInit, OnDestroy {
       this.groupedLogs[Number(groupId)].sort((a, b) => 
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       );
+    });
+    
+    // Initialize all groups as collapsed
+    this.initializeCollapsedState();
+  }
+
+  private initializeCollapsedState(): void {
+    this.groupedLogKeys.forEach(groupId => {
+      this.collapsedGroups[groupId] = true; // Start all groups collapsed
+    });
+  }
+
+  toggleGroup(groupId: number): void {
+    this.collapsedGroups[groupId] = !this.collapsedGroups[groupId];
+  }
+
+  isGroupCollapsed(groupId: number): boolean {
+    return this.collapsedGroups[groupId] ?? true;
+  }
+
+  expandAllGroups(): void {
+    this.groupedLogKeys.forEach(groupId => {
+      this.collapsedGroups[groupId] = false;
+    });
+  }
+
+  collapseAllGroups(): void {
+    this.groupedLogKeys.forEach(groupId => {
+      this.collapsedGroups[groupId] = true;
     });
   }
 

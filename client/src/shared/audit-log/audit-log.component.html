@@ -5,14 +5,31 @@
           Log di Audit - {{ config.data?.tableName || 'Record' }} #{{ config.data?.objectName }}
         </h2>
         <div class="header-title margin-left-auto">
+          <div class="flex gap-2">
             <p-button
-                class="" 
-                icon="pi pi-times" 
-                severity="secondary"
-                (click)="close()"
-                pTooltip="Chiudi"
-                tooltipPosition="left">
-                </p-button>
+              severity="primary"
+              label="Espandi tutto"
+              icon="pi pi-plus"
+              (click)="expandAllGroups()"
+              [style]="{'font-size': '0.75rem'}"
+              pTooltip="Espandi tutti i gruppi">
+            </p-button>
+            <p-button
+              severity="primary"
+              label="Riduci tutto"
+              icon="pi pi-minus"
+              (click)="collapseAllGroups()"
+              [style]="{'font-size': '0.75rem'}"
+              pTooltip="Riduci tutti i gruppi">
+            </p-button>
+            <p-button
+              icon="pi pi-times" 
+              severity="secondary"
+              (click)="close()"
+              pTooltip="Chiudi"
+              tooltipPosition="left">
+              </p-button>
+          </div>
         </div>
       </div>
     </ng-template>
@@ -42,7 +59,10 @@
           @for (groupId of groupedLogKeys; track groupId) {
             <div class="log-group mb-6">
               <!-- Group Header -->
-              <div class="group-header grid md:grid-cols-12 sm:grid-cols-1 bg-gray-100 border border-gray-200 rounded-t-lg p-4">
+              <div class="group-header grid md:grid-cols-12 sm:grid-cols-1 bg-gray-100 border border-gray-200 p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                   [class.rounded-lg]="isGroupCollapsed(groupId)"
+                   [class.rounded-t-lg]="!isGroupCollapsed(groupId)"
+                   (click)="toggleGroup(groupId)">
                 <!-- Group Summary Row -->
                 <div class="flex items-center gap-4 col-span-10 md:col-span-10 sm:col-span-1">
                   <div class="group-id">
@@ -70,15 +90,24 @@
                     </div>
                   </div>
                 </div>
-                <div class="group-count margin-left-auto col-span-2 mt-2">
-                  <span class="rounded">
-                    {{ groupedLogs[groupId].length }} {{ groupedLogs[groupId].length === 1 ? 'modifica' : 'modifiche' }}
-                  </span>
-                </div>
+                                 <div class="group-count margin-left-auto col-span-2 mt-2 flex items-center gap-2">
+                   <span class="text-sm font-medium text-gray-600">
+                     {{ groupedLogs[groupId].length }} {{ groupedLogs[groupId].length === 1 ? 'modifica' : 'modifiche' }}
+                   </span>
+                   <i class="pi transition-transform duration-200"
+                      [class.pi-chevron-down]="isGroupCollapsed(groupId)"
+                      [class.pi-chevron-up]="!isGroupCollapsed(groupId)"
+                      [class.rotate-0]="isGroupCollapsed(groupId)"
+                      [class.rotate-180]="!isGroupCollapsed(groupId)">
+                   </i>
+                 </div>
               </div>
 
               <!-- Group Content - Consolidated Changes -->
-              <div class="group-content border border-t-0 border-gray-200 rounded-b-lg p-6">
+              <div class="group-content border border-t-0 border-gray-200 rounded-b-lg p-6 overflow-hidden transition-all duration-300"
+                   [class.hidden]="isGroupCollapsed(groupId)"
+                   [class.animate-slideDown]="!isGroupCollapsed(groupId)"
+                   [class.animate-slideUp]="isGroupCollapsed(groupId)">
                 <div class="consolidated-changes m-2">
                                      <!-- Additional Data Section -->
                    @if ((groupedLogs[groupId] | groupClientInfo).additional_data) {

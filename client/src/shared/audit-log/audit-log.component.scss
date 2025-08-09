@@ -9,6 +9,46 @@
   margin-left: auto;
 }
 
+// Global Controls Styling
+.global-controls {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  
+  .flex {
+    gap: 0.5rem;
+  }
+}
+
+// Collapsible Animations
+@keyframes slideDown {
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+  to {
+    max-height: 1000px;
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    max-height: 1000px;
+    opacity: 1;
+  }
+  to {
+    max-height: 0;
+    opacity: 0;
+  }
+}
+
+.animate-slideDown {
+  animation: slideDown 0.3s ease-out forwards;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.3s ease-in forwards;
+}
+
 .visualizza-valori-wrapper {
   display: flex;
   gap: 0.5rem;
@@ -135,6 +175,15 @@
       background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
       border-bottom: 1px solid #e2e8f0;
       padding: 1rem 1.5rem;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+      }
+      
+      &.cursor-pointer {
+        user-select: none;
+      }
       
       .group-id {
         .font-mono {
@@ -153,19 +202,27 @@
         font-weight: 500;
       }
       
-      .group-count {
-        span {
-          background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-          border: 1px solid #93c5fd;
-          font-weight: 600;
-          padding: 0.5rem 1rem;
-          font-size: 0.875rem;
-        }
-      }
+             .group-count {
+         .pi {
+           color: #6b7280;
+           font-size: 0.875rem;
+           transition: transform 0.2s ease;
+         }
+         
+         span {
+           color: #4b5563;
+           font-weight: 500;
+         }
+       }
     }
     
     .group-content {
       background: white;
+      transition: all 0.3s ease;
+      
+      &.hidden {
+        display: none;
+      }
       
       .consolidated-changes {
         // Apply change item styling for consolidated view
