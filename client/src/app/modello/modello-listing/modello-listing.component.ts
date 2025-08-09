@@ -187,7 +187,8 @@ editModello(event: Event, modello: ModelloListingTableModel | ModelloListingGrid
   this.router.navigate(['/modello/manager', modello.id]);
 }
 
-viewAuditLog(modello: ModelloListingTableModel | ModelloListingGridModel): void {
+viewAuditLog(event: Event, modello: ModelloListingTableModel | ModelloListingGridModel): void {
+  event.stopPropagation();
   let config: DynamicDialogConfig = {
     width: '90%',
     height: '80%',
@@ -202,7 +203,8 @@ viewAuditLog(modello: ModelloListingTableModel | ModelloListingGridModel): void 
     },
     data: {
       tableName: 'T_MODELLI',
-      recordId: modello.id
+      recordId: modello.id,
+      objectName: modello.nome
     }
   };
   this.dialogService.open(AuditLogComponent, config);

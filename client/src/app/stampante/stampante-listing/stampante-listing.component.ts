@@ -146,7 +146,8 @@ viewAuditLog(stampante: StampanteListingModel): void {
     },
     data: {
       tableName: 'T_STAMPANTI',
-      recordId: stampante.id
+      recordId: stampante.id,
+      objectName: stampante.nome
     }
   };
   this.dialogService.open(AuditLogComponent, config);
