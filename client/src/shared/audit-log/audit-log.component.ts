@@ -140,6 +140,21 @@ export class AuditLogComponent implements OnInit, OnDestroy {
     return logs[0]?.createdAt || '';
   }
 
+  getGroupOperation(logs: AuditLog[]): AuditLog {
+    // Return the first log to get shared operation info
+    return logs[0];
+  }
+
+  getGroupClientInfo(logs: AuditLog[]): { ip_address?: string; user_agent?: string; additional_data?: any } {
+    // Return shared client info from the first log
+    const firstLog = logs[0];
+    return {
+      ip_address: firstLog?.ip_address,
+      user_agent: firstLog?.user_agent,
+      additional_data: firstLog?.additional_data
+    };
+  }
+
   close(): void {
     this.ref.close();
   }

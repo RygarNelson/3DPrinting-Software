@@ -168,7 +168,7 @@
       
       .log-entry {
         transition: all 0.2s ease;
-        padding: 1.5rem;
+        padding: 1rem 1.5rem;
         
         &:hover {
           background-color: #f8fafc;
@@ -178,18 +178,9 @@
           border-bottom: 1px solid #f1f5f9;
         }
         
-        .grid {
-          gap: 2rem;
-        }
-        
-        .col-span-2,
-        .col-span-3 {
-          padding-right: 1rem;
-          border-right: 2px solid #f1f5f9;
-        }
-        
-        .col-span-7 {
-          padding-left: 1rem;
+        // Individual log entries now only contain the details
+        .details-content {
+          width: 100%;
         }
       }
     }
@@ -224,26 +215,11 @@
     }
     
     .log-entry {
-      padding: 1rem !important;
+      padding: 0.75rem 1rem !important;
       
-      .grid {
-        display: block !important;
-        gap: 0 !important;
-        
-        .col-span-2,
-        .col-span-3,
-        .col-span-7 {
-          margin-bottom: 1rem;
-          border-right: none !important;
-          border-bottom: 1px solid #f1f5f9;
-          padding: 0 0 1rem 0 !important;
-          
-          &:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0 !important;
-          }
-        }
+      // Individual entries are now simpler - just the details content
+      .details-content {
+        width: 100%;
       }
     }
   }
