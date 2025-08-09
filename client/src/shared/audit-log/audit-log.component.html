@@ -100,7 +100,11 @@
                 <div class="consolidated-changes m-2">
                   <!-- Show consolidated field changes if any -->
                   @if (getGroupOldValues(groupedLogs[groupId]) || getGroupNewValues(groupedLogs[groupId])) {
-                    <div class="changes-comparison grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="changes-comparison grid grid-cols-1 gap-4"
+                        [ngClass]="{
+                          'md:grid-cols-2': getGroupOldValues(groupedLogs[groupId]) && getGroupNewValues(groupedLogs[groupId]),
+                          'md:grid-cols-1': !getGroupOldValues(groupedLogs[groupId]) || !getGroupNewValues(groupedLogs[groupId])
+                        }">
                       <!-- Consolidated Old Values -->
                       @if (getGroupOldValues(groupedLogs[groupId])) {
                         <div class="change-item old-change">

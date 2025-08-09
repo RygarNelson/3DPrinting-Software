@@ -226,6 +226,17 @@
           }
         }
         
+        // Optimize layout for single value scenarios
+        .changes-comparison {
+          // When only one value type exists, center and limit width
+          &.md\\:grid-cols-1 {
+            .change-item {
+              max-width: 800px;
+              margin: 0 auto;
+            }
+          }
+        }
+        
         .record-changes {
           .change-item {
             width: 100%;
@@ -275,6 +286,9 @@
         
         .change-item {
           margin-bottom: 0.5rem;
+          max-width: 100% !important;
+          margin-left: 0 !important;
+          margin-right: 0 !important;
         }
       }
       
