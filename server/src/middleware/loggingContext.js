@@ -1,5 +1,7 @@
 'use strict'
 
+import jwt from 'jsonwebtoken';
+import { secret } from '../config/jwtOptions.js';
 import loggingService from '../services/logging.service.js';
 
 /**
@@ -9,17 +11,33 @@ import loggingService from '../services/logging.service.js';
 const setLoggingContext = (req, res, next) => {
     try {
         // Extract user information from request
-        const user_id = req.user?.id || null;
+        let user = null;
         const ip_address = req.ip || req.connection.remoteAddress || req.headers['x-forwarded-for'] || null;
         const user_agent = req.headers['user-agent'] || null;
-        const session_id = req.session?.id || null;
+
+        if (req.headers.token) {
+            try {
+                let verification = jwt.verify(req.headers.token, secret)
+                if (verification) {
+                    user = {
+                        id: verification.username.id,
+                        name: verification.username.name,
+                        surname: verification.username.surname,
+                        email: verification.username.email,
+                        role: verification.username.role
+                    }
+                }
+            }
+            catch (err) {
+                console.error('Error verifying token:', err);
+            }
+        }
 
         // Set context in logging service
         loggingService.setContext({
-            user_id,
+            user,
             ip_address,
-            user_agent,
-            session_id
+            user_agent
         });
 
         next();

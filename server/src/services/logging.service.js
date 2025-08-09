@@ -5,10 +5,9 @@ import Log from '../models/log.model.js';
 class LoggingService {
     constructor() {
         this.currentContext = {
-            user_id: null,
+            user: null,
             ip_address: null,
             user_agent: null,
-            session_id: null,
             group_id: null
         };
     }
@@ -28,10 +27,9 @@ class LoggingService {
      */
     clearContext() {
         this.currentContext = {
-            user_id: null,
+            user: null,
             ip_address: null,
             user_agent: null,
-            session_id: null,
             group_id: null
         };
     }
@@ -65,10 +63,9 @@ class LoggingService {
                 new_value: new_value ? String(new_value) : null,
                 old_record: old_record ? JSON.stringify(old_record) : null,
                 new_record: new_record ? JSON.stringify(new_record) : null,
-                user_id: this.currentContext.user_id,
+                user: this.currentContext.user,
                 ip_address: this.currentContext.ip_address,
                 user_agent: this.currentContext.user_agent,
-                session_id: this.currentContext.session_id,
                 additional_data: additional_data ? JSON.stringify(additional_data) : null,
                 group_id: this.currentContext.group_id
             };
@@ -269,15 +266,15 @@ class LoggingService {
 
     /**
      * Get logs for a specific user
-     * @param {number} user_id - ID of the user
+     * @param {Object} user - User object
      * @param {Object} options - Query options (limit, offset, order)
      * @returns {Promise<Array>} - Array of log entries
      */
-    async getLogsForUser(user_id, options = {}) {
+    async getLogsForUser(user, options = {}) {
         const { limit = 100, offset = 0, order = [['createdAt', 'DESC']] } = options;
         
         return Log.findAll({
-            where: { user_id },
+            where: { user },
             limit,
             offset,
             order

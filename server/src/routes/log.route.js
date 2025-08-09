@@ -168,30 +168,6 @@ router.get('/record/:tableName/:recordId', asyncHandler(async (req, res) => {
 }));
 
 /**
- * GET /api/logs/user/:userId
- * Get logs for a specific user
- */
-router.get('/user/:userId', asyncHandler(async (req, res) => {
-    const { userId } = req.params;
-    const {
-        limit = 100,
-        offset = 0,
-        order = 'DESC'
-    } = req.query;
-
-    const logs = await logRepository.getLogsForUser(parseInt(userId), {
-        limit: parseInt(limit),
-        offset: parseInt(offset),
-        order: [['createdAt', order.toUpperCase()]]
-    });
-    
-    res.json({
-        success: true,
-        data: logs
-    });
-}));
-
-/**
  * GET /api/logs/operation/:operation
  * Get logs for a specific operation type
  */

@@ -49,11 +49,6 @@ const Log = sequelize.define('Log', {
         allowNull: true,
         comment: 'Complete new record as JSON (for INSERT operations)'
     },
-    user_id: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        comment: 'ID of the user who made the change'
-    },
     ip_address: {
         type: DataTypes.STRING(45),
         allowNull: true,
@@ -64,11 +59,6 @@ const Log = sequelize.define('Log', {
         allowNull: true,
         comment: 'User agent string'
     },
-    session_id: {
-        type: DataTypes.STRING(255),
-        allowNull: true,
-        comment: 'Session identifier'
-    },
     additional_data: {
         type: DataTypes.TEXT,
         allowNull: true,
@@ -78,6 +68,11 @@ const Log = sequelize.define('Log', {
         type: DataTypes.INTEGER,
         allowNull: true,
         comment: 'ID that groups the logs together'
+    },
+    user: {
+        type: DataTypes.JSON,
+        allowNull: true,
+        comment: 'User who made the change'
     }
 }, {
     tableName: "T_LOGS",
@@ -97,10 +92,6 @@ const Log = sequelize.define('Log', {
         {
             name: 'IX_T_LOGS_CREATED_AT',
             fields: ['createdAt']
-        },
-        {
-            name: 'IX_T_LOGS_USER_ID',
-            fields: ['user_id']
         },
         {
             name: 'IX_T_LOGS_TABLE_RECORD',

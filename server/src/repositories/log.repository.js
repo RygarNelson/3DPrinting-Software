@@ -20,7 +20,7 @@ class LogRepository extends BaseRepository {
             table_name,
             record_id,
             operation,
-            user_id,
+            user,
             date_from,
             date_to,
             group_id,
@@ -47,8 +47,8 @@ class LogRepository extends BaseRepository {
             whereClause.group_id = filters.group_id;
         }
 
-        if (filters.user_id) {
-            whereClause.user_id = filters.user_id;
+        if (filters.user) {
+            whereClause.user = filters.user;
         }
 
         if (filters.date_from || filters.date_to) {
@@ -220,8 +220,8 @@ class LogRepository extends BaseRepository {
             whereClause.table_name = filters.table_name;
         }
 
-        if (filters.user_id) {
-            whereClause.user_id = filters.user_id;
+        if (filters.user) {
+            whereClause.user = filters.user;
         }
 
         if (filters.date_from || filters.date_to) {
@@ -256,10 +256,10 @@ class LogRepository extends BaseRepository {
             Log.findAll({
                 where: whereClause,
                 attributes: [
-                    'user_id',
+                    'user',
                     [Log.sequelize.fn('COUNT', '*'), 'count']
                 ],
-                group: ['user_id'],
+                group: ['user'],
                 order: [[Log.sequelize.fn('COUNT', '*'), 'DESC']]
             })
         ]);
