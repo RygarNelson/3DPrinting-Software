@@ -97,10 +97,10 @@
 
               <!-- Group Content - Consolidated Changes -->
               <div class="group-content border border-t-0 border-gray-200 rounded-b-lg p-6">
-                <div class="consolidated-changes">
+                <div class="consolidated-changes m-2">
                   <!-- Show consolidated field changes if any -->
                   @if (getGroupOldValues(groupedLogs[groupId]) || getGroupNewValues(groupedLogs[groupId])) {
-                    <div class="changes-comparison m-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="changes-comparison grid grid-cols-1 md:grid-cols-2 gap-4">
                       <!-- Consolidated Old Values -->
                       @if (getGroupOldValues(groupedLogs[groupId])) {
                         <div class="change-item old-change">
