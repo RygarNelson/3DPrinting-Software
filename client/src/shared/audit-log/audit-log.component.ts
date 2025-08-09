@@ -10,6 +10,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { Subscription } from 'rxjs';
 import { AuditLog, LogService } from '../../services/log.service';
 import { DialogErrorComponent } from '../dialog-error/dialog-error.component';
+import { PrettyJsonPipe } from '../pipes/pretty-json.pipe';
 
 @Component({
   selector: 'app-audit-log',
@@ -21,9 +22,11 @@ import { DialogErrorComponent } from '../dialog-error/dialog-error.component';
     ButtonModule,
     TagModule,
     TooltipModule,
-    SkeletonModule
+    SkeletonModule,
+    PrettyJsonPipe
   ],
   templateUrl: './audit-log.component.html',
+  styleUrl: './audit-log.component.scss',
   providers: [LogService, DialogService]
 })
 export class AuditLogComponent implements OnInit, OnDestroy {
@@ -60,6 +63,8 @@ export class AuditLogComponent implements OnInit, OnDestroy {
         next: (response) => {
           this.logs = response.data;
           this.loading = false;
+
+          console.log(this.logs);
         },
         error: (error) => {
           console.error('Error loading audit logs:', error);

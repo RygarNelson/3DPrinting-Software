@@ -1,0 +1,107 @@
+// Audit Log Component Styles
+
+.header-title {
+  color: #374151;
+  font-weight: 600;
+}
+
+.margin-left-auto {
+  margin-left: auto;
+}
+
+// JSON Container Styles
+.json-container {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  line-height: 1.4;
+  
+  // Syntax highlighting for JSON
+  ::ng-deep {
+    .json-key {
+      color: #0f766e; // Teal-700
+      font-weight: 600;
+    }
+    
+    .json-string {
+      color: #059669; // Emerald-600
+    }
+    
+    .json-number {
+      color: #dc2626; // Red-600
+      font-weight: 500;
+    }
+    
+    .json-boolean {
+      color: #7c3aed; // Violet-600
+      font-weight: 600;
+    }
+    
+    .json-null {
+      color: #6b7280; // Gray-500
+      font-style: italic;
+    }
+  }
+  
+  // Enhanced styling for different types of JSON containers
+  &.old-values {
+    border-left: 4px solid #dc2626; // Red border for old values
+    background-color: #fef2f2; // Red-50
+  }
+  
+  &.new-values {
+    border-left: 4px solid #059669; // Green border for new values
+    background-color: #f0fdf4; // Green-50
+  }
+  
+  &.old-record {
+    border-left: 4px solid #dc2626; // Red border for old record
+    background-color: #fef2f2; // Red-50
+  }
+  
+  &.new-record {
+    border-left: 4px solid #059669; // Green border for new record
+    background-color: #f0fdf4; // Green-50
+  }
+}
+
+// Responsive improvements
+@media (max-width: 768px) {
+  .json-container {
+    font-size: 0.65rem;
+    max-height: 200px;
+  }
+}
+
+// Better table cell sizing
+::ng-deep {
+  p-table {
+    .p-datatable-table {
+      table-layout: fixed;
+      
+      th:nth-child(1), td:nth-child(1) { // Data/Ora
+        width: 120px;
+      }
+      
+      th:nth-child(2), td:nth-child(2) { // Operazione
+        width: 130px;
+      }
+      
+      th:nth-child(3), td:nth-child(3) { // Client
+        width: 200px;
+      }
+      
+      th:nth-child(4), td:nth-child(4) { // Dettagli
+        width: auto;
+        min-width: 300px;
+      }
+    }
+  }
+}
+
+// Improve user agent display
+.break-all {
+  word-break: break-all;
+  line-height: 1.3;
+}
