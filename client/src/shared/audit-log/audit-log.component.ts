@@ -63,8 +63,6 @@ export class AuditLogComponent implements OnInit, OnDestroy {
         next: (response) => {
           this.logs = response.data;
           this.loading = false;
-
-          console.log(this.logs);
         },
         error: (error) => {
           console.error('Error loading audit logs:', error);

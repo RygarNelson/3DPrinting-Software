@@ -28,8 +28,8 @@
           <tr>
             <th>Data/Ora</th>
             <th>Operazione</th>
-            <th>Client</th>
-            <th>Dettagli</th>
+            <th style="width: 300px;">Client</th>
+            <th style="width: 500px;">Dettagli</th>
           </tr>
         </ng-template>
         
@@ -57,9 +57,9 @@
                     <div class="json-container mt-1 p-2 bg-gray-50 rounded text-xs font-mono overflow-x-auto" [innerHTML]="log.additional_data | prettyJson"></div>
                   </div>
                 }
-                <div class="text-gray-500 text-xs">
-                  <div>IP: {{ log.ip_address }}</div>
-                  <div class="break-all">User agent: {{ log.user_agent }}</div>
+                <div class="text-gray-500 text-sm">
+                  <div><strong>IP:</strong> {{ log.ip_address }}</div>
+                  <div class="break-all"><strong>User agent:</strong> {{ log.user_agent }}</div>
                 </div>
               </div>
             </td>
@@ -70,25 +70,35 @@
                     @if (log.old_value) {
                       <div class="text-red-600">
                         <strong>Vecchi valori:</strong>
-                        <div class="json-container old-values mt-1 p-2 bg-red-50 rounded text-xs font-mono overflow-x-auto" [innerHTML]="log.field_name ? log.field_name + ': ' + log.old_value : log.old_value | prettyJson"></div>
+                        <div class="visualizza-valori-wrapper">
+                          @if (log.field_name) {
+                            <div class="field-name text-sm mr-2">{{ log.field_name }}:</div>
+                          }
+                          <div class="json-container old-values bg-red-50 rounded font-mono overflow-x-auto" [innerHTML]="log.old_value | prettyJson"></div>
+                        </div>
                       </div>
                     }
                     @if (log.new_value) {
                       <div class="text-green-600 mt-3">
                         <strong>Nuovi valori:</strong>
-                        <div class="json-container new-values mt-1 p-2 bg-green-50 rounded text-xs font-mono overflow-x-auto" [innerHTML]="log.field_name ? log.field_name + ': ' + log.new_value : log.new_value | prettyJson"></div>
+                        <div class="visualizza-valori-wrapper">
+                          @if (log.field_name) {
+                            <div class="field-name text-sm mr-2">{{ log.field_name }}:</div>
+                          }
+                          <div class="json-container new-values bg-green-50 rounded font-mono overflow-x-auto" [innerHTML]="log.new_value | prettyJson"></div>
+                        </div>
                       </div>
                     }
                   </div>
                 } @else if (log.old_record) {
                     <div class="text-red-600">
                         <strong>Vecchio record:</strong>
-                        <div class="json-container old-record mt-1 p-2 bg-red-50 rounded text-xs font-mono overflow-x-auto" [innerHTML]="log.old_record | prettyJson"></div>
+                        <div class="json-container old-record mt-1 bg-red-50 rounded text-xs font-mono overflow-x-auto" [innerHTML]="log.old_record | prettyJson"></div>
                     </div>
                 } @else if (log.new_record) {
                     <div class="text-green-600">
                         <strong>Nuovo record:</strong>
-                        <div class="json-container new-record mt-1 p-2 bg-green-50 rounded text-xs font-mono overflow-x-auto" [innerHTML]="log.new_record | prettyJson"></div>
+                        <div class="json-container new-record mt-1 bg-green-50 rounded text-xs font-mono overflow-x-auto" [innerHTML]="log.new_record | prettyJson"></div>
                     </div>
                 }
               </div>

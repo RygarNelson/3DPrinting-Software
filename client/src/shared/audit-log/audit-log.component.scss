@@ -9,13 +9,21 @@
   margin-left: auto;
 }
 
+.visualizza-valori-wrapper {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
 // JSON Container Styles
 .json-container {
   max-height: 300px;
   overflow-y: auto;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
-  line-height: 1.4;
+  line-height: 1.5;
+  font-size: 0.875rem; // Increased from text-xs (0.75rem) to text-sm (0.875rem)
+  padding: 0.5rem;
   
   // Syntax highlighting for JSON
   ::ng-deep {
@@ -66,10 +74,17 @@
   }
 }
 
+// Field name styling
+.field-name {
+//   color: #374151;
+//   font-weight: 600;
+//   margin-bottom: 0.25rem;
+}
+
 // Responsive improvements
 @media (max-width: 768px) {
   .json-container {
-    font-size: 0.65rem;
+    font-size: 0.75rem; // Increased mobile font size too
     max-height: 200px;
   }
 }

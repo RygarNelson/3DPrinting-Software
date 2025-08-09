@@ -22,8 +22,8 @@ export class PrettyJsonPipe implements PipeTransform {
         }
       }
       
-      // Convert to JSON with proper indentation
-      const jsonString = JSON.stringify(value, null, 2);
+      // Convert to JSON with proper indentation (4 spaces for better readability)
+      const jsonString = JSON.stringify(value, null, 4);
       
       // Add syntax highlighting with HTML
       return this.syntaxHighlight(jsonString);
@@ -34,9 +34,10 @@ export class PrettyJsonPipe implements PipeTransform {
   }
   
   private syntaxHighlight(json: string): string {
-    // Replace different JSON elements with colored spans
+    // Escape HTML characters first
     json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     
+    // Preserve whitespace and add syntax highlighting
     return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, (match) => {
       let cls = 'json-number';
       
@@ -53,6 +54,6 @@ export class PrettyJsonPipe implements PipeTransform {
       }
       
       return '<span class="' + cls + '">' + match + '</span>';
-    });
+    }).replace(/\n/g, '<br>').replace(/ /g, '&nbsp;'); // Preserve line breaks and spaces
   }
 }
