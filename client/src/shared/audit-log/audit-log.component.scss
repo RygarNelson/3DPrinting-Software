@@ -15,20 +15,73 @@
   align-items: center;
 }
 
+// Details Content Styling
+.details-content {
+  .changes-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .change-item {
+    border-radius: 8px;
+    border: 1px solid transparent;
+    
+    &.old-change {
+      background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+      border-color: #fecaca;
+    }
+    
+    &.new-change {
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+      border-color: #bbf7d0;
+    }
+    
+    .change-header {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 8px 8px 0 0;
+      
+      .change-label {
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: #374151;
+      }
+      
+      .field-name-inline {
+        margin-left: auto;
+        background: rgba(99, 102, 241, 0.1);
+        color: #4338ca;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      }
+    }
+  }
+}
+
 // JSON Container Styles
 .json-container {
-  max-height: 300px;
-  overflow-y: auto;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  line-height: 1.5;
-  font-size: 0.875rem; // Increased from text-xs (0.75rem) to text-sm (0.875rem)
-  padding: 0.5rem;
+  padding: 1rem;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Monaco', 'Consolas', monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  border-radius: 0 0 8px 8px;
+  background: rgba(255, 255, 255, 0.8);
+  border: none;
+  overflow: visible; // Remove scrollbars
+  white-space: pre-wrap;
+  word-break: break-word;
   
   // Syntax highlighting for JSON
   ::ng-deep {
     .json-key {
-      color: #0f766e; // Teal-700
+      color: #1e40af; // Blue-800
       font-weight: 600;
     }
     
@@ -51,34 +104,13 @@
       font-style: italic;
     }
   }
-  
-  // Enhanced styling for different types of JSON containers
-  &.old-values {
-    border-left: 4px solid #dc2626; // Red border for old values
-    background-color: #fef2f2; // Red-50
-  }
-  
-  &.new-values {
-    border-left: 4px solid #059669; // Green border for new values
-    background-color: #f0fdf4; // Green-50
-  }
-  
-  &.old-record {
-    border-left: 4px solid #dc2626; // Red border for old record
-    background-color: #fef2f2; // Red-50
-  }
-  
-  &.new-record {
-    border-left: 4px solid #059669; // Green border for new record
-    background-color: #f0fdf4; // Green-50
-  }
 }
 
 // Field name styling
 .field-name {
-//   color: #374151;
-//   font-weight: 600;
-//   margin-bottom: 0.25rem;
+  color: #374151;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 // Responsive improvements
@@ -89,30 +121,166 @@
   }
 }
 
-// Better table cell sizing
-::ng-deep {
-  p-table {
-    .p-datatable-table {
-      table-layout: fixed;
+// Grouped Logs Styling
+.grouped-logs-container {
+  .log-group {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    
+    .group-header {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border-bottom: 1px solid #e2e8f0;
+      padding: 1rem 1.5rem;
       
-      th:nth-child(1), td:nth-child(1) { // Data/Ora
-        width: 120px;
+      .group-id {
+        .font-mono {
+          color: #4338ca;
+          font-size: 1rem;
+        }
       }
       
-      th:nth-child(2), td:nth-child(2) { // Operazione
-        width: 130px;
+      .group-timestamp {
+        color: #374151;
+        font-weight: 500;
       }
       
-      th:nth-child(3), td:nth-child(3) { // Client
-        width: 200px;
+      .group-operations {
+        color: #059669;
+        font-weight: 500;
       }
       
-      th:nth-child(4), td:nth-child(4) { // Dettagli
-        width: auto;
-        min-width: 300px;
+      .group-count {
+        span {
+          background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+          border: 1px solid #93c5fd;
+          font-weight: 600;
+          padding: 0.5rem 1rem;
+          font-size: 0.875rem;
+        }
+      }
+    }
+    
+    .group-content {
+      background: white;
+      
+      .log-entry {
+        transition: all 0.2s ease;
+        padding: 1.5rem;
+        
+        &:hover {
+          background-color: #f8fafc;
+        }
+        
+        &:not(:last-child) {
+          border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .grid {
+          gap: 2rem;
+        }
+        
+        .col-span-2,
+        .col-span-3 {
+          padding-right: 1rem;
+          border-right: 2px solid #f1f5f9;
+        }
+        
+        .col-span-7 {
+          padding-left: 1rem;
+        }
       }
     }
   }
+}
+
+// Better spacing and organization
+.space-y-3 > * + * {
+  margin-top: 0.75rem;
+}
+
+// Enhanced grid layout for better responsive behavior
+@media (max-width: 1024px) {
+  .grouped-logs-container {
+    .log-group {
+      margin: 0 -0.5rem;
+      border-radius: 8px;
+    }
+    
+    .group-header {
+      padding: 1rem !important;
+      
+      .flex {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 0.75rem;
+        
+        .group-count {
+          align-self: flex-end;
+        }
+      }
+    }
+    
+    .log-entry {
+      padding: 1rem !important;
+      
+      .grid {
+        display: block !important;
+        gap: 0 !important;
+        
+        .col-span-2,
+        .col-span-3,
+        .col-span-7 {
+          margin-bottom: 1rem;
+          border-right: none !important;
+          border-bottom: 1px solid #f1f5f9;
+          padding: 0 0 1rem 0 !important;
+          
+          &:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0 !important;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Very small screens
+@media (max-width: 640px) {
+  .grouped-logs-container {
+    .group-header {
+      .flex {
+        .gap-4 {
+          flex-direction: column;
+          align-items: flex-start !important;
+          gap: 0.5rem;
+        }
+      }
+    }
+    
+    .json-container {
+      font-size: 0.75rem !important;
+      padding: 0.75rem !important;
+    }
+    
+    .change-header {
+      padding: 0.5rem 0.75rem !important;
+      
+      .field-name-inline {
+        margin-left: 0 !important;
+        margin-top: 0.25rem;
+      }
+    }
+  }
+}
+
+// Loading skeleton improvements
+.space-y-4 > * + * {
+  margin-top: 1rem;
 }
 
 // Improve user agent display

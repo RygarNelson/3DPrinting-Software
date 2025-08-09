@@ -31,6 +31,8 @@ import { PrettyJsonPipe } from '../pipes/pretty-json.pipe';
 })
 export class AuditLogComponent implements OnInit, OnDestroy {
   logs: AuditLog[] = [];
+  groupedLogs: { [key: number]: AuditLog[] } = {};
+  groupedLogKeys: number[] = [];
   loading: boolean = false;
   private subscription?: Subscription;
 
@@ -62,6 +64,7 @@ export class AuditLogComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
           this.logs = response.data;
+          this.groupLogsByGroupId();
           this.loading = false;
         },
         error: (error) => {
@@ -96,6 +99,45 @@ export class AuditLogComponent implements OnInit, OnDestroy {
       'RESTORE': 'secondary'
     };
     return severities[operation] || 'info';
+  }
+
+  private groupLogsByGroupId(): void {
+    this.groupedLogs = {};
+    
+    // Group logs by group_id
+    this.logs.forEach(log => {
+      if (!this.groupedLogs[log.group_id]) {
+        this.groupedLogs[log.group_id] = [];
+      }
+      this.groupedLogs[log.group_id].push(log);
+    });
+    
+    // Sort groups by the most recent log in each group (descending)
+    this.groupedLogKeys = Object.keys(this.groupedLogs)
+      .map(key => Number(key))
+      .sort((a, b) => {
+        const aLatest = Math.max(...this.groupedLogs[a].map(log => new Date(log.createdAt).getTime()));
+        const bLatest = Math.max(...this.groupedLogs[b].map(log => new Date(log.createdAt).getTime()));
+        return bLatest - aLatest;
+      });
+    
+    // Sort logs within each group by creation date (oldest first to show progression)
+    Object.keys(this.groupedLogs).forEach(groupId => {
+      this.groupedLogs[Number(groupId)].sort((a, b) => 
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      );
+    });
+  }
+
+  getGroupOperationSummary(logs: AuditLog[]): string {
+    const operations = logs.map(log => this.getOperationLabel(log.operation));
+    const uniqueOperations = [...new Set(operations)];
+    return uniqueOperations.join(', ');
+  }
+
+  getGroupTimestamp(logs: AuditLog[]): string {
+    // Return the timestamp of the first log in the group (since they're sorted)
+    return logs[0]?.createdAt || '';
   }
 
   close(): void {

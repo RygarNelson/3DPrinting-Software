@@ -11,6 +11,12 @@ export interface AuditLog {
   user_name?: string;
   old_values?: any;
   new_values?: any;
+  old_value?: any;
+  new_value?: any;
+  old_record?: any;
+  new_record?: any;
+  field_name?: string;
+  additional_data?: any;
   ip_address?: string;
   user_agent?: string;
   createdAt: string;

@@ -18,112 +18,146 @@
     </ng-template>
     
     <ng-template pTemplate="content">
-      <p-table 
-        #dataTable 
-        [value]="logs" 
-        [loading]="loading"
-        responsiveLayout="scroll">
-        
-        <ng-template pTemplate="header">
-          <tr>
-            <th>Data/Ora</th>
-            <th>Operazione</th>
-            <th style="width: 300px;">Client</th>
-            <th style="width: 500px;">Dettagli</th>
-          </tr>
-        </ng-template>
-        
-        <ng-template pTemplate="body" let-log>
-          <tr>
-            <td>
-              <div class="text-sm">
-                {{ log.createdAt | date:'dd/MM/yyyy' }}
-                <br>
-                <span class="text-gray-500">{{ log.createdAt | date:'HH:mm:ss' }}</span>
-              </div>
-            </td>
-            <td>
-              <p-tag 
-                [value]="getOperationLabel(log.operation)" 
-                [severity]="getOperationSeverity(log.operation)"
-                [style]="{'font-size': '0.75rem'}">
-              </p-tag>
-            </td>
-            <td>
-              <div class="text-sm">
-                @if (log.additional_data) {
-                  <div class="mb-2">
-                    <strong class="text-gray-700">Dati aggiuntivi:</strong>
-                    <div class="json-container mt-1 p-2 bg-gray-50 rounded text-xs font-mono overflow-x-auto" [innerHTML]="log.additional_data | prettyJson"></div>
-                  </div>
-                }
-                <div class="text-gray-500 text-sm">
-                  <div><strong>IP:</strong> {{ log.ip_address }}</div>
-                  <div class="break-all"><strong>User agent:</strong> {{ log.user_agent }}</div>
+      <!-- Grouped Logs Display -->
+      <div class="grouped-logs-container">
+        @if (loading) {
+          <div class="space-y-4">
+            @for (i of [1,2,3]; track i) {
+              <div class="log-group">
+                <div class="group-header">
+                  <p-skeleton height="30px" width="100%" />
+                </div>
+                <div class="group-content">
+                  <p-skeleton height="100px" width="100%" />
                 </div>
               </div>
-            </td>
-            <td>
-              <div class="text-sm max-w-xs">
-                @if (log.old_value || log.new_value) {
-                  <div class="space-y-1">
-                    @if (log.old_value) {
-                      <div class="text-red-600">
-                        <strong>Vecchi valori:</strong>
-                        <div class="visualizza-valori-wrapper">
-                          @if (log.field_name) {
-                            <div class="field-name text-sm mr-2">{{ log.field_name }}:</div>
+            }
+          </div>
+        } @else if (groupedLogKeys.length === 0) {
+          <div class="flex flex-col items-center gap-4 py-12">
+            <i class="pi pi-history text-6xl text-gray-400"></i>
+            <p class="text-gray-500 text-lg">Nessun log di audit trovato</p>
+          </div>
+        } @else {
+          @for (groupId of groupedLogKeys; track groupId) {
+            <div class="log-group mb-6">
+              <!-- Group Header -->
+              <div class="group-header bg-gray-100 border border-gray-200 rounded-t-lg p-4">
+                <div class="flex justify-between items-center">
+                  <div class="flex items-center gap-4">
+                    <div class="group-id">
+                      <span class="text-xs text-gray-500">Gruppo</span>
+                      <div class="font-mono text-sm font-semibold text-gray-700">#{{ groupId }}</div>
+                    </div>
+                    <div class="group-timestamp">
+                      <span class="text-xs text-gray-500">Data/Ora</span>
+                      <div class="text-sm font-medium">
+                        {{ getGroupTimestamp(groupedLogs[groupId]) | date:'dd/MM/yyyy HH:mm:ss' }}
+                      </div>
+                    </div>
+                    <div class="group-operations">
+                      <span class="text-xs text-gray-500">Operazioni</span>
+                      <div class="text-sm font-medium">{{ getGroupOperationSummary(groupedLogs[groupId]) }}</div>
+                    </div>
+                  </div>
+                  <div class="group-count margin-left-auto">
+                    <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                      {{ groupedLogs[groupId].length }} {{ groupedLogs[groupId].length === 1 ? 'modifica' : 'modifiche' }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Group Content -->
+              <div class="group-content border border-t-0 border-gray-200 rounded-b-lg">
+                @for (log of groupedLogs[groupId]; track log.id) {
+                  <div class="log-entry border-b border-gray-100 last:border-b-0 p-4">
+                    <div class="grid grid-cols-12 gap-4">
+                      <!-- Operation -->
+                      <div class="col-span-2">
+                        <div class="text-xs text-gray-500 mb-1">Operazione</div>
+                        <p-tag 
+                          [value]="getOperationLabel(log.operation)" 
+                          [severity]="getOperationSeverity(log.operation)"
+                          [style]="{'font-size': '0.75rem'}">
+                        </p-tag>
+                      </div>
+
+                      <!-- Client Info -->
+                      <div class="col-span-3">
+                        <div class="text-xs text-gray-500 mb-1">Client</div>
+                        <div class="text-sm">
+                          @if (log.additional_data) {
+                            <div class="mb-2">
+                              <strong class="text-gray-700">Dati aggiuntivi:</strong>
+                              <div class="json-container mt-1 bg-gray-50 rounded text-xs font-mono overflow-x-auto" [innerHTML]="log.additional_data | prettyJson"></div>
+                            </div>
                           }
-                          <div class="json-container old-values bg-red-50 rounded font-mono overflow-x-auto" [innerHTML]="log.old_value | prettyJson"></div>
+                          <div class="text-gray-500 text-sm">
+                            <div><strong>IP:</strong> {{ log.ip_address }}</div>
+                            <div class="break-all"><strong>User agent:</strong> {{ log.user_agent }}</div>
+                          </div>
                         </div>
                       </div>
-                    }
-                    @if (log.new_value) {
-                      <div class="text-green-600 mt-3">
-                        <strong>Nuovi valori:</strong>
-                        <div class="visualizza-valori-wrapper">
-                          @if (log.field_name) {
-                            <div class="field-name text-sm mr-2">{{ log.field_name }}:</div>
+
+                      <!-- Details -->
+                      <div class="col-span-7">
+                        <div class="text-xs text-gray-500 mb-2">Dettagli</div>
+                        <div class="details-content">
+                          @if (log.old_value || log.new_value) {
+                            <div class="changes-container">
+                              @if (log.old_value) {
+                                <div class="change-item old-change">
+                                  <div class="change-header">
+                                    <i class="pi pi-arrow-left text-red-500 mr-2"></i>
+                                    <span class="change-label">Vecchi valori</span>
+                                    @if (log.field_name) {
+                                      <span class="field-name-inline">{{ log.field_name }}</span>
+                                    }
+                                  </div>
+                                  <div class="json-container old-values" [innerHTML]="log.old_value | prettyJson"></div>
+                                </div>
+                              }
+                              @if (log.new_value) {
+                                <div class="change-item new-change">
+                                  <div class="change-header">
+                                    <i class="pi pi-arrow-right text-green-500 mr-2"></i>
+                                    <span class="change-label">Nuovi valori</span>
+                                    @if (log.field_name) {
+                                      <span class="field-name-inline">{{ log.field_name }}</span>
+                                    }
+                                  </div>
+                                  <div class="json-container new-values" [innerHTML]="log.new_value | prettyJson"></div>
+                                </div>
+                              }
+                            </div>
+                          } @else if (log.old_record) {
+                            <div class="change-item old-change">
+                              <div class="change-header">
+                                <i class="pi pi-trash text-red-500 mr-2"></i>
+                                <span class="change-label">Vecchio record</span>
+                              </div>
+                              <div class="json-container old-record" [innerHTML]="log.old_record | prettyJson"></div>
+                            </div>
+                          } @else if (log.new_record) {
+                            <div class="change-item new-change">
+                              <div class="change-header">
+                                <i class="pi pi-plus text-green-500 mr-2"></i>
+                                <span class="change-label">Nuovo record</span>
+                              </div>
+                              <div class="json-container new-record" [innerHTML]="log.new_record | prettyJson"></div>
+                            </div>
                           }
-                          <div class="json-container new-values bg-green-50 rounded font-mono overflow-x-auto" [innerHTML]="log.new_value | prettyJson"></div>
                         </div>
                       </div>
-                    }
+                    </div>
                   </div>
-                } @else if (log.old_record) {
-                    <div class="text-red-600">
-                        <strong>Vecchio record:</strong>
-                        <div class="json-container old-record mt-1 bg-red-50 rounded text-xs font-mono overflow-x-auto" [innerHTML]="log.old_record | prettyJson"></div>
-                    </div>
-                } @else if (log.new_record) {
-                    <div class="text-green-600">
-                        <strong>Nuovo record:</strong>
-                        <div class="json-container new-record mt-1 bg-green-50 rounded text-xs font-mono overflow-x-auto" [innerHTML]="log.new_record | prettyJson"></div>
-                    </div>
                 }
               </div>
-            </td>
-          </tr>
-        </ng-template>
-        
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="5" class="text-center py-8">
-              @if (loading) {
-                <div class="space-y-2">
-                  <p-skeleton height="20px" width="100%" />
-                  <p-skeleton height="20px" width="80%" />
-                  <p-skeleton height="20px" width="60%" />
-                </div>
-              } @else {
-                <div class="flex flex-col items-center gap-2">
-                  <i class="pi pi-history text-4xl text-gray-400"></i>
-                  <p class="text-gray-500">Nessun log di audit trovato</p>
-                </div>
-              }
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
+            </div>
+          }
+        }
+      </div>
+
     </ng-template>
   </p-card>
