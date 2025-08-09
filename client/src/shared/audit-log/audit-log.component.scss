@@ -26,6 +26,7 @@
   .change-item {
     border-radius: 8px;
     border: 1px solid transparent;
+    height: 100%;
     
     &.old-change {
       background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
@@ -166,21 +167,74 @@
     .group-content {
       background: white;
       
-      .log-entry {
-        transition: all 0.2s ease;
-        padding: 1rem 1.5rem;
-        
-        &:hover {
-          background-color: #f8fafc;
+      .consolidated-changes {
+        // Apply change item styling for consolidated view
+        .change-item {
+          border-radius: 8px;
+          border: 1px solid transparent;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          overflow: hidden;
+          
+          &.old-change {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border-color: #fecaca;
+            border-width: 2px;
+            
+            .json-container {
+              background: rgba(254, 242, 242, 0.8);
+              border-left: 4px solid #dc2626;
+              height: 100%;
+            }
+          }
+          
+          &.new-change {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-color: #bbf7d0;
+            border-width: 2px;
+            
+            .json-container {
+              background: rgba(240, 253, 244, 0.8);
+              border-left: 4px solid #059669;
+              height: 100%;
+            }
+          }
+          
+          .change-header {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 8px 8px 0 0;
+            
+            .change-label {
+              font-weight: 600;
+              font-size: 0.875rem;
+              color: #374151;
+            }
+            
+            .field-count {
+              margin-left: auto;
+              background: rgba(107, 114, 128, 0.1);
+              color: #4b5563;
+              padding: 0.25rem 0.5rem;
+              border-radius: 4px;
+              font-size: 0.75rem;
+              font-weight: 500;
+              font-family: sans-serif;
+            }
+          }
         }
         
-        &:not(:last-child) {
-          border-bottom: 1px solid #f1f5f9;
+        .record-changes {
+          .change-item {
+            width: 100%;
+          }
         }
         
-        // Individual log entries now only contain the details
-        .details-content {
-          width: 100%;
+        .no-changes {
+          color: #6b7280;
+          font-style: italic;
         }
       }
     }
@@ -214,12 +268,18 @@
       }
     }
     
-    .log-entry {
-      padding: 0.75rem 1rem !important;
+    .consolidated-changes {
+      .changes-comparison {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+        
+        .change-item {
+          margin-bottom: 0.5rem;
+        }
+      }
       
-      // Individual entries are now simpler - just the details content
-      .details-content {
-        width: 100%;
+      .record-changes {
+        margin-top: 1rem !important;
       }
     }
   }
@@ -246,9 +306,15 @@
     .change-header {
       padding: 0.5rem 0.75rem !important;
       
-      .field-name-inline {
+      .field-name-inline, .field-count {
         margin-left: 0 !important;
         margin-top: 0.25rem;
+      }
+    }
+    
+    .consolidated-changes {
+      .changes-comparison {
+        gap: 0.75rem !important;
       }
     }
   }

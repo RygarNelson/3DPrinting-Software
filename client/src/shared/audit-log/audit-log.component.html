@@ -95,59 +95,71 @@
                 </div>
               </div>
 
-              <!-- Group Content -->
-              <div class="group-content border border-t-0 border-gray-200 rounded-b-lg">
-                @for (log of groupedLogs[groupId]; track log.id) {
-                  <div class="log-entry border-b border-gray-100 last:border-b-0 p-4">
-                    <!-- Individual Log Details - Only showing the changes since Operation and Client are in header -->
-                    <div class="details-content">
-                      @if (log.old_value || log.new_value) {
-                        <div class="changes-container">
-                          @if (log.old_value) {
-                            <div class="change-item old-change">
-                              <div class="change-header">
-                                <i class="pi pi-arrow-left text-red-500 mr-2"></i>
-                                <span class="change-label">Vecchi valori</span>
-                                @if (log.field_name) {
-                                  <span class="field-name-inline">{{ log.field_name }}</span>
-                                }
-                              </div>
-                              <div class="json-container old-values" [innerHTML]="log.old_value | prettyJson"></div>
-                            </div>
-                          }
-                          @if (log.new_value) {
-                            <div class="change-item new-change">
-                              <div class="change-header">
-                                <i class="pi pi-arrow-right text-green-500 mr-2"></i>
-                                <span class="change-label">Nuovi valori</span>
-                                @if (log.field_name) {
-                                  <span class="field-name-inline">{{ log.field_name }}</span>
-                                }
-                              </div>
-                              <div class="json-container new-values" [innerHTML]="log.new_value | prettyJson"></div>
-                            </div>
-                          }
-                        </div>
-                      } @else if (log.old_record) {
+              <!-- Group Content - Consolidated Changes -->
+              <div class="group-content border border-t-0 border-gray-200 rounded-b-lg p-6">
+                <div class="consolidated-changes">
+                  <!-- Show consolidated field changes if any -->
+                  @if (getGroupOldValues(groupedLogs[groupId]) || getGroupNewValues(groupedLogs[groupId])) {
+                    <div class="changes-comparison m-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <!-- Consolidated Old Values -->
+                      @if (getGroupOldValues(groupedLogs[groupId])) {
                         <div class="change-item old-change">
                           <div class="change-header">
-                            <i class="pi pi-trash text-red-500 mr-2"></i>
-                            <span class="change-label">Vecchio record</span>
+                            <i class="pi pi-arrow-left text-red-500 mr-2"></i>
+                            <span class="change-label">Valori precedenti</span>
+                            <span class="field-count">{{ getObjectKeysLength(getGroupOldValues(groupedLogs[groupId])) }} campi</span>
                           </div>
-                          <div class="json-container old-record" [innerHTML]="log.old_record | prettyJson"></div>
+                          <div class="json-container old-values" [innerHTML]="getGroupOldValues(groupedLogs[groupId]) | prettyJson"></div>
                         </div>
-                      } @else if (log.new_record) {
+                      }
+
+                      <!-- Consolidated New Values -->
+                      @if (getGroupNewValues(groupedLogs[groupId])) {
                         <div class="change-item new-change">
                           <div class="change-header">
-                            <i class="pi pi-plus text-green-500 mr-2"></i>
-                            <span class="change-label">Nuovo record</span>
+                            <i class="pi pi-arrow-right text-green-500 mr-2"></i>
+                            <span class="change-label">Nuovi valori</span>
+                            <span class="field-count">{{ getObjectKeysLength(getGroupNewValues(groupedLogs[groupId])) }} campi</span>
                           </div>
-                          <div class="json-container new-record" [innerHTML]="log.new_record | prettyJson"></div>
+                          <div class="json-container new-values" [innerHTML]="getGroupNewValues(groupedLogs[groupId]) | prettyJson"></div>
                         </div>
                       }
                     </div>
-                  </div>
-                }
+                  }
+
+                  <!-- Show consolidated record changes if any -->
+                  @if (getGroupOldRecord(groupedLogs[groupId]) || getGroupNewRecord(groupedLogs[groupId])) {
+                    <div class="record-changes mt-4">
+                      @if (getGroupOldRecord(groupedLogs[groupId])) {
+                        <div class="change-item old-change mb-4">
+                          <div class="change-header">
+                            <i class="pi pi-trash text-red-500 mr-2"></i>
+                            <span class="change-label">Record eliminato</span>
+                          </div>
+                          <div class="json-container old-record" [innerHTML]="getGroupOldRecord(groupedLogs[groupId]) | prettyJson"></div>
+                        </div>
+                      }
+
+                      @if (getGroupNewRecord(groupedLogs[groupId])) {
+                        <div class="change-item new-change">
+                          <div class="change-header">
+                            <i class="pi pi-plus text-green-500 mr-2"></i>
+                            <span class="change-label">Record creato</span>
+                          </div>
+                          <div class="json-container new-record" [innerHTML]="getGroupNewRecord(groupedLogs[groupId]) | prettyJson"></div>
+                        </div>
+                      }
+                    </div>
+                  }
+
+                  <!-- Show message if no changes to display -->
+                  @if (!getGroupOldValues(groupedLogs[groupId]) && !getGroupNewValues(groupedLogs[groupId]) && !getGroupOldRecord(groupedLogs[groupId]) && !getGroupNewRecord(groupedLogs[groupId])) {
+                    <div class="no-changes text-center py-8">
+                      <i class="pi pi-info-circle text-4xl text-gray-400 mb-2"></i>
+                      <p class="text-gray-500">Nessun dettaglio di cambiamento disponibile</p>
+                    </div>
+                  }
+                </div>
               </div>
             </div>
           }

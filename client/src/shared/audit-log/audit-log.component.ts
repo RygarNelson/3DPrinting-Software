@@ -155,6 +155,47 @@ export class AuditLogComponent implements OnInit, OnDestroy {
     };
   }
 
+  getGroupOldValues(logs: AuditLog[]): any {
+    // Aggregate all old values from the group into a single object
+    const oldValues: any = {};
+    logs.forEach(log => {
+      if (log.old_value !== undefined && log.old_value !== null) {
+        const fieldName = log.field_name || 'value';
+        oldValues[fieldName] = log.old_value;
+      }
+    });
+    return Object.keys(oldValues).length > 0 ? oldValues : null;
+  }
+
+  getGroupNewValues(logs: AuditLog[]): any {
+    // Aggregate all new values from the group into a single object
+    const newValues: any = {};
+    logs.forEach(log => {
+      if (log.new_value !== undefined && log.new_value !== null) {
+        const fieldName = log.field_name || 'value';
+        newValues[fieldName] = log.new_value;
+      }
+    });
+    return Object.keys(newValues).length > 0 ? newValues : null;
+  }
+
+  getGroupOldRecord(logs: AuditLog[]): any {
+    // Return the old record if any log has it
+    const logWithOldRecord = logs.find(log => log.old_record);
+    return logWithOldRecord?.old_record || null;
+  }
+
+  getGroupNewRecord(logs: AuditLog[]): any {
+    // Return the new record if any log has it
+    const logWithNewRecord = logs.find(log => log.new_record);
+    return logWithNewRecord?.new_record || null;
+  }
+
+  getObjectKeysLength(obj: any): number {
+    // Helper method to get the number of keys in an object
+    return obj ? Object.keys(obj).length : 0;
+  }
+
   close(): void {
     this.ref.close();
   }
