@@ -58,6 +58,7 @@ export class PrettyJsonPipe implements PipeTransform {
       }
       
       return '<span class="' + cls + '">' + match + '</span>';
-    }).replace(/\n/g, '<br>').replace(/ /g, '&nbsp;'); // Preserve line breaks and spaces
+    }).replace(/\n/g, '<br>')
+    //.replace(/ /g, '&nbsp;'); // Preserve line breaks and spaces
   }
 }
