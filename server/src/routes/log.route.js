@@ -268,4 +268,124 @@ router.get('/:id', asyncHandler(async (req, res) => {
     });
 }));
 
+/**
+ * POST /api/logs/vendita/enriched
+ * Get enriched vendita logs with related dettagli and basette logs
+ */
+router.post('/vendita/enriched', asyncHandler(async (req, res) => {
+    const {
+        record_id,
+        operation,
+        user_id,
+        date_from,
+        date_to,
+        limit = 100,
+        offset = 0,
+        order = 'DESC'
+    } = req.body;
+
+    const filters = {
+        record_id: record_id ? parseInt(record_id) : null,
+        operation,
+        user: user_id ? parseInt(user_id) : null,
+        date_from,
+        date_to
+    };
+
+    const options = {
+        limit: parseInt(limit),
+        offset: parseInt(offset),
+        order: [['createdAt', order.toUpperCase()]]
+    };
+
+    // Remove null filters
+    Object.keys(filters).forEach(key => {
+        if (filters[key] === null || filters[key] === undefined) {
+            delete filters[key];
+        }
+    });
+
+    try {
+        const result = await logRepository.getEnrichedVenditaLogs(filters, options);
+        
+        res.json({
+            success: true,
+            data: result.rows,
+            pagination: {
+                total: result.count,
+                limit: parseInt(limit),
+                offset: parseInt(offset),
+                pages: Math.ceil(result.count / parseInt(limit))
+            }
+        });
+    } catch (error) {
+        console.error('Error getting enriched vendita logs:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Errore interno del server',
+            technical_data: error.message
+        });
+    }
+}));
+
+/**
+ * GET /api/logs/vendita/enriched
+ * Get enriched vendita logs with related dettagli and basette logs (simpler interface)
+ */
+router.get('/vendita/enriched', asyncHandler(async (req, res) => {
+    const {
+        record_id,
+        operation,
+        user_id,
+        date_from,
+        date_to,
+        limit = 100,
+        offset = 0,
+        order = 'DESC'
+    } = req.query;
+
+    const filters = {
+        record_id: record_id ? parseInt(record_id) : null,
+        operation,
+        user: user_id ? parseInt(user_id) : null,
+        date_from,
+        date_to
+    };
+
+    const options = {
+        limit: parseInt(limit),
+        offset: parseInt(offset),
+        order: [['createdAt', order.toUpperCase()]]
+    };
+
+    // Remove null filters
+    Object.keys(filters).forEach(key => {
+        if (filters[key] === null || filters[key] === undefined) {
+            delete filters[key];
+        }
+    });
+
+    try {
+        const result = await logRepository.getEnrichedVenditaLogs(filters, options);
+        
+        res.json({
+            success: true,
+            data: result.rows,
+            pagination: {
+                total: result.count,
+                limit: parseInt(limit),
+                offset: parseInt(offset),
+                pages: Math.ceil(result.count / parseInt(limit))
+            }
+        });
+    } catch (error) {
+        console.error('Error getting enriched vendita logs:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Errore interno del server',
+            technical_data: error.message
+        });
+    }
+}));
+
 export default router; 

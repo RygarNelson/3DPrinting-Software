@@ -66,6 +66,12 @@ export class LogService {
    * Get logs for a specific record (non-paginated)
    */
   getLogsForRecord(tableName: string, recordId: number): Observable<AuditLogResponse> {
+    // For Vendita logs, use the enriched endpoint that includes dettagli and basette
+    if (tableName === 'T_VENDITE') {
+      return this.getEnrichedVenditaLogs(recordId);
+    }
+    
+    // For all other table types, use the standard endpoint
     let filters: AuditLogFilters = {
       table_name: tableName,
       record_id: recordId,
@@ -73,6 +79,19 @@ export class LogService {
       offset: 0
     }
     return this.http.post<AuditLogResponse>(this.apiUrl, filters);
+  }
+
+  /**
+   * Get enriched Vendita logs including dettagli and basette information
+   */
+  private getEnrichedVenditaLogs(recordId: number): Observable<AuditLogResponse> {
+    const filters = {
+      table_name: 'T_VENDITE',
+      record_id: recordId,
+      limit: 1000,
+      offset: 0
+    };
+    return this.http.post<AuditLogResponse>(`${this.apiUrl}/vendita/enriched`, filters);
   }
 
   /**
