@@ -1,4 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Pipe({
   name: 'prettyJson',
@@ -6,7 +7,9 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class PrettyJsonPipe implements PipeTransform {
   
-  transform(value: any, args?: any): string {
+  constructor(private sanitizer: DomSanitizer) {}
+  
+  transform(value: any, args?: any): SafeHtml {
     if (value === null || value === undefined) {
       return '';
     }
@@ -18,7 +21,7 @@ export class PrettyJsonPipe implements PipeTransform {
           value = JSON.parse(value);
         } catch {
           // If parsing fails, return the original string
-          return value;
+          return this.sanitizer.bypassSecurityTrustHtml(value);
         }
       }
       
@@ -26,10 +29,11 @@ export class PrettyJsonPipe implements PipeTransform {
       const jsonString = JSON.stringify(value, null, 4);
       
       // Add syntax highlighting with HTML
-      return this.syntaxHighlight(jsonString);
+      const highlightedHtml = this.syntaxHighlight(jsonString);
+      return this.sanitizer.bypassSecurityTrustHtml(highlightedHtml);
     } catch (error) {
       // If anything fails, return the original value as string
-      return String(value);
+      return this.sanitizer.bypassSecurityTrustHtml(String(value));
     }
   }
   
