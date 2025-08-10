@@ -17,6 +17,7 @@ import { GroupOldRecordPipe } from '../pipes/group-old-record.pipe';
 import { GroupOldValuesPipe } from '../pipes/group-old-values.pipe';
 import { GroupOperationPipe } from '../pipes/group-operation.pipe';
 import { GroupTimestampPipe } from '../pipes/group-timestamp.pipe';
+import { GroupUserPipe } from '../pipes/group-user.pipe';
 import { ObjectKeysLengthPipe } from '../pipes/object-keys-length.pipe';
 import { OperationLabelPipe } from '../pipes/operation-label.pipe';
 import { OperationSeverityPipe } from '../pipes/operation-severity.pipe';
@@ -43,7 +44,8 @@ import { PrettyJsonPipe } from '../pipes/pretty-json.pipe';
     GroupNewRecordPipe,
     ObjectKeysLengthPipe,
     OperationLabelPipe,
-    OperationSeverityPipe
+    OperationSeverityPipe,
+    GroupUserPipe
   ],
   templateUrl: './audit-log.component.html',
   styleUrl: './audit-log.component.scss',

@@ -7,21 +7,23 @@ export interface AuditLog {
   table_name: string;
   record_id: number;
   operation: string;
-  user_id: number;
-  user_name?: string;
-  old_values?: any;
-  new_values?: any;
+  field_name?: string;
   old_value?: any;
   new_value?: any;
   old_record?: any;
   new_record?: any;
-  field_name?: string;
   additional_data?: any;
   ip_address?: string;
   user_agent?: string;
   createdAt: string;
   updatedAt: string;
   group_id: number;
+  user: {
+    id: number;
+    name: string;
+    surname: string;
+    email: string;
+  };
 }
 
 export interface AuditLogResponse {

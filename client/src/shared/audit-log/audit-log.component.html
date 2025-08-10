@@ -85,6 +85,7 @@
                   </div>
                   <div class="group-client">
                     <div class="text-gray-500 text-sm">
+                      <div><strong>Utente:</strong> {{ (groupedLogs[groupId] | groupUser).name }} {{ (groupedLogs[groupId] | groupUser).surname }} ({{ (groupedLogs[groupId] | groupUser).email }})</div>
                       <div><strong>IP:</strong> {{ (groupedLogs[groupId] | groupClientInfo).ip_address }}</div>
                       <div class="break-all"><strong>User agent:</strong> {{ (groupedLogs[groupId] | groupClientInfo).user_agent }}</div>
                     </div>
@@ -117,7 +118,9 @@
                            <i class="pi pi-info-circle text-blue-500 mr-2"></i>
                            <span class="change-label">Dati aggiuntivi</span>
                          </div>
-                         <div class="json-container additional-data-content" [innerHTML]="(groupedLogs[groupId] | groupClientInfo).additional_data | prettyJson"></div>
+                         <div class="json-container additional-data-content">
+                          <pre [innerHTML]="(groupedLogs[groupId] | groupClientInfo).additional_data | prettyJson"></pre>
+                         </div>
                        </div>
                      </div>
                    }
@@ -137,7 +140,9 @@
                             <span class="change-label">Valori precedenti</span>
                             <span class="field-count">{{ (groupedLogs[groupId] | groupOldValues) | objectKeysLength }} campi</span>
                           </div>
-                          <div class="json-container old-values" [innerHTML]="(groupedLogs[groupId] | groupOldValues) | prettyJson"></div>
+                          <div class="json-container old-values">
+                            <pre [innerHTML]="(groupedLogs[groupId] | groupOldValues) | prettyJson"></pre>
+                          </div>
                         </div>
                       }
 
@@ -149,7 +154,9 @@
                             <span class="change-label">Nuovi valori</span>
                             <span class="field-count">{{ (groupedLogs[groupId] | groupNewValues) | objectKeysLength }} campi</span>
                           </div>
-                          <div class="json-container new-values" [innerHTML]="(groupedLogs[groupId] | groupNewValues) | prettyJson"></div>
+                          <div class="json-container new-values">
+                            <pre [innerHTML]="(groupedLogs[groupId] | groupNewValues) | prettyJson"></pre>
+                          </div>
                         </div>
                       }
                     </div>
@@ -164,7 +171,9 @@
                             <i class="pi pi-trash text-red-500 mr-2"></i>
                             <span class="change-label">Record eliminato</span>
                           </div>
-                          <div class="json-container old-record" [innerHTML]="(groupedLogs[groupId] | groupOldRecord) | prettyJson"></div>
+                          <div class="json-container old-record">
+                            <pre [innerHTML]="(groupedLogs[groupId] | groupOldRecord) | prettyJson"></pre>
+                          </div>
                         </div>
                       }
 
@@ -174,7 +183,9 @@
                             <i class="pi pi-plus text-green-500 mr-2"></i>
                             <span class="change-label">Record creato</span>
                           </div>
-                          <div class="json-container new-record" [innerHTML]="(groupedLogs[groupId] | groupNewRecord) | prettyJson"></div>
+                          <div class="json-container new-record">
+                            <pre [innerHTML]="(groupedLogs[groupId] | groupNewRecord) | prettyJson"></pre>
+                          </div>
                         </div>
                       }
                     </div>
