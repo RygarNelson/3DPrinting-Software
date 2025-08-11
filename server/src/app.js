@@ -13,11 +13,12 @@ import './cron.js';
 import { connectToDatabase, initializeDatabase } from './db.js';
 import authRoute from './routes/auth.route.js';
 import clienteRoute from './routes/cliente.route.js';
+import contoBancarioRoute from './routes/conto-bancario.route.js';
+import logRoute from './routes/log.route.js';
 import modelloRoute from './routes/modello.route.js';
 import spesaRoute from './routes/spesa.route.js';
 import stampanteRoute from './routes/stampante.route.js';
 import venditaRoute from './routes/vendita.route.js';
-import contoBancarioRoute from './routes/conto-bancario.route.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -93,6 +94,7 @@ app.use('/api/cliente', clienteRoute);
 app.use('/api/vendita', venditaRoute);
 app.use('/api/spesa', spesaRoute);
 app.use('/api/conto-bancario', contoBancarioRoute);
+app.use('/api/logs', logRoute);
 
 /* STATIC FILES - Angular App */
 // Check if Angular static files directory exists

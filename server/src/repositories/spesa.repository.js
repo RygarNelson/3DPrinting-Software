@@ -1,54 +1,73 @@
 'use strict'
 
 import Spesa from '../models/spesa.model.js';
+import BaseRepository from './base.repository.js';
 
-const spesaRepository = {
-    getAll: function () {
-        return Spesa.findAll();
-    },
+class SpesaRepository extends BaseRepository {
+    constructor() {
+        super(Spesa, 'T_SPESE');
+    }
 
-    findOne: function(id, projection) {
-        return Spesa.findOne({ where: { id }, attributes: projection });
-    },
+    getAll() {
+        return super.getAll();
+    }
 
-    find: function(whereOptions, limit, offset, order, projection) {
-        return Spesa.findAndCountAll({
-            where: whereOptions,
-            attributes: projection,
-            limit: limit,
-            offset: offset,
-            order: order,
-            distinct: true
-        });
-    },
+    findOne(id, projection) {
+        return super.findOne(id, projection);
+    }
 
-    insertOne: function(req) {
-        return Spesa.create({
+    find(whereOptions, limit, offset, order, projection) {
+        return super.find(whereOptions, limit, offset, order, projection);
+    }
+
+    async insertOne(req) {
+        const data = {
             data_spesa: req.body.data_spesa,
             totale_spesa: req.body.totale_spesa,
             descrizione: req.body.descrizione,
             quantita: req.body.quantita,
             tipo_spesa: req.body.tipo_spesa,
             unita_misura: req.body.unita_misura
-        }); 
-    },
+        };
 
-    updateOne: function(req, res) {
-        return Spesa.update({
+        const additionalData = {
+            request_source: 'HTTP',
+            endpoint: req.originalUrl,
+            method: req.method
+        };
+
+        return super.insertOne(data, additionalData);
+    }
+
+    async updateOne(req, res) {
+        const data = {
             data_spesa: req.body.data_spesa,
             totale_spesa: req.body.totale_spesa,
             descrizione: req.body.descrizione,
             quantita: req.body.quantita,
             tipo_spesa: req.body.tipo_spesa,
             unita_misura: req.body.unita_misura
-        }, {
-            where: { id: req.body.id }
-        });
-    },
+        };
 
-    deleteOne: function(id) {
-        return Spesa.destroy({ where: { id: id } });
+        const additionalData = {
+            request_source: 'HTTP',
+            endpoint: req.originalUrl,
+            method: req.method
+        };
+
+        return super.updateOne(req.body.id, data, additionalData);
+    }
+
+    async deleteOne(id) {
+        const additionalData = {
+            request_source: 'HTTP',
+            operation: 'DELETE'
+        };
+        return super.deleteOne(id, additionalData);
     }
 }
+
+// Create a singleton instance
+const spesaRepository = new SpesaRepository();
 
 export default spesaRepository;

@@ -110,20 +110,6 @@ const validationSchema = {
                 },
                 toBoolean: true
             },
-            'dettagli.*.basetta_dimensione': {
-                optional: true,
-                isLength: {
-                    options: { max: 500 },
-                    errorMessage: 'La dimensione della basetta non può superare i 500 caratteri'
-                }
-            },
-            'dettagli.*.basetta_quantita': {
-                optional: true,
-                isInt: {
-                    errorMessage: 'La quantita della basette deve essere un intero',
-                },
-                toInt: true
-            },
             'basette': {
                 optional: true,
                 isArray: {

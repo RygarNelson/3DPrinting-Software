@@ -3,21 +3,26 @@
 import { Op } from 'sequelize';
 import Cliente from '../models/cliente.model.js';
 import Vendita from '../models/vendita.model.js';
+import BaseRepository from './base.repository.js';
 
-const clienteRepository = {
-    getAll: function () {
-        return Cliente.findAll();
-    },
+class ClienteRepository extends BaseRepository {
+    constructor() {
+        super(Cliente, 'T_CLIENTI');
+    }
 
-    find: function(searchExample, limit, offset, order, projection) {
-        return Cliente.findAndCountAll({ where: searchExample, limit: limit, offset: offset, order: order, attributes: projection, distinct: true });
-    },
+    getAll() {
+        return super.getAll();
+    }
 
-    findOne: function(id, projection) {
-        return Cliente.findOne({ where: { id: id }, attributes: projection });
-    },
+    find(searchExample, limit, offset, order, projection) {
+        return super.find(searchExample, limit, offset, order, projection);
+    }
 
-    insertOne: function(req, res) {
+    findOne(id, projection) {
+        return super.findOne(id, projection);
+    }
+
+    async insertOne(req, res) {
         const nome = req.body.nome ? req.body.nome.trim() : '';
         const cognome = req.body.cognome ? req.body.cognome.trim() : '';
         const ragione_sociale = req.body.ragione_sociale ? req.body.ragione_sociale.trim() : '';
@@ -27,17 +32,26 @@ const clienteRepository = {
         } else {
             etichetta = ragione_sociale;
         }
-        return Cliente.create({
+        
+        const data = {
             nome: nome,
             cognome: cognome,
             ragione_sociale: ragione_sociale,
             email: req.body.email,
             telefono: req.body.telefono,
             etichetta: etichetta
-        });
-    },
+        };
 
-    updateOne: function(req, res) {
+        const additionalData = {
+            request_source: 'HTTP',
+            endpoint: req.originalUrl,
+            method: req.method
+        };
+
+        return super.insertOne(data, additionalData);
+    }
+
+    async updateOne(req, res) {
         const nome = req.body.nome ? req.body.nome.trim() : '';
         const cognome = req.body.cognome ? req.body.cognome.trim() : '';
         const ragione_sociale = req.body.ragione_sociale ? req.body.ragione_sociale.trim() : '';
@@ -47,28 +61,39 @@ const clienteRepository = {
         } else {
             etichetta = ragione_sociale;
         }
-        return Cliente.update({
+        
+        const data = {
             nome: nome,
             cognome: cognome,
             ragione_sociale: ragione_sociale,
             email: req.body.email,
             telefono: req.body.telefono,
             etichetta: etichetta
-        }, {
-            where: { id: req.body.id }
-        });
-    },
+        };
 
-    deleteOne: function(id) {
-        return Cliente.destroy({ where: { id: id } });
-    },
+        const additionalData = {
+            request_source: 'HTTP',
+            endpoint: req.originalUrl,
+            method: req.method
+        };
 
-    isUsed: async function(id) {
+        return super.updateOne(req.body.id, data, additionalData);
+    }
+
+    async deleteOne(id) {
+        const additionalData = {
+            request_source: 'HTTP',
+            operation: 'DELETE'
+        };
+        return super.deleteOne(id, additionalData);
+    }
+
+    async isUsed(id) {
         const isVendita = await Vendita.findOne({ where: { cliente_id: id } });
         return isVendita ? true : false;
-    },
+    }
 
-    getClienteVintedId: async function() {
+    async getClienteVintedId() {
         let vintedId = null;
         
         const cliente = await Cliente.findOne({ where: 
@@ -83,20 +108,29 @@ const clienteRepository = {
         if (cliente) {
             vintedId = cliente.id;
         } else {
-            const clienteNuovo = await Cliente.create({
+            const data = {
                 nome: null,
                 cognome: null,
                 ragione_sociale: 'Vinted',
                 email: null,
                 telefono: null,
                 etichetta: 'Vinted'
-            });
+            };
 
+            const additionalData = {
+                operation: 'AUTO_CREATE',
+                reason: 'Vinted client not found, creating automatically'
+            };
+
+            const clienteNuovo = await super.insertOne(data, additionalData);
             vintedId = clienteNuovo.id;
         }
 
         return vintedId;
     }
-};
+}
+
+// Create a singleton instance
+const clienteRepository = new ClienteRepository();
 
 export default clienteRepository; 

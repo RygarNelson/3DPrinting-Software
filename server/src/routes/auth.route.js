@@ -3,10 +3,13 @@
 import express from 'express';
 import { body, validationResult } from 'express-validator';
 import authMethods from '../methods/authMethods.js';
+import { clearLoggingContext, setLoggingContext } from '../middleware/loggingContext.js';
 import UsersRepository from '../repositories/users.repository.js';
 import asyncHandler from '../utils/asyncHandler.js';
 
 const router = express.Router();
+router.use(setLoggingContext);
+router.use(clearLoggingContext);
 
 router.post(
     '/login',

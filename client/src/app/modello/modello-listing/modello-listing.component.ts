@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { DialogService } from 'primeng/dynamicdialog';
+import { DialogService, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
@@ -17,6 +17,7 @@ import { ModelloTipoLookupDirective } from 'src/directives/modello/modello-tipo-
 import { ModelloListingGridModel, ModelloListingGridResponse, ModelloListingTableModel, ModelloListingTableResponse } from 'src/models/modello/modello-listing';
 import { ModelloListingFiltri } from 'src/models/modello/modello-listing-filtri';
 import { ModelloService } from 'src/services/modello.service';
+import { AuditLogComponent } from 'src/shared/audit-log/audit-log.component';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
 import { ModelloTipoComponent } from '../modello-tipo/modello-tipo.component';
@@ -184,6 +185,29 @@ addNewModello(): void {
 editModello(event: Event, modello: ModelloListingTableModel | ModelloListingGridModel): void {
   event.stopPropagation();
   this.router.navigate(['/modello/manager', modello.id]);
+}
+
+viewAuditLog(event: Event, modello: ModelloListingTableModel | ModelloListingGridModel): void {
+  event.stopPropagation();
+  let config: DynamicDialogConfig = {
+    width: '90%',
+    height: '80%',
+    modal: true,
+    dismissableMask: true,
+    closable: true,
+    showHeader: false,
+    contentStyle: {
+      'height': '100%',
+      'width': '100%',
+      'padding': '0px'
+    },
+    data: {
+      tableName: 'T_MODELLI',
+      recordId: modello.id,
+      objectName: `Modello ${modello.nome} (${modello.id})`
+    }
+  };
+  this.dialogService.open(AuditLogComponent, config);
 }
 
 confirmDelete(event: Event, modello: ModelloListingTableModel | ModelloListingGridModel): void {

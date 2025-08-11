@@ -110,6 +110,18 @@ $breakpoints: (
   }
 }
 
+@mixin col-span($n) {
+  .col-span-#{$n} {
+    grid-column: span #{$n};
+  }
+}
+
+@mixin m($n) {
+  .m-#{$n} {
+    margin: #{$n * 0.25}rem;
+  }
+}
+
 @mixin mt($n) {
   .mt-#{$n} {
     margin-top: #{$n * 0.25}rem;
@@ -188,10 +200,12 @@ $breakpoints: (
 
 @for $i from 1 through 12 {
   @include grid-cols($i);
+  @include col-span($i);
 }
 
 // Base grid-cols and mt utilities
 @for $i from 0 through 12 {
+  @include m($i);
   @include mt($i);
   @include mb($i);
   @include ml($i);
@@ -215,9 +229,15 @@ $breakpoints: (
       .#{$break}\:grid-cols-#{$i} {
         grid-template-columns: repeat(#{$i}, minmax(0, 1fr));
       }
+      .#{$break}\:col-span-#{$i} {
+        grid-column: span #{$i};
+      }
     }
 
     @for $i from 0 through 12 {
+      .#{$break}\:m-#{$i - 1} {
+        margin: #{($i - 1) * 0.25}rem;
+      }
       .#{$break}\:mt-#{$i - 1} {
         margin-top: #{($i - 1) * 0.25}rem;
       }

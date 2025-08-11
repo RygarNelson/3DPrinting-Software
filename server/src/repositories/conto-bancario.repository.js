@@ -2,45 +2,66 @@
 
 import ContoBancario from '../models/conto-bancario.model.js';
 import Vendita from '../models/vendita.model.js';
+import BaseRepository from './base.repository.js';
 
-const contoBancarioRepository = {
-    getAll: function () {
-        return ContoBancario.findAll();
-    },
+class ContoBancarioRepository extends BaseRepository {
+    constructor() {
+        super(ContoBancario, 'T_CONTI_BANCARI');
+    }
 
-    find: function(searchExample, limit, offset, order, projection) {
-        return ContoBancario.findAndCountAll({ where: searchExample, limit: limit, offset: offset, order: order, attributes: projection, distinct: true });
-    },
+    getAll() {
+        return super.getAll();
+    }
 
-    findOne: function(id, projection) {
-        return ContoBancario.findOne({ where: {
-            id: id
-        }, attributes: projection });
-    },
+    find(searchExample, limit, offset, order, projection) {
+        return super.find(searchExample, limit, offset, order, projection);
+    }
 
-    insertOne: function(req, res) {
-        return ContoBancario.create({
+    findOne(id, projection) {
+        return super.findOne(id, projection);
+    }
+
+    async insertOne(req, res) {
+        const data = {
             nome_proprietario: req.body.nome_proprietario,
             cognome_proprietario: req.body.cognome_proprietario,
             iban: req.body.iban
-        });
-    },
+        };
 
-    updateOne: function(req, res) {
-        return ContoBancario.update({
+        const additionalData = {
+            request_source: 'HTTP',
+            endpoint: req.originalUrl,
+            method: req.method
+        };
+
+        return super.insertOne(data, additionalData);
+    }
+
+    async updateOne(req, res) {
+        const data = {
             nome_proprietario: req.body.nome_proprietario,
             cognome_proprietario: req.body.cognome_proprietario,
             iban: req.body.iban
-        }, {
-            where: { id: req.body.id }
-        });
-    },
+        };
 
-    deleteOne: function(id) {
-        return ContoBancario.destroy({ where: { id: id } });
-    },
+        const additionalData = {
+            request_source: 'HTTP',
+            endpoint: req.originalUrl,
+            method: req.method
+        };
 
-    isUsed: async function(id) {
+        return super.updateOne(req.body.id, data, additionalData);
+    }
+
+    async deleteOne(id) {
+        const additionalData = {
+            request_source: 'HTTP',
+            operation: 'DELETE'
+        };
+        return super.deleteOne(id, additionalData);
+    }
+
+    async isUsed(id) {
         try {
             const isVendita = await Vendita.findOne({ where: { conto_bancario_id: id, deletedAt: null } });
             return isVendita ? true : false;
@@ -50,6 +71,9 @@ const contoBancarioRepository = {
             return false;
         }
     }
-};
+}
+
+// Create a singleton instance
+const contoBancarioRepository = new ContoBancarioRepository();
 
 export default contoBancarioRepository;

@@ -59,6 +59,9 @@
                 </p-button>
                 }
                 @else {
+                <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(stampante)"
+                  pTooltip="Visualizza log di audit" tooltipPosition="top">
+                </p-button>
                 <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editStampante(stampante)"
                   pTooltip="Modifica stampante" tooltipPosition="top">
                 </p-button>
