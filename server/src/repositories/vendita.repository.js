@@ -7,9 +7,15 @@ import Modello from '../models/modello.model.js';
 import Spesa from '../models/spesa.model.js';
 import Vendita from '../models/vendita.model.js';
 import VenditaDettaglio from '../models/venditaDettaglio.model.js';
+import loggingService from '../services/logging.service.js';
+import BaseRepository from './base.repository.js';
 
-const venditaRepository = {
-    getAll: function () {
+class VenditaRepository extends BaseRepository {
+    constructor() {
+        super(Vendita, 'T_VENDITE');
+    }
+
+    getAll() {
         return Vendita.findAll({
             include: [
                 { association: 'dettagli', where: { deletedAt: null }, required: false },
@@ -17,13 +23,13 @@ const venditaRepository = {
                 { association: 'basette', where: { deletedAt: null }, required: false }
             ]
         });
-    },
+    }
 
-    findOne: function(id, projection, include) {
+    findOne(id, projection, include) {
         return Vendita.findOne({ where: { id }, attributes: projection, include: include });
-    },
+    }
 
-    find: function(whereOptions, limit, offset, order, projection, include) {
+    find(whereOptions, limit, offset, order, projection, include) {
         return Vendita.findAndCountAll({
             where: whereOptions,
             attributes: projection,
@@ -33,13 +39,14 @@ const venditaRepository = {
             include: include,
             distinct: true
         });
-    },
+    }
 
-    insertOne: async function(req) {
+    async insertOne(req) {
         const transaction = await sequelize.transaction();
         try {
             const { data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, dettagli, basette, conto_bancario_id } = req.body;
-            const vendita = await Vendita.create({
+            
+            const data = {
                 data_vendita,
                 data_scadenza,
                 data_scadenza_spedizione,
@@ -47,12 +54,24 @@ const venditaRepository = {
                 link_tracciamento,
                 cliente_id,
                 conto_bancario_id
-            }, { transaction: transaction });
+            };
+
+            const additionalData = {
+                request_source: 'HTTP',
+                endpoint: req.originalUrl,
+                method: req.method,
+                operation_details: 'Complex insert with dettagli and basette'
+            };
+
+            const vendita = await Vendita.create(data, { transaction: transaction });
+
+            // Log the main vendita creation
+            await loggingService.logInsert('T_VENDITE', vendita.id, vendita.toJSON(), additionalData, transaction);
 
             let totale = 0;
             if (Array.isArray(dettagli)) {
                 for (const dettaglio of dettagli) {
-                    await VenditaDettaglio.create({
+                    const dettaglioCreated = await VenditaDettaglio.create({
                         vendita_id: vendita.id,
                         modello_id: dettaglio.modello_id,
                         stampante_id: dettaglio.stampante_id,
@@ -65,6 +84,13 @@ const venditaRepository = {
                         basetta_dimensione: dettaglio.basetta_dimensione,
                         basetta_quantita: dettaglio.basetta_quantita
                     }, { transaction: transaction });
+
+                    // Log dettaglio creation
+                    await loggingService.logInsert('T_VENDITE_DETTAGLI', dettaglioCreated.id, dettaglioCreated.toJSON(), {
+                            ...additionalData,
+                            parent_vendita_id: vendita.id
+                        }, transaction);
+
                     if (dettaglio.prezzo) {
                         totale += parseFloat(dettaglio.prezzo);
                     }
@@ -74,12 +100,18 @@ const venditaRepository = {
             // Create basette
             if (Array.isArray(basette)) {
                 for (const basetta of basette) {
-                    await Basetta.create({
+                    const basettaCreated = await Basetta.create({
                         vendita_id: vendita.id,
                         dimensione: basetta.dimensione,
                         quantita: basetta.quantita,
                         stato_stampa: basetta.stato_stampa
                     }, { transaction: transaction });
+
+                    // Log basetta creation
+                    await loggingService.logInsert('T_BASETTE', basettaCreated.id, basettaCreated.toJSON(), {
+                            ...additionalData,
+                            parent_vendita_id: vendita.id
+                        }, transaction);
                 }
             }
 
@@ -90,19 +122,28 @@ const venditaRepository = {
                 const modello = await Modello.findByPk(dettaglio.modello_id);
                 if (modello != null && modello.vinted_vendibile) {
                     await modello.update({ vinted_is_in_vendita: false }, { transaction: transaction });
+                    
+                    // Log modello update
+                    await loggingService.logUpdate('T_MODELLI', modello.id, 'vinted_is_in_vendita', true, false, {
+                        ...additionalData,
+                        reason: 'Model set as not in sale after vendita creation'
+                    }, transaction);
                 }
             }
 
             await transaction.commit();
+            return vendita;
         } catch (error) {
             await transaction.rollback();
+            throw error;
         }
-    },
+    }
 
-    updateOne: async function(req) {
+    async updateOne(req) {
         const transaction = await sequelize.transaction();
         try {
             const { id, data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, dettagli, basette, conto_bancario_id } = req.body;
+            
             const vendita = await Vendita.findByPk(id, { 
                 include: [
                     { model: VenditaDettaglio, as: 'dettagli' },
@@ -111,7 +152,19 @@ const venditaRepository = {
                 transaction: transaction 
             });
             if (!vendita) throw new Error('Vendita non trovata');
+
+            const oldData = vendita.toJSON();
             await vendita.update({ data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, conto_bancario_id }, { transaction: transaction });
+
+            const additionalData = {
+                request_source: 'HTTP',
+                endpoint: req.originalUrl,
+                method: req.method,
+                operation_details: 'Complex update with dettagli and basette'
+            };
+
+            // Log the main vendita update
+            await loggingService.logUpdate('T_VENDITE', vendita.id, oldData, vendita.toJSON(), additionalData, transaction);
 
             // Handle dettagli
             const existingDettagli = vendita.dettagli || [];
@@ -127,6 +180,7 @@ const venditaRepository = {
             for (const existingDettaglio of existingDettagli) {
                 if (dettagliMap.has(existingDettaglio.id)) {
                     const dettaglio = dettagliMap.get(existingDettaglio.id);
+                    const oldDettaglioData = existingDettaglio.toJSON();
                     await existingDettaglio.update({ 
                         modello_id: dettaglio.modello_id, 
                         stampante_id: dettaglio.stampante_id, 
@@ -139,9 +193,23 @@ const venditaRepository = {
                         basetta_dimensione: dettaglio.basetta_dimensione,
                         basetta_quantita: dettaglio.basetta_quantita
                     }, { transaction: transaction });
+                    
+                    // Log dettaglio update
+                    await loggingService.logUpdate('T_VENDITE_DETTAGLI', existingDettaglio.id, oldDettaglioData, existingDettaglio.toJSON(), {
+                        ...additionalData,
+                        parent_vendita_id: vendita.id
+                    }, transaction);
+                    
                     dettagliMap.delete(existingDettaglio.id);
                 } else {
+                    const oldDettaglioData = existingDettaglio.toJSON();
                     await existingDettaglio.destroy({ transaction: transaction });
+                    
+                    // Log dettaglio deletion
+                    await loggingService.logDelete('T_VENDITE_DETTAGLI', existingDettaglio.id, oldDettaglioData, {
+                        ...additionalData,
+                        parent_vendita_id: vendita.id
+                    }, transaction);
                 }
             }
             // Insert new dettagli
@@ -149,7 +217,7 @@ const venditaRepository = {
             if (Array.isArray(dettagli)) {
                 for (const dettaglio of dettagli) {
                     if (!dettaglio.id) {
-                        await VenditaDettaglio.create({
+                        const dettaglioCreated = await VenditaDettaglio.create({
                             vendita_id: vendita.id,
                             modello_id: dettaglio.modello_id,
                             stampante_id: dettaglio.stampante_id,
@@ -162,6 +230,12 @@ const venditaRepository = {
                             basetta_dimensione: dettaglio.basetta_dimensione,
                             basetta_quantita: dettaglio.basetta_quantita
                         }, { transaction: transaction });
+                        
+                        // Log new dettaglio creation
+                        await loggingService.logInsert('T_VENDITE_DETTAGLI', dettaglioCreated.id, dettaglioCreated.toJSON(), {
+                            ...additionalData,
+                            parent_vendita_id: vendita.id
+                        }, transaction);
                     }
                     if (dettaglio.prezzo) {
                         totale += parseFloat(dettaglio.prezzo);
@@ -183,26 +257,47 @@ const venditaRepository = {
             for (const existingBasetta of existingBasette) {
                 if (basetteMap.has(existingBasetta.id)) {
                     const basetta = basetteMap.get(existingBasetta.id);
+                    const oldBasettaData = existingBasetta.toJSON();
                     await existingBasetta.update({ 
                         dimensione: basetta.dimensione, 
                         quantita: basetta.quantita, 
                         stato_stampa: basetta.stato_stampa
                     }, { transaction: transaction });
+                    
+                    // Log basetta update
+                    await loggingService.logUpdate('T_BASETTE', existingBasetta.id, oldBasettaData, existingBasetta.toJSON(), {
+                        ...additionalData,
+                        parent_vendita_id: vendita.id
+                    }, transaction);
+                    
                     basetteMap.delete(existingBasetta.id);
                 } else {
+                    const oldBasettaData = existingBasetta.toJSON();
                     await existingBasetta.destroy({ transaction: transaction });
+                    
+                    // Log basetta deletion
+                    await loggingService.logDelete('T_BASETTE', existingBasetta.id, oldBasettaData, {
+                        ...additionalData,
+                        parent_vendita_id: vendita.id
+                    }, transaction);
                 }
             }
             // Insert new basette
             if (Array.isArray(basette)) {
                 for (const basetta of basette) {
                     if (!basetta.id) {
-                        await Basetta.create({
+                        const basettaCreated = await Basetta.create({
                             vendita_id: vendita.id,
                             dimensione: basetta.dimensione,
                             quantita: basetta.quantita,
                             stato_stampa: basetta.stato_stampa
                         }, { transaction: transaction });
+                        
+                        // Log new basetta creation
+                        await loggingService.logInsert('T_BASETTE', basettaCreated.id, basettaCreated.toJSON(), {
+                            ...additionalData,
+                            parent_vendita_id: vendita.id
+                        }, transaction);
                     }
                 }
             }
@@ -214,30 +309,82 @@ const venditaRepository = {
                 if (dettaglio.modello_id) {
                     const modello = await Modello.findByPk(dettaglio.modello_id);
                     if (modello != null && modello.vinted_vendibile) {
+                        const oldVintedStatus = modello.vinted_is_in_vendita;
                         await modello.update({ vinted_is_in_vendita: false }, { transaction: transaction });
+                        
+                        // Log modello update
+                        await loggingService.logUpdate('T_MODELLI', modello.id, 'vinted_is_in_vendita', oldVintedStatus, false, {
+                            ...additionalData,
+                            reason: 'Model set as not in sale after vendita update'
+                        }, transaction);
                     }
                 }
             }
 
             await transaction.commit();
+            return vendita;
         } catch (error) {
             await transaction.rollback();
+            throw error;
         }
-    },
+    }
 
-    deleteOne: async function(id) {
+    async deleteOne(id) {
         const transaction = await sequelize.transaction();
         try {
+            const vendita = await Vendita.findByPk(id, {
+                include: [
+                    { model: VenditaDettaglio, as: 'dettagli' },
+                    { model: Basetta, as: 'basette' }
+                ],
+                transaction: transaction
+            });
+
+            if (!vendita) {
+                throw new Error('Vendita non trovata');
+            }
+
+            const additionalData = {
+                request_source: 'HTTP',
+                operation: 'DELETE',
+                operation_details: 'Complex delete with dettagli and basette'
+            };
+
+            // Log dettagli deletions
+            if (vendita.dettagli) {
+                for (const dettaglio of vendita.dettagli) {
+                    await loggingService.logDelete('T_VENDITE_DETTAGLI', dettaglio.id, dettaglio.toJSON(), {
+                        ...additionalData,
+                        parent_vendita_id: vendita.id
+                    }, transaction);
+                }
+            }
+
+            // Log basette deletions
+            if (vendita.basette) {
+                for (const basetta of vendita.basette) {
+                    await loggingService.logDelete('T_BASETTE', basetta.id, basetta.toJSON(), {
+                        ...additionalData,
+                        parent_vendita_id: vendita.id
+                    }, transaction);
+                }
+            }
+
             await VenditaDettaglio.destroy({ where: { vendita_id: id }, transaction: transaction });
             await Basetta.destroy({ where: { vendita_id: id }, transaction: transaction });
+            
+            // Log main vendita deletion
+            await loggingService.logDelete('T_VENDITE', vendita.id, vendita.toJSON(), additionalData, transaction);
+            
             await Vendita.destroy({ where: { id }, transaction: transaction });
             await transaction.commit();
         } catch (error) {
             await transaction.rollback();
+            throw error;
         }
-    },
+    }
 
-    modificaStatoDettaglio: async function(id, stato_avanzamento) {
+    async modificaStatoDettaglio(id, stato_avanzamento) {
         const dettaglio = await VenditaDettaglio.findByPk(id);
 
         if (!dettaglio) {
@@ -247,12 +394,19 @@ const venditaRepository = {
             throw new Error('Stato di avanzamento non specificato');
         }
 
+        const oldDettaglio = dettaglio.toJSON();
         await dettaglio.update({ stato_stampa: stato_avanzamento });
 
-        return dettaglio;
-    },
+        // Log the state change
+        await loggingService.logUpdate('T_VENDITE_DETTAGLI', dettaglio.id, oldDettaglio, dettaglio.toJSON(), {
+            operation: 'UPDATE',
+            reason: 'Manual state modification'
+        });
 
-    modificaStatoBasetta: async function(id, stato_avanzamento) {
+        return dettaglio;
+    }
+
+    async modificaStatoBasetta(id, stato_avanzamento) {
         const basetta = await Basetta.findByPk(id);
 
         if (!basetta) {
@@ -262,12 +416,19 @@ const venditaRepository = {
             throw new Error('Stato di avanzamento non specificato');
         }
 
+        const oldBasetta = basetta.toJSON();
         await basetta.update({ stato_stampa: stato_avanzamento });
 
-        return basetta;
-    },
+        // Log the state change
+        await loggingService.logUpdate('T_BASETTE', basetta.id, oldBasetta, basetta.toJSON(), {
+            operation: 'UPDATE',
+            reason: 'Manual state modification'
+        });
 
-    modificaStatoVendita: async function(id, stato_avanzamento) {
+        return basetta;
+    }
+
+    async modificaStatoVendita(id, stato_avanzamento) {
         const vendita = await Vendita.findByPk(id);
         const dettagli = await VenditaDettaglio.findAll({ where: { vendita_id: id } });
         const basette = await Basetta.findAll({ where: { vendita_id: id } });
@@ -281,25 +442,48 @@ const venditaRepository = {
             throw new Error('Stato di avanzamento non specificato');
         }
 
+        const oldVendita = vendita.toJSON();
         await vendita.update({ stato_spedizione: stato_avanzamento });
+
+        // Log the vendita state change
+        await loggingService.logUpdate('T_VENDITE', vendita.id, oldVendita, vendita.toJSON(), {
+            operation: 'UPDATE',
+            reason: 'Manual vendita state modification'
+        });
 
         if (isStatoSpedizioneDaSpedire) {
             for (const dettaglio of dettagli) {
                 if (dettaglio.stato_stampa == 0) {
+                    const oldDettaglio = dettaglio.toJSON();
                     await dettaglio.update({ stato_stampa: 4 });
+                    
+                    // Log dettaglio state change
+                    await loggingService.logUpdate('T_VENDITE_DETTAGLI', dettaglio.id, oldDettaglio, dettaglio.toJSON(), {
+                        operation: 'UPDATE',
+                        reason: 'Automatic state change due to vendita shipping status change',
+                        parent_vendita_id: vendita.id
+                    });
                 }
             }
             for (const basetta of basette) {
                 if (basetta.stato_stampa == 0) {
+                    const oldBasetta = basetta.toJSON();
                     await basetta.update({ stato_stampa: 4 });
+                    
+                    // Log basetta state change
+                    await loggingService.logUpdate('T_BASETTE', basetta.id, oldBasetta, basetta.toJSON(), {
+                        operation: 'UPDATE',
+                        reason: 'Automatic state change due to vendita shipping status change',
+                        parent_vendita_id: vendita.id
+                    });
                 }
             }
         }
         
         return vendita;
-    },
+    }
 
-    ottieniTuttiAnni: async function() {
+    async ottieniTuttiAnni() {
         const anni = await Vendita.findAll({
             attributes: [
                 [fn('strftime', '%Y', col('data_vendita')), 'anno']
@@ -320,9 +504,9 @@ const venditaRepository = {
                 etichetta: a.get('anno')
             }
         });
-    },
+    }
 
-    ottieniAndamentoVendite: async function(anno) {
+    async ottieniAndamentoVendite(anno) {
         const data = {
             labels: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'],
             datasets: [
@@ -367,9 +551,9 @@ const venditaRepository = {
         };
 
         return { data, options };
-    },
+    }
 
-    ottieniAndamentoUltimiTreMesi: async function() {
+    async ottieniAndamentoUltimiTreMesi() {
         let dataOggi = new Date();
         dataOggi.setTime( dataOggi.getTime() - dataOggi.getTimezoneOffset()*60*1000 );
 
@@ -391,9 +575,9 @@ const venditaRepository = {
         const totaleSpese = speseMese + speseMesePrecedente + speseMesePrecedentePrecedente;
 
         return totaleVendite - totaleSpese;
-    },
+    }
 
-    ottieniAndamentoUltimiTreMesiSospese: async function() {
+    async ottieniAndamentoUltimiTreMesiSospese() {
         let dataOggi = new Date();
         dataOggi.setTime( dataOggi.getTime() - dataOggi.getTimezoneOffset()*60*1000 );
 
@@ -408,9 +592,9 @@ const venditaRepository = {
         const venditeMesePrecedentePrecedente = await this.ottieniAndamentoVenditaSospeseAnnoMese(anno, mesePrecedentePrecedente) || 0;
 
         return venditeMese + venditeMesePrecedente + venditeMesePrecedentePrecedente;
-    },
+    }
 
-    ottieniAndamentoVenditaAnnoMese: async function(anno, mese) {
+    async ottieniAndamentoVenditaAnnoMese(anno, mese) {
         let primoGiornoMese = new Date(anno, mese - 1, 1);
         primoGiornoMese.setTime( primoGiornoMese.getTime() - primoGiornoMese.getTimezoneOffset()*60*1000 );
 
@@ -429,9 +613,9 @@ const venditaRepository = {
         });
 
         return data;
-    },
+    }
 
-    ottieniAndamentoVenditaSospeseAnnoMese: async function(anno, mese) {
+    async ottieniAndamentoVenditaSospeseAnnoMese(anno, mese) {
         let primoGiornoMese = new Date(anno, mese - 1, 1);
         primoGiornoMese.setTime( primoGiornoMese.getTime() - primoGiornoMese.getTimezoneOffset()*60*1000 );
 
@@ -452,9 +636,9 @@ const venditaRepository = {
         });
 
         return data;
-    },
+    }
 
-    ottieniAndamentoSpesaAnnoMese: async function(anno, mese) {
+    async ottieniAndamentoSpesaAnnoMese(anno, mese) {
         let primoGiornoMese = new Date(anno, mese - 1, 1);
         primoGiornoMese.setTime( primoGiornoMese.getTime() - primoGiornoMese.getTimezoneOffset()*60*1000 );
 
@@ -472,9 +656,9 @@ const venditaRepository = {
         });
 
         return data;
-    },
+    }
 
-    ottieniStatoVendite: async function() {
+    async ottieniStatoVendite() {
         const da_stampare = await this.contaVenditeConDettagliStatoStampa(0);
         const stampa_in_corso = await this.contaVenditeConDettagliStatoStampa(1);
         const terminato_senza_difetti = await this.contaVenditeConDettagliStatoStampa(4);
@@ -504,25 +688,25 @@ const venditaRepository = {
             in_scadenza,
             scadute
         };
-    },
+    }
 
-    contaVenditeConDettagliStatoStampa: async function(stato_stampa) {
+    async contaVenditeConDettagliStatoStampa(stato_stampa) {
         return VenditaDettaglio.count({
             where: {
                 stato_stampa: stato_stampa
             }
         });
-    },
+    }
 
-    contaVenditeConStatoSpedizione: async function(stato_spedizione) {
+    async contaVenditeConStatoSpedizione(stato_spedizione) {
         return Vendita.count({
             where: {
                 stato_spedizione: stato_spedizione
             }
         });
-    },
+    }
 
-    contaVenditeInScadenza: async function() {
+    async contaVenditeInScadenza() {
         let dataOggi = new Date();
 
         return Vendita.count({
@@ -532,9 +716,9 @@ const venditaRepository = {
                 stato_spedizione: { [Op.in]: [0, 4] }
             }
         });
-    },
+    }
 
-    contaVenditeScadute: async function() {
+    async contaVenditeScadute() {
         let dataOggi = new Date();
 
         return Vendita.count({
@@ -543,9 +727,9 @@ const venditaRepository = {
                 stato_spedizione: { [Op.in]: [0, 4] }
             }
         });
-    },
+    }
 
-    sommaVenditePerContoBancarioAnno: async function(anno, conto_bancario_id) {
+    async sommaVenditePerContoBancarioAnno(anno, conto_bancario_id) {
         const primoGiornoAnno = new Date(anno, 0, 1);
         const ultimoGiornoAnno = new Date(anno, 11, 31);
 
@@ -556,9 +740,9 @@ const venditaRepository = {
                 conto_bancario_id: conto_bancario_id
             }
         });
-    },
+    }
 
-    ottieniRiepilogoVenditeModelliPerMese: async function(anno) {
+    async ottieniRiepilogoVenditeModelliPerMese(anno) {
         const primoGiornoAnno = new Date(anno, 0, 1);
         const ultimoGiornoAnno = new Date(anno, 11, 31);
 
@@ -642,15 +826,26 @@ const venditaRepository = {
         });
 
         return normalized;
-    },
-
-    modificaContoBancarioVendite: async function(vendite_ids, conto_bancario_id) {
-        await Vendita.update({ conto_bancario_id: conto_bancario_id }, {
-            where: {
-                id: { [Op.in]: vendite_ids }
-            }
-        });
     }
-};
+
+    async modificaContoBancarioVendite(vendite_ids, conto_bancario_id) {
+        const vendite = await Vendita.findAll({ where: { id: { [Op.in]: vendite_ids } } });
+        
+        for (const vendita of vendite) {
+            const oldContoBancarioId = vendita.conto_bancario_id;
+            await vendita.update({ conto_bancario_id: conto_bancario_id });
+            
+            // Log the conto bancario change
+            await loggingService.logUpdate('T_VENDITE', vendita.id, 'conto_bancario_id', oldContoBancarioId, conto_bancario_id, {
+                operation: 'BULK_UPDATE',
+                reason: 'Bulk update of bank account for multiple sales',
+                affected_records: vendite_ids.length
+            });
+        }
+    }
+}
+
+// Create a singleton instance
+const venditaRepository = new VenditaRepository();
 
 export default venditaRepository; 

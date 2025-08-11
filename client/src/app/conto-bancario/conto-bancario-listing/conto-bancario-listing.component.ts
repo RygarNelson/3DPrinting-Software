@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { DialogService } from 'primeng/dynamicdialog';
+import { DialogService, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
@@ -16,6 +16,7 @@ import { Subscription } from 'rxjs';
 import { ContoBancarioListingModel, ContoBancarioListingResponse } from 'src/models/conto-bancario/conto-bancario-listing';
 import { ContoBancarioListingFiltri } from 'src/models/conto-bancario/conto-bancario-listing-filtri';
 import { ContoBancarioService } from 'src/services/conto-bancario.service';
+import { AuditLogComponent } from 'src/shared/audit-log/audit-log.component';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { ContoBancarioListingEliminaMessaggioPipe } from '../pipes/conto-bancario-listing-elimina-messaggio.pipe';
 
@@ -147,10 +148,32 @@ export class ContoBancarioListingComponent {
   }
 
   editContoBancario(contoBancario: ContoBancarioListingModel): void {
-    this.router.navigate(['/conto-bancario/manager', contoBancario.id]);
-  }
+  this.router.navigate(['/conto-bancario/manager', contoBancario.id]);
+}
 
-  confirmDelete(event: Event, contoBancario: ContoBancarioListingModel): void {
+viewAuditLog(contoBancario: ContoBancarioListingModel): void {
+  let config: DynamicDialogConfig = {
+    width: '90%',
+    height: '80%',
+    modal: true,
+    dismissableMask: true,
+    closable: true,
+    showHeader: false,
+    contentStyle: {
+      'height': '100%',
+      'width': '100%',
+      'padding': '0px'
+    },
+    data: {
+      tableName: 'T_CONTI_BANCARI',
+      recordId: contoBancario.id,
+      objectName: `Conto bancario ${contoBancario.iban} (${contoBancario.id})`
+    }
+  };
+  this.dialogService.open(AuditLogComponent, config);
+}
+
+confirmDelete(event: Event, contoBancario: ContoBancarioListingModel): void {
     this.confirmationService.confirm({
       target: event.target as EventTarget,
       message: `Sei sicuro di voler eliminare il conto bancario "${contoBancario.iban}"?`,

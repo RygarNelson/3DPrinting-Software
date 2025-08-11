@@ -120,6 +120,18 @@ const updateDatabase = async (dbVersion, DatabaseVersion, CURRENT_DATABASE_VERSI
                     await updateDatabaseToVersion13();
                     break;
                 }
+                case 13: {
+                    await updateDatabaseToVersion14();
+                    break;
+                }
+                case 14: {
+                    await updateDatabaseToVersion15();
+                    break;
+                }
+                case 15: {
+                    await updateDatabaseToVersion16();
+                    break;
+                }
                 default: {
                     console.log('Update to version', (version + 1), 'not implemented');
                     process.exit(1);
@@ -285,6 +297,60 @@ const updateDatabaseToVersion13 = async () => {
         await sequelize.query('ALTER TABLE T_VENDITE_DETTAGLI ADD COLUMN basetta_quantita INTEGER NULL');
     } catch (error) {
         console.log('Cannot update database to version 13');
+    }
+}
+
+const updateDatabaseToVersion14 = async () => {
+    try {
+        console.log('Updating database to version 14');
+
+        // Create table T_LOGS for database change logging
+        await sequelize.query(`CREATE TABLE T_LOGS (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            table_name VARCHAR(100) NOT NULL,
+            record_id INTEGER NULL,
+            operation VARCHAR(20) NOT NULL,
+            field_name VARCHAR(100) NULL,
+            old_value TEXT NULL,
+            new_value TEXT NULL,
+            old_record TEXT NULL,
+            new_record TEXT NULL,
+            user_id INTEGER NULL,
+            ip_address VARCHAR(45) NULL,
+            user_agent TEXT NULL,
+            session_id VARCHAR(255) NULL,
+            additional_data TEXT NULL,
+            createdAt DATETIME NOT NULL,
+            updatedAt DATETIME NOT NULL
+        )`);
+
+        console.log('T_LOGS table created successfully');
+    } catch (error) {
+        console.log('Cannot update database to version 14');
+        console.error(error);
+        process.exit(1);
+    }
+}
+
+const updateDatabaseToVersion15 = async () => {
+    try {
+        console.log('Updating database to version 15');
+
+        await sequelize.query('ALTER TABLE T_LOGS ADD COLUMN group_id INTEGER NULL');
+    } catch (error) {
+        console.log('Cannot update database to version 15');
+    }
+}
+
+const updateDatabaseToVersion16 = async () => {
+    try {
+        console.log('Updating database to version 16');
+
+        await sequelize.query('ALTER TABLE T_LOGS ADD COLUMN user JSON NULL');
+        await sequelize.query('ALTER TABLE T_LOGS DROP COLUMN user_id');
+        await sequelize.query('ALTER TABLE T_LOGS DROP COLUMN session_id');
+    } catch (error) {
+        console.log('Cannot update database to version 16');
     }
 }
 

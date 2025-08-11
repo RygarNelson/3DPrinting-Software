@@ -8,8 +8,8 @@ export class ModelloManagerModel {
     tipo: ModelloTipoEnum = ModelloTipoEnum.PLA;
     basetta_dimensione?: string;
     basetta_quantita?: number;
-    vinted_vendibile?: boolean;
-    vinted_is_in_vendita?: boolean;
+    vinted_vendibile: boolean = false;
+    vinted_is_in_vendita: boolean = false;
 }
 
 export class ModelloManagerResponse implements ResponseInterface {

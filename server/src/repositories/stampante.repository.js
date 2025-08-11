@@ -2,46 +2,70 @@
 
 import Stampante from '../models/stampante.model.js';
 import VenditaDettaglio from '../models/venditaDettaglio.model.js';
+import BaseRepository from './base.repository.js';
 
-const stampanteRepository = {
-    getAll: function () {
-        return Stampante.findAll();
-    },
+class StampanteRepository extends BaseRepository {
+    constructor() {
+        super(Stampante, 'T_STAMPANTI');
+    }
 
-    find: function(searchExample, limit, offset, order, projection) {
-        return Stampante.findAndCountAll({ where: searchExample, limit: limit, offset: offset, order: order, attributes: projection, distinct: true });
-    },
+    getAll() {
+        return super.getAll();
+    }
 
-    findOne: function(id, projection) {
-        return Stampante.findOne({ where: {
-            id: id
-        }, attributes: projection });
-    },
+    find(searchExample, limit, offset, order, projection) {
+        return super.find(searchExample, limit, offset, order, projection);
+    }
 
-    insertOne: function(req, res) {
-        return Stampante.create({
+    findOne(id, projection) {
+        return super.findOne(id, projection);
+    }
+
+    async insertOne(req, res) {
+        const data = {
             nome: req.body.nome,
             descrizione: req.body.descrizione
-        });
-    },
+        };
 
-    updateOne: function(req, res) {
-        return Stampante.update({
+        const additionalData = {
+            request_source: 'HTTP',
+            endpoint: req.originalUrl,
+            method: req.method
+        };
+
+        return super.insertOne(data, additionalData);
+    }
+
+    async updateOne(req, res) {
+        const data = {
             nome: req.body.nome,
             descrizione: req.body.descrizione
-        }, {
-            where: { id: req.body.id }
-        });
-    },
+        };
 
-    deleteOne: function(id) {
-        return Stampante.destroy({ where: { id: id } });
-    },
+        const additionalData = {
+            request_source: 'HTTP',
+            endpoint: req.originalUrl,
+            method: req.method
+        };
 
-    isUsed: async function(id) {
+        return super.updateOne(req.body.id, data, additionalData);
+    }
+
+    async deleteOne(id) {
+        const additionalData = {
+            request_source: 'HTTP',
+            operation: 'DELETE'
+        };
+        return super.deleteOne(id, additionalData);
+    }
+
+    async isUsed(id) {
         const isDettaglioVendita = await VenditaDettaglio.findOne({ where: { stampante_id: id } });
         return isDettaglioVendita ? true : false;
     }
-};
+}
+
+// Create a singleton instance
+const stampanteRepository = new StampanteRepository();
 
 export default stampanteRepository;

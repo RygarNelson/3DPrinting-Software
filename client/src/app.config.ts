@@ -20,7 +20,7 @@ export const appConfig: ApplicationConfig = {
             withInterceptors([HttpInterceptorService])
         ),
         provideTranslateService({
-            defaultLanguage: 'it',
+            fallbackLang: 'it',
         }),
         MessageService,
         DialogService,

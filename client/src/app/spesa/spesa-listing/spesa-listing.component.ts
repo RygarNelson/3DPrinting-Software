@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { ConfirmationService, FilterMetadata, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { DialogService } from 'primeng/dynamicdialog';
+import { DialogService, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
@@ -18,6 +18,7 @@ import { SpesaUnitaMisuraLookupDirective } from 'src/directives/spesa/spesa-unit
 import { SpesaListingModel, SpesaListingResponse } from 'src/models/spesa/spesa-listing';
 import { SpesaListingFiltri } from 'src/models/spesa/spesa-listing-filtri';
 import { SpesaService } from 'src/services/spesa.service';
+import { AuditLogComponent } from 'src/shared/audit-log/audit-log.component';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
 import { SpesaTipoPipe } from '../spesa-tipo.pipe';
@@ -231,10 +232,32 @@ export class SpesaListingComponent {
   }
 
   editSpesa(spesa: SpesaListingModel): void {
-    this.router.navigate(['/spesa/manager', spesa.id]);
-  }
+  this.router.navigate(['/spesa/manager', spesa.id]);
+}
 
-  confirmDelete(event: Event, spesa: SpesaListingModel): void {
+viewAuditLog(spesa: SpesaListingModel): void {
+  let config: DynamicDialogConfig = {
+    width: '90%',
+    height: '80%',
+    modal: true,
+    dismissableMask: true,
+    closable: true,
+    showHeader: false,
+    contentStyle: {
+      'height': '100%',
+      'width': '100%',
+      'padding': '0px'
+    },
+    data: {
+      tableName: 'T_SPESE',
+      recordId: spesa.id,
+      objectName: `Spesa ${spesa.id.toString()}`
+    }
+  };
+  this.dialogService.open(AuditLogComponent, config);
+}
+
+confirmDelete(event: Event, spesa: SpesaListingModel): void {
     this.confirmationService.confirm({
       target: event.target as EventTarget,
       message: `Sei sicuro di voler eliminare la spesa?`,

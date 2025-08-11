@@ -56,3 +56,111 @@ This project aims to be as compact as possible, so it can be used as a single, l
 - Socket module, for live interaction
 - Add scalability
 - Explanation of all the configuration variables inside the *.env* file
+
+# Server Documentation
+
+## Audit Logs
+
+### Enriched Vendita Logs
+
+The system now supports enriched vendita logs that include related `dettagli` and `basette` logs within the main vendita log data. This allows you to see all related changes in a single view.
+
+#### Endpoints
+
+- **POST** `/api/logs/vendita/enriched` - Get enriched vendita logs with POST body parameters
+- **GET** `/api/logs/vendita/enriched` - Get enriched vendita logs with query parameters
+
+#### Parameters
+
+- `record_id` (optional): Specific vendita ID to filter
+- `operation` (optional): Filter by operation type (INSERT, UPDATE, DELETE, etc.)
+- `user_id` (optional): Filter by user who made the change
+- `date_from` (optional): Start date for filtering
+- `date_to` (optional): End date for filtering
+- `limit` (optional): Number of records to return (default: 100)
+- `offset` (optional): Number of records to skip (default: 0)
+- `order` (optional): Sort order - ASC or DESC (default: DESC)
+
+#### Response Format
+
+The enriched logs will include:
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 123,
+      "table_name": "T_VENDITE",
+      "record_id": 456,
+      "operation": "UPDATE",
+      "old_record": {
+        "id": 456,
+        "data_vendita": "2024-01-01",
+        "dettagli": [
+          {
+            "id": 789,
+            "modello_id": 101,
+            "quantita": 5,
+            "_audit": {
+              "operation": "UPDATE",
+              "field_name": "quantita",
+              "old_value": "3",
+              "new_value": "5"
+            }
+          }
+        ],
+        "basette": [
+          {
+            "id": 999,
+            "dimensione": "10x10",
+            "_audit": {
+              "operation": "INSERT",
+              "field_name": null,
+              "old_value": null,
+              "new_value": "10x10"
+            }
+          }
+        ]
+      },
+      "new_record": { ... },
+      "createdAt": "2024-01-15T10:30:00.000Z"
+    }
+  ],
+  "pagination": {
+    "total": 50,
+    "limit": 100,
+    "offset": 0,
+    "pages": 1
+  }
+}
+```
+
+#### Features
+
+- **Consolidated View**: All related changes (vendita, dettagli, basette) are shown in one log entry
+- **Audit Metadata**: Each related record includes audit information about when and how it was changed
+- **Efficient Queries**: Uses batch queries to minimize database round trips
+- **Clean Data Structure**: Related data is nested under `dettagli` and `basette` arrays
+- **Audit Trail**: Each related record includes its own audit history
+
+#### Usage Examples
+
+```bash
+# Get all enriched vendita logs
+GET /api/logs/vendita/enriched
+
+# Get logs for a specific vendita
+GET /api/logs/vendita/enriched?record_id=456
+
+# Get logs with pagination
+GET /api/logs/vendita/enriched?limit=20&offset=40
+
+# Get logs for a specific operation
+GET /api/logs/vendita/enriched?operation=UPDATE
+
+# Get logs within a date range
+GET /api/logs/vendita/enriched?date_from=2024-01-01&date_to=2024-01-31
+```
+
+This functionality allows the frontend to display comprehensive audit information without needing to make multiple API calls or manually correlate related logs.

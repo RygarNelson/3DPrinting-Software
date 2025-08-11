@@ -7,7 +7,7 @@ import { ConfirmationService, FilterMetadata, MenuItem, MessageService } from 'p
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { ConfirmDialog, ConfirmDialogModule } from 'primeng/confirmdialog';
-import { DialogService } from 'primeng/dynamicdialog';
+import { DialogService, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
@@ -25,6 +25,7 @@ import { VenditaListingDettaglioBasettaModel, VenditaListingDettaglioModel, Vend
 import { VenditaListingFiltri } from 'src/models/vendita/vendita-listing-filtri';
 import { VenditaModificaContoBancarioModel } from 'src/models/vendita/vendita_modifica_conto_bancario';
 import { VenditaService } from 'src/services/vendita.service';
+import { AuditLogComponent } from 'src/shared/audit-log/audit-log.component';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { FormInputRadiobuttonComponent } from 'src/shared/form-input-radiobutton/form-input-radiobutton.component';
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
@@ -348,10 +349,32 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
   }
 
   editVendita(vendita: VenditaListingModel): void {
-    this.router.navigate(['/vendita/manager', vendita.id]);
-  }
+  this.router.navigate(['/vendita/manager', vendita.id]);
+}
 
-  confirmDelete(event: Event, vendita: VenditaListingModel): void {
+viewAuditLog(vendita: VenditaListingModel): void {
+  let config: DynamicDialogConfig = {
+    width: '90%',
+    height: '80%',
+    modal: true,
+    dismissableMask: true,
+    closable: true,
+    showHeader: false,
+    contentStyle: {
+      'height': '100%',
+      'width': '100%',
+      'padding': '0px'
+    },
+    data: {
+      tableName: 'T_VENDITE',
+      recordId: vendita.id,
+      objectName: `Vendita ${vendita.id.toString()}`
+    }
+  };
+  this.dialogService.open(AuditLogComponent, config);
+}
+
+confirmDelete(event: Event, vendita: VenditaListingModel): void {
     this.venditaToDelete = vendita;
     this.deleteDialogVisible = true;
   }
