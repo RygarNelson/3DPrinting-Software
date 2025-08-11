@@ -251,7 +251,7 @@ viewAuditLog(spesa: SpesaListingModel): void {
     data: {
       tableName: 'T_SPESE',
       recordId: spesa.id,
-      objectName: spesa.id.toString()
+      objectName: `Spesa ${spesa.id.toString()}`
     }
   };
   this.dialogService.open(AuditLogComponent, config);

@@ -87,6 +87,7 @@ export class AuditLogComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
           this.logs = response.data;
+          console.log(this.logs);
           this.groupLogsByGroupId();
           this.loading = false;
         },

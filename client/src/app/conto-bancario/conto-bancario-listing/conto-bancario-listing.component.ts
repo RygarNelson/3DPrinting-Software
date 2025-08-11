@@ -167,7 +167,7 @@ viewAuditLog(contoBancario: ContoBancarioListingModel): void {
     data: {
       tableName: 'T_CONTI_BANCARI',
       recordId: contoBancario.id,
-      objectName: contoBancario.iban
+      objectName: `Conto bancario ${contoBancario.iban} (${contoBancario.id})`
     }
   };
   this.dialogService.open(AuditLogComponent, config);

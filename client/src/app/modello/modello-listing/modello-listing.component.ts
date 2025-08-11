@@ -204,7 +204,7 @@ viewAuditLog(event: Event, modello: ModelloListingTableModel | ModelloListingGri
     data: {
       tableName: 'T_MODELLI',
       recordId: modello.id,
-      objectName: modello.nome
+      objectName: `Modello ${modello.nome} (${modello.id})`
     }
   };
   this.dialogService.open(AuditLogComponent, config);

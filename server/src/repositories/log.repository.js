@@ -388,7 +388,7 @@ class LogRepository extends BaseRepository {
 
         // For each vendita log, enrich it with related dettagli and basette logs
         const enrichedLogs = venditaLogs.rows.map((venditaLog) => {
-            const enrichedLog = { ...venditaLog.toJSON() };
+            let enrichedLog = { ...venditaLog.toJSON() };
             
             const dettagliLogs = dettagliLogsByVendita[venditaLog.record_id] || [];
             const basetteLogs = basettaLogsByVendita[venditaLog.record_id] || [];

@@ -368,7 +368,7 @@ viewAuditLog(vendita: VenditaListingModel): void {
     data: {
       tableName: 'T_VENDITE',
       recordId: vendita.id,
-      objectName: vendita.id.toString()
+      objectName: `Vendita ${vendita.id.toString()}`
     }
   };
   this.dialogService.open(AuditLogComponent, config);

@@ -142,7 +142,7 @@ export class ClienteListingComponent implements OnDestroy {
       data: {
         tableName: 'T_CLIENTI',
         recordId: cliente.id,
-        objectName: cliente.etichetta
+        objectName: `Cliente ${cliente.etichetta} (${cliente.id})`
       }
     };
     this.dialogService.open(AuditLogComponent, config);
