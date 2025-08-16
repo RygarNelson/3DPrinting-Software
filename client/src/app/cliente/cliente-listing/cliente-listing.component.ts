@@ -47,7 +47,7 @@ export class ClienteListingComponent implements OnDestroy {
 
   filtri: ClienteListingFiltri = {
     offset: 0,
-    limit: 10,
+    limit: 100,
     search: ''
   };
 
@@ -92,7 +92,7 @@ export class ClienteListingComponent implements OnDestroy {
 
   loadData(event: TableLazyLoadEvent): void {
     this.filtri.offset = event.first;
-    this.filtri.limit = event.rows ?? 10;
+    this.filtri.limit = event.rows ?? 100;
 
     if (event.globalFilter) {
       this.filtri.search = typeof event.globalFilter === 'string' ? event.globalFilter : event.globalFilter[0];

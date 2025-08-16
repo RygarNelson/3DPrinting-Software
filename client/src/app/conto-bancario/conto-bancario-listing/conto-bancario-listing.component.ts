@@ -50,7 +50,7 @@ export class ContoBancarioListingComponent {
   // Filter properties
   filtri: ContoBancarioListingFiltri = {
     offset: 0,
-    limit: 10,
+    limit: 100,
     search: ''
   };
 
@@ -101,7 +101,7 @@ export class ContoBancarioListingComponent {
 
   loadData(event: TableLazyLoadEvent): void {
     this.filtri.offset = event.first;
-    this.filtri.limit = event.rows ?? 10;
+    this.filtri.limit = event.rows ?? 100;
 
     // Global filter
     if (event.globalFilter) {
@@ -128,13 +128,13 @@ export class ContoBancarioListingComponent {
   pulisciFiltri(): void {
     this.filtri = {
       offset: 0,
-      limit: 10,
+      limit: 100,
       search: ''
     };
 
     this.loadData({
       first: 0,
-      rows: 10,
+      rows: 100,
       globalFilter: ''
     });
   }
