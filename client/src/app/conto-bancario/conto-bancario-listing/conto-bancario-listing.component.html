@@ -7,7 +7,7 @@
     <ng-template pTemplate="content">
       <!-- Table -->
       <p-table #dataTable currentPageReportTemplate="Mostrando da {first} a {last} di {totalRecords} conti bancari"
-        styleClass="p-datatable-sm" responsiveLayout="scroll" [value]="conti_bancari" [paginator]="true"
+        class="p-datatable-sm" [value]="conti_bancari" [paginator]="true"
         [rows]="filtri.limit" [totalRecords]="totalRecords" [first]="filtri.offset" [showCurrentPageReport]="true"
         [rowsPerPageOptions]="[10, 20, 50, 100]" [lazy]="true" (onLazyLoad)="loadData($event)">
 

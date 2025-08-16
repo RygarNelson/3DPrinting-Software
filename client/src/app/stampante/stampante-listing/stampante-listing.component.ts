@@ -50,7 +50,7 @@ export class StampanteListingComponent implements OnDestroy {
   // Filter properties
   filtri: StampanteListingFiltri = {
     offset: 0,
-    limit: 10,
+    limit: 100,
     search: ''
   };
 
@@ -95,7 +95,7 @@ export class StampanteListingComponent implements OnDestroy {
 
   loadData(event: TableLazyLoadEvent): void {
     this.filtri.offset = event.first;
-    this.filtri.limit = event.rows ?? 10;
+    this.filtri.limit = event.rows ?? 100;
 
     // Global filter
     if (event.globalFilter) {

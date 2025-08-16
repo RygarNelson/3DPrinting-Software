@@ -58,7 +58,7 @@ export class SpesaListingComponent {
   // Filter properties
   filtri: SpesaListingFiltri = {
     offset: 0,
-    limit: 10,
+    limit: 100,
     search: '',
   };
 
@@ -105,7 +105,7 @@ export class SpesaListingComponent {
 
   loadData(event: TableLazyLoadEvent): void {
     this.filtri.offset = event.first;
-    this.filtri.limit = event.rows ?? 10;
+    this.filtri.limit = event.rows ?? 100;
 
     // Global filter
     if (event.globalFilter) {
@@ -210,13 +210,13 @@ export class SpesaListingComponent {
   pulisciFiltri(): void {
     this.filtri = {
       offset: 0,
-      limit: 10,
+      limit: 100,
       search: ''
     };
 
     this.loadData({
       first: 0,
-      rows: 10,
+      rows: 100,
       globalFilter: '',
       sortField: 'data_spesa',
       sortOrder: -1

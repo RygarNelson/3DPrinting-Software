@@ -5,7 +5,7 @@
     </ng-template>
     <ng-template pTemplate="content">
       <p-table #dataTable currentPageReportTemplate="Mostrando da {first} a {last} di {totalRecords} clienti"
-        styleClass="p-datatable-sm" responsiveLayout="scroll" [value]="clienti" [paginator]="true" [rows]="filtri.limit"
+        class="p-datatable-sm" [value]="clienti" [paginator]="true" [rows]="filtri.limit"
         [totalRecords]="totalRecords" [first]="filtri.offset" [showCurrentPageReport]="true"
         [rowsPerPageOptions]="[10, 20, 50, 100]" [lazy]="true" (onLazyLoad)="loadData($event)">
         <ng-template pTemplate="caption">
