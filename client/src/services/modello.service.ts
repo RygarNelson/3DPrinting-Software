@@ -29,6 +29,10 @@ export class ModelloService {
     return this.http.post<ModelloListingGridResponse>(`${this.api}/listing/grid`, filtri);
   }
 
+  getListingGridNonVinted(filtri: ModelloListingFiltri): Observable<ModelloListingGridResponse> {
+    return this.http.post<ModelloListingGridResponse>(`${this.api}/listing/grid-non-vinted`, filtri);
+  }
+
   getModello(id: number): Observable<ModelloManagerResponse> {
     return this.http.get<ModelloManagerResponse>(`${this.api}/${id}`);
   }
