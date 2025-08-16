@@ -53,10 +53,10 @@
 
             <div class="modello-actions">
               <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog($event, modello)"
-                pTooltip="Visualizza log di audit" tooltipPosition="top" class="mr-2">
+                pTooltip="Visualizza log di audit" tooltipPosition="top">
               </p-button>
               <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editModello($event, modello)"
-                pTooltip="Modifica modello" tooltipPosition="top" class="mr-2">
+                pTooltip="Modifica modello" tooltipPosition="top">
               </p-button>
               <p-button icon="pi pi-trash" severity="danger" size="small" [disabled]="modello.isUsed"
                 (click)="confirmDelete($event, modello)" [pTooltip]="modello.isUsed | modelloListingEliminaMessaggio"
@@ -161,10 +161,10 @@
 
             <div class="modello-actions">
               <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog($event, modello)"
-                pTooltip="Visualizza log di audit" tooltipPosition="top" class="mr-2">
+                pTooltip="Visualizza log di audit" tooltipPosition="top">
               </p-button>
               <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editModello($event, modello)"
-                pTooltip="Modifica modello" tooltipPosition="top" class="mr-2">
+                pTooltip="Modifica modello" tooltipPosition="top">
               </p-button>
               <p-button icon="pi pi-trash" severity="danger" size="small" [disabled]="modello.isUsed"
                 (click)="confirmDelete($event, modello)" [pTooltip]="modello.isUsed | modelloListingEliminaMessaggio"
