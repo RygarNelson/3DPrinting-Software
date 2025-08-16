@@ -165,7 +165,7 @@ router.post(
                 vinted_vendibile: true,
             };
 
-            let order = [['vinted_is_in_vendita', 'ASC'], ['id', 'ASC']];
+            let order = [['vinted_is_in_vendita', 'ASC'], ['nome', 'ASC']];
 
             const projection = ['id', 'nome', 'descrizione', 'tipo', 'basetta_dimensione', 'basetta_quantita', 'vinted_vendibile', 'vinted_is_in_vendita', 'updatedAt'];
 
@@ -183,6 +183,88 @@ router.post(
                     basetta_quantita: modello.dataValues.basetta_quantita,
                     vinted_vendibile: modello.dataValues.vinted_vendibile,
                     vinted_is_in_vendita: modello.dataValues.vinted_is_in_vendita
+                }
+            }));
+
+            res.status(200).json({
+                success: true,
+                data: result,
+                count: modelli.count
+            });
+        }
+        else {
+            return res.status(400).json({
+                success: false,
+                error: 'Specificare i parametri di ricerca',
+                technical_data: 'Nessun parametro di ricerca specificato'
+            });
+        }
+    })
+);
+
+router.post(
+    '/listing/grid-non-vinted',
+    asyncHandler(async (req, res) => {
+        if (req != null && req.body != null) {
+            let whereOptions = {
+                deletedAt: null,
+                vinted_vendibile: false,
+            };
+            
+            if (req.body.nome && req.body.nome.trim() !== '') {
+                whereOptions.nome = {
+                    [Op.like]: `%${req.body.nome}%`
+                };
+            }
+            
+            if (req.body.descrizione && req.body.descrizione.trim() !== '') {
+                whereOptions.descrizione = {
+                    [Op.like]: `%${req.body.descrizione}%`
+                };
+            }
+            
+            if (req.body.search && req.body.search.trim() !== '') {
+                whereOptions = {
+                    [Op.or]: [
+                        {
+                            nome: {
+                                [Op.like]: `%${req.body.search}%`
+                            }
+                        },
+                        {
+                            descrizione: {
+                                [Op.like]: `%${req.body.search}%`
+                            }
+                        },
+                        {
+                            basetta_dimensione: {
+                                [Op.like]: `%${req.body.search}%`
+                            }
+                        }
+                    ]
+                };
+            }
+
+            if (req.body.tipo != null) {
+                whereOptions.tipo = req.body.tipo;
+            }
+
+            let order = [['tipo', 'ASC'], ['nome', 'ASC']];
+
+            const projection = ['id', 'nome', 'descrizione', 'tipo', 'basetta_dimensione', 'basetta_quantita', 'updatedAt'];
+
+            const modelli = await ModelloRepository.find(whereOptions, undefined, undefined, order, projection);
+
+            const result = await Promise.all(modelli.rows.map(async (modello) => {
+                return {
+                    id: modello.dataValues.id,
+                    nome: modello.dataValues.nome,
+                    descrizione: modello.dataValues.descrizione,
+                    updatedAt: modello.dataValues.updatedAt,
+                    isUsed: await ModelloRepository.isUsed(modello.dataValues.id),
+                    tipo: modello.dataValues.tipo,
+                    basetta_dimensione: modello.dataValues.basetta_dimensione,
+                    basetta_quantita: modello.dataValues.basetta_quantita
                 }
             }));
 

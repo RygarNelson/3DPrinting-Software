@@ -43,6 +43,7 @@ const validationSchema = {
                 escape: true,
                 optional: true,
                 isInt: {
+                    if: (value) => value != null && value != '',
                     errorMessage: 'La quantità di basette non è valida'
                 }
             },

@@ -10,11 +10,10 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { SkeletonModule } from 'primeng/skeleton';
-import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import { Subscription } from 'rxjs';
 import { ModelloTipoLookupDirective } from 'src/directives/modello/modello-tipo-lookup.directive';
-import { ModelloListingGridModel, ModelloListingGridResponse, ModelloListingTableModel, ModelloListingTableResponse } from 'src/models/modello/modello-listing';
+import { ModelloListingGridModel, ModelloListingGridResponse } from 'src/models/modello/modello-listing';
 import { ModelloListingFiltri } from 'src/models/modello/modello-listing-filtri';
 import { ModelloService } from 'src/services/modello.service';
 import { AuditLogComponent } from 'src/shared/audit-log/audit-log.component';
@@ -30,7 +29,6 @@ import { ModelloListingEliminaMessaggioPipe } from '../pipes/modello-listing-eli
     FormsModule,
     CardModule,
     ButtonModule,
-    TableModule,
     InputTextModule,
     IconFieldModule,
     InputIconModule,
@@ -49,8 +47,8 @@ import { ModelloListingEliminaMessaggioPipe } from '../pipes/modello-listing-eli
 })
 export class ModelloListingComponent implements OnInit, OnDestroy {
 // Data properties
-modelliTable: ModelloListingTableModel[] = [];
 modelliGrid: ModelloListingGridModel[] = [];
+modelliGridNonVinted: ModelloListingGridModel[] = [];
 totalRecords: number = 0;
 loading: boolean = false;
 
@@ -64,8 +62,8 @@ filtri: ModelloListingFiltri = {
 // Array reference for template
 Array = Array;
 
-private modelliTableSubscription?: Subscription;
 private modelliGridSubscription?: Subscription;
+private modelliGridNonVintedSubscription?: Subscription;
 private modelloDeleteSubscription?: Subscription;
 private modelloImpostaInVenditaVintedSubscription?: Subscription;
 private loadingTimeout?: number;
@@ -79,39 +77,18 @@ constructor(
 ) {}
 
 ngOnInit(): void {
+  this.loadModelliGrid();
+  this.loadModelliGridNonVinted();
 }
 
 ngOnDestroy(): void {
-  this.modelliTableSubscription?.unsubscribe();
   this.modelliGridSubscription?.unsubscribe();
+  this.modelliGridNonVintedSubscription?.unsubscribe();
   this.modelloDeleteSubscription?.unsubscribe();
   this.modelloImpostaInVenditaVintedSubscription?.unsubscribe();
 
   clearTimeout(this.loadingTimeout);
   this.loadingTimeout = undefined;
-}
-
-loadModelliTable(): void {
-  this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
-  
-  this.modelliTableSubscription = this.modelloService.getListingTable(this.filtri)
-    .subscribe({
-      next: (response: ModelloListingTableResponse) => {
-        this.modelliTable = response.data;
-        this.totalRecords = response.count;
-
-        window.clearTimeout(this.loadingTimeout);
-        this.loadingTimeout = undefined;
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error loading stampanti:', error);
-
-        window.clearTimeout(this.loadingTimeout);
-        this.loadingTimeout = undefined;
-        this.loading = false;
-      }
-    });
 }
 
 loadModelliGrid(): void {
@@ -132,31 +109,22 @@ loadModelliGrid(): void {
     });
 }
 
-loadDataTable(event: TableLazyLoadEvent): void {
-  this.filtri.offset = event.first;
-  this.filtri.limit = event.rows ?? 10;
+loadModelliGridNonVinted(): void {
+  if (this.loadingTimeout == null) {
+    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+  }
+  
+  this.modelliGridNonVintedSubscription = this.modelloService.getListingGridNonVinted(this.filtri)
+    .subscribe({
+      next: (response: ModelloListingGridResponse) => {
+        this.modelliGridNonVinted = response.data;
+        this.totalRecords = response.count;
 
-  // Global filter
-  if (event.globalFilter) {
-    this.filtri.search = typeof event.globalFilter === 'string' ? event.globalFilter : event.globalFilter[0];
-  }
-  else {
-    this.filtri.search = undefined;
-  }
-
-  // Sorting
-  if (event.sortField) {
-    this.filtri.order = {
-      column: typeof event.sortField === 'string' ? event.sortField : event.sortField[0],
-      direction: event.sortOrder === 1 ? 'ASC' : 'DESC'
-    }
-  }
-  else {
-    this.filtri.order = undefined;
-  }
-
-  this.loadModelliTable();
-  this.loadModelliGrid();
+        window.clearTimeout(this.loadingTimeout);
+        this.loadingTimeout = undefined;
+        this.loading = false;
+      }
+    });
 }
 
 pulisciFiltri(): void {
@@ -166,28 +134,35 @@ pulisciFiltri(): void {
     search: ''
   };
 
-  this.loadDataTable({
-    first: 0,
-    rows: 10,
-    globalFilter: ''
-  });
+  this.loadModelliGrid();
+  this.loadModelliGridNonVinted();
 }
 
 refreshTable(): void {
-  this.loadModelliTable();
   this.loadModelliGrid();
+  this.loadModelliGridNonVinted();
+}
+
+onSearchChange(searchTerm: string): void {
+  this.filtri.search = searchTerm;
+  this.refreshTable();
+}
+
+onTypeChange(tipo: number | undefined): void {
+  this.filtri.tipo = tipo;
+  this.refreshTable();
 }
 
 addNewModello(): void {
   this.router.navigate(['/modello/manager']);
 }
 
-editModello(event: Event, modello: ModelloListingTableModel | ModelloListingGridModel): void {
+editModello(event: Event, modello: ModelloListingGridModel): void {
   event.stopPropagation();
   this.router.navigate(['/modello/manager', modello.id]);
 }
 
-viewAuditLog(event: Event, modello: ModelloListingTableModel | ModelloListingGridModel): void {
+viewAuditLog(event: Event, modello: ModelloListingGridModel): void {
   event.stopPropagation();
   let config: DynamicDialogConfig = {
     width: '90%',
@@ -210,7 +185,7 @@ viewAuditLog(event: Event, modello: ModelloListingTableModel | ModelloListingGri
   this.dialogService.open(AuditLogComponent, config);
 }
 
-confirmDelete(event: Event, modello: ModelloListingTableModel | ModelloListingGridModel): void {
+confirmDelete(event: Event, modello: ModelloListingGridModel): void {
   event.stopPropagation();
 
   this.confirmationService.confirm({
@@ -248,8 +223,8 @@ private deleteModello(id: number): void {
           detail: 'Modello cancellato con successo'
         });
 
-        this.loadModelliTable();
         this.loadModelliGrid();
+        this.loadModelliGridNonVinted();
       },
       error: (error) => {
         window.clearTimeout(this.loadingTimeout);
@@ -289,6 +264,7 @@ private deleteModello(id: number): void {
             });
 
             this.loadModelliGrid();
+            this.loadModelliGridNonVinted();
           }
         });
     }
