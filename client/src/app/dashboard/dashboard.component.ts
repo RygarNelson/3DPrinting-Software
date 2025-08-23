@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { LookupInterface } from 'src/interfaces/lookup.interface';
 import { VenditaAnniResponse } from 'src/models/vendita/vendita-anni';
 import { AuthService } from 'src/services/auth.service';
+import { LocalstorageService } from 'src/services/localstorage.service';
 import { VenditaService } from 'src/services/vendita.service';
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
 import { DashboardAndamentoComponent } from './dashboard-andamento/dashboard-andamento.component';
@@ -59,6 +60,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         private authService: AuthService,
         private router: Router,
         private venditaService: VenditaService,
+        private localStorageService: LocalstorageService
     ) {}
 
     ngOnInit(): void {
@@ -74,7 +76,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private checkToken(): void {
         this.checkTokenSubscription = this.authService.checkToken(localStorage.getItem('token') || '').subscribe((res: any) => {
             if (!res.success) {
-                this.authService.removeLocalStorage();
+                this.localStorageService.clear();
                 this.router.navigate(['/login']);
             }
         });

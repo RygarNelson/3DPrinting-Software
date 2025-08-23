@@ -10,6 +10,7 @@ import { ErrorsViewModel } from 'src/models/ErrorsViewModel';
 import { ClienteManagerModel } from 'src/models/cliente/cliente-manager';
 import { ApplicationStateService } from 'src/services/application-state.service';
 import { ClienteService } from 'src/services/cliente.service';
+import { LocalstorageService } from 'src/services/localstorage.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { FormInputTextComponent } from 'src/shared/form-input-text/form-input-text.component';
 
@@ -34,7 +35,9 @@ export class ClienteManagerComponent implements OnInit, OnDestroy {
   listaErrori: ErrorsViewModel[] = [];
   loading: boolean = false;
 
+  private readonly LOCAL_STORAGE_KEY: string = 'cliente-manager';
   private loadingTimeout?: number;
+  private hasSaved: boolean = false;
 
   constructor(
     private clienteService: ClienteService,
@@ -42,7 +45,8 @@ export class ClienteManagerComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private MessageService: MessageService,
     private dialogService: DialogService,
-    private applicationStateService: ApplicationStateService
+    private applicationStateService: ApplicationStateService,
+    private localStorageService: LocalstorageService
   ){ }
 
   ngOnInit(): void {
@@ -50,21 +54,30 @@ export class ClienteManagerComponent implements OnInit, OnDestroy {
       this.cliente.id = params['id'] ? Number(params['id']) : 0;
       if (this.cliente.id) {
         this.getCliente();
+      } else if (this.localStorageService.hasItem(this.LOCAL_STORAGE_KEY)) {
+        this.cliente = this.localStorageService.getObject(this.LOCAL_STORAGE_KEY);
       }
     });
   }
 
   ngOnDestroy(): void {
-    clearTimeout(this.loadingTimeout);
+    this.clearLoadingTimeout();
+
+    if (this.hasSaved) {
+      this.localStorageService.removeItem(this.LOCAL_STORAGE_KEY);
+    } else {
+      this.localStorageService.setObject(this.LOCAL_STORAGE_KEY, this.cliente);
+    }
   }
 
   private getCliente(): void {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    if (this.loadingTimeout == null) {
+      this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    }
 
     this.clienteService.getCliente(this.cliente.id).subscribe({
       next: (result) => {
-        clearTimeout(this.loadingTimeout);
-        this.loading = false;
+        this.clearLoadingTimeout();
 
         if (result.success) {
           this.cliente = result.data;
@@ -80,8 +93,7 @@ export class ClienteManagerComponent implements OnInit, OnDestroy {
         }
       },
       error: (error: any) => {
-        clearTimeout(this.loadingTimeout);
-        this.loading = false;
+        this.clearLoadingTimeout();
 
         console.error(error);
       }
@@ -93,8 +105,8 @@ export class ClienteManagerComponent implements OnInit, OnDestroy {
     
     this.clienteService.save(this.cliente).subscribe({
       next: (result) => {
-        clearTimeout(this.loadingTimeout);
-        this.loading = false;
+        this.clearLoadingTimeout();
+        this.hasSaved = true;
 
         this.MessageService.add({
           severity: 'success',
@@ -112,8 +124,7 @@ export class ClienteManagerComponent implements OnInit, OnDestroy {
         }
       },
       error: (error: any) => {
-        clearTimeout(this.loadingTimeout);
-        this.loading = false;
+        this.clearLoadingTimeout();
 
         if (error.status === 400) {
           this.MessageService.add({
@@ -143,5 +154,11 @@ export class ClienteManagerComponent implements OnInit, OnDestroy {
     else {
       this.router.navigate(['/cliente']);
     }
+  }
+
+  private clearLoadingTimeout(): void {
+    clearTimeout(this.loadingTimeout);
+    this.loadingTimeout = undefined;
+    this.loading = false;
   }
 } 
