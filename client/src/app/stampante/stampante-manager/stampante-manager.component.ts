@@ -6,9 +6,10 @@ import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DialogService } from 'primeng/dynamicdialog';
-import { ErrorsViewModel } from 'src/models/ErrorsViewModel';
+import { BaseManager } from 'src/classes/base-manager';
 import { StampanteManagerModel } from 'src/models/stampante/stampante-manager';
 import { ApplicationStateService } from 'src/services/application-state.service';
+import { LocalstorageService } from 'src/services/localstorage.service';
 import { StampanteService } from 'src/services/stampante.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { FormInputTextComponent } from 'src/shared/form-input-text/form-input-text.component';
@@ -30,15 +31,13 @@ import { FormInputTextareaComponent } from 'src/shared/form-input-textarea/form-
   templateUrl: './stampante-manager.component.html',
   styleUrl: './stampante-manager.component.scss'
 })
-export class StampanteManagerComponent implements OnInit, OnDestroy {
+export class StampanteManagerComponent extends BaseManager implements OnInit, OnDestroy {
   @Input() venditaIndex: number = 0;
   @Input() isExternal: boolean = false;
 
   stampante: StampanteManagerModel = new StampanteManagerModel();
-  listaErrori: ErrorsViewModel[] = [];
-  loading: boolean = false;
 
-  private loadingTimeout?: number;
+  protected override readonly LOCAL_STORAGE_KEY: string = 'stampante-manager';
 
   constructor(
     private stampanteService: StampanteService,
@@ -46,30 +45,39 @@ export class StampanteManagerComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private MessageService: MessageService,
     private dialogService: DialogService,
-    private applicationStateService: ApplicationStateService
-  ){ }
+    private applicationStateService: ApplicationStateService,
+    private localStorageService: LocalstorageService
+  ){
+    super();
+  }
 
   ngOnInit(): void {
-    // Get router params
     this.route.params.subscribe(params => {
       this.stampante.id = params['id'] ? Number(params['id']) : 0;
       if (this.stampante.id) {
         this.getStampante();
+      } else if (this.localStorageService.hasItem(this.LOCAL_STORAGE_KEY)) {
+        this.stampante = this.localStorageService.getObject(this.LOCAL_STORAGE_KEY);
       }
     });
   }
 
   ngOnDestroy(): void {
-    clearTimeout(this.loadingTimeout);
+    this.clearLoadingTimeout();
+
+    if (this.hasSaved) {
+      this.localStorageService.removeItem(this.LOCAL_STORAGE_KEY);
+    } else if (!this.hasSaved && this.stampante.id == 0) {
+      this.localStorageService.setObject(this.LOCAL_STORAGE_KEY, this.stampante);
+    }
   }
 
   private getStampante(): void {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    this.setLoadingTimeout();
 
     this.stampanteService.getStampante(this.stampante.id).subscribe({
       next: (result) => {
-        clearTimeout(this.loadingTimeout);
-        this.loading = false;
+        this.clearLoadingTimeout();
 
         if (result.success) {
           this.stampante = result.data;
@@ -85,8 +93,7 @@ export class StampanteManagerComponent implements OnInit, OnDestroy {
         }
       },
       error: (error: any) => {
-        clearTimeout(this.loadingTimeout);
-        this.loading = false;
+        this.clearLoadingTimeout();
 
         console.error(error);
       }
@@ -94,12 +101,12 @@ export class StampanteManagerComponent implements OnInit, OnDestroy {
   }
 
   saveStampante(): void {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    this.setLoadingTimeout();
     
     this.stampanteService.save(this.stampante).subscribe({
       next: (result) => {
-        clearTimeout(this.loadingTimeout);
-        this.loading = false;
+        this.clearLoadingTimeout();
+        this.hasSaved = true;
 
         this.MessageService.add({
           severity: 'success',
@@ -118,8 +125,7 @@ export class StampanteManagerComponent implements OnInit, OnDestroy {
         }
       },
       error: (error: any) => {
-        clearTimeout(this.loadingTimeout);
-        this.loading = false;
+        this.clearLoadingTimeout();
 
         if (error.status === 400) {
           this.MessageService.add({

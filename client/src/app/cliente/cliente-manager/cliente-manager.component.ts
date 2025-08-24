@@ -6,7 +6,7 @@ import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DialogService } from 'primeng/dynamicdialog';
-import { ErrorsViewModel } from 'src/models/ErrorsViewModel';
+import { BaseManager } from 'src/classes/base-manager';
 import { ClienteManagerModel } from 'src/models/cliente/cliente-manager';
 import { ApplicationStateService } from 'src/services/application-state.service';
 import { ClienteService } from 'src/services/cliente.service';
@@ -28,16 +28,12 @@ import { FormInputTextComponent } from 'src/shared/form-input-text/form-input-te
   ],
   templateUrl: './cliente-manager.component.html'
 })
-export class ClienteManagerComponent implements OnInit, OnDestroy {
+export class ClienteManagerComponent extends BaseManager implements OnInit, OnDestroy {
   @Input() isExternal: boolean = false;
   
   cliente: ClienteManagerModel = new ClienteManagerModel();
-  listaErrori: ErrorsViewModel[] = [];
-  loading: boolean = false;
 
-  private readonly LOCAL_STORAGE_KEY: string = 'cliente-manager';
-  private loadingTimeout?: number;
-  private hasSaved: boolean = false;
+  protected override readonly LOCAL_STORAGE_KEY: string = 'cliente-manager';
 
   constructor(
     private clienteService: ClienteService,
@@ -47,7 +43,9 @@ export class ClienteManagerComponent implements OnInit, OnDestroy {
     private dialogService: DialogService,
     private applicationStateService: ApplicationStateService,
     private localStorageService: LocalstorageService
-  ){ }
+  ){
+    super();
+  }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -65,15 +63,13 @@ export class ClienteManagerComponent implements OnInit, OnDestroy {
 
     if (this.hasSaved) {
       this.localStorageService.removeItem(this.LOCAL_STORAGE_KEY);
-    } else {
+    } else if (!this.hasSaved && this.cliente.id == 0) {
       this.localStorageService.setObject(this.LOCAL_STORAGE_KEY, this.cliente);
     }
   }
 
   private getCliente(): void {
-    if (this.loadingTimeout == null) {
-      this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
-    }
+    this.setLoadingTimeout();
 
     this.clienteService.getCliente(this.cliente.id).subscribe({
       next: (result) => {
@@ -101,7 +97,7 @@ export class ClienteManagerComponent implements OnInit, OnDestroy {
   }
 
   saveCliente(): void {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    this.setLoadingTimeout();
     
     this.clienteService.save(this.cliente).subscribe({
       next: (result) => {
@@ -154,11 +150,5 @@ export class ClienteManagerComponent implements OnInit, OnDestroy {
     else {
       this.router.navigate(['/cliente']);
     }
-  }
-
-  private clearLoadingTimeout(): void {
-    clearTimeout(this.loadingTimeout);
-    this.loadingTimeout = undefined;
-    this.loading = false;
   }
 } 
