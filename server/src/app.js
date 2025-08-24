@@ -19,6 +19,7 @@ import modelloRoute from './routes/modello.route.js';
 import spesaRoute from './routes/spesa.route.js';
 import stampanteRoute from './routes/stampante.route.js';
 import venditaRoute from './routes/vendita.route.js';
+import securityService from './services/security.service.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -84,6 +85,14 @@ app.use(express.urlencoded({'extended': true}));
 /* DATABASE */
 await connectToDatabase();
 await initializeDatabase();
+
+/* SECURITY */
+try {
+    securityService.initializeSecurityKey();
+} catch (error) {
+    console.error('Failed to initialize security key:', error);
+    // Continue server startup even if security key fails
+}
 
 /* ROUTES */
 // API Routes

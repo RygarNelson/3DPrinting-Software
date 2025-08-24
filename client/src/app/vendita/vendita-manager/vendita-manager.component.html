@@ -79,7 +79,7 @@
                         <tr>
                             <th>Modello / Descrizione</th>
                             <th>Stampante</th>
-                            <th style="width: 200px;">Quantità</th>
+                            <th style="width: 50px;">Quantità</th>
                             <th style="width: 200px;">
                                 Prezzo
                                 <i class="pi pi-info-circle info-icon"
@@ -134,12 +134,7 @@
                             </td>
                             <td>
                                 <div class="flex flex-col items-center gap-2">
-                                    <form-input-number property="quantita" label="Quantità" [min]="0" [step]="1"
-                                        [mode]="'decimal'" [minFractionDigits]="4" [maxFractionDigits]="4"
-                                        [listaErrori]="listaErrori" [parent]="'dettagli'" [index]="rowIndex"
-                                        [(ngModel)]="dettaglio.quantita"
-                                        (ngModelChange)="ricalcolaBasette()" />
-
+                                    {{ dettaglio.quantita | number:'0.0-4' }}
                                 </div>
 
                             </td>
@@ -164,6 +159,8 @@
                                 </form-input-select>
                             </td>
                             <td>
+                                <p-button icon="pi pi-clone" severity="primary" size="small" pTooltip="Clona dettaglio"
+                                    tooltipPosition="top" class="mr-2" (click)="cloneDettaglio(dettaglio)" />
                                 <p-button icon="pi pi-trash" severity="danger" size="small" pTooltip="Elimina dettaglio"
                                     tooltipPosition="top"
                                     (click)="confirmDeleteDettaglio($event, dettaglio, rowIndex)" />
