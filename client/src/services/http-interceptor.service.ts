@@ -4,15 +4,17 @@ import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { catchError, Observable, tap, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
+import { LocalstorageService } from './localstorage.service';
 
 export function HttpInterceptorService(req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
   const messageService = inject(MessageService);
   const authService = inject(AuthService);
   const router = inject(Router);
+  const localStorageService = inject(LocalstorageService);
 
   const handleErrors = (error: HttpErrorResponse) => {
     if (error.status === 401) {
-      authService.removeLocalStorage();
+      localStorageService.clear();
       router.navigate(['/login']);
     }
 

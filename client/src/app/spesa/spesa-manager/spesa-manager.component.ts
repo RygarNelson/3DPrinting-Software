@@ -6,10 +6,11 @@ import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DialogService } from 'primeng/dynamicdialog';
+import { BaseManager } from 'src/classes/base-manager';
 import { SpesaTipoLookupDirective } from 'src/directives/spesa/spesa-tipo-lookup.directive';
 import { SpesaUnitaMisuraLookupDirective } from 'src/directives/spesa/spesa-unita-misura-lookup.directive';
-import { ErrorsViewModel } from 'src/models/ErrorsViewModel';
 import { SpesaManagerModel } from 'src/models/spesa/spesa-manager';
+import { LocalstorageService } from 'src/services/localstorage.service';
 import { SpesaService } from 'src/services/spesa.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { FormInputDatetimeComponent } from 'src/shared/form-input-datetime/form-input-datetime.component';
@@ -37,13 +38,10 @@ import { FormInputTextareaComponent } from 'src/shared/form-input-textarea/form-
   templateUrl: './spesa-manager.component.html',
   styleUrl: './spesa-manager.component.scss'
 })
-export class SpesaManagerComponent implements OnInit, OnDestroy {
-
+export class SpesaManagerComponent extends BaseManager implements OnInit, OnDestroy {
   spesa: SpesaManagerModel = new SpesaManagerModel();
-  listaErrori: ErrorsViewModel[] = [];
-  loading: boolean = false;
 
-  private loadingTimeout?: number;
+  protected override readonly LOCAL_STORAGE_KEY: string = 'spesa-manager';
 
   constructor(
     private spesaService: SpesaService,
@@ -51,29 +49,38 @@ export class SpesaManagerComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private MessageService: MessageService,
     private dialogService: DialogService,
-  ){ }
+    private localStorageService: LocalstorageService
+  ){
+    super();
+  }
 
   ngOnInit(): void {
-    // Get router params
     this.route.params.subscribe(params => {
       this.spesa.id = params['id'] ? Number(params['id']) : 0;
       if (this.spesa.id) {
         this.getSpesa();
+      } else if (this.localStorageService.hasItem(this.LOCAL_STORAGE_KEY)) {
+        this.spesa = this.localStorageService.getObject(this.LOCAL_STORAGE_KEY);
       }
     });
   }
 
   ngOnDestroy(): void {
-    clearTimeout(this.loadingTimeout);
+    this.clearLoadingTimeout();
+
+    if (this.hasSaved) {
+      this.localStorageService.removeItem(this.LOCAL_STORAGE_KEY);
+    } else if (!this.hasSaved && this.spesa.id == 0) {
+      this.localStorageService.setObject(this.LOCAL_STORAGE_KEY, this.spesa);
+    }
   }
 
   private getSpesa(): void {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    this.setLoadingTimeout();
 
     this.spesaService.getSpesa(this.spesa.id).subscribe({
       next: (result) => {
-        clearTimeout(this.loadingTimeout);
-        this.loading = false;
+        this.clearLoadingTimeout();
 
         if (result.success) {
           this.spesa = result.data;
@@ -89,8 +96,7 @@ export class SpesaManagerComponent implements OnInit, OnDestroy {
         }
       },
       error: (error: any) => {
-        clearTimeout(this.loadingTimeout);
-        this.loading = false;
+        this.clearLoadingTimeout();
 
         console.error(error);
       }
@@ -98,12 +104,12 @@ export class SpesaManagerComponent implements OnInit, OnDestroy {
   }
 
   saveSpesa(): void {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    this.setLoadingTimeout();
     
     this.spesaService.save(this.spesa).subscribe({
       next: (result) => {
-        clearTimeout(this.loadingTimeout);
-        this.loading = false;
+        this.clearLoadingTimeout();
+        this.hasSaved = true;
 
         this.MessageService.add({
           severity: 'success',
@@ -114,8 +120,7 @@ export class SpesaManagerComponent implements OnInit, OnDestroy {
         this.indietro();
       },
       error: (error: any) => {
-        clearTimeout(this.loadingTimeout);
-        this.loading = false;
+        this.clearLoadingTimeout();
 
         if (error.status === 400) {
           this.MessageService.add({
