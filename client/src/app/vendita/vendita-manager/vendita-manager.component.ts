@@ -359,8 +359,21 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
   addDettaglio(): void {
     let dettaglio = new VenditaDettaglioManagerModel();
     dettaglio.vendita_id = this.vendita.id;
+    dettaglio.quantita = 1;
 
     this.vendita.dettagli.push(dettaglio);
+  }
+
+  cloneDettaglio(dettaglio: VenditaDettaglioManagerModel): void {
+    const dettaglio_string = JSON.stringify(dettaglio);
+
+    let clone = JSON.parse(dettaglio_string);
+    clone.id = 0;
+    clone.vendita_id = this.vendita.id;
+    clone.quantita = 1;
+
+    this.vendita.dettagli.push(clone);
+    this.ricalcolaBasette();
   }
 
   confirmDeleteDettaglio(event: Event, dettaglio: VenditaDettaglioManagerModel, index: number): void {
