@@ -28,7 +28,7 @@
                         <p-button 
                             icon="pi pi-save"
                             label="Salva"
-                            (click)="saveStampante()"
+                            (click)="saveModello()"
                             [severity]="'primary'"
                         />
                     }
@@ -103,6 +103,7 @@
                     [property]="'vinted_is_in_vendita'"
                     [infoMessage]="'Indica se il modello è attualmente in vendita su Vinted'"
                     [listaErrori]="listaErrori"
+                    [disabled]="!modello.vinted_vendibile"
                     [(ngModel)]="modello.vinted_is_in_vendita"
                 />
             </div>

@@ -7,6 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { DrawerModule } from 'primeng/drawer';
 import { User } from 'src/models/User';
 import { AuthService } from 'src/services/auth.service';
+import { LocalstorageService } from 'src/services/localstorage.service';
 
 @Component({
     selector: '[app-profilesidebar]',
@@ -52,7 +53,8 @@ export class AppProfileSidebar implements OnInit {
         public layoutService: LayoutService,
         private router: Router,
         private messageService: MessageService,
-        private authService: AuthService
+        private authService: AuthService,
+        private localStorageService: LocalstorageService
     ) { }
 
     ngOnInit(): void {
@@ -72,7 +74,7 @@ export class AppProfileSidebar implements OnInit {
 
     logout(): void {
         this.onDrawerHide();
-        this.authService.removeLocalStorage();
+        this.localStorageService.clear();
         setTimeout(() => this.messageService.add({
             severity: 'success',
             detail: 'Logout effettuato correttamente!',

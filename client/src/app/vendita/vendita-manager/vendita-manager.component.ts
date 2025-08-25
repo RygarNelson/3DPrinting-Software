@@ -16,6 +16,7 @@ import { TableModule } from 'primeng/table';
 import { TabsModule } from 'primeng/tabs';
 import { TooltipModule } from 'primeng/tooltip';
 import { Subscription } from 'rxjs';
+import { BaseManager } from 'src/classes/base-manager';
 import { ClienteLookupDirective } from 'src/directives/cliente/cliente-lookup.directive';
 import { ContoBancarioLookupDirective } from 'src/directives/conto-bancario/conto-bancario-lookup.directive';
 import { ModelloLookupDirective } from 'src/directives/modello/modello-lookup.directive';
@@ -25,10 +26,10 @@ import { VenditaStatoSpedizioneLookupDirective } from 'src/directives/vendita/ve
 import { ModelloTipoEnum } from 'src/enums/ModelloTipoEnum';
 import { VenditaDettaglioStatoStampaEnum } from 'src/enums/VenditaDettaglioStatoStampaEnum';
 import { LookupInterface } from 'src/interfaces/lookup.interface';
-import { ErrorsViewModel } from 'src/models/ErrorsViewModel';
 import { VenditaDettaglioManagerModel, VenditaManagerModel } from 'src/models/vendita/vendita-manager';
 import { ApplicationStateService } from 'src/services/application-state.service';
 import { ClienteService } from 'src/services/cliente.service';
+import { LocalstorageService } from 'src/services/localstorage.service';
 import { VenditaService } from 'src/services/vendita.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { FormInputCheckboxComponent } from 'src/shared/form-input-checkbox/form-input-checkbox.component';
@@ -72,12 +73,9 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
   templateUrl: './vendita-manager.component.html',
   styleUrl: './vendita-manager.component.scss'
 })
-export class VenditaManagerComponent implements OnInit, OnDestroy {
+export class VenditaManagerComponent extends BaseManager implements OnInit, OnDestroy {
   vendita: VenditaManagerModel = new VenditaManagerModel();
-  listaErrori: ErrorsViewModel[] = [];
-  loading: boolean = false;
 
-  private loadingTimeout?: number;
   private clienteRef?: DynamicDialogRef;
   private modelloRef?: DynamicDialogRef;
   private stampanteRef?: DynamicDialogRef;
@@ -88,6 +86,7 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
   private contoBancarioSubscription?: Subscription;
   private contoBancarioLookupSubscription?: Subscription;
 
+  protected override readonly LOCAL_STORAGE_KEY: string = 'vendita-manager';
   protected ModelloTipoEnum = ModelloTipoEnum;
 
   constructor(
@@ -98,8 +97,11 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
     private dialogService: DialogService,
     private confirmationService: ConfirmationService,
     private applicationStateService: ApplicationStateService,
-    private clienteService: ClienteService
+    private clienteService: ClienteService,
+    private localStorageService: LocalstorageService
   ){
+    super();
+
     this.clienteSubscription = this.applicationStateService.newCliente.subscribe({
       next: (event) => {
         if (event.id != null) {
@@ -154,12 +156,13 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // Get router params
     this.route.params.subscribe({
       next: (params) => {
         this.vendita.id = params['id'] ? Number(params['id']) : 0;
         if (this.vendita.id) {
           this.getVendita();
+        } else if (this.localStorageService.hasItem(this.LOCAL_STORAGE_KEY)) {
+          this.vendita = this.localStorageService.getObject(this.LOCAL_STORAGE_KEY);
         } else {
           this.getClienteVintedId();
         }
@@ -168,7 +171,14 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    clearTimeout(this.loadingTimeout);
+    this.clearLoadingTimeout();
+
+    if (this.hasSaved) {
+      this.localStorageService.removeItem(this.LOCAL_STORAGE_KEY);
+    } else if (!this.hasSaved && this.vendita.id == 0) {
+      this.localStorageService.setObject(this.LOCAL_STORAGE_KEY, this.vendita);
+    }
+
     this.clienteSubscription?.unsubscribe();
     this.modelloSubscription?.unsubscribe();
     this.stampanteSubscription?.unsubscribe();
@@ -180,12 +190,11 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
   }
 
   private getVendita(): void {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    this.setLoadingTimeout();
 
     this.venditaService.getVendita(this.vendita.id).subscribe({
       next: (result) => {
-        clearTimeout(this.loadingTimeout);
-        this.loading = false;
+        this.clearLoadingTimeout();
 
         if (result.success) {
           this.vendita = result.data;
@@ -201,8 +210,7 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
         }
       },
       error: (error: any) => {
-        clearTimeout(this.loadingTimeout);
-        this.loading = false;
+        this.clearLoadingTimeout();
 
         console.error(error);
       }
@@ -234,12 +242,12 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
   }
 
   saveVendita(): void {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    this.setLoadingTimeout();
 
     this.venditaService.save(this.vendita).subscribe({
       next: () => {
-        clearTimeout(this.loadingTimeout);
-        this.loading = false;
+        this.clearLoadingTimeout();
+        this.hasSaved = true;
 
         this.MessageService.add({
           severity: 'success',
@@ -250,8 +258,7 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
         this.indietro();
       },
       error: (error: any) => {
-        clearTimeout(this.loadingTimeout);
-        this.loading = false;
+        this.clearLoadingTimeout();
 
         if (error.status === 400) {
           this.MessageService.add({
@@ -352,8 +359,21 @@ export class VenditaManagerComponent implements OnInit, OnDestroy {
   addDettaglio(): void {
     let dettaglio = new VenditaDettaglioManagerModel();
     dettaglio.vendita_id = this.vendita.id;
+    dettaglio.quantita = 1;
 
     this.vendita.dettagli.push(dettaglio);
+  }
+
+  cloneDettaglio(dettaglio: VenditaDettaglioManagerModel): void {
+    const dettaglio_string = JSON.stringify(dettaglio);
+
+    let clone = JSON.parse(dettaglio_string);
+    clone.id = 0;
+    clone.vendita_id = this.vendita.id;
+    clone.quantita = 1;
+
+    this.vendita.dettagli.push(clone);
+    this.ricalcolaBasette();
   }
 
   confirmDeleteDettaglio(event: Event, dettaglio: VenditaDettaglioManagerModel, index: number): void {

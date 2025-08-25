@@ -6,11 +6,12 @@ import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DialogService } from 'primeng/dynamicdialog';
+import { BaseManager } from 'src/classes/base-manager';
 import { ModelloBasettaDimensioneDirective } from 'src/directives/modello/modello-basetta-dimensione.directive';
 import { ModelloTipoEnum } from 'src/enums/ModelloTipoEnum';
-import { ErrorsViewModel } from 'src/models/ErrorsViewModel';
 import { ModelloManagerModel } from 'src/models/modello/modello-manager';
 import { ApplicationStateService } from 'src/services/application-state.service';
+import { LocalstorageService } from 'src/services/localstorage.service';
 import { ModelloService } from 'src/services/modello.service';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { FormInputCheckboxComponent } from 'src/shared/form-input-checkbox/form-input-checkbox.component';
@@ -41,16 +42,13 @@ import { FormInputTextareaComponent } from 'src/shared/form-input-textarea/form-
   templateUrl: './modello-manager.component.html',
   styleUrl: './modello-manager.component.scss'
 })
-export class ModelloManagerComponent implements OnInit, OnDestroy {
+export class ModelloManagerComponent extends BaseManager implements OnInit, OnDestroy {
   @Input() venditaIndex: number = 0;
   @Input() isExternal: boolean = false;
 
   modello: ModelloManagerModel = new ModelloManagerModel();
-  listaErrori: ErrorsViewModel[] = [];
-  loading: boolean = false;
 
-  private loadingTimeout?: number;
-
+  protected override readonly LOCAL_STORAGE_KEY: string = 'modello-manager';
   protected ModelloTipoEnum = ModelloTipoEnum;
 
   constructor(
@@ -59,30 +57,39 @@ export class ModelloManagerComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private MessageService: MessageService,
     private dialogService: DialogService,
-    private applicationStateService: ApplicationStateService
-  ){ }
+    private applicationStateService: ApplicationStateService,
+    private localStorageService: LocalstorageService
+  ){
+    super();
+  }
 
   ngOnInit(): void {
-    // Get router params
     this.route.params.subscribe(params => {
       this.modello.id = params['id'] ? Number(params['id']) : 0;
       if (this.modello.id) {
         this.getModello();
+      } else if (this.localStorageService.hasItem(this.LOCAL_STORAGE_KEY)) {
+        this.modello = this.localStorageService.getObject(this.LOCAL_STORAGE_KEY);
       }
     });
   }
 
   ngOnDestroy(): void {
-    clearTimeout(this.loadingTimeout);
+    this.clearLoadingTimeout();
+
+    if (this.hasSaved) {
+      this.localStorageService.removeItem(this.LOCAL_STORAGE_KEY);
+    } else if (!this.hasSaved && this.modello.id == 0) {
+      this.localStorageService.setObject(this.LOCAL_STORAGE_KEY, this.modello);
+    }
   }
 
   private getModello(): void {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    this.setLoadingTimeout();
 
     this.modelloService.getModello(this.modello.id).subscribe({
       next: (result) => {
-        clearTimeout(this.loadingTimeout);
-        this.loading = false;
+        this.clearLoadingTimeout();
 
         if (result.success) {
           this.modello = result.data;
@@ -98,21 +105,20 @@ export class ModelloManagerComponent implements OnInit, OnDestroy {
         }
       },
       error: (error: any) => {
-        clearTimeout(this.loadingTimeout);
-        this.loading = false;
+        this.clearLoadingTimeout();
 
         console.error(error);
       }
     });
   }
 
-  saveStampante(): void {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+  saveModello(): void {
+    this.setLoadingTimeout();
     
     this.modelloService.save(this.modello).subscribe({
       next: (result) => {
-        clearTimeout(this.loadingTimeout);
-        this.loading = false;
+        this.clearLoadingTimeout();
+        this.hasSaved = true;
 
         this.MessageService.add({
           severity: 'success',
@@ -131,8 +137,7 @@ export class ModelloManagerComponent implements OnInit, OnDestroy {
         }
       },
       error: (error: any) => {
-        clearTimeout(this.loadingTimeout);
-        this.loading = false;
+        this.clearLoadingTimeout();
 
         if (error.status === 400) {
           this.MessageService.add({
@@ -158,8 +163,7 @@ export class ModelloManagerComponent implements OnInit, OnDestroy {
   indietro(): void {
     if (this.isExternal) {
       this.applicationStateService.newModello.next({});
-    }
-    else {
+    } else {
       this.router.navigate(['/modello']);
     }
   }

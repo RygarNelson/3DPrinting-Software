@@ -5,6 +5,7 @@ import { body, validationResult } from 'express-validator';
 import authMethods from '../methods/authMethods.js';
 import { clearLoggingContext, setLoggingContext } from '../middleware/loggingContext.js';
 import UsersRepository from '../repositories/users.repository.js';
+import securityService from '../services/security.service.js';
 import asyncHandler from '../utils/asyncHandler.js';
 
 const router = express.Router();
@@ -59,6 +60,7 @@ router.post(
     body('email').isEmail().notEmpty(),
     body('password').escape().notEmpty(),
     body('role').isNumeric().notEmpty(),
+    body('securityKey').notEmpty(),
     asyncHandler(async (req, res) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -68,6 +70,15 @@ router.post(
                 technical_data: errors.errors
             });
         }
+
+        // Validate security key
+        if (!securityService.validateSecurityKey(req.body.securityKey)) {
+            return res.status(403).json({
+                success: false,
+                error: 'Invalid security key. Registration not authorized.'
+            });
+        }
+
         await UsersRepository.insertOne(req, res);
     })
 );
