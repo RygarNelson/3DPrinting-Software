@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 import { VenditaAndamentoResponse } from 'src/models/vendita/vendita-andamento';
 import { VenditaAnniResponse } from 'src/models/vendita/vendita-anni';
 import { VenditaContoBancarioResponse } from 'src/models/vendita/vendita-conti-bancari';
@@ -17,7 +18,9 @@ export class VenditaService {
   private api: string = '';
 
   constructor(private http: HttpClient) {
-    this.api = `http://localhost:3000/api/vendita`;
+    const url: URL = new URL(`api/vendita`, environment.baseApi);
+        
+    this.api = url.toString();
   }
 
   getAnni(): Observable<VenditaAnniResponse> {

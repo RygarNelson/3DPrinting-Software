@@ -1,7 +1,7 @@
 import 'dotenv/config';
-import https from 'https';
-import http from 'http';
 import fs from 'fs';
+import http from 'http';
+import https from 'https';
 import app from './src/app.js';
 
 const port = process.env.SERVER_PORT || 3000;
@@ -13,7 +13,8 @@ const startServer = async () => {
         try {
             const options = {
                 key: fs.readFileSync(process.env.HTTPS_KEY),
-                cert: fs.readFileSync(process.env.HTTPS_CERT)
+                cert: fs.readFileSync(process.env.HTTPS_CERT),
+                passphrase: process.env.HTTPS_PASSPHRASE || null
             };
 
             const httpsServer = https.createServer(options, app);
