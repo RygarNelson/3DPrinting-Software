@@ -36,7 +36,11 @@
               </p-accordion-panel>
             </p-accordion> -->
           <div class="flex items-center flex-wrap gap-2 mt-4">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2" [ngClass]="{
+              'flex-col': applicationState.isMobile(),
+              'w-full': applicationState.isMobile(),
+              'align-items-baseline': applicationState.isMobile()
+            }">
               <p-iconfield iconPosition="left">
                 <p-inputicon>
                   <i class="pi pi-search"></i>
@@ -48,7 +52,12 @@
                 (click)="dataTable.clear(); pulisciFiltri();"></button>
             </div>
 
-            <div class="flex items-center gap-2 margin-left-auto">
+            <div class="flex items-center gap-2" [ngClass]="{
+              'flex-col': applicationState.isMobile(),
+              'w-full': applicationState.isMobile(),
+              'align-items-baseline': applicationState.isMobile(),
+              'margin-left-auto': !applicationState.isMobile()
+            }">
               <p-menu #menu appendTo="body" [model]="multipleAzioni" [popup]="true"></p-menu>
               <p-button [label]="'Azioni'" [icon]="menu.visible ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
                 [disabled]="selectedVendite == null || (selectedVendite != null && selectedVendite.length == 0)"

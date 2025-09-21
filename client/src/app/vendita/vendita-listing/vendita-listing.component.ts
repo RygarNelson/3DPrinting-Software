@@ -24,6 +24,7 @@ import { VenditaDettaglioStatoStampaEnum } from 'src/enums/VenditaDettaglioStato
 import { VenditaListingDettaglioBasettaModel, VenditaListingDettaglioModel, VenditaListingModel, VenditaListingResponse } from 'src/models/vendita/vendita-listing';
 import { VenditaListingFiltri } from 'src/models/vendita/vendita-listing-filtri';
 import { VenditaModificaContoBancarioModel } from 'src/models/vendita/vendita_modifica_conto_bancario';
+import { ApplicationStateService } from 'src/services/application-state.service';
 import { VenditaService } from 'src/services/vendita.service';
 import { AuditLogComponent } from 'src/shared/audit-log/audit-log.component';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
@@ -115,7 +116,8 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
     private dialogService: DialogService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    public applicationState: ApplicationStateService,
   ) {}
 
   ngOnInit(): void {
