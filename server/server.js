@@ -4,7 +4,7 @@ import http from 'http';
 import https from 'https';
 import app from './src/app.js';
 
-const port = process.env.SERVER_PORT || 3000;
+const port = process.env.SERVER_PORT || 3001;
 const address = process.env.SERVER_ADDRESS || 'localhost';
 
 // Initialize database and start server
