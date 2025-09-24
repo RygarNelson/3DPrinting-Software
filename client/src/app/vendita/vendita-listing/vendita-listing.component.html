@@ -246,7 +246,7 @@
                   <div class="text-sm font-semibold">Totale: {{ vendita.totale_vendita | currency:'EUR' }}</div>
                 </div>
 
-                <div class="flex items-center justify-between mt-2">
+                <div class="mt-2 w-full">
                   <form-input-select vendita-stato-spedizione-lookup property="stato_spedizione" [filter]="false"
                     [showClear]="false" [(ngModel)]="vendita.stato_spedizione"
                     (ngModelChange)="modificaStatoVendita(vendita)">
@@ -349,6 +349,51 @@
             <td colspan="12">
               <div class="my-3">
                 <h3 class="text-lg font-semibold text-gray-800 mb-2">Dettagli</h3>
+                @if (applicationState.isMobile()) {
+                <div class="flex flex-col gap-3">
+                  @if (!vendita.dettagli || vendita.dettagli.length === 0) {
+                  <div class="text-center py-6">
+                    <i class="pi pi-inbox text-4xl text-gray-400"></i>
+                    <p class="text-gray-500 mt-2">Non ci sono dettagli per questa vendita</p>
+                  </div>
+                  }
+                  @for (dettaglio of vendita.dettagli; track dettaglio.id) {
+                  <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                    <div class="flex flex-col gap-2 text-sm text-gray-700">
+                      <div>
+                        <div class="text-gray-500">Modello / Descrizione</div>
+                        <div class="font-medium">
+                          @if (dettaglio?.modello) { {{ dettaglio?.modello?.nome }} } @else { {{ dettaglio?.descrizione }} }
+                        </div>
+                      </div>
+                      <div class="grid grid-cols-2 gap-x-3 gap-y-1">
+                        <div class="text-gray-500">Stampante</div>
+                        <div>{{ dettaglio?.stampante?.nome }}</div>
+                        <div class="text-gray-500">Quantità</div>
+                        <div>{{ dettaglio?.quantita }}</div>
+                        <div class="text-gray-500">Prezzo</div>
+                        <div class="flex flex-col">
+                          <span>Totale: {{ dettaglio?.prezzo | currency:'EUR' }}</span>
+                          <span>Unitario: {{ (dettaglio?.prezzo / dettaglio?.quantita) | currency:'EUR' }}</span>
+                        </div>
+                      </div>
+                      <div>
+                        <form-input-select vendita-dettaglio-stato-stampa-lookup property="stato_stampa" [filter]="false"
+                          [showClear]="false" [(ngModel)]="dettaglio.stato_stampa"
+                          (ngModelChange)="modificaStatoDettaglio(dettaglio)">
+                          <ng-template #selectedItem let-item>
+                            <vendita-dettaglio-stato class="w-full" [stato_stampa]="dettaglio.stato_stampa" [isInSelect]="true" />
+                          </ng-template>
+                          <ng-template #item let-item>
+                            <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id" [isInSelect]="true" />
+                          </ng-template>
+                        </form-input-select>
+                      </div>
+                    </div>
+                  </div>
+                  }
+                </div>
+                } @else {
                 <p-table showGridlines [value]="vendita.dettagli">
                   <ng-template #header>
           <tr>
@@ -399,11 +444,46 @@
           </td>
         </ng-template>
       </p-table>
+                }
 </div>
 
 <div class="my-3">
   <h3 class="text-lg font-semibold text-gray-800 mb-2">Basette</h3>
-  <p-table showGridlines [value]="vendita.basette">
+                @if (applicationState.isMobile()) {
+                <div class="flex flex-col gap-3">
+                  @if (!vendita.basette || vendita.basette.length === 0) {
+                  <div class="text-center py-6">
+                    <i class="pi pi-inbox text-4xl text-gray-400"></i>
+                    <p class="text-gray-500 mt-2">Non ci sono basette per questa vendita</p>
+                  </div>
+                  }
+                  @for (basetta of vendita.basette; track basetta.id) {
+                  <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                    <div class="flex flex-col gap-2 text-sm text-gray-700">
+                      <div class="grid grid-cols-2 gap-x-3 gap-y-1">
+                        <div class="text-gray-500">Dimensione</div>
+                        <div>{{ basetta?.dimensione }}</div>
+                        <div class="text-gray-500">Quantità</div>
+                        <div>{{ basetta?.quantita }}</div>
+                      </div>
+                      <div>
+                        <form-input-select vendita-dettaglio-stato-stampa-lookup property="stato_stampa" [filter]="false"
+                          [showClear]="false" [(ngModel)]="basetta.stato_stampa"
+                          (ngModelChange)="modificaStatoBasetta(basetta)">
+                          <ng-template #selectedItem let-item>
+                            <vendita-dettaglio-stato class="w-full" [stato_stampa]="basetta.stato_stampa" [isInSelect]="true" />
+                          </ng-template>
+                          <ng-template #item let-item>
+                            <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id" [isInSelect]="true" />
+                          </ng-template>
+                        </form-input-select>
+                      </div>
+                    </div>
+                  </div>
+                  }
+                </div>
+                } @else {
+                <p-table showGridlines [value]="vendita.basette">
     <ng-template #header>
       <tr>
         <th class="text-center">Dimensione</th>
@@ -440,6 +520,7 @@
       </td>
     </ng-template>
   </p-table>
+                }
 </div>
 </td>
 </tr>
