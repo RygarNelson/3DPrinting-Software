@@ -76,8 +76,11 @@
         <ng-template #header>
           <tr>
             <th style="width: 4rem"><p-tableHeaderCheckbox /></th>
-            <th style="width: 5rem"></th>
-            <th>Numero</th>
+            @if (applicationState.isMobile()) {
+              <th></th>
+            }
+            @else {
+              <th>Numero</th>
             <th pSortableColumn="data_vendita" style="width: 150px;">
               Vendita
               <p-sortIcon field="data_vendita" />
@@ -165,6 +168,7 @@
               </p-columnFilter>
             </th>
             <th style="width: 120px;"></th>
+            }
           </tr>
         </ng-template>
 
@@ -172,13 +176,114 @@
         <ng-template #body let-vendita let-expanded="expanded">
           <tr [ngClass]="{'in-scadenza': vendita.isInScadenza, 'scaduto': vendita.isScaduto}">
             <td>
-              <p-tableCheckbox [value]="vendita" />
+              <div class="flex flex-col items-center">
+                <p-tableCheckbox [value]="vendita" />
+                @if (applicationState.isMobile()) {
+                  <p-button type="button" pRipple [pRowToggler]="vendita" [text]="true" [rounded]="true" [plain]="true"
+                      [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
+                }
+              </div>
             </td>
+            @if (!applicationState.isMobile()) {
+              <td>
+                <p-button type="button" pRipple [pRowToggler]="vendita" [text]="true" [rounded]="true" [plain]="true"
+                  [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
+              </td>
+            }
+            @if (applicationState.isMobile()) {
             <td>
-              <p-button type="button" pRipple [pRowToggler]="vendita" [text]="true" [rounded]="true" [plain]="true"
-                [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
+              <div class="flex flex-col gap-2">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="font-semibold">#{{ vendita.id }}</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    @if (vendita.isInScadenza) {
+                    <span class="text-xs px-2 py-1 rounded bg-amber-100 text-amber-700">In scadenza</span>
+                    }
+                    @if (vendita.isScaduto) {
+                    <span class="text-xs px-2 py-1 rounded bg-red-100 text-red-700">Scaduto</span>
+                    }
+                  </div>
+                </div>
+
+                <div class="text-sm text-gray-700 grid grid-cols-2 gap-y-1 gap-x-3">
+                  <div class="text-gray-500">Vendita</div>
+                  <div class="font-medium">{{ vendita.data_vendita | date:'dd/MM/yyyy' }}</div>
+                  <div class="text-gray-500">Scadenza</div>
+                  <div>{{ vendita.data_scadenza | date:'dd/MM/yyyy' }}</div>
+                  <div class="text-gray-500">Spedizione</div>
+                  <div>{{ vendita.data_scadenza_spedizione | date:'dd/MM/yyyy' }}</div>
+                  <div class="text-gray-500">Cliente</div>
+                  <div>{{ vendita.cliente?.etichetta }}</div>
+                  <div class="text-gray-500">Conto</div>
+                  <div>{{ vendita.conto_bancario?.iban }}</div>
+                </div>
+
+                <div class="mt-2">
+                  @if (vendita.dettagli && vendita.dettagli.length > 0) {
+                  <ul class="list-disc pl-5 text-sm text-gray-700">
+                    @for (dettaglio of vendita.dettagli; track dettaglio.id) {
+                    @if (dettaglio.modello) {
+                    <li>
+                      {{ dettaglio.modello?.nome }} {{ dettaglio.stampa_is_pezzo_singolo ? '(Pezzo singolo)' : '' }}
+                      {{ dettaglio.stampa_is_parziale ? '(Parziale)' : '' }}
+                    </li>
+                    } @else {
+                    <li>
+                      {{ dettaglio.descrizione }} {{ dettaglio.stampa_is_pezzo_singolo ? '(Pezzo singolo)' : '' }}
+                      {{ dettaglio.stampa_is_parziale ? '(Parziale)' : '' }}
+                    </li>
+                    }
+                    }
+                  </ul>
+                  } @else {
+                  <p class="text-sm text-gray-500">Nessun dettaglio</p>
+                  }
+                </div>
+
+                <div class="flex items-center justify-between mt-2">
+                  <div class="text-sm font-semibold">Totale: {{ vendita.totale_vendita | currency:'EUR' }}</div>
+                </div>
+
+                <div class="flex items-center justify-between mt-2">
+                  <form-input-select vendita-stato-spedizione-lookup property="stato_spedizione" [filter]="false"
+                    [showClear]="false" [(ngModel)]="vendita.stato_spedizione"
+                    (ngModelChange)="modificaStatoVendita(vendita)">
+                    <ng-template #selectedItem let-item>
+                      <vendita-stato class="w-full" [stato_spedizione]="vendita.stato_spedizione"
+                        [isInSelect]="true" />
+                    </ng-template>
+                    <ng-template #item let-item>
+                      <vendita-stato class="w-full" [stato_spedizione]="item.id" [isInSelect]="true" />
+                    </ng-template>
+                  </form-input-select>
+                </div>
+
+                <div class="flex justify-end gap-2 mt-2">
+                  @if (loading) {
+                  <p-button icon="pi pi-spinner pi-spin" severity="info" size="small" [disabled]="true">
+                  </p-button>
+                  <p-button icon="pi pi-spinner pi-spin" severity="danger" size="small" [disabled]="true">
+                  </p-button>
+                  }
+                  @else {
+                  <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(vendita)"
+                    pTooltip="Visualizza log di audit" tooltipPosition="top">
+                  </p-button>
+                  <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editVendita(vendita)"
+                    pTooltip="Modifica vendita" tooltipPosition="top">
+                  </p-button>
+                  <p-button icon="pi pi-trash" severity="danger" size="small"
+                    (click)="confirmDelete($event, vendita)" pTooltip="Elimina vendita" tooltipPosition="top">
+                  </p-button>
+                  }
+                </div>
+              </div>
             </td>
-            <td class="font-medium">{{ vendita.id }}</td>
+            }
+            @else {
+              <td class="font-medium">{{ vendita.id }}</td>
             <td class="font-medium">{{ vendita.data_vendita | date:'dd/MM/yyyy' }}</td>
             <td>{{ vendita.data_scadenza | date:'dd/MM/yyyy' }}</td>
             <td>{{ vendita.data_scadenza_spedizione | date:'dd/MM/yyyy' }}</td>
@@ -236,6 +341,7 @@
 
               </div>
             </td>
+            }
           </tr>
         </ng-template>
         <ng-template #expandedrow let-vendita>
