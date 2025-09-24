@@ -40,18 +40,60 @@
         <!-- ID Column -->
         <ng-template #header>
           <tr>
-            <th pSortableColumn="iban">IBAN <p-sortIcon field="iban" /></th>
+            @if (applicationState.isMobile()) {
+              <th>Conto Bancario</th>
+            }
+            @else {
+              <th pSortableColumn="iban">IBAN <p-sortIcon field="iban" /></th>
             <th pSortableColumn="nome_proprietario">Nome Proprietario <p-sortIcon field="nome_proprietario" /></th>
             <th pSortableColumn="cognome_proprietario">Cognome Proprietario <p-sortIcon field="cognome_proprietario" />
             </th>
             <th class="text-center" style="width: 120px;"></th>
+            }
           </tr>
         </ng-template>
 
         <!-- Data Rows -->
         <ng-template #body let-conto_bancario>
           <tr>
-            <td class="font-medium">{{ conto_bancario.iban }}</td>
+            @if (applicationState.isMobile()) {
+              <td>
+                <div class="bg-white border border-gray-200 rounded-lg p-4 w-full hover:shadow-md transition-shadow">
+                  <div class="flex flex-col gap-2">
+                    <div class="text-sm text-gray-700 grid grid-cols-2 gap-y-1 gap-x-3">
+                      <div class="text-gray-500">IBAN</div>
+                      <div class="font-medium break-all">{{ conto_bancario.iban }}</div>
+                      <div class="text-gray-500">Nome</div>
+                      <div>{{ conto_bancario.nome_proprietario }}</div>
+                      <div class="text-gray-500">Cognome</div>
+                      <div>{{ conto_bancario.cognome_proprietario }}</div>
+                    </div>
+                    <div class="flex justify-end gap-2 mt-2">
+                      @if (loading) {
+                      <p-button icon="pi pi-spinner pi-spin" severity="info" size="small" [disabled]="true">
+                      </p-button>
+                      <p-button icon="pi pi-spinner pi-spin" severity="danger" size="small" [disabled]="true">
+                      </p-button>
+                      }
+                      @else {
+                      <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(conto_bancario)"
+                        pTooltip="Visualizza log di audit" tooltipPosition="top">
+                      </p-button>
+                      <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editContoBancario(conto_bancario)"
+                        pTooltip="Modifica conto bancario" tooltipPosition="top">
+                      </p-button>
+                      <p-button icon="pi pi-trash" severity="danger" size="small" [disabled]="conto_bancario.isUsed"
+                        (click)="confirmDelete($event, conto_bancario)"
+                        [pTooltip]="conto_bancario.isUsed | contoBancarioListingEliminaMessaggio" tooltipPosition="top">
+                      </p-button>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </td>
+            }
+            @else {
+              <td class="font-medium">{{ conto_bancario.iban }}</td>
             <td>{{ conto_bancario.nome_proprietario }}</td>
             <td>{{ conto_bancario.cognome_proprietario }}</td>
             <td class="text-center">
@@ -77,6 +119,7 @@
 
               </div>
             </td>
+            }
           </tr>
         </ng-template>
 
