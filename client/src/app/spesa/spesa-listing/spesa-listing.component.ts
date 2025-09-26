@@ -17,6 +17,7 @@ import { SpesaTipoLookupDirective } from 'src/directives/spesa/spesa-tipo-lookup
 import { SpesaUnitaMisuraLookupDirective } from 'src/directives/spesa/spesa-unita-misura-lookup.directive';
 import { SpesaListingModel, SpesaListingResponse } from 'src/models/spesa/spesa-listing';
 import { SpesaListingFiltri } from 'src/models/spesa/spesa-listing-filtri';
+import { ApplicationStateService } from 'src/services/application-state.service';
 import { SpesaService } from 'src/services/spesa.service';
 import { AuditLogComponent } from 'src/shared/audit-log/audit-log.component';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
@@ -71,7 +72,8 @@ export class SpesaListingComponent {
     private router: Router,
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    public applicationState: ApplicationStateService
   ) {}
 
   ngOnDestroy(): void {

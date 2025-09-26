@@ -13,7 +13,11 @@
 
         <ng-template pTemplate="caption">
           <div class="flex items-center flex-wrap gap-2">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2" [ngClass]="{
+              'flex-col': applicationState.isMobile(),
+              'w-full': applicationState.isMobile(),
+              'align-items-baseline': applicationState.isMobile()
+            }">
               <p-iconfield iconPosition="left">
                 <p-inputicon>
                   <i class="pi pi-search"></i>
@@ -25,7 +29,11 @@
                 (click)="dataTable.clear()"></button>
             </div>
 
-            <div class="flex items-center gap-2 margin-left-auto">
+            <div class="flex items-center gap-2 margin-left-auto" [ngClass]="{
+              'flex-col': applicationState.isMobile(),
+              'w-full': applicationState.isMobile(),
+              'align-items-baseline': applicationState.isMobile()
+            }">
               <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()"
                 pTooltip="Aggiorna tabella" tooltipPosition="top">
               </p-button>
@@ -39,16 +47,56 @@
         <!-- ID Column -->
         <ng-template #header>
           <tr>
-            <th pSortableColumn="nome">Nome <p-sortIcon field="nome" /></th>
+            @if (applicationState.isMobile()) {
+              <th>Stampante</th>
+            }
+            @else {
+              <th pSortableColumn="nome">Nome <p-sortIcon field="nome" /></th>
             <th pSortableColumn="descrizione">Descrizione <p-sortIcon field="descrizione" /></th>
             <th class="text-center" style="width: 120px;"></th>
+            }
           </tr>
         </ng-template>
 
         <!-- Data Rows -->
         <ng-template #body let-stampante>
           <tr>
-            <td class="font-medium">{{ stampante.nome }}</td>
+            @if (applicationState.isMobile()) {
+              <td>
+                <div class="bg-white border border-gray-200 rounded-lg p-4 w-full hover:shadow-md transition-shadow">
+                  <div class="flex flex-col gap-2">
+                    <div class="flex items-center justify-between">
+                      <span class="font-semibold text-gray-800">{{ stampante.nome }}</span>
+                    </div>
+                    <div class="text-sm text-gray-700">
+                      {{ stampante.descrizione || '—' }}
+                    </div>
+                    <div class="flex justify-end gap-2 mt-2">
+                      @if (loading) {
+                      <p-button icon="pi pi-spinner pi-spin" severity="info" size="small" [disabled]="true">
+                      </p-button>
+                      <p-button icon="pi pi-spinner pi-spin" severity="danger" size="small" [disabled]="true">
+                      </p-button>
+                      }
+                      @else {
+                      <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(stampante)"
+                        pTooltip="Visualizza log di audit" tooltipPosition="top">
+                      </p-button>
+                      <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editStampante(stampante)"
+                        pTooltip="Modifica stampante" tooltipPosition="top">
+                      </p-button>
+                      <p-button icon="pi pi-trash" severity="danger" size="small" [disabled]="stampante.isUsed"
+                        (click)="confirmDelete($event, stampante)"
+                        [pTooltip]="stampante.isUsed | stampanteListingEliminaMessaggio" tooltipPosition="top">
+                      </p-button>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </td>
+            }
+            @else {
+              <td class="font-medium">{{ stampante.nome }}</td>
             <td>{{ stampante.descrizione }}</td>
             <td class="text-center">
               <div class="flex justify-center gap-2">
@@ -73,6 +121,7 @@
 
               </div>
             </td>
+            }
           </tr>
         </ng-template>
 

@@ -10,7 +10,11 @@
         [rowsPerPageOptions]="[10, 20, 50, 100]" [lazy]="true" (onLazyLoad)="loadData($event)">
         <ng-template pTemplate="caption">
           <div class="flex items-center flex-wrap gap-2">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2" [ngClass]="{
+              'flex-col': applicationState.isMobile(),
+              'w-full': applicationState.isMobile(),
+              'align-items-baseline': applicationState.isMobile()
+            }">
               <p-iconfield iconPosition="left">
                 <p-inputicon>
                   <i class="pi pi-search"></i>
@@ -22,7 +26,11 @@
                 (click)="dataTable.clear()"></button>
             </div>
 
-            <div class="flex items-center gap-2 margin-left-auto">
+            <div class="flex items-center gap-2 margin-left-auto" [ngClass]="{
+              'flex-col': applicationState.isMobile(),
+              'w-full': applicationState.isMobile(),
+              'align-items-baseline': applicationState.isMobile()
+            }">
               <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()"
                 pTooltip="Aggiorna tabella" tooltipPosition="top">
               </p-button>
@@ -34,15 +42,56 @@
         </ng-template>
         <ng-template pTemplate="header">
           <tr>
-            <th pSortableColumn="etichetta">Etichetta <p-sortIcon field="etichetta"></p-sortIcon></th>
+            @if (applicationState.isMobile()) {
+              <th>Cliente</th>
+            }
+            @else {
+              <th pSortableColumn="etichetta">Etichetta <p-sortIcon field="etichetta"></p-sortIcon></th>
             <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
             <th pSortableColumn="telefono">Telefono <p-sortIcon field="telefono"></p-sortIcon></th>
             <th class="text-center" style="width: 120px;"></th>
+            }
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-cliente>
           <tr>
-            <td>{{ cliente.etichetta }}</td>
+            @if (applicationState.isMobile()) {
+              <td>
+                <div class="bg-white border border-gray-200 rounded-lg p-4 w-full hover:shadow-md transition-shadow">
+                  <div class="flex flex-col gap-2">
+                    <div class="font-semibold text-gray-800">{{ cliente.etichetta }}</div>
+                    <div class="grid grid-cols-2 gap-x-3 gap-y-1 text-sm text-gray-700">
+                      <div class="text-gray-500">Email</div>
+                      <div class="break-all">{{ cliente.email }}</div>
+                      <div class="text-gray-500">Telefono</div>
+                      <div>{{ cliente.telefono }}</div>
+                    </div>
+                    <div class="flex justify-end gap-2 mt-2">
+                      @if (loading) {
+                      <p-button icon="pi pi-spinner pi-spin" severity="info" size="small" [disabled]="true">
+                      </p-button>
+                      <p-button icon="pi pi-spinner pi-spin" severity="danger" size="small" [disabled]="true">
+                      </p-button>
+                      }
+                      @else {
+                      <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(cliente)"
+                        pTooltip="Visualizza log di audit" tooltipPosition="top">
+                      </p-button>
+                      <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editCliente(cliente)"
+                        pTooltip="Modifica cliente" tooltipPosition="top">
+                      </p-button>
+                      <p-button icon="pi pi-trash" severity="danger" size="small" [disabled]="cliente.isUsed"
+                        (click)="confirmDelete($event, cliente)" [pTooltip]="cliente.isUsed | clienteListingEliminaMessaggio"
+                        tooltipPosition="top">
+                      </p-button>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </td>
+            }
+            @else {
+              <td>{{ cliente.etichetta }}</td>
             <td>{{ cliente.email }}</td>
             <td>{{ cliente.telefono }}</td>
             <td class="text-center">
@@ -67,6 +116,7 @@
                 }
               </div>
             </td>
+            }
           </tr>
         </ng-template>
         <ng-template pTemplate="emptymessage">

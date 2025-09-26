@@ -53,11 +53,19 @@ form-input-checkbox {
 }
 
 .margin-left-auto {
-    margin-left: auto;
+  margin-left: auto;
 }
 
 .text-center {
   text-align: center !important;
+}
+
+.align-items-baseline {
+  align-items: baseline;
+}
+
+.justify-between {
+  justify-content: space-between;
 }
 
 .p-datepicker.p-component.p-inputwrapper {
