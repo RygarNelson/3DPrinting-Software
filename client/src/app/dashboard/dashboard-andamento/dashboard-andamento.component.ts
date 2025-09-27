@@ -7,6 +7,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { Subscription } from 'rxjs';
 import { Graph } from 'src/interfaces/graph';
 import { VenditaAndamentoResponse } from 'src/models/vendita/vendita-andamento';
+import { ApplicationStateService } from 'src/services/application-state.service';
 import { VenditaService } from 'src/services/vendita.service';
 
 @Component({
@@ -38,7 +39,8 @@ export class DashboardAndamentoComponent implements OnInit, OnDestroy, OnChanges
   private loadingTimeout?: number;
 
   constructor(
-    private venditaService: VenditaService
+    private venditaService: VenditaService,
+    public applicationState: ApplicationStateService
   ) {}
 
   ngOnInit(): void {
