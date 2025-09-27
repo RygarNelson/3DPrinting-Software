@@ -85,22 +85,19 @@
 
     <ng-template pTemplate="content">
       <!-- Search and Filter Controls -->
-      <div class="flex items-center flex-wrap gap-2 mb-4">
-        <div class="flex items-center gap-2" [ngClass]="{
-          'flex-col': applicationState.isMobile(),
-          'w-full': applicationState.isMobile(),
-          'align-items-baseline': applicationState.isMobile()
-        }">
-          <p-iconfield iconPosition="left">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+        <!-- Search Section -->
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <p-iconfield iconPosition="left" class="w-full sm:w-auto">
             <p-inputicon>
               <i class="pi pi-search"></i>
             </p-inputicon>
-            <input #searchInput pInputText type="text" placeholder="Cerca modelli..." class="w-full sm:w-auto"
+            <input #searchInput pInputText type="text" placeholder="Cerca modelli..." class="w-full"
               [(ngModel)]="filtri.search" (ngModelChange)="onSearchChange($event)">
           </p-iconfield>
           
           <form-input-select modello-tipo-lookup property="tipo" [filter]="false" [showClear]="true"
-            [(ngModel)]="filtri.tipo" (ngModelChange)="onTypeChange($event)" placeholder="Filtra per tipo">
+            [(ngModel)]="filtri.tipo" (ngModelChange)="onTypeChange($event)" placeholder="Filtra per tipo" class="w-full sm:w-auto">
             <ng-template #selectedItem let-item>
               <modello-tipo class="w-full" [tipo]="filtri.tipo" [isInSelect]="true" />
             </ng-template>
@@ -109,20 +106,17 @@
             </ng-template>
           </form-input-select>
           
-          <button pButton label="Pulisci" class="p-button-outlined" icon="pi pi-filter-slash"
+          <button pButton label="Pulisci" class="p-button-outlined w-full sm:w-auto" icon="pi pi-filter-slash"
             (click)="pulisciFiltri();"></button>
         </div>
 
-        <div class="flex items-center gap-2 margin-left-auto" [ngClass]="{
-          'flex-col': applicationState.isMobile(),
-          'w-full': applicationState.isMobile(),
-          'align-items-baseline': applicationState.isMobile()
-        }">
+        <!-- Action Buttons Section -->
+        <div class="flex items-center gap-2 justify-end sm:justify-start">
           <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()"
             pTooltip="Aggiorna griglia" tooltipPosition="top">
           </p-button>
           <p-button icon="pi pi-plus" label="Nuovo Modello" severity="success" (click)="addNewModello()"
-            pTooltip="Aggiungi nuovo modello" class="flex-shrink-0" tooltipPosition="top">
+            pTooltip="Aggiungi nuovo modello" tooltipPosition="top">
           </p-button>
         </div>
       </div>

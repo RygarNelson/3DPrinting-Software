@@ -12,33 +12,27 @@
         [rowsPerPageOptions]="[10, 20, 50, 100]" [lazy]="true" (onLazyLoad)="loadData($event)">
 
         <ng-template pTemplate="caption">
-          <div class="flex items-center flex-wrap gap-2">
-            <div class="flex items-center gap-2" [ngClass]="{
-              'flex-col': applicationState.isMobile(),
-              'w-full': applicationState.isMobile(),
-              'align-items-baseline': applicationState.isMobile()
-            }">
-              <p-iconfield iconPosition="left">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <!-- Search Section -->
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <p-iconfield iconPosition="left" class="w-full sm:w-auto">
                 <p-inputicon>
                   <i class="pi pi-search"></i>
                 </p-inputicon>
-                <input #searchInput pInputText type="text" placeholder="Cerca stampanti..." class="w-full sm:w-auto"
+                <input #searchInput pInputText type="text" placeholder="Cerca stampanti..." class="w-full"
                   [(ngModel)]="filtri.search" (ngModelChange)="dataTable.filterGlobal($event, 'contains')">
               </p-iconfield>
-              <button pButton label="Pulisci" class="p-button-outlined" icon="pi pi-filter-slash"
+              <button pButton label="Pulisci" class="p-button-outlined w-full sm:w-auto" icon="pi pi-filter-slash"
                 (click)="dataTable.clear()"></button>
             </div>
 
-            <div class="flex items-center gap-2 margin-left-auto" [ngClass]="{
-              'flex-col': applicationState.isMobile(),
-              'w-full': applicationState.isMobile(),
-              'align-items-baseline': applicationState.isMobile()
-            }">
+            <!-- Action Buttons Section -->
+            <div class="flex items-center gap-2 justify-end sm:justify-start">
               <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()"
                 pTooltip="Aggiorna tabella" tooltipPosition="top">
               </p-button>
               <p-button icon="pi pi-plus" label="Nuova Stampante" severity="success" (click)="addNewStampante()"
-                pTooltip="Aggiungi nuova stampante" class="flex-shrink-0" tooltipPosition="top">
+                pTooltip="Aggiungi nuova stampante" tooltipPosition="top">
               </p-button>
             </div>
           </div>
