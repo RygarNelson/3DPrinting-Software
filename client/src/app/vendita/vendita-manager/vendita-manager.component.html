@@ -28,7 +28,7 @@
                     [min]="vendita.data_vendita" [listaErrori]="listaErrori"
                     [(ngModel)]="vendita.data_scadenza_spedizione" />
             </div>
-            <div class="grid grid-cols-2 gap-4 mt-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <form-input-select cliente-lookup property="cliente_id" label="Cliente" [obligatory]="true"
                     [listaErrori]="listaErrori" [showAdd]="true" (add)="addCliente()"
                     [(ngModel)]="vendita.cliente_id" />

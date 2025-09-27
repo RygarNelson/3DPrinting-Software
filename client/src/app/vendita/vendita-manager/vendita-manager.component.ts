@@ -76,10 +76,10 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
 export class VenditaManagerComponent extends BaseManager implements OnInit, OnDestroy {
   vendita: VenditaManagerModel = new VenditaManagerModel();
 
-  private clienteRef?: DynamicDialogRef;
-  private modelloRef?: DynamicDialogRef;
-  private stampanteRef?: DynamicDialogRef;
-  private contoBancarioRef?: DynamicDialogRef;
+  private clienteRef: DynamicDialogRef<ClienteManagerComponent> | null = null;
+  private modelloRef: DynamicDialogRef<ModelloManagerComponent> | null = null;
+  private stampanteRef: DynamicDialogRef<StampanteManagerComponent> | null = null;
+  private contoBancarioRef: DynamicDialogRef<ContoBancarioManagerComponent> | null = null;
   private clienteSubscription?: Subscription;
   private modelloSubscription?: Subscription;
   private stampanteSubscription?: Subscription;
