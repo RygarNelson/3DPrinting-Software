@@ -54,6 +54,12 @@ export class VenditaStatoComponent implements OnChanges {
         this.color = '#2196F3';
         break;
       }
+      case VenditaStatoSpedizioneEnum.SpedizioneReso: {
+        this.icon = 'pi pi-refresh';
+        this.descrizione = 'Reso';
+        this.color = '#e221f3ff';
+        break;
+      }
       default: {
         this.icon = '';
         this.descrizione = '';

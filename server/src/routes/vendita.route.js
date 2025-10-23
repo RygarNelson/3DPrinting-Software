@@ -421,25 +421,26 @@ router.post(
                 'stato_spedizione',
                 [literal(`
                     CASE
-                        WHEN stato_spedizione IN (0, 4)
+                        WHEN stato_spedizione IN (0)
                             AND CURRENT_DATE >= data_scadenza
                             AND CURRENT_DATE < data_scadenza_spedizione
                         THEN 1 ELSE 0 END
                 `), 'isInScadenza'],
                 [literal(`
                     CASE
-                        WHEN stato_spedizione IN (0, 4)
+                        WHEN stato_spedizione IN (0)
                             AND CURRENT_DATE >= data_scadenza_spedizione
                         THEN 1 ELSE 0 END
                 `), 'isScaduto'],
                 [literal(`
                     CASE
                         WHEN stato_spedizione = 4 THEN 1
-                        WHEN stato_spedizione = 0 THEN 2
-                        WHEN stato_spedizione = 1 THEN 3
-                        WHEN stato_spedizione = 2 THEN 4
-                        WHEN stato_spedizione = 3 THEN 5
-                        ELSE 6
+                        WHEN stato_spedizione = 5 THEN 2
+                        WHEN stato_spedizione = 0 THEN 3
+                        WHEN stato_spedizione = 1 THEN 4
+                        WHEN stato_spedizione = 2 THEN 5
+                        WHEN stato_spedizione = 3 THEN 6
+                        ELSE 7
                     END
                 `), 'rank']
             ];
