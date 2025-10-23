@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 import { User } from 'src/models/User';
 import { LocalstorageService } from './localstorage.service';
 
@@ -12,7 +13,9 @@ export class AuthService {
   private api: string = '';
 
   constructor(private http: HttpClient, private localStorageService: LocalstorageService) {
-    this.api = `http://localhost:3000/api/auth`;
+    const url: URL = new URL(`api/auth`, environment.baseApi);
+    
+    this.api = url.toString();
   }
 
   login(email: string, password: string): Observable<any> {

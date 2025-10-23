@@ -79,48 +79,51 @@ import { AuthService } from 'src/services/auth.service';
                     </div>
                 </div>
                 <div class="flex flex-col">
-                    <p-iconfield class="w-full mb-6">
-                        <p-inputicon class="pi pi-envelope" />
-                        <input
-                            id="email"
-                            type="text"
-                            pInputText
-                            class="w-full md:w-[25rem]"
-                            placeholder="Email"
-                            [(ngModel)]="email"
-                        />
-                    </p-iconfield>
+                    <form (ngSubmit)="login()">
+                        <p-iconfield class="w-full mb-6">
+                            <p-inputicon class="pi pi-envelope" />
+                            <input
+                                id="email"
+                                type="text"
+                                pInputText
+                                class="w-full md:w-[25rem]"
+                                placeholder="Email"
+                                [(ngModel)]="email"
+                                [ngModelOptions]="{standalone: true}"
+                            />
+                        </p-iconfield>
 
-                    <p-iconfield class="w-full mb-6">
-                        <p-inputicon class="pi pi-lock" />
-                        <input
-                            id="password"
-                            type="password"
-                            pInputText
-                            class="w-full md:w-[25rem]"
-                            placeholder="Password"
-                            [(ngModel)]="password"
-                        />
-                    </p-iconfield>
-                    
-                    @if (loading) {
-                        <button
-                            pButton
-                            pRipple
-                            label="Log In"
-                            class="w-full"
-                            icon="pi pi-spin pi-spinner"
-                            [disabled]="true"></button>
-                    }
-                    @else {
-                        <button
-                            pButton
-                            pRipple
-                            label="Log In"
-                            class="w-full"
-                            (click)="login()"></button>
-                    }
-                    
+                        <p-iconfield class="w-full mb-6">
+                            <p-inputicon class="pi pi-lock" />
+                            <input
+                                id="password"
+                                type="password"
+                                pInputText
+                                class="w-full md:w-[25rem]"
+                                placeholder="Password"
+                                [(ngModel)]="password"
+                                [ngModelOptions]="{standalone: true}"
+                            />
+                        </p-iconfield>
+                        
+                        @if (loading) {
+                            <button
+                                pButton
+                                pRipple
+                                label="Log In"
+                                class="w-full"
+                                icon="pi pi-spin pi-spinner"
+                                [disabled]="true"></button>
+                        }
+                        @else {
+                            <button
+                                pButton
+                                pRipple
+                                label="Log In"
+                                class="w-full"
+                                (click)="login()"></button>
+                        }
+                    </form>
                 </div>
             </div>
         </div>

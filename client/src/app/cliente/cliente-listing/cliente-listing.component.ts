@@ -13,6 +13,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import { Subscription } from 'rxjs';
+import { ApplicationStateService } from 'src/services/application-state.service';
 import { AuditLogComponent } from 'src/shared/audit-log/audit-log.component';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { ClienteListingModel, ClienteListingResponse } from '../../../models/cliente/cliente-listing';
@@ -60,7 +61,8 @@ export class ClienteListingComponent implements OnDestroy {
     private router: Router,
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    public applicationState: ApplicationStateService
   ) {}
 
   ngOnDestroy(): void {

@@ -15,6 +15,7 @@ import { Subscription } from 'rxjs';
 import { ModelloTipoLookupDirective } from 'src/directives/modello/modello-tipo-lookup.directive';
 import { ModelloListingGridModel, ModelloListingGridResponse } from 'src/models/modello/modello-listing';
 import { ModelloListingFiltri } from 'src/models/modello/modello-listing-filtri';
+import { ApplicationStateService } from 'src/services/application-state.service';
 import { ModelloService } from 'src/services/modello.service';
 import { AuditLogComponent } from 'src/shared/audit-log/audit-log.component';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
@@ -73,7 +74,8 @@ constructor(
   private router: Router,
   private confirmationService: ConfirmationService,
   private messageService: MessageService,
-  private dialogService: DialogService
+  private dialogService: DialogService,
+  public applicationState: ApplicationStateService
 ) {}
 
 ngOnInit(): void {

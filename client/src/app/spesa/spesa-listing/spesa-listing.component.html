@@ -13,25 +13,27 @@
         (onLazyLoad)="loadData($event)">
 
         <ng-template pTemplate="caption">
-          <div class="flex items-center flex-wrap gap-2">
-            <div class="flex items-center gap-2">
-              <p-iconfield iconPosition="left">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <!-- Search Section -->
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <p-iconfield iconPosition="left" class="w-full sm:w-auto">
                 <p-inputicon>
                   <i class="pi pi-search"></i>
                 </p-inputicon>
-                <input #searchInput pInputText type="text" placeholder="Cerca spese..." class="w-full sm:w-auto"
+                <input #searchInput pInputText type="text" placeholder="Cerca spese..." class="w-full"
                   [(ngModel)]="filtri.search" (ngModelChange)="dataTable.filterGlobal($event, 'contains')">
               </p-iconfield>
-              <button pButton label="Pulisci" class="p-button-outlined" icon="pi pi-filter-slash"
+              <button pButton label="Pulisci" class="p-button-outlined w-full sm:w-auto" icon="pi pi-filter-slash"
                 (click)="dataTable.clear(); pulisciFiltri();"></button>
             </div>
 
-            <div class="flex items-center gap-2 margin-left-auto">
+            <!-- Action Buttons Section -->
+            <div class="flex items-center gap-2 justify-end sm:justify-start">
               <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()"
                 pTooltip="Aggiorna tabella" tooltipPosition="top">
               </p-button>
               <p-button icon="pi pi-plus" label="Nuova Spesa" severity="success" (click)="addNewSpesa()"
-                pTooltip="Aggiungi nuova spesa" class="flex-shrink-0" tooltipPosition="top">
+                pTooltip="Aggiungi nuova spesa" tooltipPosition="top">
               </p-button>
             </div>
           </div>
@@ -40,7 +42,11 @@
         <!-- ID Column -->
         <ng-template #header>
           <tr>
-            <th>Numero</th>
+            @if (applicationState.isMobile()) {
+              <th>Spesa</th>
+            }
+            @else {
+              <th>Numero</th>
             <th pSortableColumn="data_spesa">
               Data Spesa
               <p-sortIcon field="data_spesa" />
@@ -85,13 +91,58 @@
                 [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
             </th>
             <th class="text-center" style="width: 120px;"></th>
+            }
           </tr>
         </ng-template>
 
         <!-- Data Rows -->
         <ng-template #body let-spesa>
           <tr>
-            <td class="font-medium">{{ spesa.id }}</td>
+            @if (applicationState.isMobile()) {
+              <td>
+                <div class="bg-white border border-gray-200 rounded-lg p-4 w-full hover:shadow-md transition-shadow">
+                  <div class="flex flex-col gap-2">
+                    <div class="flex items-center justify-between">
+                      <span class="font-semibold text-gray-800">Spesa #{{ spesa.id }}</span>
+                      <span class="text-sm text-gray-600">{{ spesa.data_spesa | date:'dd/MM/yyyy' }}</span>
+                    </div>
+                    <div class="text-sm text-gray-700">{{ spesa.descrizione }}</div>
+                    <div class="grid grid-cols-2 gap-x-3 gap-y-1 text-sm text-gray-700">
+                      <div class="text-gray-500">Quantità</div>
+                      <div>{{ spesa.quantita | number : '0.4-4' }}</div>
+                      <div class="text-gray-500">Tipo</div>
+                      <div>{{ spesa.tipo_spesa | spesaTipo }}</div>
+                      <div class="text-gray-500">Unità</div>
+                      <div>{{ spesa.unita_misura | spesaUnitaMisura }}</div>
+                    </div>
+                    <div class="flex items-center justify-between mt-2">
+                      <div class="text-sm font-semibold">Totale: {{ spesa.totale_spesa | currency:'EUR' }}</div>
+                      <div class="flex justify-end gap-2">
+                        @if (loading) {
+                        <p-button icon="pi pi-spinner pi-spin" severity="info" size="small" [disabled]="true">
+                        </p-button>
+                        <p-button icon="pi pi-spinner pi-spin" severity="danger" size="small" [disabled]="true">
+                        </p-button>
+                        }
+                        @else {
+                        <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(spesa)"
+                          pTooltip="Visualizza log di audit" tooltipPosition="top">
+                        </p-button>
+                        <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editSpesa(spesa)"
+                          pTooltip="Modifica spesa" tooltipPosition="top">
+                        </p-button>
+                        <p-button icon="pi pi-trash" severity="danger" size="small" (click)="confirmDelete($event, spesa)"
+                          pTooltip="Elimina spesa" tooltipPosition="top">
+                        </p-button>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            }
+            @else {
+              <td class="font-medium">{{ spesa.id }}</td>
             <td class="font-medium">{{ spesa.data_spesa | date:'dd/MM/yyyy' }}</td>
             <td>{{ spesa.descrizione }}</td>
             <td>{{ spesa.quantita | number : "0.4-4" }}</td>
@@ -120,6 +171,7 @@
 
               </div>
             </td>
+            }
           </tr>
         </ng-template>
 

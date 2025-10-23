@@ -12,6 +12,10 @@ form-input-datetime {
   .input-error.p-datepicker .p-inputtext {
     border: 1px solid $error-color !important;
   }
+
+  .p-datepicker .p-inputtext {
+    width: 100%;
+  }
 }
 
 form-input-select {
@@ -53,11 +57,19 @@ form-input-checkbox {
 }
 
 .margin-left-auto {
-    margin-left: auto;
+  margin-left: auto;
 }
 
 .text-center {
   text-align: center !important;
+}
+
+.align-items-baseline {
+  align-items: baseline;
+}
+
+.justify-between {
+  justify-content: space-between;
 }
 
 .p-datepicker.p-component.p-inputwrapper {

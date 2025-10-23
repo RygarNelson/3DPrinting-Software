@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 import { ModelloListingGridResponse, ModelloListingTableResponse } from 'src/models/modello/modello-listing';
 import { ModelloListingFiltri } from 'src/models/modello/modello-listing-filtri';
 import { ModelloLookupFiltri } from 'src/models/modello/modello-lookup.filtri';
@@ -14,7 +15,9 @@ export class ModelloService {
   private api: string = '';
 
   constructor(private http: HttpClient) {
-    this.api = `http://localhost:3000/api/modello`;
+    const url: URL = new URL(`api/modello`, environment.baseApi);
+        
+    this.api = url.toString();
   }
 
   getLookup(filtri: ModelloLookupFiltri): Observable<ModelloLookupResponse> {

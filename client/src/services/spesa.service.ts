@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 import { SpesaListingResponse } from 'src/models/spesa/spesa-listing';
 import { SpesaListingFiltri } from 'src/models/spesa/spesa-listing-filtri';
 import { SpesaManagerModel, SpesaManagerResponse } from 'src/models/spesa/spesa-manager';
@@ -11,7 +12,9 @@ export class SpesaService {
   private api: string = '';
 
   constructor(private http: HttpClient) {
-    this.api = `http://localhost:3000/api/spesa`;
+    const url: URL = new URL(`api/spesa`, environment.baseApi);
+        
+    this.api = url.toString();
   }
 
   getListing(filtri: SpesaListingFiltri): Observable<SpesaListingResponse> {

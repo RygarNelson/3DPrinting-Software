@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 import { ResponseInterface } from 'src/interfaces/response.interface';
 import { ClienteLookupFiltri } from 'src/models/cliente/cliente-looku-filtri';
 import { ClienteLookupResponse } from 'src/models/cliente/cliente-lookup';
@@ -14,7 +15,9 @@ export class ClienteService {
   private api: string = '';
 
   constructor(private http: HttpClient) {
-    this.api = `http://localhost:3000/api/cliente`;
+    const url: URL = new URL(`api/cliente`, environment.baseApi);
+
+    this.api = url.toString();
   }
 
   getLookup(filtri: ClienteLookupFiltri): Observable<ClienteLookupResponse> {

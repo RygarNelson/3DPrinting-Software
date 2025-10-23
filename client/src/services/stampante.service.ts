@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 import { StampanteLookupFiltri } from 'src/models/stampante/stampante-lookup-filtri';
 import { StampanteLookupResponse } from 'src/models/stampante/stampante.lookup';
 import { StampanteListingResponse } from '../models/stampante/stampante-listing';
@@ -13,7 +14,9 @@ export class StampanteService {
   private api: string = '';
 
   constructor(private http: HttpClient) {
-    this.api = `http://localhost:3000/api/stampante`;
+    const url: URL = new URL(`api/stampante`, environment.baseApi);
+        
+    this.api = url.toString();
   }
 
   getLookup(filtri: StampanteLookupFiltri): Observable<StampanteLookupResponse> {

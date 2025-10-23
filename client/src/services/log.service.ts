@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 export interface AuditLog {
   id: number;
@@ -51,15 +52,20 @@ export interface AuditLogFilters {
 
 @Injectable()
 export class LogService {
-  private apiUrl = `http://localhost:3000/api/logs`;
 
-  constructor(private http: HttpClient) {}
+  private api = ``;
+
+  constructor(private http: HttpClient) {
+    const url: URL = new URL(`api/logs`, environment.baseApi);
+        
+    this.api = url.toString();
+  }
 
   /**
    * Get logs with filters and pagination
    */
   getLogs(filters: AuditLogFilters = {}): Observable<AuditLogResponse> {
-    return this.http.post<AuditLogResponse>(this.apiUrl, filters);
+    return this.http.post<AuditLogResponse>(this.api, filters);
   }
 
   /**
@@ -78,7 +84,7 @@ export class LogService {
       limit: 1000,
       offset: 0
     }
-    return this.http.post<AuditLogResponse>(this.apiUrl, filters);
+    return this.http.post<AuditLogResponse>(this.api, filters);
   }
 
   /**
@@ -91,7 +97,7 @@ export class LogService {
       limit: 1000,
       offset: 0
     };
-    return this.http.post<AuditLogResponse>(`${this.apiUrl}/vendita/enriched`, filters);
+    return this.http.post<AuditLogResponse>(`${this.api}/vendita/enriched`, filters);
   }
 
   /**
@@ -107,13 +113,13 @@ export class LogService {
       }
     });
 
-    return this.http.get<any>(`${this.apiUrl}/statistics`, { params });
+    return this.http.get<any>(`${this.api}/statistics`, { params });
   }
 
   /**
    * Get a specific log entry by ID
    */
   getLogById(id: number): Observable<{ success: boolean; data: AuditLog }> {
-    return this.http.get<{ success: boolean; data: AuditLog }>(`${this.apiUrl}/${id}`);
+    return this.http.get<{ success: boolean; data: AuditLog }>(`${this.api}/${id}`);
   }
 } 

@@ -191,8 +191,7 @@
     }
 
     .stato-grid {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 0.75rem;
+        grid-template-columns: 1fr;
     }
 
     .stato-box {
@@ -206,35 +205,5 @@
 
     .stato-value {
         font-size: 1.5rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .stato-section {
-        margin-bottom: 1rem;
-    }
-
-    .section-title {
-        font-size: 0.875rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .stato-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.5rem;
-    }
-
-    .stato-box {
-        padding: 0.75rem;
-        min-height: 50px;
-    }
-
-    .stato-name {
-        font-size: 0.7rem;
-        margin-bottom: 0.25rem;
-    }
-
-    .stato-value {
-        font-size: 1.25rem;
     }
 }

@@ -15,6 +15,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { Subscription } from 'rxjs';
 import { ContoBancarioListingModel, ContoBancarioListingResponse } from 'src/models/conto-bancario/conto-bancario-listing';
 import { ContoBancarioListingFiltri } from 'src/models/conto-bancario/conto-bancario-listing-filtri';
+import { ApplicationStateService } from 'src/services/application-state.service';
 import { ContoBancarioService } from 'src/services/conto-bancario.service';
 import { AuditLogComponent } from 'src/shared/audit-log/audit-log.component';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
@@ -63,7 +64,8 @@ export class ContoBancarioListingComponent {
     private router: Router,
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    public applicationState: ApplicationStateService
   ) { }
 
   ngOnDestroy(): void {
