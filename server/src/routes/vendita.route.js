@@ -419,6 +419,7 @@ router.post(
                 'data_scadenza_spedizione',
                 'totale_vendita',
                 'stato_spedizione',
+                'link_tracciamento',
                 [literal(`
                     CASE
                         WHEN stato_spedizione IN (0)

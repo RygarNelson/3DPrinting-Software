@@ -11,6 +11,7 @@ export class VenditaListingModel {
     isInScadenza: boolean = false;
     isScaduto: boolean = false;
     stato_spedizione: VenditaStatoSpedizioneEnum = VenditaStatoSpedizioneEnum.DaSpedire;
+    link_tracciamento?: string;
     cliente: VenditaListingClienteModel = new VenditaListingClienteModel();
     conto_bancario: VenditaListingContoBancarioModel = new VenditaListingContoBancarioModel();
     dettagli: VenditaListingDettaglioModel[] = [];

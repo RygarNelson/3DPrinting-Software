@@ -97,6 +97,8 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
     conto_bancario_id: 0
   };
 
+  venditaHighlight?: number = undefined;
+
   // Delete dialog properties
   deleteDialogVisible: boolean = false;
   venditaToDelete?: VenditaListingModel;
@@ -551,5 +553,32 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
         this.selectedVendite = [];
       }
     });
+  }
+
+  copiaLinkTracciamento(vendita: VenditaListingModel): void {
+    if (!vendita.link_tracciamento) {
+      return;
+    }
+
+    // Copy to clipboard
+    navigator.clipboard.writeText(vendita.link_tracciamento)
+      .then(() => {
+        this.venditaHighlight = vendita.id;
+
+        // Show success toast
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: `Il link tracciamento della vendita numero ${vendita.id} è stato copiato nella clipboard`
+        });
+      })
+      .catch((error) => {
+        console.error('Error copying to clipboard:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Errore durante la copia del link tracciamento'
+        });
+      });
   }
 }
