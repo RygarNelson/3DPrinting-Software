@@ -96,9 +96,10 @@
               <th></th>
             }
             @else {
-              <th>Numero</th>
+            <th></th>
+            <th></th>
             <th pSortableColumn="data_vendita" style="width: 150px;">
-              Vendita
+              Numero Vendita
               <p-sortIcon field="data_vendita" />
               <p-columnFilter field="data_vendita" [type]="'date'" display="menu" [showMatchModes]="true"
                 [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
