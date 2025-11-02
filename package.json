@@ -1,7 +1,7 @@
 {
-  "name": "3d-printing-software",
-  "version": "1.8.0",
-  "description": "3D Printing Software with bundled server",
+  "name": "backoffice-forge-by-orbitstudios-bundler",
+  "version": "1.10.0",
+  "description": "Backoffice Forge by OrbitStudios with bundled server",
   "main": "electron/main.js",
   "type": "module",
   "scripts": {
@@ -29,8 +29,8 @@
     "cross-env": "^7.0.3"
   },
   "build": {
-    "appId": "com.yourcompany.3dprintingsoftware",
-    "productName": "3D Printing Software",
+    "appId": "it.backoffice.forge.orbitstudios",
+    "productName": "Backoffice Forge by OrbitStudios",
     "directories": {
       "output": "dist"
     },
