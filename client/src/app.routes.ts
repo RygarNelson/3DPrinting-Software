@@ -142,6 +142,10 @@ export const appRoutes: Routes = [
         loadComponent: () => import('./app/login/login.component').then(c => c.Login),
     },
     {
+        path: 'startup/check',
+        loadComponent: () => import('./app/check/startup-check/startup-check.component').then(c => c.StartupCheckComponent),
+    },
+    {
         path: 'notfound',
         loadComponent: () => import('./app/notfound/notfound.component').then(c => c.Notfound),
     },
