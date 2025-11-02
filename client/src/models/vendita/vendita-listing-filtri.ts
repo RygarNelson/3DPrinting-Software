@@ -15,6 +15,10 @@ export class VenditaListingFiltri implements ListingFilter {
     cliente_id?: number = 0;
     isInScadenza?: boolean = false;
     isScaduto?: boolean = false;
+    id?: {
+        value?: number;
+        operator?: string;
+    }
     data_vendita?: {
         value?: Date;
         operator?: string;

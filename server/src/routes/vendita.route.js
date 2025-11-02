@@ -321,6 +321,36 @@ router.post(
                 }
             }
 
+            // Id
+            if (req.body.id && req.body.id.value && req.body.id.operator) {
+                switch (req.body.id.operator) {
+                    case 'equals': {
+                        whereOptions.id = { [Op.eq]: req.body.id.value };
+                        break;
+                    }
+                    case 'notEquals': {
+                        whereOptions.id = { [Op.ne]: req.body.id.value };
+                        break;
+                    }
+                    case 'lt': {
+                        whereOptions.id = { [Op.lt]: req.body.id.value };
+                        break;
+                    }
+                    case 'lte': {
+                        whereOptions.id = { [Op.lte]: req.body.id.value };
+                        break;
+                    }
+                    case 'gt': {
+                        whereOptions.id = { [Op.gt]: req.body.id.value };
+                        break;
+                    }
+                    case 'gte': {
+                        whereOptions.id = { [Op.gte]: req.body.id.value };
+                        break;
+                    }
+                }
+            }
+
             // Data scadenza
             if (req.body.data_scadenza && req.body.data_scadenza.value && req.body.data_scadenza.operator) {
                 switch (req.body.data_scadenza.operator) {
@@ -419,6 +449,7 @@ router.post(
                 'data_scadenza_spedizione',
                 'totale_vendita',
                 'stato_spedizione',
+                'link_tracciamento',
                 [literal(`
                     CASE
                         WHEN stato_spedizione IN (0)

@@ -98,10 +98,10 @@
             @else {
             <th></th>
             <th></th>
-            <th pSortableColumn="data_vendita" style="width: 150px;">
+            <th pSortableColumn="id" style="width: 150px;">
               Numero Vendita
-              <p-sortIcon field="data_vendita" />
-              <p-columnFilter field="data_vendita" [type]="'date'" display="menu" [showMatchModes]="true"
+              <p-sortIcon field="id" />
+              <p-columnFilter field="id" [type]="'numeric'" display="menu" [showMatchModes]="true"
                 [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
             </th>
             <th pSortableColumn="data_scadenza" style="width: 160px;">
@@ -191,7 +191,11 @@
 
         <!-- Data Rows -->
         <ng-template #body let-vendita let-expanded="expanded">
-          <tr [ngClass]="{'in-scadenza': vendita.isInScadenza, 'scaduto': vendita.isScaduto}">
+          <tr [ngClass]="{
+            'in-scadenza': vendita.isInScadenza,
+            'scaduto': vendita.isScaduto,
+            'highlight-row': vendita.id == venditaHighlight
+          }">
             <td>
               <div class="flex flex-col items-center">
                 <p-tableCheckbox [value]="vendita" />
@@ -285,6 +289,11 @@
                   </p-button>
                   }
                   @else {
+                    <p-button icon="pi pi-link" severity="success" size="small" 
+                      [disabled]="!vendita.link_tracciamento"
+                      (click)="copiaLinkTracciamento(vendita)"
+                      pTooltip="Copia link tracciamento" tooltipPosition="top">
+                    </p-button>
                   <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(vendita)"
                     pTooltip="Visualizza log di audit" tooltipPosition="top">
                   </p-button>
@@ -345,6 +354,11 @@
                 </p-button>
                 }
                 @else {
+                <p-button icon="pi pi-link" severity="success" size="small" 
+                    [disabled]="!vendita.link_tracciamento"
+                    (click)="copiaLinkTracciamento(vendita)"
+                    pTooltip="Copia link tracciamento" tooltipPosition="top">
+                  </p-button>
                 <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(vendita)"
                   pTooltip="Visualizza log di audit" tooltipPosition="top">
                 </p-button>

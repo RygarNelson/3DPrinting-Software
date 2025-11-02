@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { PrimeNG } from 'primeng/config';
 
@@ -13,7 +13,11 @@ import { PrimeNG } from 'primeng/config';
     template: `<router-outlet></router-outlet>`
 })
 export class AppComponent implements OnInit {
-    constructor(private config: PrimeNG) {}
+
+    constructor(
+        private config: PrimeNG,
+        private router: Router
+    ) {}
 
     async ngOnInit() {
         try {
@@ -23,6 +27,8 @@ export class AppComponent implements OnInit {
         } catch (error) {
             console.warn('Could not load Italian locale, using default:', error);
         }
+
+        this.router.navigate(['startup', 'check']);
     }
 }
 

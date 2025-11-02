@@ -97,6 +97,8 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
     conto_bancario_id: 0
   };
 
+  venditaHighlight?: number = undefined;
+
   // Delete dialog properties
   deleteDialogVisible: boolean = false;
   venditaToDelete?: VenditaListingModel;
@@ -216,6 +218,33 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
     }
     else {
       this.filtri.order = undefined;
+    }
+
+    // Filtro id
+    const idFilter: FilterMetadata | FilterMetadata[] | undefined = event.filters?.['id'];
+    if (idFilter) {
+      let value = null;
+      let operator = null;
+
+      if (idFilter instanceof Array) {
+        value = idFilter[0].value;
+        operator = idFilter[0].matchMode;
+      } else {
+        value = idFilter.value;
+        operator = idFilter.matchMode;
+      }
+
+      if (value && operator) {
+        this.filtri.id = {
+          value: value,
+          operator: operator
+        };
+      } else {
+        this.filtri.id = undefined;
+      }
+    }
+    else {
+      this.filtri.id = undefined;
     }
 
     // Date filters
@@ -551,5 +580,32 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
         this.selectedVendite = [];
       }
     });
+  }
+
+  copiaLinkTracciamento(vendita: VenditaListingModel): void {
+    if (!vendita.link_tracciamento) {
+      return;
+    }
+
+    // Copy to clipboard
+    navigator.clipboard.writeText(vendita.link_tracciamento)
+      .then(() => {
+        this.venditaHighlight = vendita.id;
+
+        // Show success toast
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: `Il link tracciamento della vendita numero ${vendita.id} è stato copiato nella clipboard`
+        });
+      })
+      .catch((error) => {
+        console.error('Error copying to clipboard:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Errore durante la copia del link tracciamento'
+        });
+      });
   }
 }

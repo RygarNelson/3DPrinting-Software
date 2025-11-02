@@ -57,9 +57,9 @@ const validationSchema = {
             'dettagli.*.modello_id': {
                 optional: true,
                 isInt: {
+                    if: (value) => value !== undefined && value !== null && value !== '',
                     errorMessage: 'Il modello non è valido',
                 },
-                toInt: true
             },
             'dettagli.*.descrizione': {
                 optional: true,
