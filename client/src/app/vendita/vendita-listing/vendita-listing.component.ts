@@ -220,6 +220,33 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
       this.filtri.order = undefined;
     }
 
+    // Filtro id
+    const idFilter: FilterMetadata | FilterMetadata[] | undefined = event.filters?.['id'];
+    if (idFilter) {
+      let value = null;
+      let operator = null;
+
+      if (idFilter instanceof Array) {
+        value = idFilter[0].value;
+        operator = idFilter[0].matchMode;
+      } else {
+        value = idFilter.value;
+        operator = idFilter.matchMode;
+      }
+
+      if (value && operator) {
+        this.filtri.id = {
+          value: value,
+          operator: operator
+        };
+      } else {
+        this.filtri.id = undefined;
+      }
+    }
+    else {
+      this.filtri.id = undefined;
+    }
+
     // Date filters
     const dataVenditaFilter: FilterMetadata | FilterMetadata[] | undefined = event.filters?.['data_vendita'];
     if (dataVenditaFilter) {
