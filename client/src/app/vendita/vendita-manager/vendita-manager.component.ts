@@ -476,4 +476,191 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
   indietro(): void {
     this.router.navigate(['/vendita']);
   }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      
+      // Validate file type
+      if (file.type !== 'application/pdf') {
+        this.MessageService.add({
+          severity: 'error',
+          summary: 'Errore',
+          detail: 'Solo file PDF sono consentiti'
+        });
+        input.value = '';
+        return;
+      }
+
+      // Validate file size (2MB = 2 * 1024 * 1024 bytes)
+      const maxSize = 2 * 1024 * 1024;
+      if (file.size > maxSize) {
+        this.MessageService.add({
+          severity: 'error',
+          summary: 'Errore',
+          detail: 'Il file non può superare i 2MB'
+        });
+        input.value = '';
+        return;
+      }
+
+      // Upload file if vendita has an ID
+      if (this.vendita.id && this.vendita.id > 0) {
+        this.uploadFile(file);
+      } else {
+        this.MessageService.add({
+          severity: 'warn',
+          summary: 'Attenzione',
+          detail: 'Salva prima la vendita per caricare l\'etichetta spedizione'
+        });
+        input.value = '';
+      }
+    }
+  }
+
+  uploadFile(file: File): void {
+    this.setLoadingTimeout();
+
+    this.venditaService.uploadEtichettaSpedizione(this.vendita.id, file).subscribe({
+      next: (result) => {
+        this.clearLoadingTimeout();
+
+        if (result.success) {
+          this.vendita.etichetta_spedizione = result.data.path;
+          
+          this.MessageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Etichetta spedizione caricata con successo'
+          });
+        } else {
+          this.MessageService.add({
+            severity: 'error',
+            summary: 'Errore',
+            detail: result.error || 'Errore durante il caricamento del file'
+          });
+        }
+      },
+      error: (error: any) => {
+        this.clearLoadingTimeout();
+
+        let errorMessage = 'Errore durante il caricamento del file';
+        if (error.error && error.error.error) {
+          errorMessage = error.error.error;
+        }
+
+        this.MessageService.add({
+          severity: 'error',
+          summary: 'Errore',
+          detail: errorMessage
+        });
+      }
+    });
+  }
+
+  downloadEtichettaSpedizione(): void {
+    if (!this.vendita.id || this.vendita.id <= 0) {
+      this.MessageService.add({
+        severity: 'warn',
+        summary: 'Attenzione',
+        detail: 'Vendita non salvata'
+      });
+      return;
+    }
+
+    this.setLoadingTimeout();
+
+    this.venditaService.downloadEtichettaSpedizione(this.vendita.id).subscribe({
+      next: (blob: Blob) => {
+        this.clearLoadingTimeout();
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `etichetta_spedizione_vendita_${this.vendita.id}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+
+        this.MessageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Download avviato'
+        });
+      },
+      error: (error: any) => {
+        this.clearLoadingTimeout();
+
+        let errorMessage = 'Errore durante il download del file';
+        if (error.error && error.error.error) {
+          errorMessage = error.error.error;
+        }
+
+        this.MessageService.add({
+          severity: 'error',
+          summary: 'Errore',
+          detail: errorMessage
+        });
+      }
+    });
+  }
+
+  deleteEtichettaSpedizione(): void {
+    if (!this.vendita.id || this.vendita.id <= 0) {
+      this.MessageService.add({
+        severity: 'warn',
+        summary: 'Attenzione',
+        detail: 'Vendita non salvata'
+      });
+      return;
+    }
+
+    this.confirmationService.confirm({
+      message: 'Sei sicuro di voler eliminare l\'etichetta spedizione?',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Si',
+      rejectLabel: 'No',
+      accept: () => {
+        this.setLoadingTimeout();
+
+        this.venditaService.deleteEtichettaSpedizione(this.vendita.id).subscribe({
+          next: (result) => {
+            this.clearLoadingTimeout();
+
+            if (result.success) {
+              this.vendita.etichetta_spedizione = undefined;
+
+              this.MessageService.add({
+                severity: 'success',
+                summary: 'Success',
+                detail: 'Etichetta spedizione eliminata con successo'
+              });
+            } else {
+              this.MessageService.add({
+                severity: 'error',
+                summary: 'Errore',
+                detail: result.error || 'Errore durante l\'eliminazione del file'
+              });
+            }
+          },
+          error: (error: any) => {
+            this.clearLoadingTimeout();
+
+            let errorMessage = 'Errore durante l\'eliminazione del file';
+            if (error.error && error.error.error) {
+              errorMessage = error.error.error;
+            }
+
+            this.MessageService.add({
+              severity: 'error',
+              summary: 'Errore',
+              detail: errorMessage
+            });
+          }
+        });
+      }
+    });
+  }
 }

@@ -51,6 +51,49 @@
                 <form-input-text property="link_tracciamento" label="Link Tracciamento" [listaErrori]="listaErrori"
                     [(ngModel)]="vendita.link_tracciamento" />
             </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div class="flex flex-col gap-2">
+                    <label class="block">Etichetta Spedizione</label>
+                    <div class="flex items-center gap-2">
+                        <input 
+                            type="file" 
+                            accept="application/pdf"
+                            (change)="onFileSelected($event)"
+                            class="hidden"
+                            id="etichetta-spedizione-input"
+                            [disabled]="!vendita.id || vendita.id <= 0" />
+                        <label 
+                            for="etichetta-spedizione-input"
+                            class="p-button p-component cursor-pointer"
+                            [class.p-disabled]="!vendita.id || vendita.id <= 0">
+                            <i class="pi pi-upload mr-2"></i>
+                            Carica PDF
+                        </label>
+                        @if (vendita.etichetta_spedizione) {
+                            <p-button 
+                                icon="pi pi-download" 
+                                label="Scarica" 
+                                severity="secondary"
+                                size="small"
+                                (click)="downloadEtichettaSpedizione()"
+                                pTooltip="Scarica etichetta spedizione"
+                                tooltipPosition="top" />
+                            <p-button 
+                                icon="pi pi-trash" 
+                                label="Elimina" 
+                                severity="danger"
+                                size="small"
+                                (click)="deleteEtichettaSpedizione()"
+                                pTooltip="Elimina etichetta spedizione"
+                                tooltipPosition="top" />
+                        }
+                    </div>
+                    <small class="text-gray-500">Dimensione massima: 2MB. Solo file PDF.</small>
+                    @if (!vendita.id || vendita.id <= 0) {
+                        <small class="text-orange-500">Salva prima la vendita per caricare l'etichetta spedizione.</small>
+                    }
+                </div>
+            </div>
         </ng-template>
     </p-card>
 

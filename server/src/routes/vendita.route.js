@@ -3,12 +3,16 @@
 import express from 'express';
 import { validationResult } from 'express-validator';
 import { Op, literal } from 'sequelize';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { authenticate } from '../middleware/authenticate.js';
 import { clearLoggingContext, setLoggingContext } from '../middleware/loggingContext.js';
 import ContoBancarioRepository from '../repositories/conto-bancario.repository.js';
 import VenditaRepository from '../repositories/vendita.repository.js';
 import validationSchema from '../schemas/vendita.schema.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import upload from '../middleware/upload.js';
 
 const router = express.Router();
 
@@ -28,7 +32,8 @@ router.get(
             'totale_vendita', 
             'stato_spedizione', 
             'link_tracciamento', 
-            'conto_bancario_id'
+            'conto_bancario_id',
+            'etichetta_spedizione'
         ];
         // Pass an include option to also get all dettagli and basette
         const include = [
@@ -450,6 +455,7 @@ router.post(
                 'totale_vendita',
                 'stato_spedizione',
                 'link_tracciamento',
+                'etichetta_spedizione',
                 [literal(`
                     CASE
                         WHEN stato_spedizione IN (0)
@@ -702,6 +708,136 @@ router.post(
         return res.status(200).json({
             success: true,
             data: 'Conto bancario aggiornato con successo!',
+        });
+    })
+);
+
+// File upload route for etichetta spedizione
+router.post(
+    '/:id/etichetta-spedizione/upload',
+    upload.single('etichetta_spedizione'),
+    asyncHandler(async (req, res) => {
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                error: 'Nessun file caricato'
+            });
+        }
+
+        const venditaId = parseInt(req.params.id);
+        if (!venditaId || venditaId <= 0) {
+            // Delete uploaded file if vendita ID is invalid
+            if (req.file.path) {
+                fs.unlinkSync(req.file.path);
+            }
+            return res.status(400).json({
+                success: false,
+                error: 'ID vendita non valido'
+            });
+        }
+
+        // Get the vendita to check if it exists and get old file path
+        const vendita = await VenditaRepository.findOne(venditaId, ['id', 'etichetta_spedizione'], []);
+        if (!vendita) {
+            // Delete uploaded file if vendita doesn't exist
+            if (req.file.path) {
+                fs.unlinkSync(req.file.path);
+            }
+            return res.status(404).json({
+                success: false,
+                error: 'Vendita non trovata'
+            });
+        }
+
+        // Delete old file if it exists
+        if (vendita.etichetta_spedizione) {
+            const oldFilePath = path.join(__dirname, '../../uploads', vendita.etichetta_spedizione);
+            if (fs.existsSync(oldFilePath)) {
+                fs.unlinkSync(oldFilePath);
+            }
+        }
+
+        // Save the file path (relative path from uploads directory)
+        const filePath = `etichette-spedizione/${req.file.filename}`;
+        await VenditaRepository.updateEtichettaSpedizione(venditaId, filePath);
+
+        return res.status(200).json({
+            success: true,
+            data: {
+                message: 'File caricato con successo',
+                filename: req.file.filename,
+                path: filePath
+            }
+        });
+    })
+);
+
+// File download route for etichetta spedizione
+router.get(
+    '/:id/etichetta-spedizione/download',
+    asyncHandler(async (req, res) => {
+        const venditaId = parseInt(req.params.id);
+        if (!venditaId || venditaId <= 0) {
+            return res.status(400).json({
+                success: false,
+                error: 'ID vendita non valido'
+            });
+        }
+
+        const vendita = await VenditaRepository.findOne(venditaId, ['id', 'etichetta_spedizione'], []);
+        if (!vendita || !vendita.etichetta_spedizione) {
+            return res.status(404).json({
+                success: false,
+                error: 'Etichetta spedizione non trovata'
+            });
+        }
+
+        const filePath = path.join(__dirname, '../../uploads', vendita.etichetta_spedizione);
+        if (!fs.existsSync(filePath)) {
+            return res.status(404).json({
+                success: false,
+                error: 'File non trovato sul server'
+            });
+        }
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${path.basename(filePath)}"`);
+        res.sendFile(path.resolve(filePath));
+    })
+);
+
+// Delete etichetta spedizione
+router.delete(
+    '/:id/etichetta-spedizione',
+    asyncHandler(async (req, res) => {
+        const venditaId = parseInt(req.params.id);
+        if (!venditaId || venditaId <= 0) {
+            return res.status(400).json({
+                success: false,
+                error: 'ID vendita non valido'
+            });
+        }
+
+        const vendita = await VenditaRepository.findOne(venditaId, ['id', 'etichetta_spedizione'], []);
+        if (!vendita || !vendita.etichetta_spedizione) {
+            return res.status(404).json({
+                success: false,
+                error: 'Etichetta spedizione non trovata'
+            });
+        }
+
+        // Delete the file
+        const filePath = path.join(__dirname, '../../uploads', vendita.etichetta_spedizione);
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+        }
+
+        // Clear the path in database
+        await VenditaRepository.updateEtichettaSpedizione(venditaId, null);
+
+        return res.status(200).json({
+            success: true,
+            data: 'Etichetta spedizione eliminata con successo'
         });
     })
 );

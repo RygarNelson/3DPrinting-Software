@@ -10,6 +10,7 @@ export class VenditaManagerModel {
     cliente_id?: number;
     conto_bancario_id?: number;
     link_tracciamento?: string;
+    etichetta_spedizione?: string;
     stato_spedizione?: VenditaStatoSpedizioneEnum = VenditaStatoSpedizioneEnum.DaSpedire;
     dettagli: VenditaDettaglioManagerModel[] = [];
     basette: VenditaDettaglioBasettaManagerModel[] = [];

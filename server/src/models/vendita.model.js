@@ -52,6 +52,10 @@ const Vendita = sequelize.define('Vendita', {
             model: 'T_CONTI_BANCARI',
             key: 'id'
         }
+    },
+    etichetta_spedizione: {
+        type: DataTypes.STRING(500),
+        allowNull: true
     }
 }, {
     tableName: 'T_VENDITE',

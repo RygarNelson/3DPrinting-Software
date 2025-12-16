@@ -83,4 +83,22 @@ export class VenditaService {
   modificaContoBancarioVendite(request: VenditaModificaContoBancarioModel): Observable<any> {
     return this.http.post<any>(`${this.api}/conto-bancario/modifica`, request);
   }
+
+  uploadEtichettaSpedizione(venditaId: number, file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('etichetta_spedizione', file);
+    formData.append('vendita_id', venditaId.toString());
+    
+    return this.http.post<any>(`${this.api}/${venditaId}/etichetta-spedizione/upload`, formData);
+  }
+
+  downloadEtichettaSpedizione(venditaId: number): Observable<Blob> {
+    return this.http.get(`${this.api}/${venditaId}/etichetta-spedizione/download`, {
+      responseType: 'blob'
+    });
+  }
+
+  deleteEtichettaSpedizione(venditaId: number): Observable<any> {
+    return this.http.delete<any>(`${this.api}/${venditaId}/etichetta-spedizione`);
+  }
 }

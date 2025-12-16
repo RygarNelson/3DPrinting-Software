@@ -48,6 +48,13 @@ const validationSchema = {
                     errorMessage: 'Il link tracciamento non può superare i 500 caratteri'
                 }
             },
+            etichetta_spedizione: {
+                optional: true,
+                isLength: {
+                    options: { max: 500 },
+                    errorMessage: 'Il percorso etichetta spedizione non può superare i 500 caratteri'
+                }
+            },
             'dettagli': {
                 optional: false,
                 isArray: {
