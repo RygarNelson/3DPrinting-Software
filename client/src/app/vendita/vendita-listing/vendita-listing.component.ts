@@ -721,15 +721,23 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
   }
 
   // Helper function to get date-only in Rome timezone (for Excel date columns)
-  private getDateInRomeTimezone(date: Date): string | null {
+  private getDateInRomeTimezone(date: Date): Date | null {
     if (!date) return null;
-
-    return date.toLocaleDateString('it-IT', { 
+  
+    // Get Rome date parts using Intl
+    const parts = new Intl.DateTimeFormat('en-CA', {
       timeZone: 'Europe/Rome',
       year: 'numeric',
-      month: '2-digit', 
+      month: '2-digit',
       day: '2-digit'
-    });
+    }).formatToParts(date);
+  
+    const year = +parts.find(p => p.type === 'year')!.value;
+    const month = +parts.find(p => p.type === 'month')!.value;
+    const day = +parts.find(p => p.type === 'day')!.value;
+  
+    // IMPORTANT: create date at UTC midnight
+    return new Date(Date.UTC(year, month - 1, day));
   }
 
   exportToExcel(): void {
@@ -835,9 +843,9 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
 
           const row = venditeWorksheet.addRow({
             numeroVendita: vendita.id,
-            dataVendita: vendita.data_vendita ? this.getDateInRomeTimezone(new Date(vendita.data_vendita)) : null,
-            dataScadenza: vendita.data_scadenza ? this.getDateInRomeTimezone(new Date(vendita.data_scadenza)) : null,
-            dataScadenzaSpedizione: vendita.data_scadenza_spedizione ? this.getDateInRomeTimezone(new Date(vendita.data_scadenza_spedizione)) : null,
+            dataVendita: null, // Will be set separately to ensure proper date type
+            dataScadenza: null, // Will be set separately to ensure proper date type
+            dataScadenzaSpedizione: null, // Will be set separately to ensure proper date type
             cliente: vendita.cliente?.etichetta || '',
             contoBancario: vendita.conto_bancario?.iban || '',
             dettagli: dettagliNormalized,
@@ -849,15 +857,21 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
           row.getCell('numeroVendita').numFmt = '0';
           row.getCell('totaleVendita').numFmt = '#,##0.00';
           
-          // Format date columns (Italian format: dd/mm/yyyy)
+          // Format date columns (Italian format: dd/mm/yyyy) and set cell type to date
           if (vendita.data_vendita) {
-            row.getCell('dataVendita').numFmt = 'dd/mm/yyyy';
+            const dateCell = row.getCell('dataVendita');
+            dateCell.numFmt = 'dd/mm/yyyy';
+            dateCell.value = this.getDateInRomeTimezone(new Date(vendita.data_vendita));
           }
           if (vendita.data_scadenza) {
-            row.getCell('dataScadenza').numFmt = 'dd/mm/yyyy';
+            const dateCell = row.getCell('dataScadenza');
+            dateCell.numFmt = 'dd/mm/yyyy';
+            dateCell.value = this.getDateInRomeTimezone(new Date(vendita.data_scadenza));
           }
           if (vendita.data_scadenza_spedizione) {
-            row.getCell('dataScadenzaSpedizione').numFmt = 'dd/mm/yyyy';
+            const dateCell = row.getCell('dataScadenzaSpedizione');
+            dateCell.numFmt = 'dd/mm/yyyy';
+            dateCell.value = this.getDateInRomeTimezone(new Date(vendita.data_scadenza_spedizione));
           }
         });
 
@@ -913,7 +927,7 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
 
           const row = speseWorksheet.addRow({
             numero: spesa.id,
-            dataSpesa: spesa.data_spesa ? this.getDateInRomeTimezone(new Date(spesa.data_spesa)) : null,
+            dataSpesa: null, // Will be set separately to ensure proper date type
             descrizione: spesa.descrizione || '',
             quantita: spesa.quantita || 0,
             tipoSpesa: tipoSpesaName,
@@ -926,9 +940,11 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
           row.getCell('quantita').numFmt = '#,##0.0000';
           row.getCell('totaleSpesa').numFmt = '#,##0.00';
           
-          // Format date column (Italian format: dd/mm/yyyy)
+          // Format date column (Italian format: dd/mm/yyyy) and set cell type to date
           if (spesa.data_spesa) {
-            row.getCell('dataSpesa').numFmt = 'dd/mm/yyyy';
+            const dateCell = row.getCell('dataSpesa');
+            dateCell.numFmt = 'dd/mm/yyyy';
+            dateCell.value = this.getDateInRomeTimezone(new Date(spesa.data_spesa));
           }
         });
 
