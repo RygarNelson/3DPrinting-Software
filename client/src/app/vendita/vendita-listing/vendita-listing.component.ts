@@ -16,23 +16,27 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { SplitButtonModule } from 'primeng/splitbutton';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
-import { Subscription } from 'rxjs';
+import { Subscription, forkJoin } from 'rxjs';
 import { ClienteLookupDirective } from 'src/directives/cliente/cliente-lookup.directive';
 import { ContoBancarioLookupDirective } from 'src/directives/conto-bancario/conto-bancario-lookup.directive';
 import { VenditaDettaglioStatoStampaLookupDirective } from 'src/directives/vendita/vendita-dettaglio-stato-stampa-lookup.directive';
 import { VenditaStatoSpedizioneLookupDirective } from 'src/directives/vendita/vendita-stato-spedizione-lookup.directive';
+import { SpesaTipoEnum, SpesaTipoEnumRecord } from 'src/enums/SpesaTipoEnum';
+import { SpesaUnitaMisuraEnum, SpesaUnitaMisuraEnumRecord } from 'src/enums/SpesaUnitaMisuraEnum';
 import { VenditaDettaglioStatoStampaEnum } from 'src/enums/VenditaDettaglioStatoStampaEnum';
-import { VenditaStatoSpedizioneEnum, VenditaStatoSpedizioneEnumRecord } from 'src/enums/VenditaStatoSpedizioneEnum';
+import { VenditaStatoSpedizioneEnumRecord } from 'src/enums/VenditaStatoSpedizioneEnum';
+import { SpesaListingFiltri } from 'src/models/spesa/spesa-listing-filtri';
 import { VenditaListingDettaglioBasettaModel, VenditaListingDettaglioModel, VenditaListingModel, VenditaListingResponse } from 'src/models/vendita/vendita-listing';
-import * as XLSX from 'xlsx';
 import { VenditaListingFiltri } from 'src/models/vendita/vendita-listing-filtri';
 import { VenditaModificaContoBancarioModel } from 'src/models/vendita/vendita_modifica_conto_bancario';
 import { ApplicationStateService } from 'src/services/application-state.service';
+import { SpesaService } from 'src/services/spesa.service';
 import { VenditaService } from 'src/services/vendita.service';
 import { AuditLogComponent } from 'src/shared/audit-log/audit-log.component';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { FormInputRadiobuttonComponent } from 'src/shared/form-input-radiobutton/form-input-radiobutton.component';
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
+import * as XLSX from 'xlsx';
 import { VenditaDettaglioStatoComponent } from '../vendita-dettaglio-stato/vendita-dettaglio-stato.component';
 import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component';
 
@@ -63,7 +67,8 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
     ConfirmDialogModule
   ],
   providers: [
-    VenditaService
+    VenditaService,
+    SpesaService
   ],
   templateUrl: './vendita-listing.component.html',
   styleUrl: './vendita-listing.component.scss'
@@ -118,6 +123,7 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
 
   constructor(
     private venditaService: VenditaService,
+    private spesaService: SpesaService,
     private router: Router,
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
@@ -744,13 +750,24 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
       exportFiltri.cliente_id = this.filtri.cliente_id;
     }
 
-    this.venditaService.getListing(exportFiltri).subscribe({
-      next: (response: VenditaListingResponse) => {
+    // Fetch all spese with a high limit
+    const spesaFiltri: SpesaListingFiltri = {
+      offset: 0,
+      limit: 10000, // High limit to get all spese
+      search: ''
+    };
+
+    // Fetch both vendite and spese in parallel
+    forkJoin({
+      vendite: this.venditaService.getListing(exportFiltri),
+      spese: this.spesaService.getListing(spesaFiltri)
+    }).subscribe({
+      next: ({ vendite, spese }) => {
         window.clearTimeout(this.loadingTimeout);
         this.loading = false;
 
-        // Prepare data for Excel
-        const excelData = response.data.map(vendita => {
+        // Prepare vendite data for Excel
+        const venditeExcelData = vendite.data.map(vendita => {
           // Format dettagli
           const dettagliArray: string[] = [];
           if (vendita.dettagli && vendita.dettagli.length > 0) {
@@ -794,10 +811,35 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
           };
         });
 
-        // Create workbook and worksheet
-        const worksheet = XLSX.utils.json_to_sheet(excelData);
+        // Prepare spese data for Excel
+        const speseExcelData = spese.data.map(spesa => {
+          // Get tipo spesa name
+          const tipoSpesaName = spesa.tipo_spesa !== undefined 
+            ? SpesaTipoEnumRecord[spesa.tipo_spesa as SpesaTipoEnum] || ''
+            : '';
+
+          // Get unità di misura name
+          const unitaMisuraName = spesa.unita_misura !== undefined 
+            ? SpesaUnitaMisuraEnumRecord[spesa.unita_misura as SpesaUnitaMisuraEnum] || ''
+            : '';
+
+          return {
+            'Numero': spesa.id,
+            'Data Spesa': spesa.data_spesa ? new Date(spesa.data_spesa).toLocaleDateString('it-IT') : '',
+            'Descrizione': spesa.descrizione || '',
+            'Quantità': spesa.quantita || 0,
+            'Tipo Spesa': tipoSpesaName,
+            'Unità di Misura': unitaMisuraName,
+            'Totale Spesa': spesa.totale_spesa || 0
+          };
+        });
+
+        // Create workbook with both sheets
+        const venditeWorksheet = XLSX.utils.json_to_sheet(venditeExcelData);
+        const speseWorksheet = XLSX.utils.json_to_sheet(speseExcelData);
         const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Vendite');
+        XLSX.utils.book_append_sheet(workbook, venditeWorksheet, 'Vendite');
+        XLSX.utils.book_append_sheet(workbook, speseWorksheet, 'Spese');
 
         // Generate Excel file and download
         const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
@@ -805,7 +847,7 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `vendite_${new Date().toISOString().split('T')[0]}.xlsx`;
+        link.download = `vendite_spese_${new Date().toISOString().split('T')[0]}.xlsx`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
