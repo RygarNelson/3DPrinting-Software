@@ -73,18 +73,40 @@
             </div>
 
             <!-- Action Buttons Section -->
-            <div class="flex items-center gap-2 justify-end sm:justify-start">
-              <p-menu #menu appendTo="body" [model]="multipleAzioni" [popup]="true"></p-menu>
-              <p-button [label]="'Azioni'" [icon]="menu.visible ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
-                [disabled]="selectedVendite == null || (selectedVendite != null && selectedVendite.length == 0)"
-                (onClick)="menu.toggle($event)" />
-              <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()"
-                pTooltip="Aggiorna tabella" tooltipPosition="top">
-              </p-button>
-              <p-button icon="pi pi-plus" label="Nuova Vendita" severity="success" (click)="addNewVendita()"
-                pTooltip="Aggiungi nuova vendita" tooltipPosition="top">
-              </p-button>
-            </div>
+             @if (!applicationState.isMobile() && !applicationState.isTablet()) {
+              <div class="flex items-center gap-2 justify-end sm:justify-start">
+                <p-button icon="pi pi-file-excel" severity="success" [loading]="loading" (click)="exportToExcel()"
+                  pTooltip="Esporta in Excel" tooltipPosition="top">
+                </p-button>
+                <p-menu #menu appendTo="body" [model]="multipleAzioni" [popup]="true"></p-menu>
+                <p-button [label]="'Azioni'" [icon]="menu.visible ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
+                  [disabled]="selectedVendite == null || (selectedVendite != null && selectedVendite.length == 0)"
+                  (onClick)="menu.toggle($event)" />
+                <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()"
+                  pTooltip="Aggiorna tabella" tooltipPosition="top">
+                </p-button>
+                <p-button icon="pi pi-plus" label="Nuova Vendita" severity="success" (click)="addNewVendita()"
+                  pTooltip="Aggiungi nuova vendita" tooltipPosition="top">
+                </p-button>
+              </div>
+             }
+             @else {
+              <div class="grid grid-cols-1 items-center gap-2 justify-end sm:justify-start">
+                <p-button icon="pi pi-file-excel" severity="success" [loading]="loading" (click)="exportToExcel()"
+                  pTooltip="Esporta in Excel" tooltipPosition="top">
+                </p-button>
+                <p-menu #menu appendTo="body" [model]="multipleAzioni" [popup]="true"></p-menu>
+                <p-button [label]="'Azioni'" [icon]="menu.visible ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
+                  [disabled]="selectedVendite == null || (selectedVendite != null && selectedVendite.length == 0)"
+                  (onClick)="menu.toggle($event)" />
+                <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()"
+                  pTooltip="Aggiorna tabella" tooltipPosition="top">
+                </p-button>
+                <p-button icon="pi pi-plus" label="Nuova Vendita" severity="success" (click)="addNewVendita()"
+                  pTooltip="Aggiungi nuova vendita" tooltipPosition="top">
+                </p-button>
+              </div>
+             }
           </div>
         </ng-template>
 

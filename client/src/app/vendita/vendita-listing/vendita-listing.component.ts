@@ -22,7 +22,9 @@ import { ContoBancarioLookupDirective } from 'src/directives/conto-bancario/cont
 import { VenditaDettaglioStatoStampaLookupDirective } from 'src/directives/vendita/vendita-dettaglio-stato-stampa-lookup.directive';
 import { VenditaStatoSpedizioneLookupDirective } from 'src/directives/vendita/vendita-stato-spedizione-lookup.directive';
 import { VenditaDettaglioStatoStampaEnum } from 'src/enums/VenditaDettaglioStatoStampaEnum';
+import { VenditaStatoSpedizioneEnum, VenditaStatoSpedizioneEnumRecord } from 'src/enums/VenditaStatoSpedizioneEnum';
 import { VenditaListingDettaglioBasettaModel, VenditaListingDettaglioModel, VenditaListingModel, VenditaListingResponse } from 'src/models/vendita/vendita-listing';
+import * as XLSX from 'xlsx';
 import { VenditaListingFiltri } from 'src/models/vendita/vendita-listing-filtri';
 import { VenditaModificaContoBancarioModel } from 'src/models/vendita/vendita_modifica_conto_bancario';
 import { ApplicationStateService } from 'src/services/application-state.service';
@@ -710,5 +712,124 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
         }
       }
     ];
+  }
+
+  exportToExcel(): void {
+    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+
+    // Fetch all vendite with a high limit
+    const exportFiltri: VenditaListingFiltri = {
+      offset: 0,
+      limit: 10000, // High limit to get all vendite
+      search: this.filtri.search
+    };
+
+    // Copy other filters if they exist
+    if (this.filtri.stato_spedizione !== undefined) {
+      exportFiltri.stato_spedizione = this.filtri.stato_spedizione;
+    }
+    if (this.filtri.stato_stampa !== undefined) {
+      exportFiltri.stato_stampa = this.filtri.stato_stampa;
+    }
+    if (this.filtri.isInScadenza !== undefined) {
+      exportFiltri.isInScadenza = this.filtri.isInScadenza;
+    }
+    if (this.filtri.isScaduto !== undefined) {
+      exportFiltri.isScaduto = this.filtri.isScaduto;
+    }
+    if (this.filtri.conto_bancario_id !== undefined) {
+      exportFiltri.conto_bancario_id = this.filtri.conto_bancario_id;
+    }
+    if (this.filtri.cliente_id !== undefined) {
+      exportFiltri.cliente_id = this.filtri.cliente_id;
+    }
+
+    this.venditaService.getListing(exportFiltri).subscribe({
+      next: (response: VenditaListingResponse) => {
+        window.clearTimeout(this.loadingTimeout);
+        this.loading = false;
+
+        // Prepare data for Excel
+        const excelData = response.data.map(vendita => {
+          // Format dettagli
+          const dettagliArray: string[] = [];
+          if (vendita.dettagli && vendita.dettagli.length > 0) {
+            vendita.dettagli.forEach(dettaglio => {
+              let dettaglioStr = '';
+              if (dettaglio.modello && dettaglio.modello.nome) {
+                dettaglioStr = dettaglio.modello.nome;
+              } else if (dettaglio.descrizione) {
+                dettaglioStr = dettaglio.descrizione;
+              }
+              
+              if (dettaglio.stampa_is_pezzo_singolo) {
+                dettaglioStr += ' (Pezzo singolo)';
+              }
+              if (dettaglio.stampa_is_parziale) {
+                dettaglioStr += ' (Parziale)';
+              }
+              
+              if (dettaglioStr) {
+                dettagliArray.push(dettaglioStr);
+              }
+            });
+          }
+          const dettagliNormalized = dettagliArray.join(';');
+
+          // Get status name
+          const statoName = vendita.stato_spedizione !== undefined 
+            ? VenditaStatoSpedizioneEnumRecord[vendita.stato_spedizione] || ''
+            : '';
+
+          return {
+            'Numero Vendita': vendita.id,
+            'Data Vendita': vendita.data_vendita ? new Date(vendita.data_vendita).toLocaleDateString('it-IT') : '',
+            'Data Scadenza': vendita.data_scadenza ? new Date(vendita.data_scadenza).toLocaleDateString('it-IT') : '',
+            'Data Scadenza Spedizione': vendita.data_scadenza_spedizione ? new Date(vendita.data_scadenza_spedizione).toLocaleDateString('it-IT') : '',
+            'Cliente': vendita.cliente?.etichetta || '',
+            'Conto Bancario': vendita.conto_bancario?.iban || '',
+            'Dettagli': dettagliNormalized,
+            'Totale Vendita': vendita.totale_vendita || 0,
+            'Stato': statoName
+          };
+        });
+
+        // Create workbook and worksheet
+        const worksheet = XLSX.utils.json_to_sheet(excelData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Vendite');
+
+        // Generate Excel file and download
+        const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+        const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `vendite_${new Date().toISOString().split('T')[0]}.xlsx`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'File Excel esportato con successo'
+        });
+      },
+      error: (error) => {
+        window.clearTimeout(this.loadingTimeout);
+        this.loading = false;
+
+        this.dialogService.open(DialogErrorComponent, {
+          inputValues: {
+            error: error
+          },
+          modal: true
+        });
+
+        console.error('Error exporting to Excel:', error);
+      }
+    });
   }
 }
