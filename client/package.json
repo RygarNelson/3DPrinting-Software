@@ -23,6 +23,7 @@
     "@ngx-translate/core": "^17.0.0",
     "@primeng/themes": "^20.2.0",
     "chart.js": "^4.5.0",
+    "exceljs": "^4.4.0",
     "primeclt": "^0.1.5",
     "primeicons": "^7.0.0",
     "primelocale": "^2.1.7",

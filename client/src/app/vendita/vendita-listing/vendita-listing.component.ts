@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import * as ExcelJS from 'exceljs';
 import { AccordionModule } from 'primeng/accordion';
 import { ConfirmationService, FilterMetadata, MenuItem, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -36,7 +37,6 @@ import { AuditLogComponent } from 'src/shared/audit-log/audit-log.component';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { FormInputRadiobuttonComponent } from 'src/shared/form-input-radiobutton/form-input-radiobutton.component';
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
-import * as XLSX from 'xlsx';
 import { VenditaDettaglioStatoComponent } from '../vendita-dettaglio-stato/vendita-dettaglio-stato.component';
 import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component';
 
@@ -720,6 +720,18 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
     ];
   }
 
+  // Helper function to get date-only in Rome timezone (for Excel date columns)
+  private getDateInRomeTimezone(date: Date): string | null {
+    if (!date) return null;
+
+    return date.toLocaleDateString('it-IT', { 
+      timeZone: 'Europe/Rome',
+      year: 'numeric',
+      month: '2-digit', 
+      day: '2-digit'
+    });
+  }
+
   exportToExcel(): void {
     this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
 
@@ -766,8 +778,31 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
         window.clearTimeout(this.loadingTimeout);
         this.loading = false;
 
-        // Prepare vendite data for Excel
-        const venditeExcelData = vendite.data.map(vendita => {
+        // Create workbook
+        const workbook = new ExcelJS.Workbook();
+
+        // Create Vendite sheet
+        const venditeWorksheet = workbook.addWorksheet('Vendite');
+        
+        // Define columns for Vendite sheet
+        venditeWorksheet.columns = [
+          { header: 'Numero Vendita', key: 'numeroVendita', width: 15 },
+          { header: 'Data Vendita', key: 'dataVendita', width: 12 },
+          { header: 'Data Scadenza', key: 'dataScadenza', width: 12 },
+          { header: 'Data Scadenza Spedizione', key: 'dataScadenzaSpedizione', width: 18 },
+          { header: 'Cliente', key: 'cliente', width: 30 },
+          { header: 'Conto Bancario', key: 'contoBancario', width: 25 },
+          { header: 'Dettagli', key: 'dettagli', width: 50 },
+          { header: 'Totale Vendita', key: 'totaleVendita', width: 18 },
+          { header: 'Stato', key: 'stato', width: 20 }
+        ];
+
+        // Style header row
+        venditeWorksheet.getRow(1).font = { bold: true };
+        venditeWorksheet.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
+
+        // Add data rows
+        vendite.data.forEach(vendita => {
           // Format dettagli
           const dettagliArray: string[] = [];
           if (vendita.dettagli && vendita.dettagli.length > 0) {
@@ -798,21 +833,74 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
             ? VenditaStatoSpedizioneEnumRecord[vendita.stato_spedizione] || ''
             : '';
 
-          return {
-            'Numero Vendita': vendita.id,
-            'Data Vendita': vendita.data_vendita ? new Date(vendita.data_vendita).toLocaleDateString('it-IT') : '',
-            'Data Scadenza': vendita.data_scadenza ? new Date(vendita.data_scadenza).toLocaleDateString('it-IT') : '',
-            'Data Scadenza Spedizione': vendita.data_scadenza_spedizione ? new Date(vendita.data_scadenza_spedizione).toLocaleDateString('it-IT') : '',
-            'Cliente': vendita.cliente?.etichetta || '',
-            'Conto Bancario': vendita.conto_bancario?.iban || '',
-            'Dettagli': dettagliNormalized,
-            'Totale Vendita': vendita.totale_vendita || 0,
-            'Stato': statoName
-          };
+          const row = venditeWorksheet.addRow({
+            numeroVendita: vendita.id,
+            dataVendita: vendita.data_vendita ? this.getDateInRomeTimezone(new Date(vendita.data_vendita)) : null,
+            dataScadenza: vendita.data_scadenza ? this.getDateInRomeTimezone(new Date(vendita.data_scadenza)) : null,
+            dataScadenzaSpedizione: vendita.data_scadenza_spedizione ? this.getDateInRomeTimezone(new Date(vendita.data_scadenza_spedizione)) : null,
+            cliente: vendita.cliente?.etichetta || '',
+            contoBancario: vendita.conto_bancario?.iban || '',
+            dettagli: dettagliNormalized,
+            totaleVendita: vendita.totale_vendita || 0,
+            stato: statoName
+          });
+
+          // Format number columns
+          row.getCell('numeroVendita').numFmt = '0';
+          row.getCell('totaleVendita').numFmt = '#,##0.00';
+          
+          // Format date columns (Italian format: dd/mm/yyyy)
+          if (vendita.data_vendita) {
+            row.getCell('dataVendita').numFmt = 'dd/mm/yyyy';
+          }
+          if (vendita.data_scadenza) {
+            row.getCell('dataScadenza').numFmt = 'dd/mm/yyyy';
+          }
+          if (vendita.data_scadenza_spedizione) {
+            row.getCell('dataScadenzaSpedizione').numFmt = 'dd/mm/yyyy';
+          }
         });
 
-        // Prepare spese data for Excel
-        const speseExcelData = spese.data.map(spesa => {
+        // Autofit columns for Vendite sheet (excluding date columns which have fixed width)
+        venditeWorksheet.columns.forEach((column, index) => {
+          if (!column || !column.eachCell) return;
+          
+          // Skip date columns (indices 1, 2, 3) - they have fixed widths
+          const dateColumnKeys = ['dataVendita', 'dataScadenza', 'dataScadenzaSpedizione'];
+          if (column.key && dateColumnKeys.includes(column.key)) {
+            return;
+          }
+          
+          let maxLength = 0;
+          column.eachCell({ includeEmpty: true }, (cell) => {
+            const columnLength = cell.value ? cell.value.toString().length : 10;
+            if (columnLength > maxLength) {
+              maxLength = columnLength;
+            }
+          });
+          column.width = maxLength < 10 ? 10 : maxLength + 2;
+        });
+
+        // Create Spese sheet
+        const speseWorksheet = workbook.addWorksheet('Spese');
+        
+        // Define columns for Spese sheet
+        speseWorksheet.columns = [
+          { header: 'Numero', key: 'numero', width: 12 },
+          { header: 'Data Spesa', key: 'dataSpesa', width: 12 },
+          { header: 'Descrizione', key: 'descrizione', width: 40 },
+          { header: 'Quantità', key: 'quantita', width: 12 },
+          { header: 'Tipo Spesa', key: 'tipoSpesa', width: 15 },
+          { header: 'Unità di Misura', key: 'unitaMisura', width: 18 },
+          { header: 'Totale Spesa', key: 'totaleSpesa', width: 18 }
+        ];
+
+        // Style header row
+        speseWorksheet.getRow(1).font = { bold: true };
+        speseWorksheet.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
+
+        // Add data rows
+        spese.data.forEach(spesa => {
           // Get tipo spesa name
           const tipoSpesaName = spesa.tipo_spesa !== undefined 
             ? SpesaTipoEnumRecord[spesa.tipo_spesa as SpesaTipoEnum] || ''
@@ -823,35 +911,58 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
             ? SpesaUnitaMisuraEnumRecord[spesa.unita_misura as SpesaUnitaMisuraEnum] || ''
             : '';
 
-          return {
-            'Numero': spesa.id,
-            'Data Spesa': spesa.data_spesa ? new Date(spesa.data_spesa).toLocaleDateString('it-IT') : '',
-            'Descrizione': spesa.descrizione || '',
-            'Quantità': spesa.quantita || 0,
-            'Tipo Spesa': tipoSpesaName,
-            'Unità di Misura': unitaMisuraName,
-            'Totale Spesa': spesa.totale_spesa || 0
-          };
+          const row = speseWorksheet.addRow({
+            numero: spesa.id,
+            dataSpesa: spesa.data_spesa ? this.getDateInRomeTimezone(new Date(spesa.data_spesa)) : null,
+            descrizione: spesa.descrizione || '',
+            quantita: spesa.quantita || 0,
+            tipoSpesa: tipoSpesaName,
+            unitaMisura: unitaMisuraName,
+            totaleSpesa: spesa.totale_spesa || 0
+          });
+
+          // Format number columns
+          row.getCell('numero').numFmt = '0';
+          row.getCell('quantita').numFmt = '#,##0.0000';
+          row.getCell('totaleSpesa').numFmt = '#,##0.00';
+          
+          // Format date column (Italian format: dd/mm/yyyy)
+          if (spesa.data_spesa) {
+            row.getCell('dataSpesa').numFmt = 'dd/mm/yyyy';
+          }
         });
 
-        // Create workbook with both sheets
-        const venditeWorksheet = XLSX.utils.json_to_sheet(venditeExcelData);
-        const speseWorksheet = XLSX.utils.json_to_sheet(speseExcelData);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, venditeWorksheet, 'Vendite');
-        XLSX.utils.book_append_sheet(workbook, speseWorksheet, 'Spese');
+        // Autofit columns for Spese sheet (excluding date column which has fixed width)
+        speseWorksheet.columns.forEach((column) => {
+          if (!column || !column.eachCell) return;
+          
+          // Skip date column - it has fixed width
+          if (column.key === 'dataSpesa') {
+            return;
+          }
+          
+          let maxLength = 0;
+          column.eachCell({ includeEmpty: true }, (cell) => {
+            const columnLength = cell.value ? cell.value.toString().length : 10;
+            if (columnLength > maxLength) {
+              maxLength = columnLength;
+            }
+          });
+          column.width = maxLength < 10 ? 10 : maxLength + 2;
+        });
 
         // Generate Excel file and download
-        const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-        const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `vendite_spese_${new Date().toISOString().split('T')[0]}.xlsx`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
+        workbook.xlsx.writeBuffer().then((buffer) => {
+          const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `vendite_spese_${new Date().toISOString().split('T')[0]}.xlsx`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        });
 
         this.messageService.add({
           severity: 'success',
