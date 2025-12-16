@@ -71,6 +71,14 @@
                         </label>
                         @if (vendita.etichetta_spedizione) {
                             <p-button 
+                                icon="pi pi-external-link" 
+                                label="Apri" 
+                                severity="info"
+                                size="small"
+                                (click)="openEtichettaSpedizione()"
+                                pTooltip="Apri etichetta spedizione in nuova scheda"
+                                tooltipPosition="top" />
+                            <p-button 
                                 icon="pi pi-download" 
                                 label="Scarica" 
                                 severity="secondary"

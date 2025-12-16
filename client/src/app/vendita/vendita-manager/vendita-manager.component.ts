@@ -607,6 +607,48 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
     });
   }
 
+  openEtichettaSpedizione(): void {
+    if (!this.vendita.id || this.vendita.id <= 0) {
+      this.MessageService.add({
+        severity: 'warn',
+        summary: 'Attenzione',
+        detail: 'Vendita non salvata'
+      });
+      return;
+    }
+
+    if (!this.vendita.etichetta_spedizione) {
+      this.MessageService.add({
+        severity: 'warn',
+        summary: 'Attenzione',
+        detail: 'Nessuna etichetta spedizione disponibile'
+      });
+      return;
+    }
+
+    // Open the download URL in a new tab
+    this.venditaService.downloadEtichettaSpedizione(this.vendita.id).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        // Note: We don't revoke the URL immediately to allow the new tab to load it
+        setTimeout(() => window.URL.revokeObjectURL(url), 100);
+      },
+      error: (error: any) => {
+        let errorMessage = 'Errore durante l\'apertura del file';
+        if (error.error && error.error.error) {
+          errorMessage = error.error.error;
+        }
+
+        this.MessageService.add({
+          severity: 'error',
+          summary: 'Errore',
+          detail: errorMessage
+        });
+      }
+    });
+  }
+
   deleteEtichettaSpedizione(): void {
     if (!this.vendita.id || this.vendita.id <= 0) {
       this.MessageService.add({
