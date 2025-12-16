@@ -662,6 +662,7 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
     this.confirmationService.confirm({
       message: 'Sei sicuro di voler eliminare l\'etichetta spedizione?',
       icon: 'pi pi-exclamation-triangle',
+      target: document.getElementById('delete-etichetta-spedizione-button') as EventTarget,
       acceptLabel: 'Si',
       rejectLabel: 'No',
       accept: () => {
