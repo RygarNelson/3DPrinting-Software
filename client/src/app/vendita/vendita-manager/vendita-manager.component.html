@@ -67,9 +67,9 @@
                             class="p-button p-component cursor-pointer"
                             [class.p-disabled]="!vendita.id || vendita.id <= 0">
                             <i class="pi pi-upload mr-2"></i>
-                            Carica PDF
+                            PDF
                         </label>
-                        @if (vendita.etichetta_spedizione) {
+                        @if (vendita.etichetta_spedizione && !applicationStateService.isMobile() && !applicationStateService.isTablet()) {
                             <p-button 
                                 icon="pi pi-external-link" 
                                 label="Apri" 
@@ -100,6 +100,33 @@
                     <small class="text-gray-500">Dimensione massima: 2MB. Solo file PDF.</small>
                     @if (!vendita.id || vendita.id <= 0) {
                         <small class="text-orange-500">Salva prima la vendita per caricare l'etichetta spedizione.</small>
+                    }
+                    @if (vendita.etichetta_spedizione && (applicationStateService.isMobile() || applicationStateService.isTablet())) {
+                        <p-button 
+                            icon="pi pi-external-link" 
+                            label="Apri" 
+                            severity="info"
+                            size="small"
+                            (click)="openEtichettaSpedizione()"
+                            pTooltip="Apri etichetta spedizione in nuova scheda"
+                            tooltipPosition="top" />
+                        <p-button 
+                            icon="pi pi-download" 
+                            label="Scarica" 
+                            severity="secondary"
+                            size="small"
+                            (click)="downloadEtichettaSpedizione()"
+                            pTooltip="Scarica etichetta spedizione"
+                            tooltipPosition="top" />
+                        <p-button 
+                            icon="pi pi-trash" 
+                            label="Elimina" 
+                            severity="danger"
+                            size="small"
+                            id="delete-etichetta-spedizione-button"
+                            (click)="deleteEtichettaSpedizione()"
+                            pTooltip="Elimina etichetta spedizione"
+                            tooltipPosition="top" />
                     }
                 </div>
             </div>

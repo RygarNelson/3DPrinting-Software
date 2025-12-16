@@ -96,9 +96,9 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
     private MessageService: MessageService,
     private dialogService: DialogService,
     private confirmationService: ConfirmationService,
-    private applicationStateService: ApplicationStateService,
     private clienteService: ClienteService,
-    private localStorageService: LocalstorageService
+    private localStorageService: LocalstorageService,
+    public applicationStateService: ApplicationStateService,
   ){
     super();
 
