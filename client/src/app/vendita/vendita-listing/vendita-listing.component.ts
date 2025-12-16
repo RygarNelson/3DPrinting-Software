@@ -13,6 +13,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { MenuModule } from 'primeng/menu';
 import { SkeletonModule } from 'primeng/skeleton';
+import { SplitButtonModule } from 'primeng/splitbutton';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import { Subscription } from 'rxjs';
@@ -56,6 +57,7 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
     VenditaStatoSpedizioneLookupDirective,
     VenditaDettaglioStatoStampaLookupDirective,
     MenuModule,
+    SplitButtonModule,
     ConfirmDialogModule
   ],
   providers: [
@@ -607,5 +609,106 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
           detail: 'Errore durante la copia del link tracciamento'
         });
       });
+  }
+
+  downloadEtichettaSpedizione(vendita: VenditaListingModel): void {
+    if (!vendita.id || vendita.id <= 0) {
+      return;
+    }
+
+    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+
+    this.venditaService.downloadEtichettaSpedizione(vendita.id).subscribe({
+      next: (blob: Blob) => {
+        window.clearTimeout(this.loadingTimeout);
+        this.loading = false;
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `etichetta_spedizione_vendita_${vendita.id}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Download avviato'
+        });
+      },
+      error: (error: any) => {
+        window.clearTimeout(this.loadingTimeout);
+        this.loading = false;
+
+        let errorMessage = 'Errore durante il download del file';
+        if (error.error && error.error.error) {
+          errorMessage = error.error.error;
+        }
+
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Errore',
+          detail: errorMessage
+        });
+      }
+    });
+  }
+
+  openEtichettaSpedizione(vendita: VenditaListingModel): void {
+    if (!vendita.id || vendita.id <= 0) {
+      return;
+    }
+
+    if (!vendita.etichetta_spedizione) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Attenzione',
+        detail: 'Nessuna etichetta spedizione disponibile'
+      });
+      return;
+    }
+
+    // Open the download URL in a new tab
+    this.venditaService.downloadEtichettaSpedizione(vendita.id).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        // Note: We don't revoke the URL immediately to allow the new tab to load it
+        setTimeout(() => window.URL.revokeObjectURL(url), 100);
+      },
+      error: (error: any) => {
+        let errorMessage = 'Errore durante l\'apertura del file';
+        if (error.error && error.error.error) {
+          errorMessage = error.error.error;
+        }
+
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Errore',
+          detail: errorMessage
+        });
+      }
+    });
+  }
+
+  getEtichettaSpedizioneMenuItems(vendita: VenditaListingModel): MenuItem[] {
+    return [
+      {
+        label: 'Scarica',
+        icon: 'pi pi-download',
+        command: () => {
+          this.downloadEtichettaSpedizione(vendita);
+        }
+      },
+      {
+        label: 'Apri in nuova scheda',
+        icon: 'pi pi-external-link',
+        command: () => {
+          this.openEtichettaSpedizione(vendita);
+        }
+      }
+    ];
   }
 }

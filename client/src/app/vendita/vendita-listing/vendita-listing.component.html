@@ -294,6 +294,15 @@
                       (click)="copiaLinkTracciamento(vendita)"
                       pTooltip="Copia link tracciamento" tooltipPosition="top">
                     </p-button>
+                    <p-button 
+                      icon="pi pi-file-pdf"
+                      severity="warn"
+                      size="small"
+                      (click)="downloadEtichettaSpedizione(vendita)"
+                      pTooltip="Etichetta spedizione" 
+                      tooltipPosition="top"
+                      [disabled]="!vendita.etichetta_spedizione || (vendita.etichetta_spedizione && vendita.etichetta_spedizione.trim() === '')">
+                    </p-button>
                   <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(vendita)"
                     pTooltip="Visualizza log di audit" tooltipPosition="top">
                   </p-button>
@@ -358,6 +367,15 @@
                     [disabled]="!vendita.link_tracciamento"
                     (click)="copiaLinkTracciamento(vendita)"
                     pTooltip="Copia link tracciamento" tooltipPosition="top">
+                  </p-button>
+                  <p-button 
+                    icon="pi pi-file-pdf"
+                    severity="warn"
+                    size="small"
+                    (click)="downloadEtichettaSpedizione(vendita)"
+                    pTooltip="Etichetta spedizione" 
+                    tooltipPosition="top"
+                    [disabled]="!vendita.etichetta_spedizione || (vendita.etichetta_spedizione && vendita.etichetta_spedizione.trim() === '')">
                   </p-button>
                 <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(vendita)"
                   pTooltip="Visualizza log di audit" tooltipPosition="top">
