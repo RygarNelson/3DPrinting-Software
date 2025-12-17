@@ -121,6 +121,10 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
 
   protected readonly VenditaDettaglioStatoStampaEnum = VenditaDettaglioStatoStampaEnum;
 
+  downloadEtichettaSpedizioneLoading: boolean = false;
+  openEtichettaSpedizioneLoading: boolean = false;
+  downloadExcelLoading: boolean = false;
+
   constructor(
     private venditaService: VenditaService,
     private spesaService: SpesaService,
@@ -625,9 +629,11 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
     }
 
     this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    this.downloadEtichettaSpedizioneLoading = true;
 
     this.venditaService.downloadEtichettaSpedizione(vendita.id).subscribe({
       next: (blob: Blob) => {
+        this.downloadEtichettaSpedizioneLoading = false;
         window.clearTimeout(this.loadingTimeout);
         this.loading = false;
 
@@ -647,6 +653,7 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
         });
       },
       error: (error: any) => {
+        this.downloadEtichettaSpedizioneLoading = false;
         window.clearTimeout(this.loadingTimeout);
         this.loading = false;
 
@@ -678,15 +685,18 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
       return;
     }
 
+    this.openEtichettaSpedizioneLoading = true;
     // Open the download URL in a new tab
     this.venditaService.downloadEtichettaSpedizione(vendita.id).subscribe({
       next: (blob: Blob) => {
+        this.openEtichettaSpedizioneLoading = false;
         const url = window.URL.createObjectURL(blob);
         window.open(url, '_blank');
         // Note: We don't revoke the URL immediately to allow the new tab to load it
         setTimeout(() => window.URL.revokeObjectURL(url), 100);
       },
       error: (error: any) => {
+        this.openEtichettaSpedizioneLoading = false;
         let errorMessage = 'Errore durante l\'apertura del file';
         if (error.error && error.error.error) {
           errorMessage = error.error.error;
@@ -699,25 +709,6 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
         });
       }
     });
-  }
-
-  getEtichettaSpedizioneMenuItems(vendita: VenditaListingModel): MenuItem[] {
-    return [
-      {
-        label: 'Scarica',
-        icon: 'pi pi-download',
-        command: () => {
-          this.downloadEtichettaSpedizione(vendita);
-        }
-      },
-      {
-        label: 'Apri in nuova scheda',
-        icon: 'pi pi-external-link',
-        command: () => {
-          this.openEtichettaSpedizione(vendita);
-        }
-      }
-    ];
   }
 
   // Helper function to get date-only in Rome timezone (for Excel date columns)
@@ -742,6 +733,7 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
 
   exportToExcel(): void {
     this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    this.downloadExcelLoading = true;
 
     // Fetch all vendite with a high limit
     const exportFiltri: VenditaListingFiltri = {
@@ -783,6 +775,7 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
       spese: this.spesaService.getListing(spesaFiltri)
     }).subscribe({
       next: ({ vendite, spese }) => {
+        this.downloadExcelLoading = false;
         window.clearTimeout(this.loadingTimeout);
         this.loading = false;
 
@@ -987,6 +980,7 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
         });
       },
       error: (error) => {
+        this.downloadExcelLoading = false;
         window.clearTimeout(this.loadingTimeout);
         this.loading = false;
 

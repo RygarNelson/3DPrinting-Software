@@ -89,6 +89,11 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
   protected override readonly LOCAL_STORAGE_KEY: string = 'vendita-manager';
   protected ModelloTipoEnum = ModelloTipoEnum;
 
+  uploadEtichettaSpedizioneLoading: boolean = false;
+  downloadEtichettaSpedizioneLoading: boolean = false;
+  openEtichettaSpedizioneLoading: boolean = false;
+  deleteEtichettaSpedizioneLoading: boolean = false;
+
   constructor(
     private venditaService: VenditaService,
     private router: Router,
@@ -520,10 +525,12 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
   }
 
   uploadFile(file: File): void {
+    this.uploadEtichettaSpedizioneLoading = true;
     this.setLoadingTimeout();
 
     this.venditaService.uploadEtichettaSpedizione(this.vendita.id, file).subscribe({
       next: (result) => {
+        this.uploadEtichettaSpedizioneLoading = false;
         this.clearLoadingTimeout();
 
         if (result.success) {
@@ -543,6 +550,7 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
         }
       },
       error: (error: any) => {
+        this.uploadEtichettaSpedizioneLoading = false;
         this.clearLoadingTimeout();
 
         let errorMessage = 'Errore durante il caricamento del file';
@@ -569,10 +577,12 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
       return;
     }
 
+    this.downloadEtichettaSpedizioneLoading = true;
     this.setLoadingTimeout();
 
     this.venditaService.downloadEtichettaSpedizione(this.vendita.id).subscribe({
       next: (blob: Blob) => {
+        this.downloadEtichettaSpedizioneLoading = false;
         this.clearLoadingTimeout();
 
         const url = window.URL.createObjectURL(blob);
@@ -591,6 +601,7 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
         });
       },
       error: (error: any) => {
+        this.downloadEtichettaSpedizioneLoading = false;
         this.clearLoadingTimeout();
 
         let errorMessage = 'Errore durante il download del file';
@@ -626,15 +637,18 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
       return;
     }
 
+    this.openEtichettaSpedizioneLoading = true;
     // Open the download URL in a new tab
     this.venditaService.downloadEtichettaSpedizione(this.vendita.id).subscribe({
       next: (blob: Blob) => {
+        this.openEtichettaSpedizioneLoading = false;
         const url = window.URL.createObjectURL(blob);
         window.open(url, '_blank');
         // Note: We don't revoke the URL immediately to allow the new tab to load it
         setTimeout(() => window.URL.revokeObjectURL(url), 100);
       },
       error: (error: any) => {
+        this.openEtichettaSpedizioneLoading = false;
         let errorMessage = 'Errore durante l\'apertura del file';
         if (error.error && error.error.error) {
           errorMessage = error.error.error;
@@ -666,10 +680,12 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
       acceptLabel: 'Si',
       rejectLabel: 'No',
       accept: () => {
+        this.deleteEtichettaSpedizioneLoading = true;
         this.setLoadingTimeout();
 
         this.venditaService.deleteEtichettaSpedizione(this.vendita.id).subscribe({
           next: (result) => {
+            this.deleteEtichettaSpedizioneLoading = false;
             this.clearLoadingTimeout();
 
             if (result.success) {
@@ -689,6 +705,7 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
             }
           },
           error: (error: any) => {
+            this.deleteEtichettaSpedizioneLoading = false;
             this.clearLoadingTimeout();
 
             let errorMessage = 'Errore durante l\'eliminazione del file';

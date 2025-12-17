@@ -75,9 +75,14 @@
             <!-- Action Buttons Section -->
              @if (!applicationState.isMobile() && !applicationState.isTablet()) {
               <div class="flex items-center gap-2 justify-end sm:justify-start">
-                <p-button icon="pi pi-file-excel" severity="success" [loading]="loading" (click)="exportToExcel()"
-                  pTooltip="Esporta in Excel" tooltipPosition="top">
-                </p-button>
+                @if (downloadExcelLoading) {
+                  <p-button icon="pi pi-spinner pi-spin" severity="success" [disabled]="true" [size]="'small'" />
+                }
+                @else {
+                  <p-button icon="pi pi-file-excel" severity="success" [loading]="loading" (click)="exportToExcel()"
+                    pTooltip="Esporta in Excel" tooltipPosition="top">
+                  </p-button>
+                }
                 <p-menu #menu appendTo="body" [model]="multipleAzioni" [popup]="true"></p-menu>
                 <p-button [label]="'Azioni'" [icon]="menu.visible ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
                   [disabled]="selectedVendite == null || (selectedVendite != null && selectedVendite.length == 0)"
@@ -92,9 +97,14 @@
              }
              @else {
               <div class="grid grid-cols-1 items-center gap-2 justify-end sm:justify-start">
-                <p-button icon="pi pi-file-excel" severity="success" [loading]="loading" (click)="exportToExcel()"
-                  pTooltip="Esporta in Excel" tooltipPosition="top">
-                </p-button>
+                @if (downloadExcelLoading) {
+                  <p-button icon="pi pi-spinner pi-spin" severity="success" [disabled]="true" [size]="'small'" />
+                }
+                @else {
+                  <p-button icon="pi pi-file-excel" severity="success" [loading]="loading" (click)="exportToExcel()"
+                    pTooltip="Esporta in Excel" tooltipPosition="top">
+                  </p-button>
+                }
                 <p-menu #menu appendTo="body" [model]="multipleAzioni" [popup]="true"></p-menu>
                 <p-button [label]="'Azioni'" [icon]="menu.visible ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
                   [disabled]="selectedVendite == null || (selectedVendite != null && selectedVendite.length == 0)"
@@ -124,6 +134,12 @@
               Numero Vendita
               <p-sortIcon field="id" />
               <p-columnFilter field="id" [type]="'numeric'" display="menu" [showMatchModes]="true"
+                [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
+            </th>
+            <th pSortableColumn="data_vendita" style="width: 160px;">
+              Data Vendita
+              <p-sortIcon field="data_vendita" />
+              <p-columnFilter field="data_vendita" [type]="'date'" display="menu" [showMatchModes]="true"
                 [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
             </th>
             <th pSortableColumn="data_scadenza" style="width: 160px;">
@@ -316,15 +332,21 @@
                       (click)="copiaLinkTracciamento(vendita)"
                       pTooltip="Copia link tracciamento" tooltipPosition="top">
                     </p-button>
-                    <p-button 
-                      icon="pi pi-file-pdf"
-                      severity="warn"
-                      size="small"
-                      (click)="downloadEtichettaSpedizione(vendita)"
-                      pTooltip="Etichetta spedizione" 
-                      tooltipPosition="top"
-                      [disabled]="!vendita.etichetta_spedizione || (vendita.etichetta_spedizione && vendita.etichetta_spedizione.trim() === '')">
-                    </p-button>
+                    @if (downloadEtichettaSpedizioneLoading) {
+                      <p-button icon="pi pi-spinner pi-spin" severity="warn" size="small" [disabled]="true">
+                      </p-button>
+                    }
+                    @else {
+                      <p-button 
+                        icon="pi pi-file-pdf"
+                        severity="warn"
+                        size="small"
+                        (click)="downloadEtichettaSpedizione(vendita)"
+                        pTooltip="Etichetta spedizione" 
+                        tooltipPosition="top"
+                        [disabled]="!vendita.etichetta_spedizione || (vendita.etichetta_spedizione && vendita.etichetta_spedizione.trim() === '')">
+                      </p-button>
+                    }
                   <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(vendita)"
                     pTooltip="Visualizza log di audit" tooltipPosition="top">
                   </p-button>
@@ -390,15 +412,21 @@
                     (click)="copiaLinkTracciamento(vendita)"
                     pTooltip="Copia link tracciamento" tooltipPosition="top">
                   </p-button>
-                  <p-button 
-                    icon="pi pi-file-pdf"
-                    severity="warn"
-                    size="small"
-                    (click)="downloadEtichettaSpedizione(vendita)"
-                    pTooltip="Etichetta spedizione" 
-                    tooltipPosition="top"
-                    [disabled]="!vendita.etichetta_spedizione || (vendita.etichetta_spedizione && vendita.etichetta_spedizione.trim() === '')">
-                  </p-button>
+                  @if (downloadEtichettaSpedizioneLoading) {
+                    <p-button icon="pi pi-spinner pi-spin" severity="warn" size="small" [disabled]="true">
+                    </p-button>
+                  }
+                  @else {
+                    <p-button 
+                      icon="pi pi-file-pdf"
+                      severity="warn"
+                      size="small"
+                      (click)="downloadEtichettaSpedizione(vendita)"
+                      pTooltip="Etichetta spedizione" 
+                      tooltipPosition="top"
+                      [disabled]="!vendita.etichetta_spedizione || (vendita.etichetta_spedizione && vendita.etichetta_spedizione.trim() === '')">
+                    </p-button>
+                  }
                 <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(vendita)"
                   pTooltip="Visualizza log di audit" tooltipPosition="top">
                 </p-button>
