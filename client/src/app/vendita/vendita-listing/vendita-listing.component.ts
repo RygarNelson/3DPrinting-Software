@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import * as ExcelJS from 'exceljs';
 import { AccordionModule } from 'primeng/accordion';
 import { ConfirmationService, FilterMetadata, MenuItem, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -13,18 +14,24 @@ import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { MenuModule } from 'primeng/menu';
 import { SkeletonModule } from 'primeng/skeleton';
+import { SplitButtonModule } from 'primeng/splitbutton';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
-import { Subscription } from 'rxjs';
+import { Subscription, forkJoin } from 'rxjs';
 import { ClienteLookupDirective } from 'src/directives/cliente/cliente-lookup.directive';
 import { ContoBancarioLookupDirective } from 'src/directives/conto-bancario/conto-bancario-lookup.directive';
 import { VenditaDettaglioStatoStampaLookupDirective } from 'src/directives/vendita/vendita-dettaglio-stato-stampa-lookup.directive';
 import { VenditaStatoSpedizioneLookupDirective } from 'src/directives/vendita/vendita-stato-spedizione-lookup.directive';
+import { SpesaTipoEnum, SpesaTipoEnumRecord } from 'src/enums/SpesaTipoEnum';
+import { SpesaUnitaMisuraEnum, SpesaUnitaMisuraEnumRecord } from 'src/enums/SpesaUnitaMisuraEnum';
 import { VenditaDettaglioStatoStampaEnum } from 'src/enums/VenditaDettaglioStatoStampaEnum';
+import { VenditaStatoSpedizioneEnumRecord } from 'src/enums/VenditaStatoSpedizioneEnum';
+import { SpesaListingFiltri } from 'src/models/spesa/spesa-listing-filtri';
 import { VenditaListingDettaglioBasettaModel, VenditaListingDettaglioModel, VenditaListingModel, VenditaListingResponse } from 'src/models/vendita/vendita-listing';
 import { VenditaListingFiltri } from 'src/models/vendita/vendita-listing-filtri';
 import { VenditaModificaContoBancarioModel } from 'src/models/vendita/vendita_modifica_conto_bancario';
 import { ApplicationStateService } from 'src/services/application-state.service';
+import { SpesaService } from 'src/services/spesa.service';
 import { VenditaService } from 'src/services/vendita.service';
 import { AuditLogComponent } from 'src/shared/audit-log/audit-log.component';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
@@ -56,10 +63,12 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
     VenditaStatoSpedizioneLookupDirective,
     VenditaDettaglioStatoStampaLookupDirective,
     MenuModule,
+    SplitButtonModule,
     ConfirmDialogModule
   ],
   providers: [
-    VenditaService
+    VenditaService,
+    SpesaService
   ],
   templateUrl: './vendita-listing.component.html',
   styleUrl: './vendita-listing.component.scss'
@@ -112,8 +121,13 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
 
   protected readonly VenditaDettaglioStatoStampaEnum = VenditaDettaglioStatoStampaEnum;
 
+  downloadEtichettaSpedizioneLoading: boolean = false;
+  openEtichettaSpedizioneLoading: boolean = false;
+  downloadExcelLoading: boolean = false;
+
   constructor(
     private venditaService: VenditaService,
+    private spesaService: SpesaService,
     private router: Router,
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
@@ -607,5 +621,378 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
           detail: 'Errore durante la copia del link tracciamento'
         });
       });
+  }
+
+  downloadEtichettaSpedizione(vendita: VenditaListingModel): void {
+    if (!vendita.id || vendita.id <= 0) {
+      return;
+    }
+
+    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    this.downloadEtichettaSpedizioneLoading = true;
+
+    this.venditaService.downloadEtichettaSpedizione(vendita.id).subscribe({
+      next: (blob: Blob) => {
+        this.downloadEtichettaSpedizioneLoading = false;
+        window.clearTimeout(this.loadingTimeout);
+        this.loading = false;
+
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `etichetta_spedizione_vendita_${vendita.id}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Download avviato'
+        });
+      },
+      error: (error: any) => {
+        this.downloadEtichettaSpedizioneLoading = false;
+        window.clearTimeout(this.loadingTimeout);
+        this.loading = false;
+
+        let errorMessage = 'Errore durante il download del file';
+        if (error.error && error.error.error) {
+          errorMessage = error.error.error;
+        }
+
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Errore',
+          detail: errorMessage
+        });
+      }
+    });
+  }
+
+  openEtichettaSpedizione(vendita: VenditaListingModel): void {
+    if (!vendita.id || vendita.id <= 0) {
+      return;
+    }
+
+    if (!vendita.etichetta_spedizione) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Attenzione',
+        detail: 'Nessuna etichetta spedizione disponibile'
+      });
+      return;
+    }
+
+    this.openEtichettaSpedizioneLoading = true;
+    // Open the download URL in a new tab
+    this.venditaService.downloadEtichettaSpedizione(vendita.id).subscribe({
+      next: (blob: Blob) => {
+        this.openEtichettaSpedizioneLoading = false;
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        // Note: We don't revoke the URL immediately to allow the new tab to load it
+        setTimeout(() => window.URL.revokeObjectURL(url), 100);
+      },
+      error: (error: any) => {
+        this.openEtichettaSpedizioneLoading = false;
+        let errorMessage = 'Errore durante l\'apertura del file';
+        if (error.error && error.error.error) {
+          errorMessage = error.error.error;
+        }
+
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Errore',
+          detail: errorMessage
+        });
+      }
+    });
+  }
+
+  // Helper function to get date-only in Rome timezone (for Excel date columns)
+  private getDateInRomeTimezone(date: Date): Date | null {
+    if (!date) return null;
+  
+    // Get Rome date parts using Intl
+    const parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Europe/Rome',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).formatToParts(date);
+  
+    const year = +parts.find(p => p.type === 'year')!.value;
+    const month = +parts.find(p => p.type === 'month')!.value;
+    const day = +parts.find(p => p.type === 'day')!.value;
+  
+    // IMPORTANT: create date at UTC midnight
+    return new Date(Date.UTC(year, month - 1, day));
+  }
+
+  exportToExcel(): void {
+    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    this.downloadExcelLoading = true;
+
+    // Fetch all vendite with a high limit
+    const exportFiltri: VenditaListingFiltri = {
+      offset: 0,
+      limit: 10000, // High limit to get all vendite
+      search: this.filtri.search
+    };
+
+    // Copy other filters if they exist
+    if (this.filtri.stato_spedizione !== undefined) {
+      exportFiltri.stato_spedizione = this.filtri.stato_spedizione;
+    }
+    if (this.filtri.stato_stampa !== undefined) {
+      exportFiltri.stato_stampa = this.filtri.stato_stampa;
+    }
+    if (this.filtri.isInScadenza !== undefined) {
+      exportFiltri.isInScadenza = this.filtri.isInScadenza;
+    }
+    if (this.filtri.isScaduto !== undefined) {
+      exportFiltri.isScaduto = this.filtri.isScaduto;
+    }
+    if (this.filtri.conto_bancario_id !== undefined) {
+      exportFiltri.conto_bancario_id = this.filtri.conto_bancario_id;
+    }
+    if (this.filtri.cliente_id !== undefined) {
+      exportFiltri.cliente_id = this.filtri.cliente_id;
+    }
+
+    // Fetch all spese with a high limit
+    const spesaFiltri: SpesaListingFiltri = {
+      offset: 0,
+      limit: 10000, // High limit to get all spese
+      search: ''
+    };
+
+    // Fetch both vendite and spese in parallel
+    forkJoin({
+      vendite: this.venditaService.getListing(exportFiltri),
+      spese: this.spesaService.getListing(spesaFiltri)
+    }).subscribe({
+      next: ({ vendite, spese }) => {
+        this.downloadExcelLoading = false;
+        window.clearTimeout(this.loadingTimeout);
+        this.loading = false;
+
+        // Create workbook
+        const workbook = new ExcelJS.Workbook();
+
+        // Create Vendite sheet
+        const venditeWorksheet = workbook.addWorksheet('Vendite');
+        
+        // Define columns for Vendite sheet
+        venditeWorksheet.columns = [
+          { header: 'Numero Vendita', key: 'numeroVendita', width: 15 },
+          { header: 'Data Vendita', key: 'dataVendita', width: 12 },
+          { header: 'Data Scadenza', key: 'dataScadenza', width: 12 },
+          { header: 'Data Scadenza Spedizione', key: 'dataScadenzaSpedizione', width: 18 },
+          { header: 'Cliente', key: 'cliente', width: 30 },
+          { header: 'Conto Bancario', key: 'contoBancario', width: 25 },
+          { header: 'Dettagli', key: 'dettagli', width: 50 },
+          { header: 'Totale Vendita', key: 'totaleVendita', width: 18 },
+          { header: 'Stato', key: 'stato', width: 20 }
+        ];
+
+        // Style header row
+        venditeWorksheet.getRow(1).font = { bold: true };
+        venditeWorksheet.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
+
+        // Add data rows
+        vendite.data.forEach(vendita => {
+          // Format dettagli
+          const dettagliArray: string[] = [];
+          if (vendita.dettagli && vendita.dettagli.length > 0) {
+            vendita.dettagli.forEach(dettaglio => {
+              let dettaglioStr = '';
+              if (dettaglio.modello && dettaglio.modello.nome) {
+                dettaglioStr = dettaglio.modello.nome;
+              } else if (dettaglio.descrizione) {
+                dettaglioStr = dettaglio.descrizione;
+              }
+              
+              if (dettaglio.stampa_is_pezzo_singolo) {
+                dettaglioStr += ' (Pezzo singolo)';
+              }
+              if (dettaglio.stampa_is_parziale) {
+                dettaglioStr += ' (Parziale)';
+              }
+              
+              if (dettaglioStr) {
+                dettagliArray.push(dettaglioStr);
+              }
+            });
+          }
+          const dettagliNormalized = dettagliArray.join(';');
+
+          // Get status name
+          const statoName = vendita.stato_spedizione !== undefined 
+            ? VenditaStatoSpedizioneEnumRecord[vendita.stato_spedizione] || ''
+            : '';
+
+          const row = venditeWorksheet.addRow({
+            numeroVendita: vendita.id,
+            dataVendita: null, // Will be set separately to ensure proper date type
+            dataScadenza: null, // Will be set separately to ensure proper date type
+            dataScadenzaSpedizione: null, // Will be set separately to ensure proper date type
+            cliente: vendita.cliente?.etichetta || '',
+            contoBancario: vendita.conto_bancario?.iban || '',
+            dettagli: dettagliNormalized,
+            totaleVendita: vendita.totale_vendita || 0,
+            stato: statoName
+          });
+
+          // Format number columns
+          row.getCell('numeroVendita').numFmt = '0';
+          row.getCell('totaleVendita').numFmt = '#,##0.00';
+          
+          // Format date columns (Italian format: dd/mm/yyyy) and set cell type to date
+          if (vendita.data_vendita) {
+            const dateCell = row.getCell('dataVendita');
+            dateCell.numFmt = 'dd/mm/yyyy';
+            dateCell.value = this.getDateInRomeTimezone(new Date(vendita.data_vendita));
+          }
+          if (vendita.data_scadenza) {
+            const dateCell = row.getCell('dataScadenza');
+            dateCell.numFmt = 'dd/mm/yyyy';
+            dateCell.value = this.getDateInRomeTimezone(new Date(vendita.data_scadenza));
+          }
+          if (vendita.data_scadenza_spedizione) {
+            const dateCell = row.getCell('dataScadenzaSpedizione');
+            dateCell.numFmt = 'dd/mm/yyyy';
+            dateCell.value = this.getDateInRomeTimezone(new Date(vendita.data_scadenza_spedizione));
+          }
+        });
+
+        // Autofit columns for Vendite sheet (excluding date columns which have fixed width)
+        venditeWorksheet.columns.forEach((column, index) => {
+          if (!column || !column.eachCell) return;
+          
+          // Skip date columns (indices 1, 2, 3) - they have fixed widths
+          const dateColumnKeys = ['dataVendita', 'dataScadenza', 'dataScadenzaSpedizione'];
+          if (column.key && dateColumnKeys.includes(column.key)) {
+            return;
+          }
+          
+          let maxLength = 0;
+          column.eachCell({ includeEmpty: true }, (cell) => {
+            const columnLength = cell.value ? cell.value.toString().length : 10;
+            if (columnLength > maxLength) {
+              maxLength = columnLength;
+            }
+          });
+          column.width = maxLength < 10 ? 10 : maxLength + 2;
+        });
+
+        // Create Spese sheet
+        const speseWorksheet = workbook.addWorksheet('Spese');
+        
+        // Define columns for Spese sheet
+        speseWorksheet.columns = [
+          { header: 'Numero', key: 'numero', width: 12 },
+          { header: 'Data Spesa', key: 'dataSpesa', width: 12 },
+          { header: 'Descrizione', key: 'descrizione', width: 40 },
+          { header: 'Quantità', key: 'quantita', width: 12 },
+          { header: 'Tipo Spesa', key: 'tipoSpesa', width: 15 },
+          { header: 'Unità di Misura', key: 'unitaMisura', width: 18 },
+          { header: 'Totale Spesa', key: 'totaleSpesa', width: 18 }
+        ];
+
+        // Style header row
+        speseWorksheet.getRow(1).font = { bold: true };
+        speseWorksheet.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
+
+        // Add data rows
+        spese.data.forEach(spesa => {
+          // Get tipo spesa name
+          const tipoSpesaName = spesa.tipo_spesa !== undefined 
+            ? SpesaTipoEnumRecord[spesa.tipo_spesa as SpesaTipoEnum] || ''
+            : '';
+
+          // Get unità di misura name
+          const unitaMisuraName = spesa.unita_misura !== undefined 
+            ? SpesaUnitaMisuraEnumRecord[spesa.unita_misura as SpesaUnitaMisuraEnum] || ''
+            : '';
+
+          const row = speseWorksheet.addRow({
+            numero: spesa.id,
+            dataSpesa: null, // Will be set separately to ensure proper date type
+            descrizione: spesa.descrizione || '',
+            quantita: spesa.quantita || 0,
+            tipoSpesa: tipoSpesaName,
+            unitaMisura: unitaMisuraName,
+            totaleSpesa: spesa.totale_spesa || 0
+          });
+
+          // Format number columns
+          row.getCell('numero').numFmt = '0';
+          row.getCell('quantita').numFmt = '#,##0.0000';
+          row.getCell('totaleSpesa').numFmt = '#,##0.00';
+          
+          // Format date column (Italian format: dd/mm/yyyy) and set cell type to date
+          if (spesa.data_spesa) {
+            const dateCell = row.getCell('dataSpesa');
+            dateCell.numFmt = 'dd/mm/yyyy';
+            dateCell.value = this.getDateInRomeTimezone(new Date(spesa.data_spesa));
+          }
+        });
+
+        // Autofit columns for Spese sheet (excluding date column which has fixed width)
+        speseWorksheet.columns.forEach((column) => {
+          if (!column || !column.eachCell) return;
+          
+          // Skip date column - it has fixed width
+          if (column.key === 'dataSpesa') {
+            return;
+          }
+          
+          let maxLength = 0;
+          column.eachCell({ includeEmpty: true }, (cell) => {
+            const columnLength = cell.value ? cell.value.toString().length : 10;
+            if (columnLength > maxLength) {
+              maxLength = columnLength;
+            }
+          });
+          column.width = maxLength < 10 ? 10 : maxLength + 2;
+        });
+
+        // Generate Excel file and download
+        workbook.xlsx.writeBuffer().then((buffer) => {
+          const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `vendite_spese_${new Date().toISOString().split('T')[0]}.xlsx`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        });
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'File Excel esportato con successo'
+        });
+      },
+      error: (error) => {
+        this.downloadExcelLoading = false;
+        window.clearTimeout(this.loadingTimeout);
+        this.loading = false;
+
+        this.dialogService.open(DialogErrorComponent, {
+          inputValues: {
+            error: error
+          },
+          modal: true
+        });
+
+        console.error('Error exporting to Excel:', error);
+      }
+    });
   }
 }

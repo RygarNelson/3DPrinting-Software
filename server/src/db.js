@@ -132,6 +132,10 @@ const updateDatabase = async (dbVersion, DatabaseVersion, CURRENT_DATABASE_VERSI
                     await updateDatabaseToVersion16();
                     break;
                 }
+                case 16: {
+                    await updateDatabaseToVersion17();
+                    break;
+                }
                 default: {
                     console.log('Update to version', (version + 1), 'not implemented');
                     process.exit(1);
@@ -351,6 +355,16 @@ const updateDatabaseToVersion16 = async () => {
         await sequelize.query('ALTER TABLE T_LOGS DROP COLUMN session_id');
     } catch (error) {
         console.log('Cannot update database to version 16');
+    }
+}
+
+const updateDatabaseToVersion17 = async () => {
+    try {
+        console.log('Updating database to version 17');
+
+        await sequelize.query('ALTER TABLE T_VENDITE ADD COLUMN etichetta_spedizione VARCHAR(500) NULL');
+    } catch (error) {
+        console.log('Cannot update database to version 17');
     }
 }
 

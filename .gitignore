@@ -23,6 +23,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Uploaded files
+server/uploads/
+
 # Runtime data
 pids/
 *.pid

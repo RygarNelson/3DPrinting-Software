@@ -44,7 +44,7 @@ class VenditaRepository extends BaseRepository {
     async insertOne(req) {
         const transaction = await sequelize.transaction();
         try {
-            const { data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, dettagli, basette, conto_bancario_id } = req.body;
+            const { data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, dettagli, basette, conto_bancario_id, etichetta_spedizione } = req.body;
             
             const data = {
                 data_vendita,
@@ -53,7 +53,8 @@ class VenditaRepository extends BaseRepository {
                 stato_spedizione,
                 link_tracciamento,
                 cliente_id,
-                conto_bancario_id
+                conto_bancario_id,
+                etichetta_spedizione
             };
 
             const additionalData = {
@@ -142,7 +143,7 @@ class VenditaRepository extends BaseRepository {
     async updateOne(req) {
         const transaction = await sequelize.transaction();
         try {
-            const { id, data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, dettagli, basette, conto_bancario_id } = req.body;
+            const { id, data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, dettagli, basette, conto_bancario_id, etichetta_spedizione } = req.body;
             
             const vendita = await Vendita.findByPk(id, { 
                 include: [
@@ -154,7 +155,7 @@ class VenditaRepository extends BaseRepository {
             if (!vendita) throw new Error('Vendita non trovata');
 
             const oldData = vendita.toJSON();
-            await vendita.update({ data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, conto_bancario_id }, { transaction: transaction });
+            await vendita.update({ data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, conto_bancario_id, etichetta_spedizione }, { transaction: transaction });
 
             const additionalData = {
                 request_source: 'HTTP',
@@ -842,6 +843,24 @@ class VenditaRepository extends BaseRepository {
                 affected_records: vendite_ids.length
             });
         }
+    }
+
+    async updateEtichettaSpedizione(venditaId, filePath) {
+        const vendita = await Vendita.findByPk(venditaId);
+        if (!vendita) {
+            throw new Error('Vendita non trovata');
+        }
+
+        const oldFilePath = vendita.etichetta_spedizione;
+        await vendita.update({ etichetta_spedizione: filePath });
+
+        // Log the update
+        await loggingService.logUpdate('T_VENDITE', venditaId, 'etichetta_spedizione', oldFilePath, filePath, {
+            operation: 'UPDATE',
+            reason: 'Etichetta spedizione file upload/update'
+        });
+
+        return vendita;
     }
 }
 

@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
 import {
     ActivatedRouteSnapshot,
     NavigationEnd,
@@ -10,6 +10,7 @@ import {
 import { BehaviorSubject, filter } from 'rxjs';
 
 interface Breadcrumb {
+    id: string;
     label: string;
     url?: string;
 }
@@ -19,18 +20,15 @@ interface Breadcrumb {
     standalone: true,
     imports: [CommonModule, RouterModule],
     template: `<nav class="layout-breadcrumb">
-        <ol>
-            <ng-template
-                ngFor
-                let-item
-                let-last="last"
-                [ngForOf]="breadcrumbs$ | async"
-            >
-                <li>{{ item.label }}</li>
-                <li *ngIf="!last" class="layout-breadcrumb-chevron">/</li>
-            </ng-template>
-        </ol>
-    </nav> `,
+          <ol>
+            @for (item of breadcrumbs$ | async; track item.id; let last = $last) {
+              <li>{{ item.label }}</li>
+              @if (!last) {
+                <li class="layout-breadcrumb-chevron">/</li>
+              }
+            }
+          </ol>
+        </nav>`,
 })
 export class AppBreadcrumb {
     private readonly _breadcrumbs$ = new BehaviorSubject<Breadcrumb[]>([]);
@@ -63,6 +61,7 @@ export class AppBreadcrumb {
 
         if (breadcrumb && breadcrumb !== parentBreadcrumb) {
             breadcrumbs.push({
+                id: routeUrl.join('/'),
                 label: route.data['breadcrumb'],
                 url: '/' + routeUrl.join('/'),
             });
