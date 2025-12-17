@@ -75,24 +75,23 @@
             <!-- Action Buttons Section -->
              @if (!applicationState.isMobile() && !applicationState.isTablet()) {
               <div class="flex items-center gap-2 justify-end sm:justify-start">
+                <p-menu #menu appendTo="body" [model]="multipleAzioni" [popup]="true"></p-menu>
                 @if (downloadExcelLoading) {
-                  <p-button icon="pi pi-spinner pi-spin" severity="success" [disabled]="true" [size]="'small'" />
+                  <p-button icon="pi pi-spinner pi-spin" label="Esporta Excel" severity="success" [disabled]="true" [size]="'small'" />
                 }
                 @else {
-                  <p-button icon="pi pi-file-excel" severity="success" [loading]="loading" (click)="exportToExcel()"
+                  <p-button icon="pi pi-file-excel" label="Esporta Excel" severity="success" [loading]="loading" (click)="exportToExcel()"
                     pTooltip="Esporta in Excel" tooltipPosition="top">
                   </p-button>
                 }
-                <p-menu #menu appendTo="body" [model]="multipleAzioni" [popup]="true"></p-menu>
                 <p-button [label]="'Azioni'" [icon]="menu.visible ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
                   [disabled]="selectedVendite == null || (selectedVendite != null && selectedVendite.length == 0)"
                   (onClick)="menu.toggle($event)" />
-                <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()"
-                  pTooltip="Aggiorna tabella" tooltipPosition="top">
-                </p-button>
                 <p-button icon="pi pi-plus" label="Nuova Vendita" severity="success" (click)="addNewVendita()"
                   pTooltip="Aggiungi nuova vendita" tooltipPosition="top">
                 </p-button>
+                <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()"
+                  pTooltip="Aggiorna tabella" tooltipPosition="top" />
               </div>
              }
              @else {
@@ -128,7 +127,6 @@
               <th></th>
             }
             @else {
-            <th></th>
             <th></th>
             <th pSortableColumn="id" style="width: 150px;">
               Numero Vendita
