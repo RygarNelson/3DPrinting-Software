@@ -1,4 +1,4 @@
-
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -24,6 +24,7 @@ import { ContoBancarioListingEliminaMessaggioPipe } from '../pipes/conto-bancari
 @Component({
   selector: 'app-conto-bancario-listing',
   imports: [
+    CommonModule,
     FormsModule,
     CardModule,
     ButtonModule,
@@ -34,7 +35,7 @@ import { ContoBancarioListingEliminaMessaggioPipe } from '../pipes/conto-bancari
     SkeletonModule,
     TooltipModule,
     ContoBancarioListingEliminaMessaggioPipe
-],
+  ],
   providers: [
     ContoBancarioService
   ],

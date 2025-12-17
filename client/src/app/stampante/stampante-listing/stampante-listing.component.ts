@@ -1,4 +1,4 @@
-
+import { CommonModule } from '@angular/common';
 import { Component, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -24,6 +24,7 @@ import { StampanteListingEliminaMessaggioPipe } from '../pipes/stampante-listing
 @Component({
   selector: 'app-stampante-listing',
   imports: [
+    CommonModule,
     FormsModule,
     CardModule,
     ButtonModule,
@@ -34,7 +35,7 @@ import { StampanteListingEliminaMessaggioPipe } from '../pipes/stampante-listing
     SkeletonModule,
     TooltipModule,
     StampanteListingEliminaMessaggioPipe
-],
+  ],
   templateUrl: './stampante-listing.component.html',
   styleUrl: './stampante-listing.component.scss',
   providers: [

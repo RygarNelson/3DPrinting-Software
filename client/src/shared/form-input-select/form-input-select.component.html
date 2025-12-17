@@ -1,69 +1,67 @@
 <div class="flex align-items-center">
-  <label [htmlFor]="property" class="block">{{label}}</label>
-  @if (obligatory) {
-    <span class="obligatory">*</span>
-  }
-  @if(infoMessage) {
-    <i class="pi pi-info-circle info-icon" [pTooltip]="infoMessage"></i>
-  }
+    <label [htmlFor]="property" class="block">{{label}}</label>
+    @if (obligatory) {
+        <span class="obligatory">*</span>
+    }
+    @if(infoMessage) {
+        <i class="pi pi-info-circle info-icon" [pTooltip]="infoMessage"></i>
+    }
 </div>
 <p-inputgroup>
-  <p-select
-    class="w-full"
-    appendTo="body"
-    [ngClass]="{'input-error' : property | showError: listaErrori : parent : index}"
-    [id]="property"
-    [options]="data"
-    [optionLabel]="'etichetta'"
-    [optionValue]="'id'"
-    [placeholder]="placeholder"
-    [disabled]="disabled"
-    [showClear]="showClear"
-    [filter]="filter"
-    [filterBy]="filterBy"
-    [virtualScroll]="virtualScroll"
-    [virtualScrollItemSize]="virtualScrollItemSize"
-    [editable]="editable"
-    [checkmark]="checkmark"
-    [loading]="loading"
-    (onBlur)="onBlur()"
-    [(ngModel)]="value"
-    (ngModelChange)="onSelect()">
-    @if(selectedItemTemplate) {
-      <ng-template #selectedItem let-item>
-        <ng-container *ngTemplateOutlet="selectedItemTemplate; context: { $implicit: item }"></ng-container>
-      </ng-template>
+    <p-select
+        class="w-full"
+        appendTo="body"
+        [ngClass]="{'input-error' : property | showError: listaErrori : parent : index}"
+        [id]="property"
+        [options]="data"
+        [optionLabel]="'etichetta'"
+        [optionValue]="'id'"
+        [placeholder]="placeholder"
+        [disabled]="disabled"
+        [showClear]="showClear"
+        [filter]="filter"
+        [filterBy]="filterBy"
+        [virtualScroll]="virtualScroll"
+        [virtualScrollItemSize]="virtualScrollItemSize"
+        [editable]="editable"
+        [checkmark]="checkmark"
+        [loading]="loading"
+        (onBlur)="onBlur()"
+        [(ngModel)]="value"
+        (ngModelChange)="onSelect()">
+        @if(selectedItemTemplate) {
+            <ng-template #selectedItem let-item>
+                <ng-container *ngTemplateOutlet="selectedItemTemplate; context: { $implicit: item }"></ng-container>
+            </ng-template>
+        }
+        <ng-template #item let-item>
+            @if(itemTemplate) {
+                <ng-container *ngTemplateOutlet="itemTemplate; context: { $implicit: item }"></ng-container>
+            } @else {
+                <div class="flex flex-col">
+                    <span>{{item.etichetta}}</span>
+                    <span *ngIf="item.informazioniAggiuntive" class="ml-2 text-xs text-gray-500 italic">
+                        {{item.informazioniAggiuntive}}
+                    </span>
+                </div>
+            }
+        </ng-template>
+    </p-select>
+    @if(showAdd) {
+        <p-inputgroup-addon>
+            <p-button
+                class="bottone-aggiungi"
+                icon="pi pi-plus"
+                severity="primary"
+                [pTooltip]="'Aggiungi'"
+                tooltipPosition="top"
+                (click)="add.emit()"/>
+        </p-inputgroup-addon>
     }
-    <ng-template #item let-item>
-      @if(itemTemplate) {
-        <ng-container *ngTemplateOutlet="itemTemplate; context: { $implicit: item }"></ng-container>
-      } @else {
-        <div class="flex flex-col">
-          <span>{{item.etichetta}}</span>
-          @if (item.informazioniAggiuntive) {
-            <span class="ml-2 text-xs text-gray-500 italic">
-              {{item.informazioniAggiuntive}}
-            </span>
-          }
-        </div>
-      }
-    </ng-template>
-  </p-select>
-  @if(showAdd) {
-    <p-inputgroup-addon>
-      <p-button
-        class="bottone-aggiungi"
-        icon="pi pi-plus"
-        severity="primary"
-        [pTooltip]="'Aggiungi'"
-        tooltipPosition="top"
-        (click)="add.emit()"/>
-      </p-inputgroup-addon>
-    }
-  </p-inputgroup>
+</p-inputgroup>
 
-  @if(property | showError: listaErrori : parent : index) {
+@if(property | showError: listaErrori : parent : index) {
     @for(error of property | errorMessages: listaErrori : parent : index; track error) {
-      <small id="help" class="message-error block">{{error}}</small>
+        <small id="help" class="message-error block">{{error}}</small>
     }
-  }
+}
