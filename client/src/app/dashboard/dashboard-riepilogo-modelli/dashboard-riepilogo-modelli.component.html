@@ -1,54 +1,52 @@
 <div class="p-4">
-  <p-card>
-    <ng-template pTemplate="header">
-      <h2 class="text-xl font-semibold text-gray-800 pt-6 header-title">Riepilogo Modelli</h2>
-    </ng-template>
-    <ng-template pTemplate="content">
-      <p-table
-        #dataTable
-        styleClass="p-datatable-sm"
-        responsiveLayout="scroll"
-        [value]="riepilogo"
-        rowGroupMode="rowspan"
-        groupRowsBy="mese_numero"
-        sortField="mese_numero">
+    <p-card>
         <ng-template pTemplate="header">
-          <tr>
-            <th>Mese</th>
-            <th>Modello</th>
-            <th>Tipo</th>
-            <th>Quantità</th>
-            <th>Prezzo Totale</th>
-          </tr>
+            <h2 class="text-xl font-semibold text-gray-800 pt-6 header-title">Riepilogo Modelli</h2>
         </ng-template>
-        <ng-template #body let-riepilogo let-rowIndex="rowIndex" let-rowgroup="rowgroup" let-rowspan="rowspan">
+        <ng-template pTemplate="content">
+            <p-table 
+                #dataTable
+                styleClass="p-datatable-sm"
+                responsiveLayout="scroll"
+                [value]="riepilogo"
+                rowGroupMode="rowspan"
+                groupRowsBy="mese_numero"
+                sortField="mese_numero">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Mese</th>
+                        <th>Modello</th>
+                        <th>Tipo</th>
+                        <th>Quantità</th>
+                        <th>Prezzo Totale</th>
+                    </tr>
+                </ng-template>
+                <ng-template #body let-riepilogo let-rowIndex="rowIndex" let-rowgroup="rowgroup" let-rowspan="rowspan">
                     <tr [ngClass]="{
                         'separatore-aumentato-raggruppamenti': !rowspan
                     }">
-            @if (rowgroup) {
-              <td [attr.rowspan]="rowspan" class="font-bold separatore-aumentato-raggruppamenti-singolo">{{ riepilogo.mese }}</td>
-            }
-            <td>{{ riepilogo.modello_nome }}</td>
-            <td><modello-tipo [tipo]="riepilogo.tipo" /></td>
-            <td>{{ riepilogo.quantita }}</td>
-            <td>{{ riepilogo.prezzo_totale | currency:'EUR' }}</td>
-          </tr>
+                        <td *ngIf="rowgroup" [attr.rowspan]="rowspan" class="font-bold separatore-aumentato-raggruppamenti-singolo">{{ riepilogo.mese }}</td>
+                        <td>{{ riepilogo.modello_nome }}</td>
+                        <td><modello-tipo [tipo]="riepilogo.tipo" /></td>
+                        <td>{{ riepilogo.quantita }}</td>
+                        <td>{{ riepilogo.prezzo_totale | currency:'EUR' }}</td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="5" class="text-center py-8">
+                            @if (loading) {
+                            <p-skeleton height="100px" width="100%" />
+                            } @else {
+                            <div class="flex flex-col items-center gap-2">
+                                <i class="pi pi-inbox text-4xl text-gray-400"></i>
+                                <p class="text-gray-500">Nessun riepilogo trovato</p>
+                            </div>
+                            }
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
         </ng-template>
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="5" class="text-center py-8">
-              @if (loading) {
-                <p-skeleton height="100px" width="100%" />
-              } @else {
-                <div class="flex flex-col items-center gap-2">
-                  <i class="pi pi-inbox text-4xl text-gray-400"></i>
-                  <p class="text-gray-500">Nessun riepilogo trovato</p>
-                </div>
-              }
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </ng-template>
-  </p-card>
+    </p-card>
 </div>

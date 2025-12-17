@@ -1,4 +1,4 @@
-
+import { CommonModule } from '@angular/common';
 import { Component, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -24,6 +24,7 @@ import { ClienteListingEliminaMessaggioPipe } from '../pipes/cliente-listing-eli
 @Component({
   selector: 'app-cliente-listing',
   imports: [
+    CommonModule,
     FormsModule,
     CardModule,
     ButtonModule,
@@ -34,7 +35,7 @@ import { ClienteListingEliminaMessaggioPipe } from '../pipes/cliente-listing-eli
     SkeletonModule,
     TooltipModule,
     ClienteListingEliminaMessaggioPipe
-],
+  ],
   templateUrl: './cliente-listing.component.html',
   providers: [
     ClienteService

@@ -1,4 +1,4 @@
-
+import { CommonModule } from '@angular/common';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -17,11 +17,12 @@ import { FormInputTextComponent } from 'src/shared/form-input-text/form-input-te
 @Component({
   selector: 'app-cliente-manager',
   imports: [
+    CommonModule,
     FormsModule,
     FormInputTextComponent,
     CardModule,
     ButtonModule
-],
+  ],
   providers: [
     ClienteService
   ],

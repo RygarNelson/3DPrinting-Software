@@ -1,4 +1,4 @@
-
+import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -21,6 +21,7 @@ import { FormInputTextareaComponent } from 'src/shared/form-input-textarea/form-
 @Component({
   selector: 'app-spesa-manager',
   imports: [
+    CommonModule,
     FormsModule,
     FormInputTextareaComponent,
     FormInputDatetimeComponent,
@@ -30,7 +31,7 @@ import { FormInputTextareaComponent } from 'src/shared/form-input-textarea/form-
     ButtonModule,
     SpesaTipoLookupDirective,
     SpesaUnitaMisuraLookupDirective
-],
+  ],
   providers: [
     SpesaService,
   ],

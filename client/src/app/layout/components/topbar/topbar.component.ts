@@ -1,5 +1,5 @@
 import { LayoutService } from '@/layout/service/layout.service';
-
+import { CommonModule } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -15,7 +15,7 @@ import { AppBreadcrumb } from '../breadcrumb/breadcrumb.component';
 @Component({
     selector: '[app-topbar]',
     standalone: true,
-    imports: [RouterModule, StyleClassModule, AppBreadcrumb, InputTextModule, ButtonModule, IconFieldModule, InputIconModule],
+    imports: [RouterModule, CommonModule, StyleClassModule, AppBreadcrumb, InputTextModule, ButtonModule, IconFieldModule, InputIconModule],
     template: `<div class="layout-topbar">
         <div class="topbar-start">
             <button #menubutton type="button" class="topbar-menubutton p-link p-trigger" (click)="onMenuButtonClick()">
