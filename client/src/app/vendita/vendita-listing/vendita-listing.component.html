@@ -45,7 +45,8 @@
         [expandedRowKeys]="expandedRows"
         [(selection)]="selectedVendite"
         [lazy]="true"
-        (onLazyLoad)="loadData($event)">
+        (onLazyLoad)="loadData($event)"
+        [loading]="loading">
         <ng-template pTemplate="caption">
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mt-4">
             <!-- Search Section -->
@@ -63,26 +64,28 @@
             @if (!applicationState.isMobile() && !applicationState.isTablet()) {
               <div class="flex items-center gap-2 justify-end sm:justify-start">
                 <p-menu #menu appendTo="body" [model]="multipleAzioni" [popup]="true"></p-menu>
-                @if (downloadExcelLoading) {
-                  <p-button icon="pi pi-spinner pi-spin" label="Esporta Excel" severity="success" [disabled]="true" [size]="'small'" />
-                } @else {
-                  <p-button icon="pi pi-file-excel" label="Esporta Excel" severity="success" [loading]="loading" (click)="exportToExcel()" pTooltip="Esporta in Excel" tooltipPosition="top"> </p-button>
-                }
-                <p-button [label]="'Azioni'" [icon]="menu.visible ? 'pi pi-chevron-up' : 'pi pi-chevron-down'" [disabled]="selectedVendite == null || (selectedVendite != null && selectedVendite.length == 0)" (onClick)="menu.toggle($event)" />
-                <p-button icon="pi pi-plus" label="Nuova Vendita" severity="success" (click)="addNewVendita()" pTooltip="Aggiungi nuova vendita" tooltipPosition="top"> </p-button>
+                <p-button icon="pi pi-file-excel" label="Esporta Excel" severity="success" [loading]="loading" (click)="exportToExcel()" pTooltip="Esporta in Excel" tooltipPosition="top"> </p-button>
+                <p-button
+                  [label]="'Azioni'"
+                  [loading]="loading"
+                  [icon]="menu.visible ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
+                  [disabled]="selectedVendite == null || (selectedVendite != null && selectedVendite.length == 0)"
+                  (onClick)="menu.toggle($event)" />
+                <p-button icon="pi pi-plus" [loading]="loading" label="Nuova Vendita" severity="success" (click)="addNewVendita()" pTooltip="Aggiungi nuova vendita" tooltipPosition="top"> </p-button>
                 <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()" pTooltip="Aggiorna tabella" tooltipPosition="top" />
               </div>
             } @else {
               <div class="grid grid-cols-1 items-center gap-2 justify-end sm:justify-start">
-                @if (downloadExcelLoading) {
-                  <p-button icon="pi pi-spinner pi-spin" severity="success" [disabled]="true" [size]="'small'" />
-                } @else {
-                  <p-button icon="pi pi-file-excel" severity="success" [loading]="loading" (click)="exportToExcel()" pTooltip="Esporta in Excel" tooltipPosition="top"> </p-button>
-                }
                 <p-menu #menu appendTo="body" [model]="multipleAzioni" [popup]="true"></p-menu>
-                <p-button [label]="'Azioni'" [icon]="menu.visible ? 'pi pi-chevron-up' : 'pi pi-chevron-down'" [disabled]="selectedVendite == null || (selectedVendite != null && selectedVendite.length == 0)" (onClick)="menu.toggle($event)" />
+                <p-button icon="pi pi-file-excel" severity="success" [loading]="loading" (click)="exportToExcel()" pTooltip="Esporta in Excel" tooltipPosition="top"> </p-button>
+                <p-button
+                  [label]="'Azioni'"
+                  [loading]="loading"
+                  [icon]="menu.visible ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
+                  [disabled]="selectedVendite == null || (selectedVendite != null && selectedVendite.length == 0)"
+                  (onClick)="menu.toggle($event)" />
                 <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()" pTooltip="Aggiorna tabella" tooltipPosition="top"> </p-button>
-                <p-button icon="pi pi-plus" label="Nuova Vendita" severity="success" (click)="addNewVendita()" pTooltip="Aggiungi nuova vendita" tooltipPosition="top"> </p-button>
+                <p-button icon="pi pi-plus" label="Nuova Vendita" severity="success" [loading]="loading" (click)="addNewVendita()" pTooltip="Aggiungi nuova vendita" tooltipPosition="top"> </p-button>
               </div>
             }
           </div>
@@ -259,28 +262,20 @@
                   </div>
 
                   <div class="flex justify-end gap-2 mt-2">
-                    @if (loading) {
-                      <p-button icon="pi pi-spinner pi-spin" severity="info" size="small" [disabled]="true"> </p-button>
-                      <p-button icon="pi pi-spinner pi-spin" severity="danger" size="small" [disabled]="true"> </p-button>
-                    } @else {
-                      <p-button icon="pi pi-link" severity="success" size="small" [disabled]="!vendita.link_tracciamento" (click)="copiaLinkTracciamento(vendita)" pTooltip="Copia link tracciamento" tooltipPosition="top"> </p-button>
-                      @if (downloadEtichettaSpedizioneLoading) {
-                        <p-button icon="pi pi-spinner pi-spin" severity="warn" size="small" [disabled]="true"> </p-button>
-                      } @else {
-                        <p-button
-                          icon="pi pi-file-pdf"
-                          severity="warn"
-                          size="small"
-                          (click)="downloadEtichettaSpedizione(vendita)"
-                          pTooltip="Etichetta spedizione"
-                          tooltipPosition="top"
-                          [disabled]="!vendita.etichetta_spedizione || (vendita.etichetta_spedizione && vendita.etichetta_spedizione.trim() === '')">
-                        </p-button>
-                      }
-                      <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(vendita)" pTooltip="Visualizza log di audit" tooltipPosition="top"> </p-button>
-                      <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editVendita(vendita)" pTooltip="Modifica vendita" tooltipPosition="top"> </p-button>
-                      <p-button icon="pi pi-trash" severity="danger" size="small" (click)="confirmDelete($event, vendita)" pTooltip="Elimina vendita" tooltipPosition="top"> </p-button>
-                    }
+                    <p-button icon="pi pi-link" severity="success" size="small" [disabled]="!vendita.link_tracciamento" (click)="copiaLinkTracciamento(vendita)" pTooltip="Copia link tracciamento" tooltipPosition="top" [loading]="loading"> </p-button>
+                    <p-button
+                      icon="pi pi-file-pdf"
+                      severity="warn"
+                      size="small"
+                      (click)="downloadEtichettaSpedizione(vendita)"
+                      pTooltip="Etichetta spedizione"
+                      tooltipPosition="top"
+                      [disabled]="!vendita.etichetta_spedizione || (vendita.etichetta_spedizione && vendita.etichetta_spedizione.trim() === '')"
+                      [loading]="loading">
+                    </p-button>
+                    <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(vendita)" pTooltip="Visualizza log di audit" tooltipPosition="top" [loading]="loading"> </p-button>
+                    <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editVendita(vendita)" pTooltip="Modifica vendita" tooltipPosition="top" [loading]="loading"> </p-button>
+                    <p-button icon="pi pi-trash" severity="danger" size="small" (click)="confirmDelete($event, vendita)" pTooltip="Elimina vendita" tooltipPosition="top" [loading]="loading"> </p-button>
                   </div>
                 </div>
               </td>
@@ -319,28 +314,20 @@
               </td>
               <td class="text-center">
                 <div class="flex justify-center gap-2">
-                  @if (loading) {
-                    <p-button icon="pi pi-spinner pi-spin" severity="info" size="small" [disabled]="true"> </p-button>
-                    <p-button icon="pi pi-spinner pi-spin" severity="danger" size="small" [disabled]="true"> </p-button>
-                  } @else {
-                    <p-button icon="pi pi-link" severity="success" size="small" [disabled]="!vendita.link_tracciamento" (click)="copiaLinkTracciamento(vendita)" pTooltip="Copia link tracciamento" tooltipPosition="top"> </p-button>
-                    @if (downloadEtichettaSpedizioneLoading) {
-                      <p-button icon="pi pi-spinner pi-spin" severity="warn" size="small" [disabled]="true"> </p-button>
-                    } @else {
-                      <p-button
-                        icon="pi pi-file-pdf"
-                        severity="warn"
-                        size="small"
-                        (click)="downloadEtichettaSpedizione(vendita)"
-                        pTooltip="Etichetta spedizione"
-                        tooltipPosition="top"
-                        [disabled]="!vendita.etichetta_spedizione || (vendita.etichetta_spedizione && vendita.etichetta_spedizione.trim() === '')">
-                      </p-button>
-                    }
-                    <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(vendita)" pTooltip="Visualizza log di audit" tooltipPosition="top"> </p-button>
-                    <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editVendita(vendita)" pTooltip="Modifica vendita" tooltipPosition="top"> </p-button>
-                    <p-button icon="pi pi-trash" severity="danger" size="small" (click)="confirmDelete($event, vendita)" pTooltip="Elimina vendita" tooltipPosition="top"> </p-button>
-                  }
+                  <p-button icon="pi pi-link" severity="success" size="small" [disabled]="!vendita.link_tracciamento" (click)="copiaLinkTracciamento(vendita)" pTooltip="Copia link tracciamento" tooltipPosition="top" [loading]="loading"> </p-button>
+                  <p-button
+                    icon="pi pi-file-pdf"
+                    severity="warn"
+                    size="small"
+                    (click)="downloadEtichettaSpedizione(vendita)"
+                    pTooltip="Etichetta spedizione"
+                    tooltipPosition="top"
+                    [disabled]="!vendita.etichetta_spedizione || (vendita.etichetta_spedizione && vendita.etichetta_spedizione.trim() === '')"
+                    [loading]="loading">
+                  </p-button>
+                  <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(vendita)" pTooltip="Visualizza log di audit" tooltipPosition="top" [loading]="loading"> </p-button>
+                  <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editVendita(vendita)" pTooltip="Modifica vendita" tooltipPosition="top" [loading]="loading"> </p-button>
+                  <p-button icon="pi pi-trash" severity="danger" size="small" (click)="confirmDelete($event, vendita)" pTooltip="Elimina vendita" tooltipPosition="top" [loading]="loading"> </p-button>
                 </div>
               </td>
             }
@@ -525,14 +512,10 @@
         <ng-template pTemplate="emptymessage">
           <tr>
             <td colspan="11" class="text-center py-8">
-              @if (loading) {
-                <p-skeleton height="100px" width="100%" />
-              } @else {
-                <div class="flex flex-col items-center gap-2">
-                  <i class="pi pi-inbox text-4xl text-gray-400"></i>
-                  <p class="text-gray-500">Nessuna vendita trovata</p>
-                </div>
-              }
+              <div class="flex flex-col items-center gap-2">
+                <i class="pi pi-inbox text-4xl text-gray-400"></i>
+                <p class="text-gray-500">Nessuna vendita trovata</p>
+              </div>
             </td>
           </tr>
         </ng-template>
