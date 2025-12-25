@@ -1,63 +1,52 @@
 <div class="p-4">
   <p-card>
     <ng-template pTemplate="header">
-      <div class="flex items-center gap-2" [ngClass]="{
-        'flex-col': applicationState.isMobile(),
-        'w-full': applicationState.isMobile()
+      <div
+        class="flex items-center gap-2"
+        [ngClass]="{
+          'flex-col w-full': applicationState.isMobile()
         }">
         <h2 class="text-xl font-semibold text-gray-800 pt-6 header-title">Gestione Vendite</h2>
-        <div class="header-title" [ngClass]="{
-          'margin-left-auto': !applicationState.isMobile(),
-          'flex': applicationState.isMobile(),
-          'flex-col': applicationState.isMobile(),
-          'w-full': applicationState.isMobile()
-        }
-          ">
+        <div
+          class="header-title"
+          [ngClass]="{
+            'margin-left-auto': !applicationState.isMobile(),
+            'flex flex-col w-full': applicationState.isMobile()
+          }">
           @if (!applicationState.isMobile()) {
             <h5 class="text-lg font-semibold">
-              Ultimi 3 mesi /
-              Saldo: {{ ultimiTreMesi | currency:'EUR' }} <i class="pi pi-info-circle info-icon" tooltipPosition="bottom"
-                [pTooltip]="'Il saldo viene calcolato come la somma delle vendite meno le spese, senza considerare le vendite in sospeso'"></i>
-              -
-              In Sospeso: {{ ultimiTreMesiSospese | currency:'EUR' }} <i class="pi pi-info-circle info-icon"
-                tooltipPosition="bottom"
-                [pTooltip]="'Il totale delle vendite in sospeso, senza considerare le spese'"></i>
+              Ultimi 3 mesi / Saldo: {{ ultimiTreMesi | currency: 'EUR' }}
+              <i class="pi pi-info-circle info-icon" tooltipPosition="bottom" [pTooltip]="'Il saldo viene calcolato come la somma delle vendite meno le spese, senza considerare le vendite in sospeso'"></i> - In Sospeso:
+              {{ ultimiTreMesiSospese | currency: 'EUR' }} <i class="pi pi-info-circle info-icon" tooltipPosition="bottom" [pTooltip]="'Il totale delle vendite in sospeso, senza considerare le spese'"></i>
             </h5>
+          } @else {
+            <h5 class="text-lg font-semibold">Ultimi 3 mesi</h5>
+            <h5 class="text-lg font-semibold">Saldo: {{ ultimiTreMesi | currency: 'EUR' }}</h5>
+            <h5 class="text-lg font-semibold">In Sospeso: {{ ultimiTreMesiSospese | currency: 'EUR' }}</h5>
           }
-          @else {
-            <h5 class="text-lg font-semibold">
-              Ultimi 3 mesi
-            </h5>
-            <h5 class="text-lg font-semibold">
-              Saldo: {{ ultimiTreMesi | currency:'EUR' }}
-            </h5>
-            <h5 class="text-lg font-semibold">
-              In Sospeso: {{ ultimiTreMesiSospese | currency:'EUR' }}
-            </h5>
-          }
-          
         </div>
       </div>
     </ng-template>
 
     <ng-template pTemplate="content">
       <!-- Table -->
-      <p-table #dataTable currentPageReportTemplate="Mostrando da {first} a {last} di {totalRecords} vendite"
-        class="p-datatable-sm" [value]="vendite" [paginator]="true" [rows]="filtri.limit"
-        [totalRecords]="totalRecords" [first]="filtri.offset" [showCurrentPageReport]="true"
-        [rowsPerPageOptions]="[10, 20, 50, 100]" dataKey="id"
-        [expandedRowKeys]="expandedRows" [(selection)]="selectedVendite" [lazy]="true" (onLazyLoad)="loadData($event)">
-
+      <p-table
+        #dataTable
+        currentPageReportTemplate="Mostrando da {first} a {last} di {totalRecords} vendite"
+        class="p-datatable-sm"
+        [value]="vendite"
+        [paginator]="true"
+        [rows]="filtri.limit"
+        [totalRecords]="totalRecords"
+        [first]="filtri.offset"
+        [showCurrentPageReport]="true"
+        [rowsPerPageOptions]="[10, 20, 50, 100]"
+        dataKey="id"
+        [expandedRowKeys]="expandedRows"
+        [(selection)]="selectedVendite"
+        [lazy]="true"
+        (onLazyLoad)="loadData($event)">
         <ng-template pTemplate="caption">
-          <!-- <p-accordion>
-              <p-accordion-panel value="0">
-                <p-accordion-header>
-                  Filtri
-                </p-accordion-header>
-                <p-accordion-content>
-                </p-accordion-content>
-              </p-accordion-panel>
-            </p-accordion> -->
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mt-4">
             <!-- Search Section -->
             <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -65,57 +54,37 @@
                 <p-inputicon>
                   <i class="pi pi-search"></i>
                 </p-inputicon>
-                <input #searchInput pInputText type="text" placeholder="Cerca vendite..." class="w-full"
-                  [(ngModel)]="filtri.search" (ngModelChange)="dataTable.filterGlobal($event, 'contains')">
+                <input #searchInput pInputText type="text" placeholder="Cerca vendite..." class="w-full" [(ngModel)]="filtri.search" (ngModelChange)="dataTable.filterGlobal($event, 'contains')" />
               </p-iconfield>
-              <button pButton label="Pulisci" class="p-button-outlined w-full sm:w-auto" icon="pi pi-filter-slash"
-                (click)="dataTable.clear(); pulisciFiltri();"></button>
+              <button pButton label="Pulisci" class="p-button-outlined w-full sm:w-auto" icon="pi pi-filter-slash" (click)="dataTable.clear(); pulisciFiltri()"></button>
             </div>
 
             <!-- Action Buttons Section -->
-             @if (!applicationState.isMobile() && !applicationState.isTablet()) {
+            @if (!applicationState.isMobile() && !applicationState.isTablet()) {
               <div class="flex items-center gap-2 justify-end sm:justify-start">
                 <p-menu #menu appendTo="body" [model]="multipleAzioni" [popup]="true"></p-menu>
                 @if (downloadExcelLoading) {
                   <p-button icon="pi pi-spinner pi-spin" label="Esporta Excel" severity="success" [disabled]="true" [size]="'small'" />
+                } @else {
+                  <p-button icon="pi pi-file-excel" label="Esporta Excel" severity="success" [loading]="loading" (click)="exportToExcel()" pTooltip="Esporta in Excel" tooltipPosition="top"> </p-button>
                 }
-                @else {
-                  <p-button icon="pi pi-file-excel" label="Esporta Excel" severity="success" [loading]="loading" (click)="exportToExcel()"
-                    pTooltip="Esporta in Excel" tooltipPosition="top">
-                  </p-button>
-                }
-                <p-button [label]="'Azioni'" [icon]="menu.visible ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
-                  [disabled]="selectedVendite == null || (selectedVendite != null && selectedVendite.length == 0)"
-                  (onClick)="menu.toggle($event)" />
-                <p-button icon="pi pi-plus" label="Nuova Vendita" severity="success" (click)="addNewVendita()"
-                  pTooltip="Aggiungi nuova vendita" tooltipPosition="top">
-                </p-button>
-                <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()"
-                  pTooltip="Aggiorna tabella" tooltipPosition="top" />
+                <p-button [label]="'Azioni'" [icon]="menu.visible ? 'pi pi-chevron-up' : 'pi pi-chevron-down'" [disabled]="selectedVendite == null || (selectedVendite != null && selectedVendite.length == 0)" (onClick)="menu.toggle($event)" />
+                <p-button icon="pi pi-plus" label="Nuova Vendita" severity="success" (click)="addNewVendita()" pTooltip="Aggiungi nuova vendita" tooltipPosition="top"> </p-button>
+                <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()" pTooltip="Aggiorna tabella" tooltipPosition="top" />
               </div>
-             }
-             @else {
+            } @else {
               <div class="grid grid-cols-1 items-center gap-2 justify-end sm:justify-start">
                 @if (downloadExcelLoading) {
                   <p-button icon="pi pi-spinner pi-spin" severity="success" [disabled]="true" [size]="'small'" />
-                }
-                @else {
-                  <p-button icon="pi pi-file-excel" severity="success" [loading]="loading" (click)="exportToExcel()"
-                    pTooltip="Esporta in Excel" tooltipPosition="top">
-                  </p-button>
+                } @else {
+                  <p-button icon="pi pi-file-excel" severity="success" [loading]="loading" (click)="exportToExcel()" pTooltip="Esporta in Excel" tooltipPosition="top"> </p-button>
                 }
                 <p-menu #menu appendTo="body" [model]="multipleAzioni" [popup]="true"></p-menu>
-                <p-button [label]="'Azioni'" [icon]="menu.visible ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
-                  [disabled]="selectedVendite == null || (selectedVendite != null && selectedVendite.length == 0)"
-                  (onClick)="menu.toggle($event)" />
-                <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()"
-                  pTooltip="Aggiorna tabella" tooltipPosition="top">
-                </p-button>
-                <p-button icon="pi pi-plus" label="Nuova Vendita" severity="success" (click)="addNewVendita()"
-                  pTooltip="Aggiungi nuova vendita" tooltipPosition="top">
-                </p-button>
+                <p-button [label]="'Azioni'" [icon]="menu.visible ? 'pi pi-chevron-up' : 'pi pi-chevron-down'" [disabled]="selectedVendite == null || (selectedVendite != null && selectedVendite.length == 0)" (onClick)="menu.toggle($event)" />
+                <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()" pTooltip="Aggiorna tabella" tooltipPosition="top"> </p-button>
+                <p-button icon="pi pi-plus" label="Nuova Vendita" severity="success" (click)="addNewVendita()" pTooltip="Aggiungi nuova vendita" tooltipPosition="top"> </p-button>
               </div>
-             }
+            }
           </div>
         </ng-template>
 
@@ -125,319 +94,255 @@
             <th style="width: 4rem"><p-tableHeaderCheckbox /></th>
             @if (applicationState.isMobile()) {
               <th></th>
-            }
-            @else {
-            <th></th>
-            <th pSortableColumn="id" style="width: 150px;">
-              Numero Vendita
-              <p-sortIcon field="id" />
-              <p-columnFilter field="id" [type]="'numeric'" display="menu" [showMatchModes]="true"
-                [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
-            </th>
-            <th pSortableColumn="data_vendita" style="width: 160px;">
-              Data Vendita
-              <p-sortIcon field="data_vendita" />
-              <p-columnFilter field="data_vendita" [type]="'date'" display="menu" [showMatchModes]="true"
-                [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
-            </th>
-            <th pSortableColumn="data_scadenza" style="width: 160px;">
-              Scadenza
-              <p-sortIcon field="data_scadenza" />
-              <p-columnFilter field="data_scadenza" [type]="'date'" display="menu" [showMatchModes]="true"
-                [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
-            </th>
-            <th pSortableColumn="data_scadenza_spedizione" style="width: 250px;">
-              Scadenza Spedizione
-              <p-sortIcon field="data_scadenza_spedizione" />
-              <p-columnFilter field="data_scadenza_spedizione" [type]="'date'" display="menu" [showMatchModes]="true"
-                [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
-            </th>
-            <th>
-              Cliente
-              <p-columnFilter field="cliente_id" matchMode="in" display="menu" [showMatchModes]="false"
-                [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false">
-                <ng-template #filter let-value let-filter="filterCallback">
-                  <form-input-select cliente-lookup property="cliente_id" label="Cliente"
-                    [(ngModel)]="filtri.cliente_id" (ngModelChange)="filter($event)" />
-                </ng-template>
-              </p-columnFilter>
-            </th>
-            <th>
-              Conto Bancario
-              <p-columnFilter field="conto_bancario_id" matchMode="in" display="menu" [showMatchModes]="false"
-                [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false">
-                <ng-template #filter let-value let-filter="filterCallback">
-                  <form-input-select conto-bancario-lookup property="conto_bancario_id" label="Conto Bancario"
-                    [(ngModel)]="filtri.conto_bancario_id" (ngModelChange)="filter($event)" />
-                </ng-template>
-              </p-columnFilter>
-            </th>
-            <th style="min-width: 200px;">
-              Dettagli
-            </th>
-            <th pSortableColumn="totale_vendita" style="width: 200px;">
-              Totale Vendita
-              <p-sortIcon field="totale_vendita" />
-              <p-columnFilter field="totale_vendita" [type]="'numeric'" currency="EUR" display="menu"
-                minFractionDigits="2" [showMatchModes]="true" [showOperator]="false" [showAddButton]="false"
-                [showApplyButton]="false" showClearButton="false" />
-            </th>
-            <th style="width: 270px;">
-              Stato
-              <p-columnFilter display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"
-                [showApplyButton]="false" showClearButton="false">
-                <ng-template #filter let-value let-filter="filterCallback">
-                  <div class="grid grid-cols-1 gap-2 w-full" style="width: 300px">
-                    <form-input-select vendita-stato-spedizione-lookup property="stato_spedizione"
-                      label="Stato Spedizione" [filter]="false" [(ngModel)]="filtri.stato_spedizione"
-                      (ngModelChange)="filter($event)">
-                      <ng-template #selectedItem let-item>
-                        <vendita-stato class="w-full" [stato_spedizione]="filtri.stato_spedizione"
-                          [isInSelect]="true" />
-                      </ng-template>
-                      <ng-template #item let-item>
-                        <vendita-stato class="w-full" [stato_spedizione]="item.id" [isInSelect]="true" />
-                      </ng-template>
-                    </form-input-select>
-                    <form-input-select vendita-dettaglio-stato-stampa-lookup property="stato_stampa"
-                      label="Stato Stampa" [filter]="false" [(ngModel)]="filtri.stato_stampa"
-                      (ngModelChange)="filter($event)">
-                      <ng-template #selectedItem let-item>
-                        <vendita-dettaglio-stato class="w-full" [stato_stampa]="filtri.stato_stampa"
-                          [isInSelect]="true" />
-                      </ng-template>
-                      <ng-template #item let-item>
-                        <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id" [isInSelect]="true" />
-                      </ng-template>
-                    </form-input-select>
-                    <form-input-radiobutton [label]="'In Scadenza'" [property]="'in_scadenza'" [name]="'scadenza'"
-                      [radioButtonValue]="true" [(ngModel)]="filtri.isInScadenza"
-                      (ngModelChange)="filterRadioButton('in_scadenza')" />
-                    <form-input-radiobutton [label]="'Scaduto'" [property]="'scaduto'" [name]="'scadenza'"
-                      [radioButtonValue]="true" [(ngModel)]="filtri.isScaduto"
-                      (ngModelChange)="filterRadioButton('scaduto')" />
-                  </div>
-                </ng-template>
-              </p-columnFilter>
-            </th>
-            <th style="width: 120px;"></th>
+            } @else {
+              <th></th>
+              <th pSortableColumn="id" style="width: 150px">
+                Numero
+                <p-sortIcon field="id" />
+                <p-columnFilter field="id" [type]="'numeric'" display="menu" [showMatchModes]="true" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
+              </th>
+              <th pSortableColumn="data_vendita" style="width: 160px">
+                Data
+                <p-sortIcon field="data_vendita" />
+                <p-columnFilter field="data_vendita" [type]="'date'" display="menu" [showMatchModes]="true" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
+              </th>
+              <th pSortableColumn="data_scadenza" style="width: 160px">
+                Scadenza
+                <p-sortIcon field="data_scadenza" />
+                <p-columnFilter field="data_scadenza" [type]="'date'" display="menu" [showMatchModes]="true" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
+              </th>
+              <th pSortableColumn="data_scadenza_spedizione" style="width: 250px">
+                Scadenza Spedizione
+                <p-sortIcon field="data_scadenza_spedizione" />
+                <p-columnFilter field="data_scadenza_spedizione" [type]="'date'" display="menu" [showMatchModes]="true" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
+              </th>
+              <th>
+                Cliente
+                <p-columnFilter field="cliente_id" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false">
+                  <ng-template #filter let-value let-filter="filterCallback">
+                    <form-input-select cliente-lookup property="cliente_id" label="Cliente" [(ngModel)]="filtri.cliente_id" (ngModelChange)="filter($event)" />
+                  </ng-template>
+                </p-columnFilter>
+              </th>
+              <th>
+                Conto Bancario
+                <p-columnFilter field="conto_bancario_id" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false">
+                  <ng-template #filter let-value let-filter="filterCallback">
+                    <form-input-select conto-bancario-lookup property="conto_bancario_id" label="Conto Bancario" [(ngModel)]="filtri.conto_bancario_id" (ngModelChange)="filter($event)" />
+                  </ng-template>
+                </p-columnFilter>
+              </th>
+              <th style="min-width: 200px">Dettagli</th>
+              <th pSortableColumn="totale_vendita" style="width: 200px">
+                Totale
+                <p-sortIcon field="totale_vendita" />
+                <p-columnFilter field="totale_vendita" [type]="'numeric'" currency="EUR" display="menu" minFractionDigits="2" [showMatchModes]="true" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
+              </th>
+              <th style="width: 270px">
+                Stato
+                <p-columnFilter display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false">
+                  <ng-template #filter let-value let-filter="filterCallback">
+                    <div class="grid grid-cols-1 gap-2 w-full" style="width: 300px">
+                      <form-input-select vendita-stato-spedizione-lookup property="stato_spedizione" label="Stato Spedizione" [filter]="false" [(ngModel)]="filtri.stato_spedizione" (ngModelChange)="filter($event)">
+                        <ng-template #selectedItem let-item>
+                          <vendita-stato class="w-full" [stato_spedizione]="filtri.stato_spedizione" [isInSelect]="true" />
+                        </ng-template>
+                        <ng-template #item let-item>
+                          <vendita-stato class="w-full" [stato_spedizione]="item.id" [isInSelect]="true" />
+                        </ng-template>
+                      </form-input-select>
+                      <form-input-select vendita-dettaglio-stato-stampa-lookup property="stato_stampa" label="Stato Stampa" [filter]="false" [(ngModel)]="filtri.stato_stampa" (ngModelChange)="filter($event)">
+                        <ng-template #selectedItem let-item>
+                          <vendita-dettaglio-stato class="w-full" [stato_stampa]="filtri.stato_stampa" [isInSelect]="true" />
+                        </ng-template>
+                        <ng-template #item let-item>
+                          <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id" [isInSelect]="true" />
+                        </ng-template>
+                      </form-input-select>
+                      <form-input-radiobutton [label]="'In Scadenza'" [property]="'in_scadenza'" [name]="'scadenza'" [radioButtonValue]="true" [(ngModel)]="filtri.isInScadenza" (ngModelChange)="filterRadioButton('in_scadenza')" />
+                      <form-input-radiobutton [label]="'Scaduto'" [property]="'scaduto'" [name]="'scadenza'" [radioButtonValue]="true" [(ngModel)]="filtri.isScaduto" (ngModelChange)="filterRadioButton('scaduto')" />
+                    </div>
+                  </ng-template>
+                </p-columnFilter>
+              </th>
+              <th style="width: 120px"></th>
             }
           </tr>
         </ng-template>
 
         <!-- Data Rows -->
         <ng-template #body let-vendita let-expanded="expanded">
-          <tr [ngClass]="{
-            'in-scadenza': vendita.isInScadenza,
-            'scaduto': vendita.isScaduto,
-            'highlight-row': vendita.id == venditaHighlight
-          }">
+          <tr
+            [ngClass]="{
+              'in-scadenza': vendita.isInScadenza,
+              scaduto: vendita.isScaduto,
+              'highlight-row': vendita.id == venditaHighlight
+            }">
             <td>
               <div class="flex flex-col items-center">
                 <p-tableCheckbox [value]="vendita" />
                 @if (applicationState.isMobile()) {
-                  <p-button type="button" pRipple [pRowToggler]="vendita" [text]="true" [rounded]="true" [plain]="true"
-                      [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
+                  <p-button type="button" pRipple [pRowToggler]="vendita" [text]="true" [rounded]="true" [plain]="true" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
                 }
               </div>
             </td>
             @if (!applicationState.isMobile()) {
               <td>
-                <p-button type="button" pRipple [pRowToggler]="vendita" [text]="true" [rounded]="true" [plain]="true"
-                  [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
+                <p-button type="button" pRipple [pRowToggler]="vendita" [text]="true" [rounded]="true" [plain]="true" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
               </td>
             }
             @if (applicationState.isMobile()) {
-            <td>
-              <div class="flex flex-col gap-2">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2">
-                    <span class="font-semibold">#{{ vendita.id }}</span>
+              <td>
+                <div class="flex flex-col gap-2">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="font-semibold">#{{ vendita.id }}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      @if (vendita.isInScadenza) {
+                        <span class="text-xs px-2 py-1 rounded bg-amber-100 text-amber-700">In scadenza</span>
+                      }
+                      @if (vendita.isScaduto) {
+                        <span class="text-xs px-2 py-1 rounded bg-red-100 text-red-700">Scaduto</span>
+                      }
+                    </div>
                   </div>
-                  <div class="flex items-center gap-2">
-                    @if (vendita.isInScadenza) {
-                    <span class="text-xs px-2 py-1 rounded bg-amber-100 text-amber-700">In scadenza</span>
-                    }
-                    @if (vendita.isScaduto) {
-                    <span class="text-xs px-2 py-1 rounded bg-red-100 text-red-700">Scaduto</span>
-                    }
+
+                  <div class="text-sm text-gray-700 grid grid-cols-2 gap-y-1 gap-x-3">
+                    <div class="text-gray-500">Vendita</div>
+                    <div class="font-medium">{{ vendita.data_vendita | date: 'dd/MM/yyyy' }}</div>
+                    <div class="text-gray-500">Scadenza</div>
+                    <div>{{ vendita.data_scadenza | date: 'dd/MM/yyyy' }}</div>
+                    <div class="text-gray-500">Spedizione</div>
+                    <div>{{ vendita.data_scadenza_spedizione | date: 'dd/MM/yyyy' }}</div>
+                    <div class="text-gray-500">Cliente</div>
+                    <div>{{ vendita.cliente?.etichetta }}</div>
+                    <div class="text-gray-500">Conto</div>
+                    <div>{{ vendita.conto_bancario?.iban }}</div>
                   </div>
-                </div>
 
-                <div class="text-sm text-gray-700 grid grid-cols-2 gap-y-1 gap-x-3">
-                  <div class="text-gray-500">Vendita</div>
-                  <div class="font-medium">{{ vendita.data_vendita | date:'dd/MM/yyyy' }}</div>
-                  <div class="text-gray-500">Scadenza</div>
-                  <div>{{ vendita.data_scadenza | date:'dd/MM/yyyy' }}</div>
-                  <div class="text-gray-500">Spedizione</div>
-                  <div>{{ vendita.data_scadenza_spedizione | date:'dd/MM/yyyy' }}</div>
-                  <div class="text-gray-500">Cliente</div>
-                  <div>{{ vendita.cliente?.etichetta }}</div>
-                  <div class="text-gray-500">Conto</div>
-                  <div>{{ vendita.conto_bancario?.iban }}</div>
-                </div>
-
-                <div class="mt-2">
-                  @if (vendita.dettagli && vendita.dettagli.length > 0) {
-                  <ul class="list-disc pl-5 text-sm text-gray-700">
-                    @for (dettaglio of vendita.dettagli; track dettaglio.id) {
-                    @if (dettaglio.modello) {
-                    <li>
-                      {{ dettaglio.modello?.nome }} {{ dettaglio.stampa_is_pezzo_singolo ? '(Pezzo singolo)' : '' }}
-                      {{ dettaglio.stampa_is_parziale ? '(Parziale)' : '' }}
-                    </li>
+                  <div class="mt-2">
+                    @if (vendita.dettagli && vendita.dettagli.length > 0) {
+                      <ul class="list-disc pl-5 text-sm text-gray-700">
+                        @for (dettaglio of vendita.dettagli; track dettaglio.id) {
+                          @if (dettaglio.modello) {
+                            <li>
+                              {{ dettaglio.modello?.nome }} {{ dettaglio.stampa_is_pezzo_singolo ? '(Pezzo singolo)' : '' }}
+                              {{ dettaglio.stampa_is_parziale ? '(Parziale)' : '' }}
+                            </li>
+                          } @else {
+                            <li>
+                              {{ dettaglio.descrizione }} {{ dettaglio.stampa_is_pezzo_singolo ? '(Pezzo singolo)' : '' }}
+                              {{ dettaglio.stampa_is_parziale ? '(Parziale)' : '' }}
+                            </li>
+                          }
+                        }
+                      </ul>
                     } @else {
-                    <li>
-                      {{ dettaglio.descrizione }} {{ dettaglio.stampa_is_pezzo_singolo ? '(Pezzo singolo)' : '' }}
-                      {{ dettaglio.stampa_is_parziale ? '(Parziale)' : '' }}
-                    </li>
+                      <p class="text-sm text-gray-500">Nessun dettaglio</p>
                     }
+                  </div>
+
+                  <div class="flex items-center justify-between mt-2">
+                    <div class="text-sm font-semibold">{{ vendita.totale_vendita | currency: 'EUR' }}</div>
+                  </div>
+
+                  <div class="mt-2 w-full">
+                    <form-input-select vendita-stato-spedizione-lookup property="stato_spedizione" [filter]="false" [showClear]="false" [(ngModel)]="vendita.stato_spedizione" (ngModelChange)="modificaStatoVendita(vendita)">
+                      <ng-template #selectedItem let-item>
+                        <vendita-stato class="w-full" [stato_spedizione]="vendita.stato_spedizione" [isInSelect]="true" />
+                      </ng-template>
+                      <ng-template #item let-item>
+                        <vendita-stato class="w-full" [stato_spedizione]="item.id" [isInSelect]="true" />
+                      </ng-template>
+                    </form-input-select>
+                  </div>
+
+                  <div class="flex justify-end gap-2 mt-2">
+                    @if (loading) {
+                      <p-button icon="pi pi-spinner pi-spin" severity="info" size="small" [disabled]="true"> </p-button>
+                      <p-button icon="pi pi-spinner pi-spin" severity="danger" size="small" [disabled]="true"> </p-button>
+                    } @else {
+                      <p-button icon="pi pi-link" severity="success" size="small" [disabled]="!vendita.link_tracciamento" (click)="copiaLinkTracciamento(vendita)" pTooltip="Copia link tracciamento" tooltipPosition="top"> </p-button>
+                      @if (downloadEtichettaSpedizioneLoading) {
+                        <p-button icon="pi pi-spinner pi-spin" severity="warn" size="small" [disabled]="true"> </p-button>
+                      } @else {
+                        <p-button
+                          icon="pi pi-file-pdf"
+                          severity="warn"
+                          size="small"
+                          (click)="downloadEtichettaSpedizione(vendita)"
+                          pTooltip="Etichetta spedizione"
+                          tooltipPosition="top"
+                          [disabled]="!vendita.etichetta_spedizione || (vendita.etichetta_spedizione && vendita.etichetta_spedizione.trim() === '')">
+                        </p-button>
+                      }
+                      <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(vendita)" pTooltip="Visualizza log di audit" tooltipPosition="top"> </p-button>
+                      <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editVendita(vendita)" pTooltip="Modifica vendita" tooltipPosition="top"> </p-button>
+                      <p-button icon="pi pi-trash" severity="danger" size="small" (click)="confirmDelete($event, vendita)" pTooltip="Elimina vendita" tooltipPosition="top"> </p-button>
+                    }
+                  </div>
+                </div>
+              </td>
+            } @else {
+              <td class="font-medium">{{ vendita.id }}</td>
+              <td class="font-medium">{{ vendita.data_vendita | date: 'dd/MM/yyyy' }}</td>
+              <td>{{ vendita.data_scadenza | date: 'dd/MM/yyyy' }}</td>
+              <td>{{ vendita.data_scadenza_spedizione | date: 'dd/MM/yyyy' }}</td>
+              <td>{{ vendita.cliente?.etichetta }}</td>
+              <td>{{ vendita.conto_bancario?.iban }}</td>
+              <td>
+                @if (vendita.dettagli && vendita.dettagli.length > 0) {
+                  <ul class="pl-4" style="list-style: disc">
+                    @for (dettaglio of vendita.dettagli; track dettaglio.id) {
+                      @if (dettaglio.modello) {
+                        <li>{{ dettaglio.modello?.nome }} {{ dettaglio.stampa_is_pezzo_singolo ? '(Pezzo singolo)' : '' }} {{ dettaglio.stampa_is_parziale ? '(Parziale)' : '' }}</li>
+                      } @else {
+                        <li>{{ dettaglio.descrizione }} {{ dettaglio.stampa_is_pezzo_singolo ? '(Pezzo singolo)' : '' }} {{ dettaglio.stampa_is_parziale ? '(Parziale)' : '' }}</li>
+                      }
                     }
                   </ul>
-                  } @else {
-                  <p class="text-sm text-gray-500">Nessun dettaglio</p>
-                  }
-                </div>
-
-                <div class="flex items-center justify-between mt-2">
-                  <div class="text-sm font-semibold">Totale: {{ vendita.totale_vendita | currency:'EUR' }}</div>
-                </div>
-
-                <div class="mt-2 w-full">
-                  <form-input-select vendita-stato-spedizione-lookup property="stato_spedizione" [filter]="false"
-                    [showClear]="false" [(ngModel)]="vendita.stato_spedizione"
-                    (ngModelChange)="modificaStatoVendita(vendita)">
-                    <ng-template #selectedItem let-item>
-                      <vendita-stato class="w-full" [stato_spedizione]="vendita.stato_spedizione"
-                        [isInSelect]="true" />
-                    </ng-template>
-                    <ng-template #item let-item>
-                      <vendita-stato class="w-full" [stato_spedizione]="item.id" [isInSelect]="true" />
-                    </ng-template>
-                  </form-input-select>
-                </div>
-
-                <div class="flex justify-end gap-2 mt-2">
+                } @else {
+                  <p class="text-gray-500">Nessun dettaglio</p>
+                }
+              </td>
+              <td>{{ vendita.totale_vendita | currency: 'EUR' }}</td>
+              <td>
+                <form-input-select vendita-stato-spedizione-lookup property="stato_spedizione" [filter]="false" [showClear]="false" [(ngModel)]="vendita.stato_spedizione" (ngModelChange)="modificaStatoVendita(vendita)">
+                  <ng-template #selectedItem let-item>
+                    <vendita-stato class="w-full" [stato_spedizione]="vendita.stato_spedizione" [isInSelect]="true" />
+                  </ng-template>
+                  <ng-template #item let-item>
+                    <vendita-stato class="w-full" [stato_spedizione]="item.id" [isInSelect]="true" />
+                  </ng-template>
+                </form-input-select>
+              </td>
+              <td class="text-center">
+                <div class="flex justify-center gap-2">
                   @if (loading) {
-                  <p-button icon="pi pi-spinner pi-spin" severity="info" size="small" [disabled]="true">
-                  </p-button>
-                  <p-button icon="pi pi-spinner pi-spin" severity="danger" size="small" [disabled]="true">
-                  </p-button>
-                  }
-                  @else {
-                    <p-button icon="pi pi-link" severity="success" size="small" 
-                      [disabled]="!vendita.link_tracciamento"
-                      (click)="copiaLinkTracciamento(vendita)"
-                      pTooltip="Copia link tracciamento" tooltipPosition="top">
-                    </p-button>
+                    <p-button icon="pi pi-spinner pi-spin" severity="info" size="small" [disabled]="true"> </p-button>
+                    <p-button icon="pi pi-spinner pi-spin" severity="danger" size="small" [disabled]="true"> </p-button>
+                  } @else {
+                    <p-button icon="pi pi-link" severity="success" size="small" [disabled]="!vendita.link_tracciamento" (click)="copiaLinkTracciamento(vendita)" pTooltip="Copia link tracciamento" tooltipPosition="top"> </p-button>
                     @if (downloadEtichettaSpedizioneLoading) {
-                      <p-button icon="pi pi-spinner pi-spin" severity="warn" size="small" [disabled]="true">
-                      </p-button>
-                    }
-                    @else {
-                      <p-button 
+                      <p-button icon="pi pi-spinner pi-spin" severity="warn" size="small" [disabled]="true"> </p-button>
+                    } @else {
+                      <p-button
                         icon="pi pi-file-pdf"
                         severity="warn"
                         size="small"
                         (click)="downloadEtichettaSpedizione(vendita)"
-                        pTooltip="Etichetta spedizione" 
+                        pTooltip="Etichetta spedizione"
                         tooltipPosition="top"
                         [disabled]="!vendita.etichetta_spedizione || (vendita.etichetta_spedizione && vendita.etichetta_spedizione.trim() === '')">
                       </p-button>
                     }
-                  <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(vendita)"
-                    pTooltip="Visualizza log di audit" tooltipPosition="top">
-                  </p-button>
-                  <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editVendita(vendita)"
-                    pTooltip="Modifica vendita" tooltipPosition="top">
-                  </p-button>
-                  <p-button icon="pi pi-trash" severity="danger" size="small"
-                    (click)="confirmDelete($event, vendita)" pTooltip="Elimina vendita" tooltipPosition="top">
-                  </p-button>
+                    <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(vendita)" pTooltip="Visualizza log di audit" tooltipPosition="top"> </p-button>
+                    <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editVendita(vendita)" pTooltip="Modifica vendita" tooltipPosition="top"> </p-button>
+                    <p-button icon="pi pi-trash" severity="danger" size="small" (click)="confirmDelete($event, vendita)" pTooltip="Elimina vendita" tooltipPosition="top"> </p-button>
                   }
                 </div>
-              </div>
-            </td>
-            }
-            @else {
-              <td class="font-medium">{{ vendita.id }}</td>
-            <td class="font-medium">{{ vendita.data_vendita | date:'dd/MM/yyyy' }}</td>
-            <td>{{ vendita.data_scadenza | date:'dd/MM/yyyy' }}</td>
-            <td>{{ vendita.data_scadenza_spedizione | date:'dd/MM/yyyy' }}</td>
-            <td>{{ vendita.cliente?.etichetta }}</td>
-            <td>{{ vendita.conto_bancario?.iban }}</td>
-            <td>
-              @if (vendita.dettagli && vendita.dettagli.length > 0) {
-              <ul class="pl-4" style="list-style: disc;">
-                @for (dettaglio of vendita.dettagli; track dettaglio.id) {
-                @if (dettaglio.modello) {
-                <li>{{ dettaglio.modello?.nome }} {{ dettaglio.stampa_is_pezzo_singolo ? '(Pezzo singolo)' : '' }} {{
-                  dettaglio.stampa_is_parziale ? '(Parziale)' : '' }}</li>
-                } @else {
-                <li>{{ dettaglio.descrizione }} {{ dettaglio.stampa_is_pezzo_singolo ? '(Pezzo singolo)' : '' }} {{
-                  dettaglio.stampa_is_parziale ? '(Parziale)' : '' }}</li>
-                }
-                }
-              </ul>
-              } @else {
-              <p class="text-gray-500">Nessun dettaglio</p>
-              }
-            </td>
-            <td>Totale: {{ vendita.totale_vendita | currency:'EUR' }}</td>
-            <td>
-              <form-input-select vendita-stato-spedizione-lookup property="stato_spedizione" [filter]="false"
-                [showClear]="false" [(ngModel)]="vendita.stato_spedizione"
-                (ngModelChange)="modificaStatoVendita(vendita)">
-                <ng-template #selectedItem let-item>
-                  <vendita-stato class="w-full" [stato_spedizione]="vendita.stato_spedizione" [isInSelect]="true" />
-                </ng-template>
-                <ng-template #item let-item>
-                  <vendita-stato class="w-full" [stato_spedizione]="item.id" [isInSelect]="true" />
-                </ng-template>
-              </form-input-select>
-            </td>
-            <td class="text-center">
-              <div class="flex justify-center gap-2">
-                @if (loading) {
-                <p-button icon="pi pi-spinner pi-spin" severity="info" size="small" [disabled]="true">
-                </p-button>
-                <p-button icon="pi pi-spinner pi-spin" severity="danger" size="small" [disabled]="true">
-                </p-button>
-                }
-                @else {
-                <p-button icon="pi pi-link" severity="success" size="small" 
-                    [disabled]="!vendita.link_tracciamento"
-                    (click)="copiaLinkTracciamento(vendita)"
-                    pTooltip="Copia link tracciamento" tooltipPosition="top">
-                  </p-button>
-                  @if (downloadEtichettaSpedizioneLoading) {
-                    <p-button icon="pi pi-spinner pi-spin" severity="warn" size="small" [disabled]="true">
-                    </p-button>
-                  }
-                  @else {
-                    <p-button 
-                      icon="pi pi-file-pdf"
-                      severity="warn"
-                      size="small"
-                      (click)="downloadEtichettaSpedizione(vendita)"
-                      pTooltip="Etichetta spedizione" 
-                      tooltipPosition="top"
-                      [disabled]="!vendita.etichetta_spedizione || (vendita.etichetta_spedizione && vendita.etichetta_spedizione.trim() === '')">
-                    </p-button>
-                  }
-                <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(vendita)"
-                  pTooltip="Visualizza log di audit" tooltipPosition="top">
-                </p-button>
-                <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editVendita(vendita)"
-                  pTooltip="Modifica vendita" tooltipPosition="top">
-                </p-button>
-                <p-button icon="pi pi-trash" severity="danger" size="small" (click)="confirmDelete($event, vendita)"
-                  pTooltip="Elimina vendita" tooltipPosition="top">
-                </p-button>
-                }
-
-              </div>
-            </td>
+              </td>
             }
           </tr>
         </ng-template>
@@ -447,238 +352,221 @@
               <div class="my-3">
                 <h3 class="text-lg font-semibold text-gray-800 mb-2">Dettagli</h3>
                 @if (applicationState.isMobile()) {
-                <div class="flex flex-col gap-3">
-                  @if (!vendita.dettagli || vendita.dettagli.length === 0) {
-                  <div class="text-center py-6">
-                    <i class="pi pi-inbox text-4xl text-gray-400"></i>
-                    <p class="text-gray-500 mt-2">Non ci sono dettagli per questa vendita</p>
-                  </div>
-                  }
-                  @for (dettaglio of vendita.dettagli; track dettaglio.id) {
-                  <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                    <div class="flex flex-col gap-2 text-sm text-gray-700">
-                      <div>
-                        <div class="text-gray-500">Modello / Descrizione</div>
-                        <div class="font-medium">
-                          @if (dettaglio?.modello) { {{ dettaglio?.modello?.nome }} } @else { {{ dettaglio?.descrizione }} }
+                  <div class="flex flex-col gap-3">
+                    @if (!vendita.dettagli || vendita.dettagli.length === 0) {
+                      <div class="text-center py-6">
+                        <i class="pi pi-inbox text-4xl text-gray-400"></i>
+                        <p class="text-gray-500 mt-2">Non ci sono dettagli per questa vendita</p>
+                      </div>
+                    }
+                    @for (dettaglio of vendita.dettagli; track dettaglio.id) {
+                      <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <div class="flex flex-col gap-2 text-sm text-gray-700">
+                          <div>
+                            <div class="text-gray-500">Modello / Descrizione</div>
+                            <div class="font-medium">
+                              @if (dettaglio?.modello) {
+                                {{ dettaglio?.modello?.nome }}
+                              } @else {
+                                {{ dettaglio?.descrizione }}
+                              }
+                            </div>
+                          </div>
+                          <div class="grid grid-cols-2 gap-x-3 gap-y-1">
+                            <div class="text-gray-500">Stampante</div>
+                            <div>{{ dettaglio?.stampante?.nome }}</div>
+                            <div class="text-gray-500">Quantità</div>
+                            <div>{{ dettaglio?.quantita }}</div>
+                            <div class="text-gray-500">Prezzo</div>
+                            <div class="flex flex-col">
+                              <span>{{ dettaglio?.prezzo | currency: 'EUR' }}</span>
+                            </div>
+                          </div>
+                          <div>
+                            <form-input-select vendita-dettaglio-stato-stampa-lookup property="stato_stampa" [filter]="false" [showClear]="false" [(ngModel)]="dettaglio.stato_stampa" (ngModelChange)="modificaStatoDettaglio(dettaglio)">
+                              <ng-template #selectedItem let-item>
+                                <vendita-dettaglio-stato class="w-full" [stato_stampa]="dettaglio.stato_stampa" [isInSelect]="true" />
+                              </ng-template>
+                              <ng-template #item let-item>
+                                <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id" [isInSelect]="true" />
+                              </ng-template>
+                            </form-input-select>
+                          </div>
                         </div>
                       </div>
-                      <div class="grid grid-cols-2 gap-x-3 gap-y-1">
-                        <div class="text-gray-500">Stampante</div>
-                        <div>{{ dettaglio?.stampante?.nome }}</div>
-                        <div class="text-gray-500">Quantità</div>
-                        <div>{{ dettaglio?.quantita }}</div>
-                        <div class="text-gray-500">Prezzo</div>
-                        <div class="flex flex-col">
-                          <span>Totale: {{ dettaglio?.prezzo | currency:'EUR' }}</span>
-                          <span>Unitario: {{ (dettaglio?.prezzo / dettaglio?.quantita) | currency:'EUR' }}</span>
-                        </div>
-                      </div>
-                      <div>
-                        <form-input-select vendita-dettaglio-stato-stampa-lookup property="stato_stampa" [filter]="false"
-                          [showClear]="false" [(ngModel)]="dettaglio.stato_stampa"
-                          (ngModelChange)="modificaStatoDettaglio(dettaglio)">
-                          <ng-template #selectedItem let-item>
-                            <vendita-dettaglio-stato class="w-full" [stato_stampa]="dettaglio.stato_stampa" [isInSelect]="true" />
-                          </ng-template>
-                          <ng-template #item let-item>
-                            <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id" [isInSelect]="true" />
-                          </ng-template>
-                        </form-input-select>
-                      </div>
-                    </div>
+                    }
                   </div>
-                  }
-                </div>
                 } @else {
-                <p-table showGridlines [value]="vendita.dettagli">
-                  <ng-template #header>
-          <tr>
-            <th class="text-center">Modello / Descrizione</th>
-            <th class="text-center">Stampante</th>
-            <th class="text-center">Quantità</th>
-            <th class="text-center">Prezzo</th>
-            <th class="text-center" style="width: 300px;">Stato Stampa</th>
-          </tr>
-        </ng-template>
-        <ng-template #body let-dettaglio>
-          <tr>
-            <td class="text-center">
-              @if (dettaglio?.modello) {
-              {{ dettaglio?.modello?.nome }}
-              } @else {
-              {{ dettaglio?.descrizione }}
-              }
-            </td>
-            <td class="text-center">{{ dettaglio?.stampante?.nome }}</td>
-            <td class="text-center">{{ dettaglio?.quantita }}</td>
-            <td class="text-center">
-              <div class="flex flex-col items-center gap-2">
-                <span>Totale: {{ dettaglio?.prezzo | currency:'EUR' }}</span>
-                <span>Unitario: {{ (dettaglio?.prezzo / dettaglio?.quantita) | currency:'EUR' }}</span>
+                  <p-table showGridlines [value]="vendita.dettagli">
+                    <ng-template #header>
+                      <tr>
+                        <th class="text-center">Modello / Descrizione</th>
+                        <th class="text-center">Stampante</th>
+                        <th class="text-center">Quantità</th>
+                        <th class="text-center">Prezzo</th>
+                        <th class="text-center" style="width: 300px">Stato Stampa</th>
+                      </tr>
+                    </ng-template>
+                    <ng-template #body let-dettaglio>
+                      <tr>
+                        <td class="text-center">
+                          @if (dettaglio?.modello) {
+                            {{ dettaglio?.modello?.nome }}
+                          } @else {
+                            {{ dettaglio?.descrizione }}
+                          }
+                        </td>
+                        <td class="text-center">{{ dettaglio?.stampante?.nome }}</td>
+                        <td class="text-center">{{ dettaglio?.quantita }}</td>
+                        <td class="text-center">
+                          <div class="flex flex-col items-center gap-2">
+                            <span>{{ dettaglio?.prezzo | currency: 'EUR' }}</span>
+                          </div>
+                        </td>
+                        <td class="text-center">
+                          <form-input-select vendita-dettaglio-stato-stampa-lookup property="stato_stampa" [filter]="false" [showClear]="false" [(ngModel)]="dettaglio.stato_stampa" (ngModelChange)="modificaStatoDettaglio(dettaglio)">
+                            <ng-template #selectedItem let-item>
+                              <vendita-dettaglio-stato class="w-full" [stato_stampa]="dettaglio.stato_stampa" [isInSelect]="true" />
+                            </ng-template>
+                            <ng-template #item let-item>
+                              <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id" [isInSelect]="true" />
+                            </ng-template>
+                          </form-input-select>
+                        </td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <td colspan="5" class="text-center py-8">
+                        <div class="flex flex-col items-center gap-2">
+                          <i class="pi pi-inbox text-4xl text-gray-400"></i>
+                          <p class="text-gray-500">Non ci sono dettagli per questa vendita</p>
+                        </div>
+                      </td>
+                    </ng-template>
+                  </p-table>
+                }
+              </div>
+              <div class="my-3">
+                <h3 class="text-lg font-semibold text-gray-800 mb-2">Basette</h3>
+                @if (applicationState.isMobile()) {
+                  <div class="flex flex-col gap-3">
+                    @if (!vendita.basette || vendita.basette.length === 0) {
+                      <div class="text-center py-6">
+                        <i class="pi pi-inbox text-4xl text-gray-400"></i>
+                        <p class="text-gray-500 mt-2">Non ci sono basette per questa vendita</p>
+                      </div>
+                    }
+                    @for (basetta of vendita.basette; track basetta.id) {
+                      <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <div class="flex flex-col gap-2 text-sm text-gray-700">
+                          <div class="grid grid-cols-2 gap-x-3 gap-y-1">
+                            <div class="text-gray-500">Dimensione</div>
+                            <div>{{ basetta?.dimensione }}</div>
+                            <div class="text-gray-500">Quantità</div>
+                            <div>{{ basetta?.quantita }}</div>
+                          </div>
+                          <div>
+                            <form-input-select vendita-dettaglio-stato-stampa-lookup property="stato_stampa" [filter]="false" [showClear]="false" [(ngModel)]="basetta.stato_stampa" (ngModelChange)="modificaStatoBasetta(basetta)">
+                              <ng-template #selectedItem let-item>
+                                <vendita-dettaglio-stato class="w-full" [stato_stampa]="basetta.stato_stampa" [isInSelect]="true" />
+                              </ng-template>
+                              <ng-template #item let-item>
+                                <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id" [isInSelect]="true" />
+                              </ng-template>
+                            </form-input-select>
+                          </div>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                } @else {
+                  <p-table showGridlines [value]="vendita.basette">
+                    <ng-template #header>
+                      <tr>
+                        <th class="text-center">Dimensione</th>
+                        <th class="text-center">Quantità</th>
+                        <th class="text-center" style="width: 300px">Stato Stampa</th>
+                      </tr>
+                    </ng-template>
+                    <ng-template #body let-basetta>
+                      <tr>
+                        <td class="text-center">
+                          {{ basetta?.dimensione }}
+                        </td>
+                        <td class="text-center">{{ basetta?.quantita }}</td>
+                        <td class="text-center">
+                          <form-input-select vendita-dettaglio-stato-stampa-lookup property="stato_stampa" [filter]="false" [showClear]="false" [(ngModel)]="basetta.stato_stampa" (ngModelChange)="modificaStatoBasetta(basetta)">
+                            <ng-template #selectedItem let-item>
+                              <vendita-dettaglio-stato class="w-full" [stato_stampa]="basetta.stato_stampa" [isInSelect]="true" />
+                            </ng-template>
+                            <ng-template #item let-item>
+                              <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id" [isInSelect]="true" />
+                            </ng-template>
+                          </form-input-select>
+                        </td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <td colspan="3" class="text-center py-8">
+                        <div class="flex flex-col items-center gap-2">
+                          <i class="pi pi-inbox text-4xl text-gray-400"></i>
+                          <p class="text-gray-500">Non ci sono basette per questa vendita</p>
+                        </div>
+                      </td>
+                    </ng-template>
+                  </p-table>
+                }
               </div>
             </td>
-            <td class="text-center">
-              <form-input-select vendita-dettaglio-stato-stampa-lookup property="stato_stampa" [filter]="false"
-                [showClear]="false" [(ngModel)]="dettaglio.stato_stampa"
-                (ngModelChange)="modificaStatoDettaglio(dettaglio)">
-                <ng-template #selectedItem let-item>
-                  <vendita-dettaglio-stato class="w-full" [stato_stampa]="dettaglio.stato_stampa" [isInSelect]="true" />
-                </ng-template>
-                <ng-template #item let-item>
-                  <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id" [isInSelect]="true" />
-                </ng-template>
-              </form-input-select>
+          </tr>
+        </ng-template>
+
+        <!-- Empty State -->
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="11" class="text-center py-8">
+              @if (loading) {
+                <p-skeleton height="100px" width="100%" />
+              } @else {
+                <div class="flex flex-col items-center gap-2">
+                  <i class="pi pi-inbox text-4xl text-gray-400"></i>
+                  <p class="text-gray-500">Nessuna vendita trovata</p>
+                </div>
+              }
             </td>
           </tr>
         </ng-template>
-        <ng-template pTemplate="emptymessage">
-          <td colspan="5" class="text-center py-8">
-            <div class="flex flex-col items-center gap-2">
-              <i class="pi pi-inbox text-4xl text-gray-400"></i>
-              <p class="text-gray-500">Non ci sono dettagli per questa vendita</p>
-            </div>
-          </td>
-        </ng-template>
       </p-table>
-                }
-</div>
+    </ng-template>
+  </p-card>
 
-<div class="my-3">
-  <h3 class="text-lg font-semibold text-gray-800 mb-2">Basette</h3>
-                @if (applicationState.isMobile()) {
-                <div class="flex flex-col gap-3">
-                  @if (!vendita.basette || vendita.basette.length === 0) {
-                  <div class="text-center py-6">
-                    <i class="pi pi-inbox text-4xl text-gray-400"></i>
-                    <p class="text-gray-500 mt-2">Non ci sono basette per questa vendita</p>
-                  </div>
-                  }
-                  @for (basetta of vendita.basette; track basetta.id) {
-                  <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                    <div class="flex flex-col gap-2 text-sm text-gray-700">
-                      <div class="grid grid-cols-2 gap-x-3 gap-y-1">
-                        <div class="text-gray-500">Dimensione</div>
-                        <div>{{ basetta?.dimensione }}</div>
-                        <div class="text-gray-500">Quantità</div>
-                        <div>{{ basetta?.quantita }}</div>
-                      </div>
-                      <div>
-                        <form-input-select vendita-dettaglio-stato-stampa-lookup property="stato_stampa" [filter]="false"
-                          [showClear]="false" [(ngModel)]="basetta.stato_stampa"
-                          (ngModelChange)="modificaStatoBasetta(basetta)">
-                          <ng-template #selectedItem let-item>
-                            <vendita-dettaglio-stato class="w-full" [stato_stampa]="basetta.stato_stampa" [isInSelect]="true" />
-                          </ng-template>
-                          <ng-template #item let-item>
-                            <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id" [isInSelect]="true" />
-                          </ng-template>
-                        </form-input-select>
-                      </div>
-                    </div>
-                  </div>
-                  }
-                </div>
-                } @else {
-                <p-table showGridlines [value]="vendita.basette">
-    <ng-template #header>
-      <tr>
-        <th class="text-center">Dimensione</th>
-        <th class="text-center">Quantità</th>
-        <th class="text-center" style="width: 300px;">Stato Stampa</th>
-      </tr>
-    </ng-template>
-    <ng-template #body let-basetta>
-      <tr>
-        <td class="text-center">
-          {{ basetta?.dimensione }}
-        </td>
-        <td class="text-center">{{ basetta?.quantita }}</td>
-        <td class="text-center">
-          <form-input-select vendita-dettaglio-stato-stampa-lookup property="stato_stampa" [filter]="false"
-            [showClear]="false" [(ngModel)]="basetta.stato_stampa"
-            (ngModelChange)="modificaStatoBasetta(basetta)">
-            <ng-template #selectedItem let-item>
-              <vendita-dettaglio-stato class="w-full" [stato_stampa]="basetta.stato_stampa" [isInSelect]="true" />
-            </ng-template>
-            <ng-template #item let-item>
-              <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id" [isInSelect]="true" />
-            </ng-template>
-          </form-input-select>
-        </td>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="emptymessage">
-      <td colspan="3" class="text-center py-8">
+  <p-confirmDialog #confirmDialogModificaContoBancario [visible]="modificaContoBancarioVisible" [dismissableMask]="true" (onHide)="modificaContoBancarioVisible = false">
+    <ng-template #headless let-message>
+      <div class="p-4">
         <div class="flex flex-col items-center gap-2">
-          <i class="pi pi-inbox text-4xl text-gray-400"></i>
-          <p class="text-gray-500">Non ci sono basette per questa vendita</p>
+          <p class="text-gray-800">Modifica il conto bancario delle vendite selezionate</p>
         </div>
-      </td>
+        <form-input-select conto-bancario-lookup property="conto_bancario_id" [(ngModel)]="modificaContoBancarioModel.conto_bancario_id" />
+        <div class="flex items-center gap-2 mt-6">
+          <p-button label="Salva" styleClass="w-32" [disabled]="modificaContoBancarioModel == null || (modificaContoBancarioModel != null && !modificaContoBancarioModel.conto_bancario_id)" (onClick)="modificaContoBancarioVendite()"></p-button>
+          <p-button label="Annulla" [outlined]="true" styleClass="w-32" (onClick)="confirmDialogModificaContoBancario?.hide()"></p-button>
+        </div>
+      </div>
     </ng-template>
-  </p-table>
-                }
-</div>
-</td>
-</tr>
-</ng-template>
+  </p-confirmDialog>
 
-<!-- Empty State -->
-<ng-template pTemplate="emptymessage">
-  <tr>
-    <td colspan="11" class="text-center py-8">
-      @if (loading) {
-      <p-skeleton height="100px" width="100%" />
-      } @else {
-      <div class="flex flex-col items-center gap-2">
-        <i class="pi pi-inbox text-4xl text-gray-400"></i>
-        <p class="text-gray-500">Nessuna vendita trovata</p>
+  <p-confirmDialog #confirmDialogDelete [visible]="deleteDialogVisible" [dismissableMask]="true" (onHide)="deleteDialogVisible = false">
+    <ng-template #headless let-message>
+      <div class="p-4">
+        <div class="flex flex-col items-center gap-2">
+          <i class="pi pi-exclamation-triangle text-4xl text-red-500"></i>
+          <p class="text-gray-800 text-center">Sei sicuro di voler eliminare la vendita nr."{{ venditaToDelete?.id }}"?</p>
+        </div>
+        <div class="flex items-center gap-2 mt-6">
+          <p-button label="Si" styleClass="w-32 p-button-danger" icon="pi pi-exclamation-triangle" (onClick)="deleteVendita(venditaToDelete?.id!)"></p-button>
+          <p-button label="No" [outlined]="true" styleClass="w-32 p-button-secondary" icon="pi pi-times" (onClick)="confirmDialogDelete?.hide()"></p-button>
+        </div>
       </div>
-      }
-    </td>
-  </tr>
-</ng-template>
-</p-table>
-</ng-template>
-</p-card>
-
-<p-confirmDialog #confirmDialogModificaContoBancario [visible]="modificaContoBancarioVisible" [dismissableMask]="true"
-  (onHide)="modificaContoBancarioVisible = false">
-  <ng-template #headless let-message>
-    <div class="p-4">
-      <div class="flex flex-col items-center gap-2">
-        <p class="text-gray-800">Modifica il conto bancario delle vendite selezionate</p>
-      </div>
-      <form-input-select conto-bancario-lookup property="conto_bancario_id"
-        [(ngModel)]="modificaContoBancarioModel.conto_bancario_id" />
-      <div class="flex items-center gap-2 mt-6">
-        <p-button label="Salva" styleClass="w-32"
-          [disabled]="modificaContoBancarioModel == null || (modificaContoBancarioModel != null && !modificaContoBancarioModel.conto_bancario_id)"
-          (onClick)="modificaContoBancarioVendite()"></p-button>
-        <p-button label="Annulla" [outlined]="true" styleClass="w-32"
-          (onClick)="confirmDialogModificaContoBancario?.hide()"></p-button>
-      </div>
-    </div>
-
-  </ng-template>
-</p-confirmDialog>
-
-<p-confirmDialog #confirmDialogDelete [visible]="deleteDialogVisible" [dismissableMask]="true"
-  (onHide)="deleteDialogVisible = false">
-  <ng-template #headless let-message>
-    <div class="p-4">
-      <div class="flex flex-col items-center gap-2">
-        <i class="pi pi-exclamation-triangle text-4xl text-red-500"></i>
-        <p class="text-gray-800 text-center">Sei sicuro di voler eliminare la vendita nr."{{ venditaToDelete?.id }}"?
-        </p>
-      </div>
-      <div class="flex items-center gap-2 mt-6">
-        <p-button label="Si" styleClass="w-32 p-button-danger" icon="pi pi-exclamation-triangle"
-          (onClick)="deleteVendita(venditaToDelete?.id!)"></p-button>
-        <p-button label="No" [outlined]="true" styleClass="w-32 p-button-secondary" icon="pi pi-times"
-          (onClick)="confirmDialogDelete?.hide()"></p-button>
-      </div>
-    </div>
-  </ng-template>
-</p-confirmDialog>
+    </ng-template>
+  </p-confirmDialog>
 </div>
