@@ -261,22 +261,7 @@
                     </form-input-select>
                   </div>
 
-                  <div class="flex justify-end gap-2 mt-2">
-                    <p-button icon="pi pi-link" severity="success" size="small" [disabled]="!vendita.link_tracciamento" (click)="copiaLinkTracciamento(vendita)" pTooltip="Copia link tracciamento" tooltipPosition="top" [loading]="loading"> </p-button>
-                    <p-button
-                      icon="pi pi-file-pdf"
-                      severity="warn"
-                      size="small"
-                      (click)="downloadEtichettaSpedizione(vendita)"
-                      pTooltip="Etichetta spedizione"
-                      tooltipPosition="top"
-                      [disabled]="!vendita.etichetta_spedizione || (vendita.etichetta_spedizione && vendita.etichetta_spedizione.trim() === '')"
-                      [loading]="loading">
-                    </p-button>
-                    <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(vendita)" pTooltip="Visualizza log di audit" tooltipPosition="top" [loading]="loading"> </p-button>
-                    <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editVendita(vendita)" pTooltip="Modifica vendita" tooltipPosition="top" [loading]="loading"> </p-button>
-                    <p-button icon="pi pi-trash" severity="danger" size="small" (click)="confirmDelete($event, vendita)" pTooltip="Elimina vendita" tooltipPosition="top" [loading]="loading"> </p-button>
-                  </div>
+                  <ng-container *ngTemplateOutlet="venditaActionButtons; context: { vendita: vendita }" />
                 </div>
               </td>
             } @else {
@@ -313,22 +298,7 @@
                 </form-input-select>
               </td>
               <td class="text-center">
-                <div class="flex justify-center gap-2">
-                  <p-button icon="pi pi-link" severity="success" size="small" [disabled]="!vendita.link_tracciamento" (click)="copiaLinkTracciamento(vendita)" pTooltip="Copia link tracciamento" tooltipPosition="top" [loading]="loading"> </p-button>
-                  <p-button
-                    icon="pi pi-file-pdf"
-                    severity="warn"
-                    size="small"
-                    (click)="downloadEtichettaSpedizione(vendita)"
-                    pTooltip="Etichetta spedizione"
-                    tooltipPosition="top"
-                    [disabled]="!vendita.etichetta_spedizione || (vendita.etichetta_spedizione && vendita.etichetta_spedizione.trim() === '')"
-                    [loading]="loading">
-                  </p-button>
-                  <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(vendita)" pTooltip="Visualizza log di audit" tooltipPosition="top" [loading]="loading"> </p-button>
-                  <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editVendita(vendita)" pTooltip="Modifica vendita" tooltipPosition="top" [loading]="loading"> </p-button>
-                  <p-button icon="pi pi-trash" severity="danger" size="small" (click)="confirmDelete($event, vendita)" pTooltip="Elimina vendita" tooltipPosition="top" [loading]="loading"> </p-button>
-                </div>
+                <ng-container *ngTemplateOutlet="venditaActionButtons; context: { vendita: vendita }" />
               </td>
             }
           </tr>
@@ -553,3 +523,21 @@
     </ng-template>
   </p-confirmDialog>
 </div>
+
+<ng-template #venditaActionButtons let-vendita="vendita">
+  <div class="flex justify-end gap-2 mt-2">
+    <p-button icon="pi pi-link" severity="success" size="small" [disabled]="!vendita.link_tracciamento" (click)="copiaLinkTracciamento(vendita)" pTooltip="Copia link tracciamento" tooltipPosition="top" [loading]="loading"> </p-button>
+    <p-button
+      icon="pi pi-file-pdf"
+      severity="warn"
+      size="small"
+      (click)="downloadEtichettaSpedizione(vendita)"
+      pTooltip="Etichetta spedizione"
+      tooltipPosition="top"
+      [disabled]="!vendita.etichetta_spedizione || (vendita.etichetta_spedizione && vendita.etichetta_spedizione.trim() === '')"
+      [loading]="loading" />
+    <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(vendita)" pTooltip="Visualizza log di audit" tooltipPosition="top" [loading]="loading" />
+    <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editVendita(vendita)" pTooltip="Modifica vendita" tooltipPosition="top" [loading]="loading" />
+    <p-button icon="pi pi-trash" severity="danger" size="small" (click)="confirmDelete($event, vendita)" pTooltip="Elimina vendita" tooltipPosition="top" [loading]="loading" />
+  </div>
+</ng-template>
