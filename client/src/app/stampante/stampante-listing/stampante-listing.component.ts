@@ -23,24 +23,10 @@ import { StampanteListingEliminaMessaggioPipe } from '../pipes/stampante-listing
 
 @Component({
   selector: 'app-stampante-listing',
-  imports: [
-    CommonModule,
-    FormsModule,
-    CardModule,
-    ButtonModule,
-    TableModule,
-    InputTextModule,
-    IconFieldModule,
-    InputIconModule,
-    SkeletonModule,
-    TooltipModule,
-    StampanteListingEliminaMessaggioPipe
-  ],
+  imports: [CommonModule, FormsModule, CardModule, ButtonModule, TableModule, InputTextModule, IconFieldModule, InputIconModule, SkeletonModule, TooltipModule, StampanteListingEliminaMessaggioPipe],
   templateUrl: './stampante-listing.component.html',
   styleUrl: './stampante-listing.component.scss',
-  providers: [
-    StampanteService
-  ]
+  providers: [StampanteService]
 })
 export class StampanteListingComponent implements OnDestroy {
   // Data properties
@@ -75,24 +61,23 @@ export class StampanteListingComponent implements OnDestroy {
   }
 
   loadStampanti(): void {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
-    
-    this.stampantiSubscription = this.stampanteService.getListing(this.filtri)
-      .subscribe({
-        next: (response: StampanteListingResponse) => {
-          this.stampanti = response.data;
-          this.totalRecords = response.count;
+    this.loading = true;
 
-          window.clearTimeout(this.loadingTimeout);
-          this.loading = false;
-        },
-        error: (error) => {
-          console.error('Error loading stampanti:', error);
+    this.stampantiSubscription = this.stampanteService.getListing(this.filtri).subscribe({
+      next: (response: StampanteListingResponse) => {
+        this.stampanti = response.data;
+        this.totalRecords = response.count;
 
-          window.clearTimeout(this.loadingTimeout);
-          this.loading = false;
-        }
-      });
+        window.clearTimeout(this.loadingTimeout);
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading stampanti:', error);
+
+        window.clearTimeout(this.loadingTimeout);
+        this.loading = false;
+      }
+    });
   }
 
   loadData(event: TableLazyLoadEvent): void {
@@ -102,8 +87,7 @@ export class StampanteListingComponent implements OnDestroy {
     // Global filter
     if (event.globalFilter) {
       this.filtri.search = typeof event.globalFilter === 'string' ? event.globalFilter : event.globalFilter[0];
-    }
-    else {
+    } else {
       this.filtri.search = undefined;
     }
 
@@ -112,9 +96,8 @@ export class StampanteListingComponent implements OnDestroy {
       this.filtri.order = {
         column: typeof event.sortField === 'string' ? event.sortField : event.sortField[0],
         direction: event.sortOrder === 1 ? 'ASC' : 'DESC'
-      }
-    }
-    else {
+      };
+    } else {
       this.filtri.order = undefined;
     }
 
@@ -130,32 +113,32 @@ export class StampanteListingComponent implements OnDestroy {
   }
 
   editStampante(stampante: StampanteListingModel): void {
-  this.router.navigate(['/stampante/manager', stampante.id]);
-}
+    this.router.navigate(['/stampante/manager', stampante.id]);
+  }
 
-viewAuditLog(stampante: StampanteListingModel): void {
-  let config: DynamicDialogConfig = {
-    width: '90%',
-    height: '80%',
-    modal: true,  
-    dismissableMask: true,
-    closable: true,
-    showHeader: false,
-    contentStyle: {
-      'height': '100%',
-      'width': '100%',
-      'padding': '0px'
-    },
-    data: {
-      tableName: 'T_STAMPANTI',
-      recordId: stampante.id,
-      objectName: `Stampante ${stampante.nome} (${stampante.id})`
-    }
-  };
-  this.dialogService.open(AuditLogComponent, config);
-}
+  viewAuditLog(stampante: StampanteListingModel): void {
+    let config: DynamicDialogConfig = {
+      width: '90%',
+      height: '80%',
+      modal: true,
+      dismissableMask: true,
+      closable: true,
+      showHeader: false,
+      contentStyle: {
+        height: '100%',
+        width: '100%',
+        padding: '0px'
+      },
+      data: {
+        tableName: 'T_STAMPANTI',
+        recordId: stampante.id,
+        objectName: `Stampante ${stampante.nome} (${stampante.id})`
+      }
+    };
+    this.dialogService.open(AuditLogComponent, config);
+  }
 
-confirmDelete(event: Event, stampante: StampanteListingModel): void {
+  confirmDelete(event: Event, stampante: StampanteListingModel): void {
     this.confirmationService.confirm({
       target: event.target as EventTarget,
       message: `Sei sicuro di voler eliminare la stampante "${stampante.nome}"?`,
@@ -176,35 +159,34 @@ confirmDelete(event: Event, stampante: StampanteListingModel): void {
   }
 
   private deleteStampante(id: number): void {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    this.loading = true;
 
-    this.stampanteDeleteSubscription = this.stampanteService.delete(id)
-      .subscribe({
-        next: () => {
-          window.clearTimeout(this.loadingTimeout);
-          this.loading = false;
+    this.stampanteDeleteSubscription = this.stampanteService.delete(id).subscribe({
+      next: () => {
+        window.clearTimeout(this.loadingTimeout);
+        this.loading = false;
 
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Stampante cancellata con successo'
-          });
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Stampante cancellata con successo'
+        });
 
-          this.loadStampanti();
-        },
-        error: (error) => {
-          window.clearTimeout(this.loadingTimeout);
-          this.loading = false;
+        this.loadStampanti();
+      },
+      error: (error) => {
+        window.clearTimeout(this.loadingTimeout);
+        this.loading = false;
 
-          this.dialogService.open(DialogErrorComponent, {
-            inputValues: {
-              error: error
-            },
-            modal: true
-          });
-          
-          console.error('Error deleting stampante:', error);
-        }
-      });
+        this.dialogService.open(DialogErrorComponent, {
+          inputValues: {
+            error: error
+          },
+          modal: true
+        });
+
+        console.error('Error deleting stampante:', error);
+      }
+    });
   }
 }
