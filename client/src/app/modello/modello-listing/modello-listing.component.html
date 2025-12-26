@@ -7,73 +7,58 @@
 
     <ng-template pTemplate="content">
       @if (loading) {
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-        @for (item of Array(6); track $index) {
-        <div class="bg-gray-100 rounded-lg p-4 h-32 animate-pulse">
-          <div class="h-4 bg-gray-300 rounded mb-2"></div>
-          <div class="h-3 bg-gray-300 rounded mb-1"></div>
-          <div class="h-3 bg-gray-300 rounded w-2/3"></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          @for (item of Array(6); track $index) {
+            <div class="bg-gray-100 rounded-lg p-4 h-32 animate-pulse">
+              <div class="h-4 bg-gray-300 rounded mb-2"></div>
+              <div class="h-3 bg-gray-300 rounded mb-1"></div>
+              <div class="h-3 bg-gray-300 rounded w-2/3"></div>
+            </div>
+          }
         </div>
-        }
-      </div>
       } @else {
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-        @for (modello of modelliGrid; track modello.id) {
-        <div
-          class="relative bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow grid-card"
-          [ngClass]="{'cursor-pointer modello-content-non-vendita': modello.vinted_is_in_vendita === false}"
-          (click)="impostaModelloVendibileVinted(modello)">
-          <div class="modello-grid-box-wrapper">
-            <div class="modello-content">
-              <div class="relative z-20">
-                <div class="flex flex-col">
-                  <!-- Red exclamation icon for items not in vendita -->
-                  @if (modello.vinted_is_in_vendita === false) {
-                  <div class="icona-non-vendita-wrapper">
-                    <i class="pi pi-exclamation-circle icona-non-vendita mb-2" pTooltip="Non in vendita">
-                    </i>
-                  </div>
-                  }
-                  <div class="flex items-center">
-                    <modello-tipo [tipo]="modello.tipo" />
-                    <h3 class="font-semibold text-gray-800 truncate ml-1">{{ modello.nome }}</h3>
-                  </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          @for (modello of modelliGrid; track modello.id) {
+            <div
+              class="relative bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow grid-card"
+              [ngClass]="{ 'cursor-pointer modello-content-non-vendita': modello.vinted_is_in_vendita === false }"
+              (click)="impostaModelloVendibileVinted(modello)">
+              <div class="modello-grid-box-wrapper">
+                <div class="modello-content">
+                  <div class="relative z-20">
+                    <div class="flex flex-col">
+                      <!-- Red exclamation icon for items not in vendita -->
+                      @if (modello.vinted_is_in_vendita === false) {
+                        <div class="icona-non-vendita-wrapper">
+                          <i class="pi pi-exclamation-circle icona-non-vendita mb-2" pTooltip="Non in vendita"> </i>
+                        </div>
+                      }
+                      <div class="flex items-center">
+                        <modello-tipo [tipo]="modello.tipo" />
+                        <h3 class="font-semibold text-gray-800 truncate ml-1">{{ modello.nome }}</h3>
+                      </div>
+                    </div>
 
+                    <p class="text-sm text-gray-600 mb-2 line-clamp-2">{{ modello.descrizione }}</p>
+
+                    @if (modello.basetta_dimensione && modello.basetta_quantita) {
+                      <div class="text-sm text-gray-600">Basetta: {{ modello.basetta_dimensione }} x {{ modello.basetta_quantita }}</div>
+                    }
+                  </div>
                 </div>
 
-                <p class="text-sm text-gray-600 mb-2 line-clamp-2">{{ modello.descrizione }}</p>
-
-                @if (modello.basetta_dimensione && modello.basetta_quantita) {
-                <div class="text-sm text-gray-600">
-                  Basetta: {{ modello.basetta_dimensione }} x {{ modello.basetta_quantita }}
-                </div>
-                }
+                <ng-container *ngTemplateOutlet="modelloActionButtons; context: { modello: modello }"></ng-container>
               </div>
             </div>
-
-            <div class="modello-actions">
-              <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog($event, modello)"
-                pTooltip="Visualizza log di audit" tooltipPosition="top">
-              </p-button>
-              <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editModello($event, modello)"
-                pTooltip="Modifica modello" tooltipPosition="top">
-              </p-button>
-              <p-button icon="pi pi-trash" severity="danger" size="small" [disabled]="modello.isUsed"
-                (click)="confirmDelete($event, modello)" [pTooltip]="modello.isUsed | modelloListingEliminaMessaggio"
-                tooltipPosition="top">
-              </p-button>
-            </div>
-          </div>
+          }
         </div>
-        }
-      </div>
 
-      @if (modelliGrid.length === 0 && !loading) {
-      <div class="flex flex-col items-center gap-2 py-8">
-        <i class="pi pi-inbox text-4xl text-gray-400"></i>
-        <p class="text-gray-500">Nessun modello trovato</p>
-      </div>
-      }
+        @if (modelliGrid.length === 0 && !loading) {
+          <div class="flex flex-col items-center gap-2 py-8">
+            <i class="pi pi-inbox text-4xl text-gray-400"></i>
+            <p class="text-gray-500">Nessun modello trovato</p>
+          </div>
+        }
       }
     </ng-template>
   </p-card>
@@ -92,12 +77,10 @@
             <p-inputicon>
               <i class="pi pi-search"></i>
             </p-inputicon>
-            <input #searchInput pInputText type="text" placeholder="Cerca modelli..." class="w-full"
-              [(ngModel)]="filtri.search" (ngModelChange)="onSearchChange($event)">
+            <input #searchInput pInputText type="text" placeholder="Cerca modelli..." class="w-full" [(ngModel)]="filtri.search" (ngModelChange)="onSearchChange($event)" />
           </p-iconfield>
-          
-          <form-input-select modello-tipo-lookup property="tipo" [filter]="false" [showClear]="true"
-            [(ngModel)]="filtri.tipo" (ngModelChange)="onTypeChange($event)" placeholder="Filtra per tipo" class="w-full sm:w-auto">
+
+          <form-input-select modello-tipo-lookup property="tipo" [filter]="false" [showClear]="true" [(ngModel)]="filtri.tipo" (ngModelChange)="onTypeChange($event)" placeholder="Filtra per tipo" class="w-full sm:w-auto">
             <ng-template #selectedItem let-item>
               <modello-tipo class="w-full" [tipo]="filtri.tipo" [isInSelect]="true" />
             </ng-template>
@@ -105,86 +88,73 @@
               <modello-tipo class="w-full" [tipo]="item.id" [isInSelect]="true" />
             </ng-template>
           </form-input-select>
-          
-          <button pButton label="Pulisci" class="p-button-outlined w-full sm:w-auto" icon="pi pi-filter-slash"
-            (click)="pulisciFiltri();"></button>
+
+          <button pButton label="Pulisci" class="p-button-outlined w-full sm:w-auto" icon="pi pi-filter-slash" [loading]="loading" (click)="pulisciFiltri()"></button>
         </div>
 
         <!-- Action Buttons Section -->
         <div class="flex items-center gap-2 justify-end sm:justify-start">
-          <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()"
-            pTooltip="Aggiorna griglia" tooltipPosition="top">
-          </p-button>
-          <p-button icon="pi pi-plus" label="Nuovo Modello" severity="success" (click)="addNewModello()"
-            pTooltip="Aggiungi nuovo modello" tooltipPosition="top">
-          </p-button>
+          <p-button icon="pi pi-plus" label="Nuovo Modello" [loading]="loading" severity="success" (click)="addNewModello()" pTooltip="Aggiungi nuovo modello" tooltipPosition="top" />
+          <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()" pTooltip="Aggiorna griglia" tooltipPosition="top" />
         </div>
       </div>
 
       <!-- Grid View -->
       @if (loading) {
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-        @for (item of Array(6); track $index) {
-        <div class="bg-gray-100 rounded-lg p-4 h-32 animate-pulse">
-          <div class="h-4 bg-gray-300 rounded mb-2"></div>
-          <div class="h-3 bg-gray-300 rounded mb-1"></div>
-          <div class="h-3 bg-gray-300 rounded w-2/3"></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          @for (item of Array(6); track $index) {
+            <div class="bg-gray-100 rounded-lg p-4 h-32 animate-pulse">
+              <div class="h-4 bg-gray-300 rounded mb-2"></div>
+              <div class="h-3 bg-gray-300 rounded mb-1"></div>
+              <div class="h-3 bg-gray-300 rounded w-2/3"></div>
+            </div>
+          }
         </div>
-        }
-      </div>
       } @else {
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-        @for (modello of modelliGridNonVinted; track modello.id) {
-        <div
-          class="relative bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow grid-card">
-          <div class="modello-grid-box-wrapper">
-            <div class="modello-content">
-              <div class="relative z-20">
-                <div class="flex flex-col">
-                  <div class="flex items-center">
-                    <modello-tipo [tipo]="modello.tipo" />
-                    <h3 class="font-semibold text-gray-800 truncate ml-1">{{ modello.nome }}</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          @for (modello of modelliGridNonVinted; track modello.id) {
+            <div class="relative bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow grid-card">
+              <div class="modello-grid-box-wrapper">
+                <div class="modello-content">
+                  <div class="relative z-20">
+                    <div class="flex flex-col">
+                      <div class="flex items-center">
+                        <modello-tipo [tipo]="modello.tipo" />
+                        <h3 class="font-semibold text-gray-800 truncate ml-1">{{ modello.nome }}</h3>
+                      </div>
+                    </div>
+
+                    <p class="text-sm text-gray-600 mb-2 line-clamp-2">{{ modello.descrizione }}</p>
+
+                    @if (modello.basetta_dimensione && modello.basetta_quantita) {
+                      <div class="text-sm text-gray-600">Basetta: {{ modello.basetta_dimensione }} x {{ modello.basetta_quantita }}</div>
+                    }
+
+                    <div class="text-xs text-gray-400 mt-2">Ultima modifica: {{ modello.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</div>
                   </div>
                 </div>
 
-                <p class="text-sm text-gray-600 mb-2 line-clamp-2">{{ modello.descrizione }}</p>
-
-                @if (modello.basetta_dimensione && modello.basetta_quantita) {
-                <div class="text-sm text-gray-600">
-                  Basetta: {{ modello.basetta_dimensione }} x {{ modello.basetta_quantita }}
-                </div>
-                }
-
-                <div class="text-xs text-gray-400 mt-2">
-                  Ultima modifica: {{ modello.updatedAt | date:'dd/MM/yyyy HH:mm' }}
-                </div>
+                <ng-container *ngTemplateOutlet="modelloActionButtons; context: { modello: modello }"></ng-container>
               </div>
             </div>
-
-            <div class="modello-actions">
-              <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog($event, modello)"
-                pTooltip="Visualizza log di audit" tooltipPosition="top">
-              </p-button>
-              <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editModello($event, modello)"
-                pTooltip="Modifica modello" tooltipPosition="top">
-              </p-button>
-              <p-button icon="pi pi-trash" severity="danger" size="small" [disabled]="modello.isUsed"
-                (click)="confirmDelete($event, modello)" [pTooltip]="modello.isUsed | modelloListingEliminaMessaggio"
-                tooltipPosition="top">
-              </p-button>
-            </div>
-          </div>
+          }
         </div>
-        }
-      </div>
 
-      @if (modelliGridNonVinted.length === 0 && !loading) {
-      <div class="flex flex-col items-center gap-2 py-8">
-        <i class="pi pi-inbox text-4xl text-gray-400"></i>
-        <p class="text-gray-500">Nessun modello trovato</p>
-      </div>
-      }
+        @if (modelliGridNonVinted.length === 0 && !loading) {
+          <div class="flex flex-col items-center gap-2 py-8">
+            <i class="pi pi-inbox text-4xl text-gray-400"></i>
+            <p class="text-gray-500">Nessun modello trovato</p>
+          </div>
+        }
       }
     </ng-template>
   </p-card>
 </div>
+
+<ng-template #modelloActionButtons let-modello="modello">
+  <div class="modello-actions">
+    <p-button icon="pi pi-history" severity="secondary" [loading]="loading" size="small" (click)="viewAuditLog($event, modello)" pTooltip="Visualizza log di audit" tooltipPosition="top" />
+    <p-button icon="pi pi-pencil" severity="info" [loading]="loading" size="small" (click)="editModello($event, modello)" pTooltip="Modifica modello" tooltipPosition="top" />
+    <p-button icon="pi pi-trash" severity="danger" [loading]="loading" size="small" [disabled]="modello.isUsed" (click)="confirmDelete($event, modello)" [pTooltip]="modello.isUsed | modelloListingEliminaMessaggio" tooltipPosition="top" />
+  </div>
+</ng-template>
