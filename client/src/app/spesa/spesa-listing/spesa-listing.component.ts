@@ -44,9 +44,7 @@ import { SpesaUnitaMisuraPipe } from '../spesa-unita-misura.pipe';
     SpesaUnitaMisuraLookupDirective,
     FormInputSelectComponent
   ],
-  providers: [
-    SpesaService,
-  ],
+  providers: [SpesaService],
   templateUrl: './spesa-listing.component.html',
   styleUrl: './spesa-listing.component.scss'
 })
@@ -60,7 +58,7 @@ export class SpesaListingComponent {
   filtri: SpesaListingFiltri = {
     offset: 0,
     limit: 100,
-    search: '',
+    search: ''
   };
 
   private speseSubscription?: Subscription;
@@ -83,26 +81,23 @@ export class SpesaListingComponent {
   }
 
   loadSpese(): void {
-    if (this.loadingTimeout == null) {
-      this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
-    }
-    
-    this.speseSubscription = this.spesaService.getListing(this.filtri)
-      .subscribe({
-        next: (response: SpesaListingResponse) => {
-          this.spese = response.data;
-          this.totalRecords = response.count;
+    this.loading = true;
 
-          window.clearTimeout(this.loadingTimeout);
-          this.loading = false;
-        },
-        error: (error) => {
-          console.error('Error loading spese:', error);
+    this.speseSubscription = this.spesaService.getListing(this.filtri).subscribe({
+      next: (response: SpesaListingResponse) => {
+        this.spese = response.data;
+        this.totalRecords = response.count;
 
-          window.clearTimeout(this.loadingTimeout);
-          this.loading = false;
-        }
-      });
+        window.clearTimeout(this.loadingTimeout);
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading spese:', error);
+
+        window.clearTimeout(this.loadingTimeout);
+        this.loading = false;
+      }
+    });
   }
 
   loadData(event: TableLazyLoadEvent): void {
@@ -112,8 +107,7 @@ export class SpesaListingComponent {
     // Global filter
     if (event.globalFilter) {
       this.filtri.search = typeof event.globalFilter === 'string' ? event.globalFilter : event.globalFilter[0];
-    }
-    else {
+    } else {
       this.filtri.search = undefined;
     }
 
@@ -122,9 +116,8 @@ export class SpesaListingComponent {
       this.filtri.order = {
         column: typeof event.sortField === 'string' ? event.sortField : event.sortField[0],
         direction: event.sortOrder === 1 ? 'ASC' : 'DESC'
-      }
-    }
-    else {
+      };
+    } else {
       this.filtri.order = undefined;
     }
 
@@ -149,8 +142,7 @@ export class SpesaListingComponent {
       } else {
         this.filtri.data_spesa = undefined;
       }
-    }
-    else {
+    } else {
       this.filtri.data_spesa = undefined;
     }
 
@@ -175,8 +167,7 @@ export class SpesaListingComponent {
       } else {
         this.filtri.totale_spesa = undefined;
       }
-    }
-    else {
+    } else {
       this.filtri.totale_spesa = undefined;
     }
 
@@ -201,8 +192,7 @@ export class SpesaListingComponent {
       } else {
         this.filtri.quantita = undefined;
       }
-    }
-    else {
+    } else {
       this.filtri.quantita = undefined;
     }
 
@@ -234,32 +224,32 @@ export class SpesaListingComponent {
   }
 
   editSpesa(spesa: SpesaListingModel): void {
-  this.router.navigate(['/spesa/manager', spesa.id]);
-}
+    this.router.navigate(['/spesa/manager', spesa.id]);
+  }
 
-viewAuditLog(spesa: SpesaListingModel): void {
-  let config: DynamicDialogConfig = {
-    width: '90%',
-    height: '80%',
-    modal: true,
-    dismissableMask: true,
-    closable: true,
-    showHeader: false,
-    contentStyle: {
-      'height': '100%',
-      'width': '100%',
-      'padding': '0px'
-    },
-    data: {
-      tableName: 'T_SPESE',
-      recordId: spesa.id,
-      objectName: `Spesa ${spesa.id.toString()}`
-    }
-  };
-  this.dialogService.open(AuditLogComponent, config);
-}
+  viewAuditLog(spesa: SpesaListingModel): void {
+    let config: DynamicDialogConfig = {
+      width: '90%',
+      height: '80%',
+      modal: true,
+      dismissableMask: true,
+      closable: true,
+      showHeader: false,
+      contentStyle: {
+        height: '100%',
+        width: '100%',
+        padding: '0px'
+      },
+      data: {
+        tableName: 'T_SPESE',
+        recordId: spesa.id,
+        objectName: `Spesa ${spesa.id.toString()}`
+      }
+    };
+    this.dialogService.open(AuditLogComponent, config);
+  }
 
-confirmDelete(event: Event, spesa: SpesaListingModel): void {
+  confirmDelete(event: Event, spesa: SpesaListingModel): void {
     this.confirmationService.confirm({
       target: event.target as EventTarget,
       message: `Sei sicuro di voler eliminare la spesa?`,
@@ -280,35 +270,34 @@ confirmDelete(event: Event, spesa: SpesaListingModel): void {
   }
 
   private deleteSpesa(id: number): void {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    this.loading = true;
 
-    this.spesaDeleteSubscription = this.spesaService.delete(id)
-      .subscribe({
-        next: () => {
-          window.clearTimeout(this.loadingTimeout);
-          this.loading = false;
+    this.spesaDeleteSubscription = this.spesaService.delete(id).subscribe({
+      next: () => {
+        window.clearTimeout(this.loadingTimeout);
+        this.loading = false;
 
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Spesa cancellata con successo'
-          });
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Spesa cancellata con successo'
+        });
 
-          this.loadSpese();
-        },
-        error: (error) => {
-          window.clearTimeout(this.loadingTimeout);
-          this.loading = false;
+        this.loadSpese();
+      },
+      error: (error) => {
+        window.clearTimeout(this.loadingTimeout);
+        this.loading = false;
 
-          this.dialogService.open(DialogErrorComponent, {
-            inputValues: {
-              error: error
-            },
-            modal: true
-          });
-          
-          console.error('Error deleting spesa:', error);
-        }
-      });
+        this.dialogService.open(DialogErrorComponent, {
+          inputValues: {
+            error: error
+          },
+          modal: true
+        });
+
+        console.error('Error deleting spesa:', error);
+      }
+    });
   }
 }

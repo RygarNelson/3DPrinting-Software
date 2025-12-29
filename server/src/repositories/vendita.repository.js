@@ -630,7 +630,7 @@ class VenditaRepository extends BaseRepository {
                     [Op.between]: [primoGiornoMese, ultimoGiornoMese]
                 },
                 stato_spedizione: {
-                    [Op.in]: [0, 1, 2, 4]
+                    [Op.in]: [0, 1, 2]
                 }
             },
             group: [fn('strftime', '%Y', col('data_vendita')), fn('strftime', '%m', col('data_vendita'))],

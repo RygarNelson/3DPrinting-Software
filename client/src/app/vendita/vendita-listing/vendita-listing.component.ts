@@ -66,10 +66,7 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
     SplitButtonModule,
     ConfirmDialogModule
   ],
-  providers: [
-    VenditaService,
-    SpesaService
-  ],
+  providers: [VenditaService, SpesaService],
   templateUrl: './vendita-listing.component.html',
   styleUrl: './vendita-listing.component.scss'
 })
@@ -121,10 +118,6 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
 
   protected readonly VenditaDettaglioStatoStampaEnum = VenditaDettaglioStatoStampaEnum;
 
-  downloadEtichettaSpedizioneLoading: boolean = false;
-  openEtichettaSpedizioneLoading: boolean = false;
-  downloadExcelLoading: boolean = false;
-
   constructor(
     private venditaService: VenditaService,
     private spesaService: SpesaService,
@@ -133,7 +126,7 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
     private messageService: MessageService,
     private dialogService: DialogService,
     private activatedRoute: ActivatedRoute,
-    public applicationState: ApplicationStateService,
+    public applicationState: ApplicationStateService
   ) {}
 
   ngOnInit(): void {
@@ -167,43 +160,39 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
   }
 
   loadVendite(): void {
-    if (this.loadingTimeout == null) {
-      this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
-    }
-    
-    this.venditeSubscription = this.venditaService.getListing(this.filtri)
-      .subscribe({
-        next: (response: VenditaListingResponse) => {
-          this.vendite = response.data;
-          this.totalRecords = response.count;
-          this.ultimiTreMesi = response.ultimiTreMesi;
-          this.ultimiTreMesiSospese = response.ultimiTreMesiSospese;
+    this.loading = true;
 
-          window.clearTimeout(this.loadingTimeout);
-          this.loading = false;
-        },
-        error: (error) => {
-          console.error('Error loading vendite:', error);
+    this.venditeSubscription = this.venditaService.getListing(this.filtri).subscribe({
+      next: (response: VenditaListingResponse) => {
+        this.vendite = response.data;
+        this.totalRecords = response.count;
+        this.ultimiTreMesi = response.ultimiTreMesi;
+        this.ultimiTreMesiSospese = response.ultimiTreMesiSospese;
 
-          window.clearTimeout(this.loadingTimeout);
-          this.loading = false;
+        window.clearTimeout(this.loadingTimeout);
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading vendite:', error);
 
-          this.dialogService.open(DialogErrorComponent, {
-            inputValues: {
-              error: error
-            },
-            modal: true
-          });
-        }
-      });
+        window.clearTimeout(this.loadingTimeout);
+        this.loading = false;
+
+        this.dialogService.open(DialogErrorComponent, {
+          inputValues: {
+            error: error
+          },
+          modal: true
+        });
+      }
+    });
   }
 
   filterRadioButton(type: string): void {
     if (type === 'in_scadenza') {
       this.filtri.isInScadenza = true;
       this.filtri.isScaduto = false;
-    }
-    else if (type === 'scaduto') {
+    } else if (type === 'scaduto') {
       this.filtri.isScaduto = true;
       this.filtri.isInScadenza = false;
     }
@@ -218,8 +207,7 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
     // Global filter
     if (event.globalFilter) {
       this.filtri.search = typeof event.globalFilter === 'string' ? event.globalFilter : event.globalFilter[0];
-    }
-    else {
+    } else {
       this.filtri.search = undefined;
     }
 
@@ -228,9 +216,8 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
       this.filtri.order = {
         column: typeof event.sortField === 'string' ? event.sortField : event.sortField[0],
         direction: event.sortOrder === 1 ? 'ASC' : 'DESC'
-      }
-    }
-    else {
+      };
+    } else {
       this.filtri.order = undefined;
     }
 
@@ -256,8 +243,7 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
       } else {
         this.filtri.id = undefined;
       }
-    }
-    else {
+    } else {
       this.filtri.id = undefined;
     }
 
@@ -283,8 +269,7 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
       } else {
         this.filtri.data_vendita = undefined;
       }
-    }
-    else {
+    } else {
       this.filtri.data_vendita = undefined;
     }
 
@@ -309,8 +294,7 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
       } else {
         this.filtri.data_scadenza = undefined;
       }
-    }
-    else {
+    } else {
       this.filtri.data_scadenza = undefined;
     }
 
@@ -335,8 +319,7 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
       } else {
         this.filtri.data_scadenza_spedizione = undefined;
       }
-    }
-    else {
+    } else {
       this.filtri.data_scadenza_spedizione = undefined;
     }
 
@@ -361,8 +344,7 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
       } else {
         this.filtri.totale_vendita = undefined;
       }
-    }
-    else {
+    } else {
       this.filtri.totale_vendita = undefined;
     }
 
@@ -394,178 +376,172 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
   }
 
   editVendita(vendita: VenditaListingModel): void {
-  this.router.navigate(['/vendita/manager', vendita.id]);
-}
+    this.router.navigate(['/vendita/manager', vendita.id]);
+  }
 
-viewAuditLog(vendita: VenditaListingModel): void {
-  let config: DynamicDialogConfig = {
-    width: '90%',
-    height: '80%',
-    modal: true,
-    dismissableMask: true,
-    closable: true,
-    showHeader: false,
-    contentStyle: {
-      'height': '100%',
-      'width': '100%',
-      'padding': '0px'
-    },
-    data: {
-      tableName: 'T_VENDITE',
-      recordId: vendita.id,
-      objectName: `Vendita ${vendita.id.toString()}`
-    }
-  };
-  this.dialogService.open(AuditLogComponent, config);
-}
+  viewAuditLog(vendita: VenditaListingModel): void {
+    let config: DynamicDialogConfig = {
+      width: '90%',
+      height: '80%',
+      modal: true,
+      dismissableMask: true,
+      closable: true,
+      showHeader: false,
+      contentStyle: {
+        height: '100%',
+        width: '100%',
+        padding: '0px'
+      },
+      data: {
+        tableName: 'T_VENDITE',
+        recordId: vendita.id,
+        objectName: `Vendita ${vendita.id.toString()}`
+      }
+    };
+    this.dialogService.open(AuditLogComponent, config);
+  }
 
-confirmDelete(event: Event, vendita: VenditaListingModel): void {
+  confirmDelete(event: Event, vendita: VenditaListingModel): void {
     this.venditaToDelete = vendita;
     this.deleteDialogVisible = true;
   }
 
   deleteVendita(id: number): void {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    this.loading = true;
 
-    this.venditaDeleteSubscription = this.venditaService.delete(id)
-      .subscribe({
-        next: () => {
-          window.clearTimeout(this.loadingTimeout);
-          this.loading = false;
+    this.venditaDeleteSubscription = this.venditaService.delete(id).subscribe({
+      next: () => {
+        window.clearTimeout(this.loadingTimeout);
+        this.loading = false;
 
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Vendita cancellata con successo'
-          });
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Vendita cancellata con successo'
+        });
 
-          // Hide dialog and clear venditaToDelete
-          this.deleteDialogVisible = false;
-          this.venditaToDelete = undefined;
+        // Hide dialog and clear venditaToDelete
+        this.deleteDialogVisible = false;
+        this.venditaToDelete = undefined;
 
-          this.loadVendite();
-        },
-        error: (error) => {
-          window.clearTimeout(this.loadingTimeout);
-          this.loading = false;
+        this.loadVendite();
+      },
+      error: (error) => {
+        window.clearTimeout(this.loadingTimeout);
+        this.loading = false;
 
-          this.dialogService.open(DialogErrorComponent, {
-            inputValues: {
-              error: error
-            },
-            modal: true
-          });
-          
-          console.error('Error deleting vendita:', error);
-        }
-      });
+        this.dialogService.open(DialogErrorComponent, {
+          inputValues: {
+            error: error
+          },
+          modal: true
+        });
+
+        console.error('Error deleting vendita:', error);
+      }
+    });
   }
 
   modificaStatoVendita(vendita: VenditaListingModel): void {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    this.loading = true;
 
-    this.venditaService.modificaStatoVendita(vendita.id, vendita.stato_spedizione)
-      .subscribe({
-        next: () => {
-          window.clearTimeout(this.loadingTimeout);
-          this.loading = false;
+    this.venditaService.modificaStatoVendita(vendita.id, vendita.stato_spedizione).subscribe({
+      next: () => {
+        window.clearTimeout(this.loadingTimeout);
+        this.loading = false;
 
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Stato spedizione modificato con successo'
-          });
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Stato spedizione modificato con successo'
+        });
 
-          this.loadVendite();
-        },
-        error: (error) => {
-          window.clearTimeout(this.loadingTimeout);
-          this.loading = false;
+        this.loadVendite();
+      },
+      error: (error) => {
+        window.clearTimeout(this.loadingTimeout);
+        this.loading = false;
 
-          this.dialogService.open(DialogErrorComponent, {
-            inputValues: {
-              error: error
-            },
-            modal: true
-          });
+        this.dialogService.open(DialogErrorComponent, {
+          inputValues: {
+            error: error
+          },
+          modal: true
+        });
 
-          console.error('Error avanzando stato dettaglio:', error);
-        }
-      });
+        console.error('Error avanzando stato dettaglio:', error);
+      }
+    });
   }
 
   modificaStatoDettaglio(dettaglio: VenditaListingDettaglioModel): void {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    this.loading = true;
 
-    this.venditaService.modificaStatoDettaglio(dettaglio.id, dettaglio.stato_stampa)
-      .subscribe({
-        next: () => {
-          window.clearTimeout(this.loadingTimeout);
-          this.loading = false;
+    this.venditaService.modificaStatoDettaglio(dettaglio.id, dettaglio.stato_stampa).subscribe({
+      next: () => {
+        window.clearTimeout(this.loadingTimeout);
+        this.loading = false;
 
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Stato di stampa modificato con successo'
-          });
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Stato di stampa modificato con successo'
+        });
 
-          this.loadVendite();
-        },
-        error: (error) => {
-          window.clearTimeout(this.loadingTimeout);
-          this.loading = false;
+        this.loadVendite();
+      },
+      error: (error) => {
+        window.clearTimeout(this.loadingTimeout);
+        this.loading = false;
 
-          this.dialogService.open(DialogErrorComponent, {
-            inputValues: {
-              error: error
-            },
-            modal: true
-          });
+        this.dialogService.open(DialogErrorComponent, {
+          inputValues: {
+            error: error
+          },
+          modal: true
+        });
 
-          console.error('Error avanzando stato dettaglio:', error);
-        }
-      });
+        console.error('Error avanzando stato dettaglio:', error);
+      }
+    });
   }
 
   modificaStatoBasetta(basetta: VenditaListingDettaglioBasettaModel): void {
-    if (this.loadingTimeout == null) {
-      this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
-    }
+    this.loading = true;
 
-    this.venditaService.modificaStatoBasetta(basetta.id, basetta.stato_stampa)
-      .subscribe({
-        next: () => {
-          window.clearTimeout(this.loadingTimeout);
-          this.loadingTimeout = undefined;
-          this.loading = false;
+    this.venditaService.modificaStatoBasetta(basetta.id, basetta.stato_stampa).subscribe({
+      next: () => {
+        window.clearTimeout(this.loadingTimeout);
+        this.loadingTimeout = undefined;
+        this.loading = false;
 
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Stato di stampa basetta modificato con successo'
-          });
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Stato di stampa basetta modificato con successo'
+        });
 
-          this.loadVendite();
-        },
-        error: (error) => {
-          window.clearTimeout(this.loadingTimeout);
-          this.loadingTimeout = undefined;
-          this.loading = false;
+        this.loadVendite();
+      },
+      error: (error) => {
+        window.clearTimeout(this.loadingTimeout);
+        this.loadingTimeout = undefined;
+        this.loading = false;
 
-          this.dialogService.open(DialogErrorComponent, {
-            inputValues: {
-              error: error
-            },
-            modal: true
-          });
+        this.dialogService.open(DialogErrorComponent, {
+          inputValues: {
+            error: error
+          },
+          modal: true
+        });
 
-          console.error('Errore avanzamento stato basetta:', error);
-        }
-      });
+        console.error('Errore avanzamento stato basetta:', error);
+      }
+    });
   }
 
   modificaContoBancarioVendite(): void {
-    this.modificaContoBancarioModel.vendite_ids = this.selectedVendite.map(vendita => vendita.id);
+    this.modificaContoBancarioModel.vendite_ids = this.selectedVendite.map((vendita) => vendita.id);
 
     this.venditaService.modificaContoBancarioVendite(this.modificaContoBancarioModel).subscribe({
       next: () => {
@@ -602,7 +578,8 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
     }
 
     // Copy to clipboard
-    navigator.clipboard.writeText(vendita.link_tracciamento)
+    navigator.clipboard
+      .writeText(vendita.link_tracciamento)
       .then(() => {
         this.venditaHighlight = vendita.id;
 
@@ -628,12 +605,10 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
       return;
     }
 
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
-    this.downloadEtichettaSpedizioneLoading = true;
+    this.loading = true;
 
     this.venditaService.downloadEtichettaSpedizione(vendita.id).subscribe({
       next: (blob: Blob) => {
-        this.downloadEtichettaSpedizioneLoading = false;
         window.clearTimeout(this.loadingTimeout);
         this.loading = false;
 
@@ -653,7 +628,6 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
         });
       },
       error: (error: any) => {
-        this.downloadEtichettaSpedizioneLoading = false;
         window.clearTimeout(this.loadingTimeout);
         this.loading = false;
 
@@ -685,19 +659,16 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
       return;
     }
 
-    this.openEtichettaSpedizioneLoading = true;
     // Open the download URL in a new tab
     this.venditaService.downloadEtichettaSpedizione(vendita.id).subscribe({
       next: (blob: Blob) => {
-        this.openEtichettaSpedizioneLoading = false;
         const url = window.URL.createObjectURL(blob);
         window.open(url, '_blank');
         // Note: We don't revoke the URL immediately to allow the new tab to load it
         setTimeout(() => window.URL.revokeObjectURL(url), 100);
       },
       error: (error: any) => {
-        this.openEtichettaSpedizioneLoading = false;
-        let errorMessage = 'Errore durante l\'apertura del file';
+        let errorMessage = "Errore durante l'apertura del file";
         if (error.error && error.error.error) {
           errorMessage = error.error.error;
         }
@@ -714,7 +685,7 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
   // Helper function to get date-only in Rome timezone (for Excel date columns)
   private getDateInRomeTimezone(date: Date): Date | null {
     if (!date) return null;
-  
+
     // Get Rome date parts using Intl
     const parts = new Intl.DateTimeFormat('en-CA', {
       timeZone: 'Europe/Rome',
@@ -722,18 +693,17 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
       month: '2-digit',
       day: '2-digit'
     }).formatToParts(date);
-  
-    const year = +parts.find(p => p.type === 'year')!.value;
-    const month = +parts.find(p => p.type === 'month')!.value;
-    const day = +parts.find(p => p.type === 'day')!.value;
-  
+
+    const year = +parts.find((p) => p.type === 'year')!.value;
+    const month = +parts.find((p) => p.type === 'month')!.value;
+    const day = +parts.find((p) => p.type === 'day')!.value;
+
     // IMPORTANT: create date at UTC midnight
     return new Date(Date.UTC(year, month - 1, day));
   }
 
   exportToExcel(): void {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
-    this.downloadExcelLoading = true;
+    this.loading = true;
 
     // Fetch all vendite with a high limit
     const exportFiltri: VenditaListingFiltri = {
@@ -775,7 +745,6 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
       spese: this.spesaService.getListing(spesaFiltri)
     }).subscribe({
       next: ({ vendite, spese }) => {
-        this.downloadExcelLoading = false;
         window.clearTimeout(this.loadingTimeout);
         this.loading = false;
 
@@ -784,7 +753,7 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
 
         // Create Vendite sheet
         const venditeWorksheet = workbook.addWorksheet('Vendite');
-        
+
         // Define columns for Vendite sheet
         venditeWorksheet.columns = [
           { header: 'Numero Vendita', key: 'numeroVendita', width: 15 },
@@ -803,25 +772,25 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
         venditeWorksheet.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
 
         // Add data rows
-        vendite.data.forEach(vendita => {
+        vendite.data.forEach((vendita) => {
           // Format dettagli
           const dettagliArray: string[] = [];
           if (vendita.dettagli && vendita.dettagli.length > 0) {
-            vendita.dettagli.forEach(dettaglio => {
+            vendita.dettagli.forEach((dettaglio) => {
               let dettaglioStr = '';
               if (dettaglio.modello && dettaglio.modello.nome) {
                 dettaglioStr = dettaglio.modello.nome;
               } else if (dettaglio.descrizione) {
                 dettaglioStr = dettaglio.descrizione;
               }
-              
+
               if (dettaglio.stampa_is_pezzo_singolo) {
                 dettaglioStr += ' (Pezzo singolo)';
               }
               if (dettaglio.stampa_is_parziale) {
                 dettaglioStr += ' (Parziale)';
               }
-              
+
               if (dettaglioStr) {
                 dettagliArray.push(dettaglioStr);
               }
@@ -830,9 +799,7 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
           const dettagliNormalized = dettagliArray.join(';');
 
           // Get status name
-          const statoName = vendita.stato_spedizione !== undefined 
-            ? VenditaStatoSpedizioneEnumRecord[vendita.stato_spedizione] || ''
-            : '';
+          const statoName = vendita.stato_spedizione !== undefined ? VenditaStatoSpedizioneEnumRecord[vendita.stato_spedizione] || '' : '';
 
           const row = venditeWorksheet.addRow({
             numeroVendita: vendita.id,
@@ -849,7 +816,7 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
           // Format number columns
           row.getCell('numeroVendita').numFmt = '0';
           row.getCell('totaleVendita').numFmt = '#,##0.00';
-          
+
           // Format date columns (Italian format: dd/mm/yyyy) and set cell type to date
           if (vendita.data_vendita) {
             const dateCell = row.getCell('dataVendita');
@@ -871,13 +838,13 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
         // Autofit columns for Vendite sheet (excluding date columns which have fixed width)
         venditeWorksheet.columns.forEach((column, index) => {
           if (!column || !column.eachCell) return;
-          
+
           // Skip date columns (indices 1, 2, 3) - they have fixed widths
           const dateColumnKeys = ['dataVendita', 'dataScadenza', 'dataScadenzaSpedizione'];
           if (column.key && dateColumnKeys.includes(column.key)) {
             return;
           }
-          
+
           let maxLength = 0;
           column.eachCell({ includeEmpty: true }, (cell) => {
             const columnLength = cell.value ? cell.value.toString().length : 10;
@@ -890,7 +857,7 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
 
         // Create Spese sheet
         const speseWorksheet = workbook.addWorksheet('Spese');
-        
+
         // Define columns for Spese sheet
         speseWorksheet.columns = [
           { header: 'Numero', key: 'numero', width: 12 },
@@ -907,16 +874,12 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
         speseWorksheet.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
 
         // Add data rows
-        spese.data.forEach(spesa => {
+        spese.data.forEach((spesa) => {
           // Get tipo spesa name
-          const tipoSpesaName = spesa.tipo_spesa !== undefined 
-            ? SpesaTipoEnumRecord[spesa.tipo_spesa as SpesaTipoEnum] || ''
-            : '';
+          const tipoSpesaName = spesa.tipo_spesa !== undefined ? SpesaTipoEnumRecord[spesa.tipo_spesa as SpesaTipoEnum] || '' : '';
 
           // Get unità di misura name
-          const unitaMisuraName = spesa.unita_misura !== undefined 
-            ? SpesaUnitaMisuraEnumRecord[spesa.unita_misura as SpesaUnitaMisuraEnum] || ''
-            : '';
+          const unitaMisuraName = spesa.unita_misura !== undefined ? SpesaUnitaMisuraEnumRecord[spesa.unita_misura as SpesaUnitaMisuraEnum] || '' : '';
 
           const row = speseWorksheet.addRow({
             numero: spesa.id,
@@ -932,7 +895,7 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
           row.getCell('numero').numFmt = '0';
           row.getCell('quantita').numFmt = '#,##0.0000';
           row.getCell('totaleSpesa').numFmt = '#,##0.00';
-          
+
           // Format date column (Italian format: dd/mm/yyyy) and set cell type to date
           if (spesa.data_spesa) {
             const dateCell = row.getCell('dataSpesa');
@@ -944,12 +907,12 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
         // Autofit columns for Spese sheet (excluding date column which has fixed width)
         speseWorksheet.columns.forEach((column) => {
           if (!column || !column.eachCell) return;
-          
+
           // Skip date column - it has fixed width
           if (column.key === 'dataSpesa') {
             return;
           }
-          
+
           let maxLength = 0;
           column.eachCell({ includeEmpty: true }, (cell) => {
             const columnLength = cell.value ? cell.value.toString().length : 10;
@@ -980,7 +943,6 @@ confirmDelete(event: Event, vendita: VenditaListingModel): void {
         });
       },
       error: (error) => {
-        this.downloadExcelLoading = false;
         window.clearTimeout(this.loadingTimeout);
         this.loading = false;
 

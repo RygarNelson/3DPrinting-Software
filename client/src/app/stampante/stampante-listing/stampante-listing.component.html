@@ -6,11 +6,20 @@
 
     <ng-template pTemplate="content">
       <!-- Table -->
-      <p-table #dataTable currentPageReportTemplate="Mostrando da {first} a {last} di {totalRecords} stampanti"
-        class="p-datatable-sm" [value]="stampanti" [paginator]="true"
-        [rows]="filtri.limit" [totalRecords]="totalRecords" [first]="filtri.offset" [showCurrentPageReport]="true"
-        [rowsPerPageOptions]="[10, 20, 50, 100]" [lazy]="true" (onLazyLoad)="loadData($event)">
-
+      <p-table
+        #dataTable
+        currentPageReportTemplate="Mostrando da {first} a {last} di {totalRecords} stampanti"
+        class="p-datatable-sm"
+        [value]="stampanti"
+        [paginator]="true"
+        [rows]="filtri.limit"
+        [totalRecords]="totalRecords"
+        [first]="filtri.offset"
+        [showCurrentPageReport]="true"
+        [rowsPerPageOptions]="[10, 20, 50, 100]"
+        [loading]="loading"
+        [lazy]="true"
+        (onLazyLoad)="loadData($event)">
         <ng-template pTemplate="caption">
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <!-- Search Section -->
@@ -19,21 +28,15 @@
                 <p-inputicon>
                   <i class="pi pi-search"></i>
                 </p-inputicon>
-                <input #searchInput pInputText type="text" placeholder="Cerca stampanti..." class="w-full"
-                  [(ngModel)]="filtri.search" (ngModelChange)="dataTable.filterGlobal($event, 'contains')">
+                <input #searchInput pInputText type="text" placeholder="Cerca stampanti..." class="w-full" [(ngModel)]="filtri.search" (ngModelChange)="dataTable.filterGlobal($event, 'contains')" />
               </p-iconfield>
-              <button pButton label="Pulisci" class="p-button-outlined w-full sm:w-auto" icon="pi pi-filter-slash"
-                (click)="dataTable.clear()"></button>
+              <button pButton label="Pulisci" class="p-button-outlined w-full sm:w-auto" icon="pi pi-filter-slash" [loading]="loading" (click)="dataTable.clear()"></button>
             </div>
 
             <!-- Action Buttons Section -->
             <div class="flex items-center gap-2 justify-end sm:justify-start">
-              <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()"
-                pTooltip="Aggiorna tabella" tooltipPosition="top">
-              </p-button>
-              <p-button icon="pi pi-plus" label="Nuova Stampante" severity="success" (click)="addNewStampante()"
-                pTooltip="Aggiungi nuova stampante" tooltipPosition="top">
-              </p-button>
+              <p-button icon="pi pi-plus" label="Nuova Stampante" [loading]="loading" severity="success" (click)="addNewStampante()" pTooltip="Aggiungi nuova stampante" tooltipPosition="top" />
+              <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()" pTooltip="Aggiorna tabella" tooltipPosition="top" />
             </div>
           </div>
         </ng-template>
@@ -42,12 +45,11 @@
         <ng-template #header>
           <tr>
             @if (applicationState.isMobile()) {
-              <th>Stampante</th>
-            }
-            @else {
+              <th></th>
+            } @else {
               <th pSortableColumn="nome">Nome <p-sortIcon field="nome" /></th>
-            <th pSortableColumn="descrizione">Descrizione <p-sortIcon field="descrizione" /></th>
-            <th class="text-center" style="width: 120px;"></th>
+              <th pSortableColumn="descrizione">Descrizione <p-sortIcon field="descrizione" /></th>
+              <th class="text-center" style="width: 120px"></th>
             }
           </tr>
         </ng-template>
@@ -65,56 +67,16 @@
                     <div class="text-sm text-gray-700">
                       {{ stampante.descrizione || '—' }}
                     </div>
-                    <div class="flex justify-end gap-2 mt-2">
-                      @if (loading) {
-                      <p-button icon="pi pi-spinner pi-spin" severity="info" size="small" [disabled]="true">
-                      </p-button>
-                      <p-button icon="pi pi-spinner pi-spin" severity="danger" size="small" [disabled]="true">
-                      </p-button>
-                      }
-                      @else {
-                      <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(stampante)"
-                        pTooltip="Visualizza log di audit" tooltipPosition="top">
-                      </p-button>
-                      <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editStampante(stampante)"
-                        pTooltip="Modifica stampante" tooltipPosition="top">
-                      </p-button>
-                      <p-button icon="pi pi-trash" severity="danger" size="small" [disabled]="stampante.isUsed"
-                        (click)="confirmDelete($event, stampante)"
-                        [pTooltip]="stampante.isUsed | stampanteListingEliminaMessaggio" tooltipPosition="top">
-                      </p-button>
-                      }
-                    </div>
+                    <ng-container *ngTemplateOutlet="stampanteActionButtons; context: { stampante: stampante }"></ng-container>
                   </div>
                 </div>
               </td>
-            }
-            @else {
+            } @else {
               <td class="font-medium">{{ stampante.nome }}</td>
-            <td>{{ stampante.descrizione }}</td>
-            <td class="text-center">
-              <div class="flex justify-center gap-2">
-                @if (loading) {
-                <p-button icon="pi pi-spinner pi-spin" severity="info" size="small" [disabled]="true">
-                </p-button>
-                <p-button icon="pi pi-spinner pi-spin" severity="danger" size="small" [disabled]="true">
-                </p-button>
-                }
-                @else {
-                <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(stampante)"
-                  pTooltip="Visualizza log di audit" tooltipPosition="top">
-                </p-button>
-                <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editStampante(stampante)"
-                  pTooltip="Modifica stampante" tooltipPosition="top">
-                </p-button>
-                <p-button icon="pi pi-trash" severity="danger" size="small" [disabled]="stampante.isUsed"
-                  (click)="confirmDelete($event, stampante)"
-                  [pTooltip]="stampante.isUsed | stampanteListingEliminaMessaggio" tooltipPosition="top">
-                </p-button>
-                }
-
-              </div>
-            </td>
+              <td>{{ stampante.descrizione }}</td>
+              <td class="text-center">
+                <ng-container *ngTemplateOutlet="stampanteActionButtons; context: { stampante: stampante }"></ng-container>
+              </td>
             }
           </tr>
         </ng-template>
@@ -123,14 +85,10 @@
         <ng-template pTemplate="emptymessage">
           <tr>
             <td colspan="4" class="text-center py-8">
-              @if (loading) {
-              <p-skeleton height="100px" width="100%" />
-              } @else {
               <div class="flex flex-col items-center gap-2">
                 <i class="pi pi-inbox text-4xl text-gray-400"></i>
                 <p class="text-gray-500">Nessuna stampante trovata</p>
               </div>
-              }
             </td>
           </tr>
         </ng-template>
@@ -138,3 +96,11 @@
     </ng-template>
   </p-card>
 </div>
+
+<ng-template #stampanteActionButtons let-stampante="stampante">
+  <div class="flex justify-end gap-2 mt-2">
+    <p-button icon="pi pi-history" severity="secondary" [loading]="loading" size="small" (click)="viewAuditLog(stampante)" pTooltip="Visualizza log di audit" tooltipPosition="top" />
+    <p-button icon="pi pi-pencil" severity="info" [loading]="loading" size="small" (click)="editStampante(stampante)" pTooltip="Modifica stampante" tooltipPosition="top" />
+    <p-button icon="pi pi-trash" severity="danger" [loading]="loading" size="small" [disabled]="stampante.isUsed" (click)="confirmDelete($event, stampante)" [pTooltip]="stampante.isUsed | stampanteListingEliminaMessaggio" tooltipPosition="top" />
+  </div>
+</ng-template>

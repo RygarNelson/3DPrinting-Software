@@ -23,22 +23,8 @@ import { ContoBancarioListingEliminaMessaggioPipe } from '../pipes/conto-bancari
 
 @Component({
   selector: 'app-conto-bancario-listing',
-  imports: [
-    CommonModule,
-    FormsModule,
-    CardModule,
-    ButtonModule,
-    TableModule,
-    InputTextModule,
-    IconFieldModule,
-    InputIconModule,
-    SkeletonModule,
-    TooltipModule,
-    ContoBancarioListingEliminaMessaggioPipe
-  ],
-  providers: [
-    ContoBancarioService
-  ],
+  imports: [CommonModule, FormsModule, CardModule, ButtonModule, TableModule, InputTextModule, IconFieldModule, InputIconModule, SkeletonModule, TooltipModule, ContoBancarioListingEliminaMessaggioPipe],
+  providers: [ContoBancarioService],
   templateUrl: './conto-bancario-listing.component.html',
   styleUrl: './conto-bancario-listing.component.scss'
 })
@@ -66,7 +52,7 @@ export class ContoBancarioListingComponent {
     private messageService: MessageService,
     private dialogService: DialogService,
     public applicationState: ApplicationStateService
-  ) { }
+  ) {}
 
   ngOnDestroy(): void {
     this.contoBancarioSubscription?.unsubscribe();
@@ -77,28 +63,25 @@ export class ContoBancarioListingComponent {
   }
 
   loadModelli(): void {
-    if (this.loadingTimeout == null) {
-      this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
-    }
+    this.loading = true;
 
-    this.contoBancarioSubscription = this.contoBancarioService.getListing(this.filtri)
-      .subscribe({
-        next: (response: ContoBancarioListingResponse) => {
-          this.conti_bancari = response.data;
-          this.totalRecords = response.count;
+    this.contoBancarioSubscription = this.contoBancarioService.getListing(this.filtri).subscribe({
+      next: (response: ContoBancarioListingResponse) => {
+        this.conti_bancari = response.data;
+        this.totalRecords = response.count;
 
-          clearTimeout(this.loadingTimeout);
-          this.loadingTimeout = undefined;
-          this.loading = false;
-        },
-        error: (error) => {
-          console.error('Error loading stampanti:', error);
+        clearTimeout(this.loadingTimeout);
+        this.loadingTimeout = undefined;
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading stampanti:', error);
 
-          clearTimeout(this.loadingTimeout);
-          this.loadingTimeout = undefined;
-          this.loading = false;
-        }
-      });
+        clearTimeout(this.loadingTimeout);
+        this.loadingTimeout = undefined;
+        this.loading = false;
+      }
+    });
   }
 
   loadData(event: TableLazyLoadEvent): void {
@@ -108,8 +91,7 @@ export class ContoBancarioListingComponent {
     // Global filter
     if (event.globalFilter) {
       this.filtri.search = typeof event.globalFilter === 'string' ? event.globalFilter : event.globalFilter[0];
-    }
-    else {
+    } else {
       this.filtri.search = undefined;
     }
 
@@ -118,9 +100,8 @@ export class ContoBancarioListingComponent {
       this.filtri.order = {
         column: typeof event.sortField === 'string' ? event.sortField : event.sortField[0],
         direction: event.sortOrder === 1 ? 'ASC' : 'DESC'
-      }
-    }
-    else {
+      };
+    } else {
       this.filtri.order = undefined;
     }
 
@@ -150,32 +131,32 @@ export class ContoBancarioListingComponent {
   }
 
   editContoBancario(contoBancario: ContoBancarioListingModel): void {
-  this.router.navigate(['/conto-bancario/manager', contoBancario.id]);
-}
+    this.router.navigate(['/conto-bancario/manager', contoBancario.id]);
+  }
 
-viewAuditLog(contoBancario: ContoBancarioListingModel): void {
-  let config: DynamicDialogConfig = {
-    width: '90%',
-    height: '80%',
-    modal: true,
-    dismissableMask: true,
-    closable: true,
-    showHeader: false,
-    contentStyle: {
-      'height': '100%',
-      'width': '100%',
-      'padding': '0px'
-    },
-    data: {
-      tableName: 'T_CONTI_BANCARI',
-      recordId: contoBancario.id,
-      objectName: `Conto bancario ${contoBancario.iban} (${contoBancario.id})`
-    }
-  };
-  this.dialogService.open(AuditLogComponent, config);
-}
+  viewAuditLog(contoBancario: ContoBancarioListingModel): void {
+    let config: DynamicDialogConfig = {
+      width: '90%',
+      height: '80%',
+      modal: true,
+      dismissableMask: true,
+      closable: true,
+      showHeader: false,
+      contentStyle: {
+        height: '100%',
+        width: '100%',
+        padding: '0px'
+      },
+      data: {
+        tableName: 'T_CONTI_BANCARI',
+        recordId: contoBancario.id,
+        objectName: `Conto bancario ${contoBancario.iban} (${contoBancario.id})`
+      }
+    };
+    this.dialogService.open(AuditLogComponent, config);
+  }
 
-confirmDelete(event: Event, contoBancario: ContoBancarioListingModel): void {
+  confirmDelete(event: Event, contoBancario: ContoBancarioListingModel): void {
     this.confirmationService.confirm({
       target: event.target as EventTarget,
       message: `Sei sicuro di voler eliminare il conto bancario "${contoBancario.iban}"?`,
@@ -196,37 +177,36 @@ confirmDelete(event: Event, contoBancario: ContoBancarioListingModel): void {
   }
 
   private deleteContoBancario(id: number): void {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    this.loading = true;
 
-    this.contoBancarioDeleteSubscription = this.contoBancarioService.delete(id)
-      .subscribe({
-        next: () => {
-          clearTimeout(this.loadingTimeout);
-          this.loadingTimeout = undefined;
-          this.loading = false;
+    this.contoBancarioDeleteSubscription = this.contoBancarioService.delete(id).subscribe({
+      next: () => {
+        clearTimeout(this.loadingTimeout);
+        this.loadingTimeout = undefined;
+        this.loading = false;
 
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Conto bancario cancellato con successo'
-          });
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Conto bancario cancellato con successo'
+        });
 
-          this.loadModelli();
-        },
-        error: (error) => {
-          clearTimeout(this.loadingTimeout);
-          this.loadingTimeout = undefined;
-          this.loading = false;
+        this.loadModelli();
+      },
+      error: (error) => {
+        clearTimeout(this.loadingTimeout);
+        this.loadingTimeout = undefined;
+        this.loading = false;
 
-          this.dialogService.open(DialogErrorComponent, {
-            inputValues: {
-              error: error
-            },
-            modal: true
-          });
+        this.dialogService.open(DialogErrorComponent, {
+          inputValues: {
+            error: error
+          },
+          modal: true
+        });
 
-          console.error('Error deleting conto bancario:', error);
-        }
-      });
+        console.error('Error deleting conto bancario:', error);
+      }
+    });
   }
 }

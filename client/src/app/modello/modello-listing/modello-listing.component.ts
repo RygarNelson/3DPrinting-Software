@@ -40,66 +40,61 @@ import { ModelloListingEliminaMessaggioPipe } from '../pipes/modello-listing-eli
     FormInputSelectComponent,
     ModelloTipoComponent
   ],
-  providers: [
-    ModelloService
-  ],
+  providers: [ModelloService],
   templateUrl: './modello-listing.component.html',
   styleUrl: './modello-listing.component.scss'
 })
 export class ModelloListingComponent implements OnInit, OnDestroy {
-// Data properties
-modelliGrid: ModelloListingGridModel[] = [];
-modelliGridNonVinted: ModelloListingGridModel[] = [];
-totalRecords: number = 0;
-loading: boolean = false;
+  // Data properties
+  modelliGrid: ModelloListingGridModel[] = [];
+  modelliGridNonVinted: ModelloListingGridModel[] = [];
+  totalRecords: number = 0;
+  loading: boolean = false;
 
-// Filter properties
-filtri: ModelloListingFiltri = {
-  offset: 0,
-  limit: 10,
-  search: ''
-};
+  // Filter properties
+  filtri: ModelloListingFiltri = {
+    offset: 0,
+    limit: 10,
+    search: ''
+  };
 
-// Array reference for template
-Array = Array;
+  // Array reference for template
+  Array = Array;
 
-private modelliGridSubscription?: Subscription;
-private modelliGridNonVintedSubscription?: Subscription;
-private modelloDeleteSubscription?: Subscription;
-private modelloImpostaInVenditaVintedSubscription?: Subscription;
-private loadingTimeout?: number;
+  private modelliGridSubscription?: Subscription;
+  private modelliGridNonVintedSubscription?: Subscription;
+  private modelloDeleteSubscription?: Subscription;
+  private modelloImpostaInVenditaVintedSubscription?: Subscription;
+  private loadingTimeout?: number;
 
-constructor(
-  private modelloService: ModelloService,
-  private router: Router,
-  private confirmationService: ConfirmationService,
-  private messageService: MessageService,
-  private dialogService: DialogService,
-  public applicationState: ApplicationStateService
-) {}
+  constructor(
+    private modelloService: ModelloService,
+    private router: Router,
+    private confirmationService: ConfirmationService,
+    private messageService: MessageService,
+    private dialogService: DialogService,
+    public applicationState: ApplicationStateService
+  ) {}
 
-ngOnInit(): void {
-  this.loadModelliGrid();
-  this.loadModelliGridNonVinted();
-}
-
-ngOnDestroy(): void {
-  this.modelliGridSubscription?.unsubscribe();
-  this.modelliGridNonVintedSubscription?.unsubscribe();
-  this.modelloDeleteSubscription?.unsubscribe();
-  this.modelloImpostaInVenditaVintedSubscription?.unsubscribe();
-
-  clearTimeout(this.loadingTimeout);
-  this.loadingTimeout = undefined;
-}
-
-loadModelliGrid(): void {
-  if (this.loadingTimeout == null) {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+  ngOnInit(): void {
+    this.loadModelliGrid();
+    this.loadModelliGridNonVinted();
   }
-  
-  this.modelliGridSubscription = this.modelloService.getListingGrid(this.filtri)
-    .subscribe({
+
+  ngOnDestroy(): void {
+    this.modelliGridSubscription?.unsubscribe();
+    this.modelliGridNonVintedSubscription?.unsubscribe();
+    this.modelloDeleteSubscription?.unsubscribe();
+    this.modelloImpostaInVenditaVintedSubscription?.unsubscribe();
+
+    clearTimeout(this.loadingTimeout);
+    this.loadingTimeout = undefined;
+  }
+
+  loadModelliGrid(): void {
+    this.loading = true;
+
+    this.modelliGridSubscription = this.modelloService.getListingGrid(this.filtri).subscribe({
       next: (response: ModelloListingGridResponse) => {
         this.modelliGrid = response.data;
         this.totalRecords = response.count;
@@ -109,15 +104,12 @@ loadModelliGrid(): void {
         this.loading = false;
       }
     });
-}
-
-loadModelliGridNonVinted(): void {
-  if (this.loadingTimeout == null) {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
   }
-  
-  this.modelliGridNonVintedSubscription = this.modelloService.getListingGridNonVinted(this.filtri)
-    .subscribe({
+
+  loadModelliGridNonVinted(): void {
+    this.loading = true;
+
+    this.modelliGridNonVintedSubscription = this.modelloService.getListingGridNonVinted(this.filtri).subscribe({
       next: (response: ModelloListingGridResponse) => {
         this.modelliGridNonVinted = response.data;
         this.totalRecords = response.count;
@@ -127,93 +119,92 @@ loadModelliGridNonVinted(): void {
         this.loading = false;
       }
     });
-}
+  }
 
-pulisciFiltri(): void {
-  this.filtri = {
-    offset: 0,
-    limit: 10,
-    search: ''
-  };
+  pulisciFiltri(): void {
+    this.filtri = {
+      offset: 0,
+      limit: 10,
+      search: ''
+    };
 
-  this.loadModelliGrid();
-  this.loadModelliGridNonVinted();
-}
+    this.loadModelliGrid();
+    this.loadModelliGridNonVinted();
+  }
 
-refreshTable(): void {
-  this.loadModelliGrid();
-  this.loadModelliGridNonVinted();
-}
+  refreshTable(): void {
+    this.loadModelliGrid();
+    this.loadModelliGridNonVinted();
+  }
 
-onSearchChange(searchTerm: string): void {
-  this.filtri.search = searchTerm;
-  this.refreshTable();
-}
+  onSearchChange(searchTerm: string): void {
+    this.filtri.search = searchTerm;
+    this.refreshTable();
+  }
 
-onTypeChange(tipo: number | undefined): void {
-  this.filtri.tipo = tipo;
-  this.refreshTable();
-}
+  onTypeChange(tipo: number | undefined): void {
+    this.filtri.tipo = tipo;
+    this.refreshTable();
+  }
 
-addNewModello(): void {
-  this.router.navigate(['/modello/manager']);
-}
+  addNewModello(): void {
+    this.router.navigate(['/modello/manager']);
+  }
 
-editModello(event: Event, modello: ModelloListingGridModel): void {
-  event.stopPropagation();
-  this.router.navigate(['/modello/manager', modello.id]);
-}
+  editModello(event: Event, modello: ModelloListingGridModel): void {
+    event.stopPropagation();
+    this.router.navigate(['/modello/manager', modello.id]);
+  }
 
-viewAuditLog(event: Event, modello: ModelloListingGridModel): void {
-  event.stopPropagation();
-  let config: DynamicDialogConfig = {
-    width: '90%',
-    height: '80%',
-    modal: true,
-    dismissableMask: true,
-    closable: true,
-    showHeader: false,
-    contentStyle: {
-      'height': '100%',
-      'width': '100%',
-      'padding': '0px'
-    },
-    data: {
-      tableName: 'T_MODELLI',
-      recordId: modello.id,
-      objectName: `Modello ${modello.nome} (${modello.id})`
-    }
-  };
-  this.dialogService.open(AuditLogComponent, config);
-}
+  viewAuditLog(event: Event, modello: ModelloListingGridModel): void {
+    event.stopPropagation();
+    let config: DynamicDialogConfig = {
+      width: '90%',
+      height: '80%',
+      modal: true,
+      dismissableMask: true,
+      closable: true,
+      showHeader: false,
+      contentStyle: {
+        height: '100%',
+        width: '100%',
+        padding: '0px'
+      },
+      data: {
+        tableName: 'T_MODELLI',
+        recordId: modello.id,
+        objectName: `Modello ${modello.nome} (${modello.id})`
+      }
+    };
+    this.dialogService.open(AuditLogComponent, config);
+  }
 
-confirmDelete(event: Event, modello: ModelloListingGridModel): void {
-  event.stopPropagation();
+  confirmDelete(event: Event, modello: ModelloListingGridModel): void {
+    event.stopPropagation();
 
-  this.confirmationService.confirm({
-    target: event.target as EventTarget,
-    message: `Sei sicuro di voler eliminare il modello "${modello.nome}"?`,
-    icon: 'pi pi-exclamation-triangle',
-    acceptLabel: 'Si',
-    rejectLabel: 'No',
-    acceptIcon: 'pi pi-exclamation-triangle',
-    rejectIcon: 'pi pi-times',
-    acceptButtonStyleClass: 'p-button-danger',
-    rejectButtonStyleClass: 'p-button-secondary',
-    accept: () => {
-      this.deleteModello(modello.id);
-    },
-    reject: () => {
-      // User rejected the deletion
-    }
-  });
-}
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      message: `Sei sicuro di voler eliminare il modello "${modello.nome}"?`,
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Si',
+      rejectLabel: 'No',
+      acceptIcon: 'pi pi-exclamation-triangle',
+      rejectIcon: 'pi pi-times',
+      acceptButtonStyleClass: 'p-button-danger',
+      rejectButtonStyleClass: 'p-button-secondary',
+      accept: () => {
+        this.deleteModello(modello.id);
+      },
+      reject: () => {
+        // User rejected the deletion
+      }
+    });
+  }
 
-private deleteModello(id: number): void {
-  this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+  private deleteModello(id: number): void {
+    this.loading = true;
 
-  this.modelloDeleteSubscription = this.modelloService.delete(id)
-    .subscribe({
+    this.modelloDeleteSubscription = this.modelloService.delete(id).subscribe({
       next: () => {
         window.clearTimeout(this.loadingTimeout);
         this.loadingTimeout = undefined;
@@ -239,36 +230,33 @@ private deleteModello(id: number): void {
           },
           modal: true
         });
-        
+
         console.error('Error deleting modello:', error);
       }
     });
-}
+  }
 
   // Cross interaction methods
   impostaModelloVendibileVinted(modello: ModelloListingGridModel): void {
     if (modello != null && modello.id != null && modello.vinted_vendibile && !modello.vinted_is_in_vendita) {
-      if (this.loadingTimeout == null) {
-        this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
-      }
+      this.loading = true;
 
-      this.modelloImpostaInVenditaVintedSubscription = this.modelloService.impostaInVenditaVinted({ id: modello.id })
-        .subscribe({
-          next: () => {
-            window.clearTimeout(this.loadingTimeout);
-            this.loadingTimeout = undefined;
-            this.loading = false;
+      this.modelloImpostaInVenditaVintedSubscription = this.modelloService.impostaInVenditaVinted({ id: modello.id }).subscribe({
+        next: () => {
+          window.clearTimeout(this.loadingTimeout);
+          this.loadingTimeout = undefined;
+          this.loading = false;
 
-            this.messageService.add({
-              severity: 'success',
-              summary: 'Success',
-              detail: 'Modello impostato in vendita su Vinted con successo'
-            });
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Modello impostato in vendita su Vinted con successo'
+          });
 
-            this.loadModelliGrid();
-            this.loadModelliGridNonVinted();
-          }
-        });
+          this.loadModelliGrid();
+          this.loadModelliGridNonVinted();
+        }
+      });
     }
   }
 }

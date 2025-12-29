@@ -4,10 +4,20 @@
       <h2 class="text-xl font-semibold text-gray-800 pt-6 header-title">Gestione Clienti</h2>
     </ng-template>
     <ng-template pTemplate="content">
-      <p-table #dataTable currentPageReportTemplate="Mostrando da {first} a {last} di {totalRecords} clienti"
-        class="p-datatable-sm" [value]="clienti" [paginator]="true" [rows]="filtri.limit"
-        [totalRecords]="totalRecords" [first]="filtri.offset" [showCurrentPageReport]="true"
-        [rowsPerPageOptions]="[10, 20, 50, 100]" [lazy]="true" (onLazyLoad)="loadData($event)">
+      <p-table
+        #dataTable
+        currentPageReportTemplate="Mostrando da {first} a {last} di {totalRecords} clienti"
+        class="p-datatable-sm"
+        [value]="clienti"
+        [paginator]="true"
+        [rows]="filtri.limit"
+        [totalRecords]="totalRecords"
+        [first]="filtri.offset"
+        [showCurrentPageReport]="true"
+        [rowsPerPageOptions]="[10, 20, 50, 100]"
+        [loading]="loading"
+        [lazy]="true"
+        (onLazyLoad)="loadData($event)">
         <ng-template pTemplate="caption">
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <!-- Search Section -->
@@ -16,34 +26,27 @@
                 <p-inputicon>
                   <i class="pi pi-search"></i>
                 </p-inputicon>
-                <input #searchInput pInputText type="text" placeholder="Cerca clienti..." class="w-full"
-                  [(ngModel)]="filtri.search" (ngModelChange)="dataTable.filterGlobal($event, 'contains')">
+                <input #searchInput pInputText type="text" placeholder="Cerca clienti..." class="w-full" [(ngModel)]="filtri.search" (ngModelChange)="dataTable.filterGlobal($event, 'contains')" />
               </p-iconfield>
-              <button pButton label="Pulisci" class="p-button-outlined w-full sm:w-auto" icon="pi pi-filter-slash"
-                (click)="dataTable.clear()"></button>
+              <button pButton label="Pulisci" class="p-button-outlined w-full sm:w-auto" icon="pi pi-filter-slash" (click)="dataTable.clear()"></button>
             </div>
 
             <!-- Action Buttons Section -->
             <div class="flex items-center gap-2 justify-end sm:justify-start">
-              <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()"
-                pTooltip="Aggiorna tabella" tooltipPosition="top">
-              </p-button>
-              <p-button icon="pi pi-plus" label="Nuovo Cliente" severity="success" (click)="addNewCliente()"
-                pTooltip="Aggiungi nuovo cliente" tooltipPosition="top">
-              </p-button>
+              <p-button icon="pi pi-plus" label="Nuovo Cliente" [loading]="loading" severity="success" (click)="addNewCliente()" pTooltip="Aggiungi nuovo cliente" tooltipPosition="top" />
+              <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()" pTooltip="Aggiorna tabella" tooltipPosition="top" />
             </div>
           </div>
         </ng-template>
         <ng-template pTemplate="header">
           <tr>
             @if (applicationState.isMobile()) {
-              <th>Cliente</th>
-            }
-            @else {
+              <th></th>
+            } @else {
               <th pSortableColumn="etichetta">Etichetta <p-sortIcon field="etichetta"></p-sortIcon></th>
-            <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
-            <th pSortableColumn="telefono">Telefono <p-sortIcon field="telefono"></p-sortIcon></th>
-            <th class="text-center" style="width: 120px;"></th>
+              <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
+              <th pSortableColumn="telefono">Telefono <p-sortIcon field="telefono"></p-sortIcon></th>
+              <th class="text-center" style="width: 120px"></th>
             }
           </tr>
         </ng-template>
@@ -60,70 +63,27 @@
                       <div class="text-gray-500">Telefono</div>
                       <div>{{ cliente.telefono }}</div>
                     </div>
-                    <div class="flex justify-end gap-2 mt-2">
-                      @if (loading) {
-                      <p-button icon="pi pi-spinner pi-spin" severity="info" size="small" [disabled]="true">
-                      </p-button>
-                      <p-button icon="pi pi-spinner pi-spin" severity="danger" size="small" [disabled]="true">
-                      </p-button>
-                      }
-                      @else {
-                      <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(cliente)"
-                        pTooltip="Visualizza log di audit" tooltipPosition="top">
-                      </p-button>
-                      <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editCliente(cliente)"
-                        pTooltip="Modifica cliente" tooltipPosition="top">
-                      </p-button>
-                      <p-button icon="pi pi-trash" severity="danger" size="small" [disabled]="cliente.isUsed"
-                        (click)="confirmDelete($event, cliente)" [pTooltip]="cliente.isUsed | clienteListingEliminaMessaggio"
-                        tooltipPosition="top">
-                      </p-button>
-                      }
-                    </div>
+                    <ng-container *ngTemplateOutlet="clienteActionButtons; context: { cliente: cliente }"></ng-container>
                   </div>
                 </div>
               </td>
-            }
-            @else {
+            } @else {
               <td>{{ cliente.etichetta }}</td>
-            <td>{{ cliente.email }}</td>
-            <td>{{ cliente.telefono }}</td>
-            <td class="text-center">
-              <div class="flex justify-center gap-2">
-                @if (loading) {
-                <p-button icon="pi pi-spinner pi-spin" severity="info" size="small" [disabled]="true">
-                </p-button>
-                <p-button icon="pi pi-spinner pi-spin" severity="danger" size="small" [disabled]="true">
-                </p-button>
-                }
-                @else {
-                <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(cliente)"
-                  pTooltip="Visualizza log di audit" tooltipPosition="top">
-                </p-button>
-                <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editCliente(cliente)"
-                  pTooltip="Modifica cliente" tooltipPosition="top">
-                </p-button>
-                <p-button icon="pi pi-trash" severity="danger" size="small" [disabled]="cliente.isUsed"
-                  (click)="confirmDelete($event, cliente)" [pTooltip]="cliente.isUsed | clienteListingEliminaMessaggio"
-                  tooltipPosition="top">
-                </p-button>
-                }
-              </div>
-            </td>
+              <td>{{ cliente.email }}</td>
+              <td>{{ cliente.telefono }}</td>
+              <td class="text-center">
+                <ng-container *ngTemplateOutlet="clienteActionButtons; context: { cliente: cliente }"></ng-container>
+              </td>
             }
           </tr>
         </ng-template>
         <ng-template pTemplate="emptymessage">
           <tr>
             <td colspan="4" class="text-center py-8">
-              @if (loading) {
-              <p-skeleton height="100px" width="100%" />
-              } @else {
               <div class="flex flex-col items-center gap-2">
                 <i class="pi pi-inbox text-4xl text-gray-400"></i>
                 <p class="text-gray-500">Nessun cliente trovato</p>
               </div>
-              }
             </td>
           </tr>
         </ng-template>
@@ -131,3 +91,11 @@
     </ng-template>
   </p-card>
 </div>
+
+<ng-template #clienteActionButtons let-cliente="cliente">
+  <div class="flex justify-end gap-2">
+    <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(cliente)" pTooltip="Visualizza log di audit" tooltipPosition="top" />
+    <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editCliente(cliente)" pTooltip="Modifica cliente" tooltipPosition="top" />
+    <p-button icon="pi pi-trash" severity="danger" size="small" [disabled]="cliente.isUsed" (click)="confirmDelete($event, cliente)" [pTooltip]="cliente.isUsed | clienteListingEliminaMessaggio" tooltipPosition="top" />
+  </div>
+</ng-template>

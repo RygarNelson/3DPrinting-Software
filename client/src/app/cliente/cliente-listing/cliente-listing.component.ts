@@ -23,23 +23,9 @@ import { ClienteListingEliminaMessaggioPipe } from '../pipes/cliente-listing-eli
 
 @Component({
   selector: 'app-cliente-listing',
-  imports: [
-    CommonModule,
-    FormsModule,
-    CardModule,
-    ButtonModule,
-    TableModule,
-    InputTextModule,
-    IconFieldModule,
-    InputIconModule,
-    SkeletonModule,
-    TooltipModule,
-    ClienteListingEliminaMessaggioPipe
-  ],
+  imports: [CommonModule, FormsModule, CardModule, ButtonModule, TableModule, InputTextModule, IconFieldModule, InputIconModule, SkeletonModule, TooltipModule, ClienteListingEliminaMessaggioPipe],
   templateUrl: './cliente-listing.component.html',
-  providers: [
-    ClienteService
-  ]
+  providers: [ClienteService]
 })
 export class ClienteListingComponent implements OnDestroy {
   clienti: ClienteListingModel[] = [];
@@ -72,24 +58,23 @@ export class ClienteListingComponent implements OnDestroy {
   }
 
   loadClienti(): void {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
-    
-    this.clientiSubscription = this.clienteService.getListing(this.filtri)
-      .subscribe({
-        next: (response: ClienteListingResponse) => {
-          this.clienti = response.data;
-          this.totalRecords = response.count;
+    this.loading = true;
 
-          window.clearTimeout(this.loadingTimeout);
-          this.loading = false;
-        },
-        error: (error) => {
-          console.error('Error loading clienti:', error);
+    this.clientiSubscription = this.clienteService.getListing(this.filtri).subscribe({
+      next: (response: ClienteListingResponse) => {
+        this.clienti = response.data;
+        this.totalRecords = response.count;
 
-          window.clearTimeout(this.loadingTimeout);
-          this.loading = false;
-        }
-      });
+        window.clearTimeout(this.loadingTimeout);
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading clienti:', error);
+
+        window.clearTimeout(this.loadingTimeout);
+        this.loading = false;
+      }
+    });
   }
 
   loadData(event: TableLazyLoadEvent): void {
@@ -98,8 +83,7 @@ export class ClienteListingComponent implements OnDestroy {
 
     if (event.globalFilter) {
       this.filtri.search = typeof event.globalFilter === 'string' ? event.globalFilter : event.globalFilter[0];
-    }
-    else {
+    } else {
       this.filtri.search = undefined;
     }
 
@@ -107,9 +91,8 @@ export class ClienteListingComponent implements OnDestroy {
       this.filtri.order = {
         column: typeof event.sortField === 'string' ? event.sortField : event.sortField[0],
         direction: event.sortOrder === 1 ? 'ASC' : 'DESC'
-      }
-    }
-    else {
+      };
+    } else {
       this.filtri.order = undefined;
     }
 
@@ -137,9 +120,9 @@ export class ClienteListingComponent implements OnDestroy {
       closable: true,
       showHeader: false,
       contentStyle: {
-        'height': '100%',
-        'width': '100%',
-        'padding': '0px'
+        height: '100%',
+        width: '100%',
+        padding: '0px'
       },
       data: {
         tableName: 'T_CLIENTI',
@@ -171,35 +154,34 @@ export class ClienteListingComponent implements OnDestroy {
   }
 
   private deleteCliente(id: number): void {
-    this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+    this.loading = true;
 
-    this.clienteDeleteSubscription = this.clienteService.delete(id)
-      .subscribe({
-        next: () => {
-          window.clearTimeout(this.loadingTimeout);
-          this.loading = false;
+    this.clienteDeleteSubscription = this.clienteService.delete(id).subscribe({
+      next: () => {
+        window.clearTimeout(this.loadingTimeout);
+        this.loading = false;
 
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Cliente cancellato con successo'
-          });
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Cliente cancellato con successo'
+        });
 
-          this.loadClienti();
-        },
-        error: (error) => {
-          window.clearTimeout(this.loadingTimeout);
-          this.loading = false;
+        this.loadClienti();
+      },
+      error: (error) => {
+        window.clearTimeout(this.loadingTimeout);
+        this.loading = false;
 
-          this.dialogService.open(DialogErrorComponent, {
-            inputValues: {
-              error: error
-            },
-            modal: true
-          });
-          
-          console.error('Error deleting cliente:', error);
-        }
-      });
+        this.dialogService.open(DialogErrorComponent, {
+          inputValues: {
+            error: error
+          },
+          modal: true
+        });
+
+        console.error('Error deleting cliente:', error);
+      }
+    });
   }
-} 
+}

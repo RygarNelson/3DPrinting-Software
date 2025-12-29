@@ -6,11 +6,20 @@
 
     <ng-template pTemplate="content">
       <!-- Table -->
-      <p-table #dataTable currentPageReportTemplate="Mostrando da {first} a {last} di {totalRecords} conti bancari"
-        class="p-datatable-sm" [value]="conti_bancari" [paginator]="true"
-        [rows]="filtri.limit" [totalRecords]="totalRecords" [first]="filtri.offset" [showCurrentPageReport]="true"
-        [rowsPerPageOptions]="[10, 20, 50, 100]" [lazy]="true" (onLazyLoad)="loadData($event)">
-
+      <p-table
+        #dataTable
+        currentPageReportTemplate="Mostrando da {first} a {last} di {totalRecords} conti bancari"
+        class="p-datatable-sm"
+        [value]="conti_bancari"
+        [paginator]="true"
+        [rows]="filtri.limit"
+        [totalRecords]="totalRecords"
+        [first]="filtri.offset"
+        [showCurrentPageReport]="true"
+        [rowsPerPageOptions]="[10, 20, 50, 100]"
+        [loading]="loading"
+        [lazy]="true"
+        (onLazyLoad)="loadData($event)">
         <ng-template pTemplate="caption">
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <!-- Search Section -->
@@ -19,22 +28,15 @@
                 <p-inputicon>
                   <i class="pi pi-search"></i>
                 </p-inputicon>
-                <input #searchInput pInputText type="text" placeholder="Cerca conti bancari..." class="w-full"
-                  [(ngModel)]="filtri.search" (ngModelChange)="dataTable.filterGlobal($event, 'contains')">
+                <input #searchInput pInputText type="text" placeholder="Cerca conti bancari..." class="w-full" [(ngModel)]="filtri.search" (ngModelChange)="dataTable.filterGlobal($event, 'contains')" />
               </p-iconfield>
-              <button pButton label="Pulisci" class="p-button-outlined w-full sm:w-auto" icon="pi pi-filter-slash"
-                (click)="dataTable.clear(); pulisciFiltri();"></button>
+              <button pButton label="Pulisci" class="p-button-outlined w-full sm:w-auto" icon="pi pi-filter-slash" [loading]="loading" (click)="dataTable.clear(); pulisciFiltri()"></button>
             </div>
 
             <!-- Action Buttons Section -->
             <div class="flex items-center gap-2 justify-end sm:justify-start">
-              <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()"
-                pTooltip="Aggiorna tabella" tooltipPosition="top">
-              </p-button>
-              <p-button icon="pi pi-plus" label="Nuovo Conto Bancario" severity="success"
-                (click)="addNewContoBancario()" pTooltip="Aggiungi nuovo conto bancario"
-                tooltipPosition="top">
-              </p-button>
+              <p-button icon="pi pi-plus" label="Nuovo Conto Bancario" [loading]="loading" severity="success" (click)="addNewContoBancario()" pTooltip="Aggiungi nuovo conto bancario" tooltipPosition="top" />
+              <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()" pTooltip="Aggiorna tabella" tooltipPosition="top" />
             </div>
           </div>
         </ng-template>
@@ -43,14 +45,12 @@
         <ng-template #header>
           <tr>
             @if (applicationState.isMobile()) {
-              <th>Conto Bancario</th>
-            }
-            @else {
+              <th></th>
+            } @else {
               <th pSortableColumn="iban">IBAN <p-sortIcon field="iban" /></th>
-            <th pSortableColumn="nome_proprietario">Nome Proprietario <p-sortIcon field="nome_proprietario" /></th>
-            <th pSortableColumn="cognome_proprietario">Cognome Proprietario <p-sortIcon field="cognome_proprietario" />
-            </th>
-            <th class="text-center" style="width: 120px;"></th>
+              <th pSortableColumn="nome_proprietario">Nome Proprietario <p-sortIcon field="nome_proprietario" /></th>
+              <th pSortableColumn="cognome_proprietario">Cognome Proprietario <p-sortIcon field="cognome_proprietario" /></th>
+              <th class="text-center" style="width: 120px"></th>
             }
           </tr>
         </ng-template>
@@ -70,57 +70,17 @@
                       <div class="text-gray-500">Cognome</div>
                       <div>{{ conto_bancario.cognome_proprietario }}</div>
                     </div>
-                    <div class="flex justify-end gap-2 mt-2">
-                      @if (loading) {
-                      <p-button icon="pi pi-spinner pi-spin" severity="info" size="small" [disabled]="true">
-                      </p-button>
-                      <p-button icon="pi pi-spinner pi-spin" severity="danger" size="small" [disabled]="true">
-                      </p-button>
-                      }
-                      @else {
-                      <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(conto_bancario)"
-                        pTooltip="Visualizza log di audit" tooltipPosition="top">
-                      </p-button>
-                      <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editContoBancario(conto_bancario)"
-                        pTooltip="Modifica conto bancario" tooltipPosition="top">
-                      </p-button>
-                      <p-button icon="pi pi-trash" severity="danger" size="small" [disabled]="conto_bancario.isUsed"
-                        (click)="confirmDelete($event, conto_bancario)"
-                        [pTooltip]="conto_bancario.isUsed | contoBancarioListingEliminaMessaggio" tooltipPosition="top">
-                      </p-button>
-                      }
-                    </div>
+                    <ng-container *ngTemplateOutlet="contoBancarioActionButtons; context: { conto_bancario: conto_bancario }"></ng-container>
                   </div>
                 </div>
               </td>
-            }
-            @else {
+            } @else {
               <td class="font-medium">{{ conto_bancario.iban }}</td>
-            <td>{{ conto_bancario.nome_proprietario }}</td>
-            <td>{{ conto_bancario.cognome_proprietario }}</td>
-            <td class="text-center">
-              <div class="flex justify-center gap-2">
-                @if (loading) {
-                <p-button icon="pi pi-spinner pi-spin" severity="info" size="small" [disabled]="true">
-                </p-button>
-                <p-button icon="pi pi-spinner pi-spin" severity="danger" size="small" [disabled]="true">
-                </p-button>
-                }
-                @else {
-                <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(conto_bancario)"
-                  pTooltip="Visualizza log di audit" tooltipPosition="top">
-                </p-button>
-                <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editContoBancario(conto_bancario)"
-                  pTooltip="Modifica conto bancario" tooltipPosition="top">
-                </p-button>
-                <p-button icon="pi pi-trash" severity="danger" size="small" [disabled]="conto_bancario.isUsed"
-                  (click)="confirmDelete($event, conto_bancario)"
-                  [pTooltip]="conto_bancario.isUsed | contoBancarioListingEliminaMessaggio" tooltipPosition="top">
-                </p-button>
-                }
-
-              </div>
-            </td>
+              <td>{{ conto_bancario.nome_proprietario }}</td>
+              <td>{{ conto_bancario.cognome_proprietario }}</td>
+              <td class="text-center">
+                <ng-container *ngTemplateOutlet="contoBancarioActionButtons; context: { conto_bancario: conto_bancario }"></ng-container>
+              </td>
             }
           </tr>
         </ng-template>
@@ -129,14 +89,10 @@
         <ng-template pTemplate="emptymessage">
           <tr>
             <td colspan="4" class="text-center py-8">
-              @if (loading) {
-              <p-skeleton height="100px" width="100%" />
-              } @else {
               <div class="flex flex-col items-center gap-2">
                 <i class="pi pi-inbox text-4xl text-gray-400"></i>
                 <p class="text-gray-500">Nessun conto bancario trovato</p>
               </div>
-              }
             </td>
           </tr>
         </ng-template>
@@ -144,3 +100,19 @@
     </ng-template>
   </p-card>
 </div>
+
+<ng-template #contoBancarioActionButtons let-conto_bancario="conto_bancario">
+  <div class="flex justify-end gap-2">
+    <p-button icon="pi pi-history" severity="secondary" [loading]="loading" size="small" (click)="viewAuditLog(conto_bancario)" pTooltip="Visualizza log di audit" tooltipPosition="top" />
+    <p-button icon="pi pi-pencil" severity="info" [loading]="loading" size="small" (click)="editContoBancario(conto_bancario)" pTooltip="Modifica conto bancario" tooltipPosition="top" />
+    <p-button
+      icon="pi pi-trash"
+      severity="danger"
+      [loading]="loading"
+      size="small"
+      [disabled]="conto_bancario.isUsed"
+      (click)="confirmDelete($event, conto_bancario)"
+      [pTooltip]="conto_bancario.isUsed | contoBancarioListingEliminaMessaggio"
+      tooltipPosition="top" />
+  </div>
+</ng-template>
