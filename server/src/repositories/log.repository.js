@@ -494,24 +494,7 @@ class LogRepository extends BaseRepository {
                     (log.old_record ? JSON.parse(log.old_record) : {}) :
                     (log.new_record ? JSON.parse(log.new_record) : {});
                 
-                // Create a clean dettaglio object with audit metadata
-                const enrichedDettaglio = {
-                    ...dettaglioData,
-                    _audit: {
-                        log_id: log.id,
-                        operation: log.operation,
-                        field_name: log.field_name,
-                        old_value: log.old_value,
-                        new_value: log.new_value,
-                        created_at: log.createdAt,
-                        user: log.user
-                    }
-                };
-
-                // Remove audit metadata from the main data to keep it clean
-                delete enrichedDettaglio._audit.log_id;
-                
-                return enrichedDettaglio;
+                return dettaglioData;
             });
         }
 
@@ -522,24 +505,7 @@ class LogRepository extends BaseRepository {
                     (log.old_record ? JSON.parse(log.old_record) : {}) :
                     (log.new_record ? JSON.parse(log.new_record) : {});
                 
-                // Create a clean basetta object with audit metadata
-                const enrichedBasetta = {
-                    ...basettaData,
-                    _audit: {
-                        log_id: log.id,
-                        operation: log.operation,
-                        field_name: log.field_name,
-                        old_value: log.old_value,
-                        new_value: log.new_value,
-                        created_at: log.createdAt,
-                        user: log.user
-                    }
-                };
-
-                // Remove audit metadata from the main data to keep it clean
-                delete enrichedBasetta._audit.log_id;
-                
-                return enrichedBasetta;
+                return basettaData;
             });
         }
 
