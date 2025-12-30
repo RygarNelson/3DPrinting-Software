@@ -380,118 +380,29 @@ class LogRepository extends BaseRepository {
         const tVenditeDettagliLogs = venditaLogs.rows.filter(log => log.table_name === 'T_VENDITE_DETTAGLI');
         const tBasettaLogs = venditaLogs.rows.filter(log => log.table_name === 'T_BASETTE');
 
-        // Group related logs by group_id for efficient lookup
-        const dettagliLogsByGroupId = {};
-        const basettaLogsByGroupId = {};
+        // We simply combine all logs. The frontend handles the grouping and display.
+        // We filter out any duplicates from the "childLogs" fetch above if simpler logic is desired,
+        // but here we are combining the specific fetched sets.
+        // Combine the explicitly fetched related logs with the main result
+        // We use a Map to dedup by ID just in case there's overlap between the main query and the group fetch
+        const allLogsMap = new Map();
 
-        // Group dettagli logs by group_id
-        for (const log of tVenditeDettagliLogs) {
-            if (!dettagliLogsByGroupId[log.group_id]) {
-                dettagliLogsByGroupId[log.group_id] = [];
-            }
-            dettagliLogsByGroupId[log.group_id].push(log);
-        }
+        tVenditeLogs.forEach(log => allLogsMap.set(log.id, log));
+        tVenditeDettagliLogs.forEach(log => allLogsMap.set(log.id, log));
+        tBasettaLogs.forEach(log => allLogsMap.set(log.id, log));
 
-        // Group basette logs by group_id
-        for (const log of tBasettaLogs) {
-             if (!basettaLogsByGroupId[log.group_id]) {
-                basettaLogsByGroupId[log.group_id] = [];
-            }
-            basettaLogsByGroupId[log.group_id].push(log);
-        }
-
-        // For each Verkauf log, enrich it with related dettagli and basette logs from the SAME group
-        const enrichedLogs = tVenditeLogs.map((venditaLog) => {
-            let enrichedLog = { ...venditaLog.toJSON() };
-            
-            const dettagliLogs = dettagliLogsByGroupId[venditaLog.group_id] || [];
-            const basetteLogs = basettaLogsByGroupId[venditaLog.group_id] || [];
-
-            // Enrich old_record with dettagli and basette
-            if (enrichedLog.old_record) {
-                try {
-                    const oldRecord = JSON.parse(enrichedLog.old_record);
-                    enrichedLog.old_record = this.mergeRelatedLogs(oldRecord, dettagliLogs, basetteLogs, 'old');
-                } catch (error) {
-                    console.error('Error parsing old_record:', error);
-                }
-            }
-
-            // Enrich new_record with dettagli and basette
-            if (enrichedLog.new_record) {
-                try {
-                    const newRecord = JSON.parse(enrichedLog.new_record);
-                    enrichedLog.new_record = this.mergeRelatedLogs(newRecord, dettagliLogs, basetteLogs, 'new');
-                } catch (error) {
-                    console.error('Error parsing new_record:', error);
-                }
-            }
-
-            return enrichedLog;
-        });
-
-        // We combine the enriched parent logs with the raw child logs
-        // This ensures that the group contains ALL operations (parent update + child inserts/updates)
-        // allowing the frontend to consolidate them appropriately.
-        let finalRows = [
-            ...enrichedLogs,
-            ...tVenditeDettagliLogs.map(log => log.toJSON()),
-            ...tBasettaLogs.map(log => log.toJSON())
-        ];
-        finalRows = finalRows.sort((a, b) => a.id < b.id ? -1 : 1);
+        // Convert to array and sort
+        const finalRows = Array.from(allLogsMap.values())
+            .map(log => log.toJSON ? log.toJSON() : log) // Ensure JSON
+            .sort((a, b) => {
+                // Sort by ID descending (newer first) or createdAt
+                return b.id - a.id; 
+            });
 
         return {
             count: finalRows.length, 
             rows: finalRows
         };
-    }
-
-    /**
-     * Merge related dettagli and basette logs into a record
-     * @param {Object} record - The main record to enrich
-     * @param {Array} dettagliLogs - Array of dettagli logs
-     * @param {Array} basetteLogs - Array of basette logs
-     * @param {string} recordType - 'old' or 'new' to determine which value to use
-     * @returns {Object} - Enriched record
-     */
-    mergeRelatedLogs(record, dettagliLogs, basetteLogs, recordType) {
-        const enrichedRecord = { ...record };
-
-        // Add dettagli logs
-        if (dettagliLogs.length > 0) {
-            const relevantDettagli = dettagliLogs.filter(log => 
-                recordType === 'old' ? log.old_record : log.new_record
-            );
-            
-            if (relevantDettagli.length > 0) {
-                enrichedRecord.dettagli = relevantDettagli.map((log) => {
-                    const dettaglioData = recordType === 'old' ? 
-                        (log.old_record ? JSON.parse(log.old_record) : {}) :
-                        (log.new_record ? JSON.parse(log.new_record) : {});
-                    
-                    return dettaglioData;
-                });
-            }
-        }
-
-        // Add basette logs
-        if (basetteLogs.length > 0) {
-            const relevantBasette = basetteLogs.filter(log => 
-                recordType === 'old' ? log.old_record : log.new_record
-            );
-
-            if (relevantBasette.length > 0) {
-                enrichedRecord.basette = relevantBasette.map((log) => {
-                    const basettaData = recordType === 'old' ? 
-                        (log.old_record ? JSON.parse(log.old_record) : {}) :
-                        (log.new_record ? JSON.parse(log.new_record) : {});
-                    
-                    return basettaData;
-                });
-            }
-        }
-
-        return enrichedRecord;
     }
 }
 
