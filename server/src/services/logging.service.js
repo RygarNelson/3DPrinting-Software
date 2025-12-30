@@ -246,9 +246,24 @@ class LoggingService {
             const oldValue = old_record?.[field];
             const newValue = new_record?.[field];
 
-            // Check if both values are dates
-            if (oldValue instanceof Date && newValue instanceof Date) {
-                if (oldValue.getTime() != newValue.getTime()) {
+            // Helper to check if a value is a valid date
+            const isValidDate = (d) => {
+                if (d instanceof Date && !isNaN(d)) return true;
+                if (typeof d === 'string' || typeof d === 'number') {
+                    const date = new Date(d);
+                    return !isNaN(date.getTime());
+                }
+                return false;
+            };
+
+            // Check if both values are potentially dates
+            if (isValidDate(oldValue) && isValidDate(newValue)) {
+                // If they are both dates, compare their timestamps
+                const oldDate = new Date(oldValue);
+                const newDate = new Date(newValue);
+                
+                // Compare timestamps
+                if (oldDate.getTime() !== newDate.getTime()) {
                     changedFields.push({
                         name: field,
                         old_value: oldValue,
@@ -256,7 +271,9 @@ class LoggingService {
                     });
                 }
             }
-            // Compare values (handling null/undefined)
+            // Strict equality check for non-dates
+            // Note: Use loose equality (!=) if typemismatch is expected but value is same (e.g. "1" and 1)
+            // But strict (!==) is safer. Let's stick to loose (!=) as per previous implementation to avoid regression
             else if (oldValue != newValue) {
                 changedFields.push({
                     name: field,

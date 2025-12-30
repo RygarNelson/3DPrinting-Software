@@ -60,8 +60,7 @@ class VenditaRepository extends BaseRepository {
             const additionalData = {
                 request_source: 'HTTP',
                 endpoint: req.originalUrl,
-                method: req.method,
-                operation_details: 'Complex insert with dettagli and basette'
+                method: req.method
             };
 
             const vendita = await Vendita.create(data, { 
@@ -162,8 +161,7 @@ class VenditaRepository extends BaseRepository {
             const additionalData = {
                 request_source: 'HTTP',
                 endpoint: req.originalUrl,
-                method: req.method,
-                operation_details: 'Complex update with dettagli and basette'
+                method: req.method
             };
 
             await vendita.update({ data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, conto_bancario_id, etichetta_spedizione }, { 
@@ -356,8 +354,7 @@ class VenditaRepository extends BaseRepository {
 
             const additionalData = {
                 request_source: 'HTTP',
-                operation: 'DELETE',
-                operation_details: 'Complex delete with dettagli and basette'
+                operation: 'DELETE'
             };
 
             // Dettagli and basette are deleted either manually or via cascade if configured (checking code implies manual)
