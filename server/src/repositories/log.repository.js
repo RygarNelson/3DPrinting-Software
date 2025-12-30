@@ -397,50 +397,32 @@ class LogRepository extends BaseRepository {
             })
         ]);
 
-        // Group related logs by vendita_id for efficient lookup
-        const dettagliLogsByVendita = {};
-        const basettaLogsByVendita = {};
+        // Group related logs by group_id for efficient lookup
+        const dettagliLogsByGroupId = {};
+        const basettaLogsByGroupId = {};
 
-        // Group dettagli logs by vendita_id
+        // Group dettagli logs by group_id
         for (const log of allDettagliLogs) {
-            // We need to get the vendita_id from the dettaglio record
-            // Since we don't have direct access, we'll need to query it
-            try {
-                const dettaglioData = log.new_record ? JSON.parse(log.new_record) : 
-                                    (log.old_record ? JSON.parse(log.old_record) : {});
-                if (dettaglioData.vendita_id) {
-                    if (!dettagliLogsByVendita[dettaglioData.vendita_id]) {
-                        dettagliLogsByVendita[dettaglioData.vendita_id] = [];
-                    }
-                    dettagliLogsByVendita[dettaglioData.vendita_id].push(log);
-                }
-            } catch (error) {
-                console.error('Error parsing dettaglio log data:', error);
+            if (!dettagliLogsByGroupId[log.group_id]) {
+                dettagliLogsByGroupId[log.group_id] = [];
             }
+            dettagliLogsByGroupId[log.group_id].push(log);
         }
 
-        // Group basette logs by vendita_id
+        // Group basette logs by group_id
         for (const log of allBasettaLogs) {
-            try {
-                const basettaData = log.new_record ? JSON.parse(log.new_record) : 
-                                  (log.old_record ? JSON.parse(log.old_record) : {});
-                if (basettaData.vendita_id) {
-                    if (!basettaLogsByVendita[basettaData.vendita_id]) {
-                        basettaLogsByVendita[basettaData.vendita_id] = [];
-                    }
-                    basettaLogsByVendita[basettaData.vendita_id].push(log);
-                }
-            } catch (error) {
-                console.error('Error parsing basetta log data:', error);
+             if (!basettaLogsByGroupId[log.group_id]) {
+                basettaLogsByGroupId[log.group_id] = [];
             }
+            basettaLogsByGroupId[log.group_id].push(log);
         }
 
-        // For each vendita log, enrich it with related dettagli and basette logs
+        // For each vendita log, enrich it with related dettagli and basette logs from the SAME group
         const enrichedLogs = venditaLogs.rows.map((venditaLog) => {
             let enrichedLog = { ...venditaLog.toJSON() };
             
-            const dettagliLogs = dettagliLogsByVendita[venditaLog.record_id] || [];
-            const basetteLogs = basettaLogsByVendita[venditaLog.record_id] || [];
+            const dettagliLogs = dettagliLogsByGroupId[venditaLog.group_id] || [];
+            const basetteLogs = basettaLogsByGroupId[venditaLog.group_id] || [];
 
             // Enrich old_record with dettagli and basette
             if (enrichedLog.old_record) {
@@ -462,7 +444,6 @@ class LogRepository extends BaseRepository {
                 }
             }
 
-            // Enrich old_value and new_value if they exist
             // We DO NOT enrich old_value/new_value because these are usually specific field values (strings/numbers)
             // and merging related full-record logs into them corrupts the data structure.
             // Only old_record and new_record (which are full snapshots) should be enriched.
