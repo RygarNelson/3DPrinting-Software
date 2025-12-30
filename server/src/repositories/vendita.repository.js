@@ -64,10 +64,10 @@ class VenditaRepository extends BaseRepository {
                 operation_details: 'Complex insert with dettagli and basette'
             };
 
-            const vendita = await Vendita.create(data, { transaction: transaction });
-
-            // Log the main vendita creation
-            await loggingService.logInsert('T_VENDITE', vendita.id, vendita.toJSON(), additionalData, transaction);
+            const vendita = await Vendita.create(data, { 
+                transaction: transaction,
+                auditAdditionalData: additionalData
+            });
 
             let totale = 0;
             if (Array.isArray(dettagli)) {
@@ -84,13 +84,13 @@ class VenditaRepository extends BaseRepository {
                         stampa_is_parziale: dettaglio.stampa_is_parziale,
                         basetta_dimensione: dettaglio.basetta_dimensione,
                         basetta_quantita: dettaglio.basetta_quantita
-                    }, { transaction: transaction });
-
-                    // Log dettaglio creation
-                    await loggingService.logInsert('T_VENDITE_DETTAGLI', dettaglioCreated.id, dettaglioCreated.toJSON(), {
+                    }, { 
+                        transaction: transaction,
+                        auditAdditionalData: {
                             ...additionalData,
                             parent_vendita_id: vendita.id
-                        }, transaction);
+                        }
+                    });
 
                     if (dettaglio.prezzo) {
                         totale += parseFloat(dettaglio.prezzo);
@@ -106,29 +106,34 @@ class VenditaRepository extends BaseRepository {
                         dimensione: basetta.dimensione,
                         quantita: basetta.quantita,
                         stato_stampa: basetta.stato_stampa
-                    }, { transaction: transaction });
-
-                    // Log basetta creation
-                    await loggingService.logInsert('T_BASETTE', basettaCreated.id, basettaCreated.toJSON(), {
+                    }, { 
+                        transaction: transaction,
+                        auditAdditionalData: {
                             ...additionalData,
                             parent_vendita_id: vendita.id
-                        }, transaction);
+                        }
+                    });
                 }
             }
 
-            await vendita.update({ totale_vendita: totale }, { transaction: transaction });
+            await vendita.update({ totale_vendita: totale }, { 
+                transaction: transaction,
+                auditAdditionalData: additionalData,
+                individualHooks: true
+            });
 
             // For each dettaglio, if the modello is not null and is vendibile on vinted, set is in vendita to false
             for (const dettaglio of dettagli) {
                 const modello = await Modello.findByPk(dettaglio.modello_id);
                 if (modello != null && modello.vinted_vendibile) {
-                    await modello.update({ vinted_is_in_vendita: false }, { transaction: transaction });
-                    
-                    // Log modello update
-                    await loggingService.logUpdate('T_MODELLI', modello.id, 'vinted_is_in_vendita', true, false, {
-                        ...additionalData,
-                        reason: 'Model set as not in sale after vendita creation'
-                    }, transaction);
+                    await modello.update({ vinted_is_in_vendita: false }, { 
+                        transaction: transaction,
+                        auditAdditionalData: {
+                            ...additionalData,
+                            reason: 'Model set as not in sale after vendita creation'
+                        },
+                        individualHooks: true
+                    });
                 }
             }
 
@@ -154,9 +159,6 @@ class VenditaRepository extends BaseRepository {
             });
             if (!vendita) throw new Error('Vendita non trovata');
 
-            const oldData = vendita.toJSON();
-            await vendita.update({ data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, conto_bancario_id, etichetta_spedizione }, { transaction: transaction });
-
             const additionalData = {
                 request_source: 'HTTP',
                 endpoint: req.originalUrl,
@@ -164,8 +166,11 @@ class VenditaRepository extends BaseRepository {
                 operation_details: 'Complex update with dettagli and basette'
             };
 
-            // Log the main vendita update
-            await loggingService.logUpdate('T_VENDITE', vendita.id, oldData, vendita.toJSON(), additionalData, transaction);
+            await vendita.update({ data_vendita, data_scadenza, data_scadenza_spedizione, stato_spedizione, link_tracciamento, cliente_id, conto_bancario_id, etichetta_spedizione }, { 
+                transaction: transaction,
+                auditAdditionalData: additionalData,
+                individualHooks: true
+            });
 
             // Handle dettagli
             const existingDettagli = vendita.dettagli || [];
@@ -181,7 +186,6 @@ class VenditaRepository extends BaseRepository {
             for (const existingDettaglio of existingDettagli) {
                 if (dettagliMap.has(existingDettaglio.id)) {
                     const dettaglio = dettagliMap.get(existingDettaglio.id);
-                    const oldDettaglioData = existingDettaglio.toJSON();
                     await existingDettaglio.update({ 
                         modello_id: dettaglio.modello_id, 
                         stampante_id: dettaglio.stampante_id, 
@@ -193,24 +197,25 @@ class VenditaRepository extends BaseRepository {
                         stampa_is_parziale: dettaglio.stampa_is_parziale,
                         basetta_dimensione: dettaglio.basetta_dimensione,
                         basetta_quantita: dettaglio.basetta_quantita
-                    }, { transaction: transaction });
-                    
-                    // Log dettaglio update
-                    await loggingService.logUpdate('T_VENDITE_DETTAGLI', existingDettaglio.id, oldDettaglioData, existingDettaglio.toJSON(), {
-                        ...additionalData,
-                        parent_vendita_id: vendita.id
-                    }, transaction);
+                    }, { 
+                        transaction: transaction,
+                        auditAdditionalData: {
+                            ...additionalData,
+                            parent_vendita_id: vendita.id
+                        },
+                        individualHooks: true
+                    });
                     
                     dettagliMap.delete(existingDettaglio.id);
                 } else {
-                    const oldDettaglioData = existingDettaglio.toJSON();
-                    await existingDettaglio.destroy({ transaction: transaction });
-                    
-                    // Log dettaglio deletion
-                    await loggingService.logDelete('T_VENDITE_DETTAGLI', existingDettaglio.id, oldDettaglioData, {
-                        ...additionalData,
-                        parent_vendita_id: vendita.id
-                    }, transaction);
+                    await existingDettaglio.destroy({ 
+                        transaction: transaction,
+                        auditAdditionalData: {
+                            ...additionalData,
+                            parent_vendita_id: vendita.id
+                        },
+                        individualHooks: true
+                    });
                 }
             }
             // Insert new dettagli
@@ -230,13 +235,13 @@ class VenditaRepository extends BaseRepository {
                             stampa_is_parziale: dettaglio.stampa_is_parziale,
                             basetta_dimensione: dettaglio.basetta_dimensione,
                             basetta_quantita: dettaglio.basetta_quantita
-                        }, { transaction: transaction });
-                        
-                        // Log new dettaglio creation
-                        await loggingService.logInsert('T_VENDITE_DETTAGLI', dettaglioCreated.id, dettaglioCreated.toJSON(), {
-                            ...additionalData,
-                            parent_vendita_id: vendita.id
-                        }, transaction);
+                        }, { 
+                            transaction: transaction,
+                            auditAdditionalData: {
+                                ...additionalData,
+                                parent_vendita_id: vendita.id
+                            }
+                        });
                     }
                     if (dettaglio.prezzo) {
                         totale += parseFloat(dettaglio.prezzo);
@@ -258,29 +263,29 @@ class VenditaRepository extends BaseRepository {
             for (const existingBasetta of existingBasette) {
                 if (basetteMap.has(existingBasetta.id)) {
                     const basetta = basetteMap.get(existingBasetta.id);
-                    const oldBasettaData = existingBasetta.toJSON();
                     await existingBasetta.update({ 
                         dimensione: basetta.dimensione, 
                         quantita: basetta.quantita, 
                         stato_stampa: basetta.stato_stampa
-                    }, { transaction: transaction });
-                    
-                    // Log basetta update
-                    await loggingService.logUpdate('T_BASETTE', existingBasetta.id, oldBasettaData, existingBasetta.toJSON(), {
-                        ...additionalData,
-                        parent_vendita_id: vendita.id
-                    }, transaction);
+                    }, { 
+                        transaction: transaction,
+                        auditAdditionalData: {
+                            ...additionalData,
+                            parent_vendita_id: vendita.id
+                        },
+                        individualHooks: true
+                    });
                     
                     basetteMap.delete(existingBasetta.id);
                 } else {
-                    const oldBasettaData = existingBasetta.toJSON();
-                    await existingBasetta.destroy({ transaction: transaction });
-                    
-                    // Log basetta deletion
-                    await loggingService.logDelete('T_BASETTE', existingBasetta.id, oldBasettaData, {
-                        ...additionalData,
-                        parent_vendita_id: vendita.id
-                    }, transaction);
+                    await existingBasetta.destroy({ 
+                        transaction: transaction,
+                        auditAdditionalData: {
+                            ...additionalData,
+                            parent_vendita_id: vendita.id
+                        },
+                        individualHooks: true 
+                    });
                 }
             }
             // Insert new basette
@@ -292,32 +297,36 @@ class VenditaRepository extends BaseRepository {
                             dimensione: basetta.dimensione,
                             quantita: basetta.quantita,
                             stato_stampa: basetta.stato_stampa
-                        }, { transaction: transaction });
-                        
-                        // Log new basetta creation
-                        await loggingService.logInsert('T_BASETTE', basettaCreated.id, basettaCreated.toJSON(), {
-                            ...additionalData,
-                            parent_vendita_id: vendita.id
-                        }, transaction);
+                        }, { 
+                            transaction: transaction,
+                            auditAdditionalData: {
+                                ...additionalData,
+                                parent_vendita_id: vendita.id
+                            }
+                        });
                     }
                 }
             }
 
-            await vendita.update({ totale_vendita: totale }, { transaction: transaction });
+            await vendita.update({ totale_vendita: totale }, { 
+                transaction: transaction,
+                auditAdditionalData: additionalData,
+                individualHooks: true
+            });
 
             // For each dettaglio, if the modello is not null and is vendibile on vinted, set is in vendita to false
             for (const dettaglio of dettagli) {
                 if (dettaglio.modello_id) {
                     const modello = await Modello.findByPk(dettaglio.modello_id);
                     if (modello != null && modello.vinted_vendibile) {
-                        const oldVintedStatus = modello.vinted_is_in_vendita;
-                        await modello.update({ vinted_is_in_vendita: false }, { transaction: transaction });
-                        
-                        // Log modello update
-                        await loggingService.logUpdate('T_MODELLI', modello.id, 'vinted_is_in_vendita', oldVintedStatus, false, {
-                            ...additionalData,
-                            reason: 'Model set as not in sale after vendita update'
-                        }, transaction);
+                        await modello.update({ vinted_is_in_vendita: false }, { 
+                            transaction: transaction,
+                            auditAdditionalData: {
+                                ...additionalData,
+                                reason: 'Model set as not in sale after vendita update'
+                            },
+                            individualHooks: true
+                        });
                     }
                 }
             }
@@ -351,33 +360,36 @@ class VenditaRepository extends BaseRepository {
                 operation_details: 'Complex delete with dettagli and basette'
             };
 
-            // Log dettagli deletions
-            if (vendita.dettagli) {
-                for (const dettaglio of vendita.dettagli) {
-                    await loggingService.logDelete('T_VENDITE_DETTAGLI', dettaglio.id, dettaglio.toJSON(), {
-                        ...additionalData,
-                        parent_vendita_id: vendita.id
-                    }, transaction);
-                }
-            }
+            // Dettagli and basette are deleted either manually or via cascade if configured (checking code implies manual)
+            // But here we are just destroying them.
+            // CAREFUL: standard destroying via where clause (bulk) needs individualHooks: true
 
-            // Log basette deletions
-            if (vendita.basette) {
-                for (const basetta of vendita.basette) {
-                    await loggingService.logDelete('T_BASETTE', basetta.id, basetta.toJSON(), {
-                        ...additionalData,
-                        parent_vendita_id: vendita.id
-                    }, transaction);
+            await VenditaDettaglio.destroy({ 
+                where: { vendita_id: id }, 
+                transaction: transaction,
+                individualHooks: true,
+                auditAdditionalData: {
+                    ...additionalData,
+                    parent_vendita_id: vendita.id
                 }
-            }
+            });
 
-            await VenditaDettaglio.destroy({ where: { vendita_id: id }, transaction: transaction });
-            await Basetta.destroy({ where: { vendita_id: id }, transaction: transaction });
+            await Basetta.destroy({ 
+                where: { vendita_id: id }, 
+                transaction: transaction,
+                individualHooks: true,
+                auditAdditionalData: {
+                    ...additionalData,
+                    parent_vendita_id: vendita.id
+                }
+            });
             
-            // Log main vendita deletion
-            await loggingService.logDelete('T_VENDITE', vendita.id, vendita.toJSON(), additionalData, transaction);
-            
-            await Vendita.destroy({ where: { id }, transaction: transaction });
+            await Vendita.destroy({ 
+                where: { id }, 
+                transaction: transaction,
+                individualHooks: true,
+                auditAdditionalData: additionalData 
+            });
             await transaction.commit();
         } catch (error) {
             await transaction.rollback();
@@ -395,13 +407,12 @@ class VenditaRepository extends BaseRepository {
             throw new Error('Stato di avanzamento non specificato');
         }
 
-        const oldDettaglio = dettaglio.toJSON();
-        await dettaglio.update({ stato_stampa: stato_avanzamento });
-
-        // Log the state change
-        await loggingService.logUpdate('T_VENDITE_DETTAGLI', dettaglio.id, oldDettaglio, dettaglio.toJSON(), {
-            operation: 'UPDATE',
-            reason: 'Manual state modification'
+        await dettaglio.update({ stato_stampa: stato_avanzamento }, {
+            individualHooks: true,
+            auditAdditionalData: {
+                operation: 'UPDATE',
+                reason: 'Manual state modification'
+            }
         });
 
         return dettaglio;
@@ -417,13 +428,12 @@ class VenditaRepository extends BaseRepository {
             throw new Error('Stato di avanzamento non specificato');
         }
 
-        const oldBasetta = basetta.toJSON();
-        await basetta.update({ stato_stampa: stato_avanzamento });
-
-        // Log the state change
-        await loggingService.logUpdate('T_BASETTE', basetta.id, oldBasetta, basetta.toJSON(), {
-            operation: 'UPDATE',
-            reason: 'Manual state modification'
+        await basetta.update({ stato_stampa: stato_avanzamento }, {
+            individualHooks: true,
+            auditAdditionalData: {
+                operation: 'UPDATE',
+                reason: 'Manual state modification'
+            }
         });
 
         return basetta;
@@ -443,39 +453,36 @@ class VenditaRepository extends BaseRepository {
             throw new Error('Stato di avanzamento non specificato');
         }
 
-        const oldVendita = vendita.toJSON();
-        await vendita.update({ stato_spedizione: stato_avanzamento });
-
-        // Log the vendita state change
-        await loggingService.logUpdate('T_VENDITE', vendita.id, oldVendita, vendita.toJSON(), {
-            operation: 'UPDATE',
-            reason: 'Manual vendita state modification'
+        await vendita.update({ stato_spedizione: stato_avanzamento }, {
+            individualHooks: true,
+            auditAdditionalData: {
+                operation: 'UPDATE',
+                reason: 'Manual vendita state modification'
+            }
         });
 
         if (isStatoSpedizioneDaSpedire) {
             for (const dettaglio of dettagli) {
                 if (dettaglio.stato_stampa == 0) {
-                    const oldDettaglio = dettaglio.toJSON();
-                    await dettaglio.update({ stato_stampa: 4 });
-                    
-                    // Log dettaglio state change
-                    await loggingService.logUpdate('T_VENDITE_DETTAGLI', dettaglio.id, oldDettaglio, dettaglio.toJSON(), {
-                        operation: 'UPDATE',
-                        reason: 'Automatic state change due to vendita shipping status change',
-                        parent_vendita_id: vendita.id
+                    await dettaglio.update({ stato_stampa: 4 }, {
+                        individualHooks: true,
+                        auditAdditionalData: {
+                            operation: 'UPDATE',
+                            reason: 'Automatic state change due to vendita shipping status change',
+                            parent_vendita_id: vendita.id
+                        }
                     });
                 }
             }
             for (const basetta of basette) {
                 if (basetta.stato_stampa == 0) {
-                    const oldBasetta = basetta.toJSON();
-                    await basetta.update({ stato_stampa: 4 });
-                    
-                    // Log basetta state change
-                    await loggingService.logUpdate('T_BASETTE', basetta.id, oldBasetta, basetta.toJSON(), {
-                        operation: 'UPDATE',
-                        reason: 'Automatic state change due to vendita shipping status change',
-                        parent_vendita_id: vendita.id
+                    await basetta.update({ stato_stampa: 4 }, {
+                        individualHooks: true,
+                        auditAdditionalData: {
+                            operation: 'UPDATE',
+                            reason: 'Automatic state change due to vendita shipping status change',
+                            parent_vendita_id: vendita.id
+                        }
                     });
                 }
             }
