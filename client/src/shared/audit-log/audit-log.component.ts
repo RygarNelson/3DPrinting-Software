@@ -11,7 +11,6 @@ import { Subscription } from 'rxjs';
 import { AuditLog, LogService } from '../../services/log.service';
 import { DialogErrorComponent } from '../dialog-error/dialog-error.component';
 import { GroupClientInfoPipe } from '../pipes/group-client-info.pipe';
-import { GroupOperationPipe } from '../pipes/group-operation.pipe';
 import { GroupTimestampPipe } from '../pipes/group-timestamp.pipe';
 import { GroupUserPipe } from '../pipes/group-user.pipe';
 import { OperationLabelPipe } from '../pipes/operation-label.pipe';
@@ -31,7 +30,7 @@ import { PrettyJsonPipe } from '../pipes/pretty-json.pipe';
     SkeletonModule,
     PrettyJsonPipe,
     GroupTimestampPipe,
-    GroupOperationPipe,
+    GroupTimestampPipe,
     GroupClientInfoPipe,
     OperationLabelPipe,
     OperationSeverityPipe,

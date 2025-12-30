@@ -75,14 +75,7 @@
                       {{ groupedLogs[groupId] | groupTimestamp | date:'dd/MM/yyyy HH:mm:ss' }}
                     </div>
                   </div>
-                  <div class="group-operation">
-                    <div class="text-xs text-gray-500 mb-1">Operazione</div>
-                    <p-tag 
-                      [value]="((groupedLogs[groupId] | groupOperation)?.operation || '') | operationLabel" 
-                      [severity]="((groupedLogs[groupId] | groupOperation)?.operation || '') | operationSeverity"
-                      [style]="{'font-size': '0.75rem'}">
-                    </p-tag>
-                  </div>
+                  <!-- Operation removed as per request -->
                   <div class="group-client">
                     <div class="text-gray-500 text-sm">
                       <div><strong>Utente:</strong> {{ (groupedLogs[groupId] | groupUser).name }} {{ (groupedLogs[groupId] | groupUser).surname }} ({{ (groupedLogs[groupId] | groupUser).email }})</div>
