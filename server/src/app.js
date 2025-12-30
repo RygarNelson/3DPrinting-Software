@@ -26,6 +26,7 @@ const __dirname = path.dirname(__filename);
 
 /* SERVER & PARAMETERS */
 const app = express();
+app.set('trust proxy', 1); // Trust first hop (Nginx)
 
 /* COMPRESSION */
 // Enable compression for all responses when browser supports it
