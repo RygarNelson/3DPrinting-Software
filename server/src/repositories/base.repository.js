@@ -1,6 +1,5 @@
 'use strict'
 
-import loggingService from '../services/logging.service.js';
 
 /**
  * Base repository class with automatic logging
@@ -60,18 +59,18 @@ class BaseRepository {
      * @param {Object} additionalData - Additional context data for logging
      * @returns {Promise<Object>} - Created record
      */
+    /**
+     * Insert a new record with automatic logging
+     * @param {Object} data - Record data
+     * @param {Object} additionalData - Additional context data for logging
+     * @returns {Promise<Object>} - Created record
+     */
     async insertOne(data, additionalData = null) {
         try {
-            const result = await this.model.create(data);
+            const result = await this.model.create(data, {
+                auditAdditionalData: additionalData
+            });
             
-            // Log the insert operation
-            await loggingService.logInsert(
-                this.tableName,
-                result.id,
-                result.toJSON(),
-                additionalData
-            );
-
             return result;
         } catch (error) {
             console.error(`Error inserting record in ${this.tableName}:`, error);
@@ -88,31 +87,18 @@ class BaseRepository {
      */
     async updateOne(id, data, additionalData = null) {
         try {
-            // Get the old record before updating
+            // Check if record exists to preserve error behavior
             const oldRecord = await this.model.findByPk(id);
             if (!oldRecord) {
                 throw new Error(`Record with ID ${id} not found in ${this.tableName}`);
             }
 
-            const oldData = oldRecord.toJSON();
-
-            // Perform the update
+            // Perform the update with hooks enabled
             const result = await this.model.update(data, {
-                where: { id: id }
+                where: { id: id },
+                individualHooks: true,
+                auditAdditionalData: additionalData
             });
-
-            // Get the updated record
-            const updatedRecord = await this.model.findByPk(id);
-            const newData = updatedRecord.toJSON();
-
-            // Log the update operation
-            await loggingService.logUpdate(
-                this.tableName,
-                id,
-                oldData,
-                newData,
-                additionalData
-            );
 
             return result;
         } catch (error) {
@@ -129,37 +115,18 @@ class BaseRepository {
      */
     async deleteOne(id, additionalData = null) {
         try {
-            // Get the record before deleting
+            // Check if record exists
             const record = await this.model.findByPk(id);
             if (!record) {
                 throw new Error(`Record with ID ${id} not found in ${this.tableName}`);
             }
 
-            const recordData = record.toJSON();
-
-            // Perform the delete
+            // Perform the delete with hooks enabled
             const result = await this.model.destroy({
-                where: { id: id }
+                where: { id: id },
+                individualHooks: true,
+                auditAdditionalData: additionalData
             });
-
-            // Log the delete operation
-            if (this.model.options.paranoid) {
-                // Soft delete
-                await loggingService.logSoftDelete(
-                    this.tableName,
-                    id,
-                    recordData,
-                    additionalData
-                );
-            } else {
-                // Hard delete
-                await loggingService.logDelete(
-                    this.tableName,
-                    id,
-                    recordData,
-                    additionalData
-                );
-            }
 
             return result;
         } catch (error) {
@@ -180,22 +147,12 @@ class BaseRepository {
                 throw new Error(`Model ${this.tableName} does not support soft deletes`);
             }
 
-            // Perform the restore
+            // Perform the restore with hooks enabled
             const result = await this.model.restore({
-                where: { id: id }
+                where: { id: id },
+                individualHooks: true,
+                auditAdditionalData: additionalData
             });
-
-            // Get the restored record
-            const restoredRecord = await this.model.findByPk(id);
-            const recordData = restoredRecord.toJSON();
-
-            // Log the restore operation
-            await loggingService.logRestore(
-                this.tableName,
-                id,
-                recordData,
-                additionalData
-            );
 
             return result;
         } catch (error) {
@@ -213,20 +170,10 @@ class BaseRepository {
     async bulkInsert(records, additionalData = null) {
         try {
             const results = await this.model.bulkCreate(records, {
-                returning: true
+                returning: true,
+                individualHooks: true,
+                auditAdditionalData: additionalData
             });
-
-            // Log each insert operation
-            const logPromises = results.map(result =>
-                loggingService.logInsert(
-                    this.tableName,
-                    result.id,
-                    result.toJSON(),
-                    additionalData
-                )
-            );
-
-            await Promise.all(logPromises);
 
             return results;
         } catch (error) {
@@ -244,32 +191,12 @@ class BaseRepository {
      */
     async bulkUpdate(data, where, additionalData = null) {
         try {
-            // Get the old records before updating
-            const oldRecords = await this.model.findAll({ where });
-            const oldDataMap = new Map(oldRecords.map(record => [record.id, record.toJSON()]));
-
-            // Perform the bulk update
-            const result = await this.model.update(data, { where });
-
-            // Get the updated records
-            const updatedRecords = await this.model.findAll({ where });
-            const newDataMap = new Map(updatedRecords.map(record => [record.id, record.toJSON()]));
-
-            // Log each update operation
-            const logPromises = updatedRecords.map(record => {
-                const oldData = oldDataMap.get(record.id);
-                const newData = newDataMap.get(record.id);
-                
-                return loggingService.logUpdate(
-                    this.tableName,
-                    record.id,
-                    oldData,
-                    newData,
-                    additionalData
-                );
+            // Perform the bulk update with hooks enabled
+            const result = await this.model.update(data, { 
+                where,
+                individualHooks: true,
+                auditAdditionalData: additionalData
             });
-
-            await Promise.all(logPromises);
 
             return result;
         } catch (error) {

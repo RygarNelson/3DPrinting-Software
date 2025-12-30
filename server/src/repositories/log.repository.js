@@ -32,10 +32,33 @@ class LogRepository extends BaseRepository {
         const whereClause = {};
 
         if (filters.table_name) {
-            whereClause.table_name = filters.table_name;
-        }
-
-        if (filters.record_id) {
+            if (filters.table_name === 'T_VENDITE' && filters.record_id) {
+                whereClause[Op.or] = [
+                    {
+                        table_name: 'T_VENDITE',
+                        record_id: filters.record_id
+                    },
+                    {
+                        table_name: 'T_VENDITE_DETTAGLI',
+                        additional_data: {
+                            [Op.like]: `%"parent_vendita_id":${filters.record_id}%`
+                        }
+                    },
+                    {
+                        table_name: 'T_BASETTE',
+                        additional_data: {
+                            [Op.like]: `%"parent_vendita_id":${filters.record_id}%`
+                        }
+                    }
+                ];
+                // Since we handled table_name and record_id here, we don't add them individually
+            } else {
+                whereClause.table_name = filters.table_name;
+                if (filters.record_id) {
+                    whereClause.record_id = filters.record_id;
+                }
+            }
+        } else if (filters.record_id) {
             whereClause.record_id = filters.record_id;
         }
 
@@ -78,12 +101,38 @@ class LogRepository extends BaseRepository {
      */
     async getLogsForRecord(table_name, record_id, options = {}) {
         const { limit = 50, offset = 0, order = [['createdAt', 'DESC']] } = options;
+
+        let whereClause = {
+            table_name,
+            record_id
+        };
+
+        // Special handling for T_VENDITE to include children logs
+        if (table_name === 'T_VENDITE') {
+            whereClause = {
+                [Op.or]: [
+                    {
+                        table_name: 'T_VENDITE',
+                        record_id: record_id
+                    },
+                    {
+                        table_name: 'T_VENDITE_DETTAGLI',
+                        additional_data: {
+                            [Op.like]: `%"parent_vendita_id":${record_id}%`
+                        }
+                    },
+                    {
+                        table_name: 'T_BASETTE',
+                        additional_data: {
+                            [Op.like]: `%"parent_vendita_id":${record_id}%`
+                        }
+                    }
+                ]
+            };
+        }
         
         return Log.findAll({
-            where: {
-                table_name,
-                record_id
-            },
+            where: whereClause,
             limit,
             offset,
             order
@@ -326,189 +375,34 @@ class LogRepository extends BaseRepository {
             return { count: 0, rows: [] };
         }
 
-        // Batch query all related dettagli and basette logs
-        const [allDettagliLogs, allBasettaLogs] = await Promise.all([
-            Log.findAll({
-                where: {
-                    table_name: 'T_VENDITE_DETTAGLI',
-                    group_id: {
-                        [Op.in]: groupIds
-                    }
-                },
-                order: [['createdAt', 'ASC']]
-            }),
-            Log.findAll({
-                where: {
-                    table_name: 'T_BASETTE',
-                    group_id: {
-                        [Op.in]: groupIds
-                    }
-                },
-                order: [['createdAt', 'ASC']]
-            })
-        ]);
+        // Separate main logs (T_VENDITE) from related logs
+        const tVenditeLogs = venditaLogs.rows.filter(log => log.table_name === 'T_VENDITE');
+        const tVenditeDettagliLogs = venditaLogs.rows.filter(log => log.table_name === 'T_VENDITE_DETTAGLI');
+        const tBasettaLogs = venditaLogs.rows.filter(log => log.table_name === 'T_BASETTE');
 
-        // Group related logs by vendita_id for efficient lookup
-        const dettagliLogsByVendita = {};
-        const basettaLogsByVendita = {};
+        // We simply combine all logs. The frontend handles the grouping and display.
+        // We filter out any duplicates from the "childLogs" fetch above if simpler logic is desired,
+        // but here we are combining the specific fetched sets.
+        // Combine the explicitly fetched related logs with the main result
+        // We use a Map to dedup by ID just in case there's overlap between the main query and the group fetch
+        const allLogsMap = new Map();
 
-        // Group dettagli logs by vendita_id
-        for (const log of allDettagliLogs) {
-            // We need to get the vendita_id from the dettaglio record
-            // Since we don't have direct access, we'll need to query it
-            try {
-                const dettaglioData = log.new_record ? JSON.parse(log.new_record) : 
-                                    (log.old_record ? JSON.parse(log.old_record) : {});
-                if (dettaglioData.vendita_id) {
-                    if (!dettagliLogsByVendita[dettaglioData.vendita_id]) {
-                        dettagliLogsByVendita[dettaglioData.vendita_id] = [];
-                    }
-                    dettagliLogsByVendita[dettaglioData.vendita_id].push(log);
-                }
-            } catch (error) {
-                console.error('Error parsing dettaglio log data:', error);
-            }
-        }
+        tVenditeLogs.forEach(log => allLogsMap.set(log.id, log));
+        tVenditeDettagliLogs.forEach(log => allLogsMap.set(log.id, log));
+        tBasettaLogs.forEach(log => allLogsMap.set(log.id, log));
 
-        // Group basette logs by vendita_id
-        for (const log of allBasettaLogs) {
-            try {
-                const basettaData = log.new_record ? JSON.parse(log.new_record) : 
-                                  (log.old_record ? JSON.parse(log.old_record) : {});
-                if (basettaData.vendita_id) {
-                    if (!basettaLogsByVendita[basettaData.vendita_id]) {
-                        basettaLogsByVendita[basettaData.vendita_id] = [];
-                    }
-                    basettaLogsByVendita[basettaData.vendita_id].push(log);
-                }
-            } catch (error) {
-                console.error('Error parsing basetta log data:', error);
-            }
-        }
-
-        // For each vendita log, enrich it with related dettagli and basette logs
-        const enrichedLogs = venditaLogs.rows.map((venditaLog) => {
-            let enrichedLog = { ...venditaLog.toJSON() };
-            
-            const dettagliLogs = dettagliLogsByVendita[venditaLog.record_id] || [];
-            const basetteLogs = basettaLogsByVendita[venditaLog.record_id] || [];
-
-            // Enrich old_record with dettagli and basette
-            if (enrichedLog.old_record) {
-                try {
-                    const oldRecord = JSON.parse(enrichedLog.old_record);
-                    enrichedLog.old_record = this.mergeRelatedLogs(oldRecord, dettagliLogs, basetteLogs, 'old');
-                } catch (error) {
-                    console.error('Error parsing old_record:', error);
-                }
-            }
-
-            // Enrich new_record with dettagli and basette
-            if (enrichedLog.new_record) {
-                try {
-                    const newRecord = JSON.parse(enrichedLog.new_record);
-                    enrichedLog.new_record = this.mergeRelatedLogs(newRecord, dettagliLogs, basetteLogs, 'new');
-                } catch (error) {
-                    console.error('Error parsing new_record:', error);
-                }
-            }
-
-            // Enrich old_value and new_value if they exist
-            if (enrichedLog.old_value) {
-                try {
-                    const oldValue = JSON.parse(enrichedLog.old_value);
-                    enrichedLog.old_value = this.mergeRelatedLogs(oldValue, dettagliLogs, basetteLogs, 'old');
-                } catch (error) {
-                    // If not JSON, leave as is
-                }
-            }
-
-            if (enrichedLog.new_value) {
-                try {
-                    const newValue = JSON.parse(enrichedLog.new_value);
-                    enrichedLog.new_value = this.mergeRelatedLogs(newValue, dettagliLogs, basetteLogs, 'new');
-                } catch (error) {
-                    // If not JSON, leave as is
-                }
-            }
-
-            return enrichedLog;
-        });
+        // Convert to array and sort
+        const finalRows = Array.from(allLogsMap.values())
+            .map(log => log.toJSON ? log.toJSON() : log) // Ensure JSON
+            .sort((a, b) => {
+                // Sort by ID descending (newer first) or createdAt
+                return b.id - a.id; 
+            });
 
         return {
-            count: venditaLogs.count,
-            rows: enrichedLogs
+            count: finalRows.length, 
+            rows: finalRows
         };
-    }
-
-    /**
-     * Merge related dettagli and basette logs into a record
-     * @param {Object} record - The main record to enrich
-     * @param {Array} dettagliLogs - Array of dettagli logs
-     * @param {Array} basetteLogs - Array of basette logs
-     * @param {string} recordType - 'old' or 'new' to determine which value to use
-     * @returns {Object} - Enriched record
-     */
-    mergeRelatedLogs(record, dettagliLogs, basetteLogs, recordType) {
-        const enrichedRecord = { ...record };
-
-        // Add dettagli logs
-        if (dettagliLogs.length > 0) {
-            enrichedRecord.dettagli = dettagliLogs.map((log, index) => {
-                const dettaglioData = recordType === 'old' ? 
-                    (log.old_record ? JSON.parse(log.old_record) : {}) :
-                    (log.new_record ? JSON.parse(log.new_record) : {});
-                
-                // Create a clean dettaglio object with audit metadata
-                const enrichedDettaglio = {
-                    ...dettaglioData,
-                    _audit: {
-                        log_id: log.id,
-                        operation: log.operation,
-                        field_name: log.field_name,
-                        old_value: log.old_value,
-                        new_value: log.new_value,
-                        created_at: log.createdAt,
-                        user: log.user
-                    }
-                };
-
-                // Remove audit metadata from the main data to keep it clean
-                delete enrichedDettaglio._audit.log_id;
-                
-                return enrichedDettaglio;
-            });
-        }
-
-        // Add basette logs
-        if (basetteLogs.length > 0) {
-            enrichedRecord.basette = basetteLogs.map((log, index) => {
-                const basettaData = recordType === 'old' ? 
-                    (log.old_record ? JSON.parse(log.old_record) : {}) :
-                    (log.new_record ? JSON.parse(log.new_record) : {});
-                
-                // Create a clean basetta object with audit metadata
-                const enrichedBasetta = {
-                    ...basettaData,
-                    _audit: {
-                        log_id: log.id,
-                        operation: log.operation,
-                        field_name: log.field_name,
-                        old_value: log.old_value,
-                        new_value: log.new_value,
-                        created_at: log.createdAt,
-                        user: log.user
-                    }
-                };
-
-                // Remove audit metadata from the main data to keep it clean
-                delete enrichedBasetta._audit.log_id;
-                
-                return enrichedBasetta;
-            });
-        }
-
-        return enrichedRecord;
     }
 }
 
