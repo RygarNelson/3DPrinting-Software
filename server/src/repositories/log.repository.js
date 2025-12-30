@@ -419,6 +419,12 @@ class LogRepository extends BaseRepository {
 
         // For each vendita log, enrich it with related dettagli and basette logs from the SAME group
         const enrichedLogs = venditaLogs.rows.map((venditaLog) => {
+            // Only enrich the main T_VENDITE logs. Child logs (returned if record_id filter is active) 
+            // should not be enriched with siblings/themselves.
+            if (venditaLog.table_name !== 'T_VENDITE') {
+                return venditaLog.toJSON();
+            }
+
             let enrichedLog = { ...venditaLog.toJSON() };
             
             const dettagliLogs = dettagliLogsByGroupId[venditaLog.group_id] || [];
