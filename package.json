@@ -1,6 +1,6 @@
 {
   "name": "backoffice-forge-by-orbitstudios-bundler",
-  "version": "1.12.0",
+  "version": "1.13.0",
   "description": "Backoffice Forge by OrbitStudios with bundled server",
   "main": "electron/main.js",
   "type": "module",
