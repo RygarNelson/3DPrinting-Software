@@ -32,10 +32,33 @@ class LogRepository extends BaseRepository {
         const whereClause = {};
 
         if (filters.table_name) {
-            whereClause.table_name = filters.table_name;
-        }
-
-        if (filters.record_id) {
+            if (filters.table_name === 'T_VENDITE' && filters.record_id) {
+                whereClause[Op.or] = [
+                    {
+                        table_name: 'T_VENDITE',
+                        record_id: filters.record_id
+                    },
+                    {
+                        table_name: 'T_VENDITE_DETTAGLI',
+                        additional_data: {
+                            [Op.like]: `%"parent_vendita_id":${filters.record_id}%`
+                        }
+                    },
+                    {
+                        table_name: 'T_BASETTE',
+                        additional_data: {
+                            [Op.like]: `%"parent_vendita_id":${filters.record_id}%`
+                        }
+                    }
+                ];
+                // Since we handled table_name and record_id here, we don't add them individually
+            } else {
+                whereClause.table_name = filters.table_name;
+                if (filters.record_id) {
+                    whereClause.record_id = filters.record_id;
+                }
+            }
+        } else if (filters.record_id) {
             whereClause.record_id = filters.record_id;
         }
 
@@ -78,12 +101,38 @@ class LogRepository extends BaseRepository {
      */
     async getLogsForRecord(table_name, record_id, options = {}) {
         const { limit = 50, offset = 0, order = [['createdAt', 'DESC']] } = options;
+
+        let whereClause = {
+            table_name,
+            record_id
+        };
+
+        // Special handling for T_VENDITE to include children logs
+        if (table_name === 'T_VENDITE') {
+            whereClause = {
+                [Op.or]: [
+                    {
+                        table_name: 'T_VENDITE',
+                        record_id: record_id
+                    },
+                    {
+                        table_name: 'T_VENDITE_DETTAGLI',
+                        additional_data: {
+                            [Op.like]: `%"parent_vendita_id":${record_id}%`
+                        }
+                    },
+                    {
+                        table_name: 'T_BASETTE',
+                        additional_data: {
+                            [Op.like]: `%"parent_vendita_id":${record_id}%`
+                        }
+                    }
+                ]
+            };
+        }
         
         return Log.findAll({
-            where: {
-                table_name,
-                record_id
-            },
+            where: whereClause,
             limit,
             offset,
             order
