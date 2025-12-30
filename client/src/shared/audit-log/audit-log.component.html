@@ -127,7 +127,7 @@
                                 @if (log.operation === 'UPDATE' && log.field_name) {
                                     <div class="field-change flex flex-col gap-2">
                                         <div class="flex items-center gap-2">
-                                            <span class="text-sm font-medium text-gray-600">Campo modificato:</span>
+                                            <span class="text-sm font-medium text-gray-600">Modifica</span>
                                             <span class="font-mono text-sm font-bold text-gray-800">{{ log.field_name }}</span>
                                         </div>
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
@@ -146,7 +146,7 @@
                                 <!-- CASE 2: INSERT/RESTORE (New Record) -->
                                 @if ((log.operation === 'INSERT' || log.operation === 'RESTORE') && log.new_record) {
                                     <div class="record-view">
-                                        <div class="text-sm font-medium text-gray-600 mb-2">Dettaglio record creato:</div>
+                                        <div class="text-sm font-medium text-gray-600 mb-2">Nuovo record</div>
                                         <div class="json-container overflow-auto max-h-60 bg-gray-50 rounded border border-gray-200">
                                            <pre [innerHTML]="log.new_record | prettyJson"></pre>
                                         </div>
@@ -154,9 +154,9 @@
                                 }
 
                                 <!-- CASE 3: DELETE (Old Record) -->
-                                @if (log.operation === 'DELETE' && log.old_record) {
+                                @if ((log.operation === 'DELETE' || log.operation === 'SOFT_DELETE') && log.old_record) {
                                     <div class="record-view">
-                                        <div class="text-sm font-medium text-gray-600 mb-2">Dettaglio record eliminato:</div>
+                                        <div class="text-sm font-medium text-gray-600 mb-2">Record eliminato</div>
                                         <div class="json-container overflow-auto max-h-60 bg-gray-50 rounded border border-gray-200">
                                            <pre [innerHTML]="log.old_record | prettyJson"></pre>
                                         </div>
