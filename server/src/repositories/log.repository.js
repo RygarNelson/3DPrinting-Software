@@ -463,23 +463,9 @@ class LogRepository extends BaseRepository {
             }
 
             // Enrich old_value and new_value if they exist
-            if (enrichedLog.old_value) {
-                try {
-                    const oldValue = JSON.parse(enrichedLog.old_value);
-                    enrichedLog.old_value = this.mergeRelatedLogs(oldValue, dettagliLogs, basetteLogs, 'old');
-                } catch (error) {
-                    // If not JSON, leave as is
-                }
-            }
-
-            if (enrichedLog.new_value) {
-                try {
-                    const newValue = JSON.parse(enrichedLog.new_value);
-                    enrichedLog.new_value = this.mergeRelatedLogs(newValue, dettagliLogs, basetteLogs, 'new');
-                } catch (error) {
-                    // If not JSON, leave as is
-                }
-            }
+            // We DO NOT enrich old_value/new_value because these are usually specific field values (strings/numbers)
+            // and merging related full-record logs into them corrupts the data structure.
+            // Only old_record and new_record (which are full snapshots) should be enriched.
 
             return enrichedLog;
         });

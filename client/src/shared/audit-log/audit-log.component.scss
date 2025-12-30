@@ -119,7 +119,8 @@
   border-radius: 0 0 8px 8px;
   background: rgba(255, 255, 255, 0.8);
   border: none;
-  overflow: visible; // Remove scrollbars
+  overflow: auto;
+  max-height: 400px;
   white-space: pre-wrap;
   word-break: break-word;
   
