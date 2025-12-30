@@ -11,14 +11,8 @@ import { Subscription } from 'rxjs';
 import { AuditLog, LogService } from '../../services/log.service';
 import { DialogErrorComponent } from '../dialog-error/dialog-error.component';
 import { GroupClientInfoPipe } from '../pipes/group-client-info.pipe';
-import { GroupNewRecordPipe } from '../pipes/group-new-record.pipe';
-import { GroupNewValuesPipe } from '../pipes/group-new-values.pipe';
-import { GroupOldRecordPipe } from '../pipes/group-old-record.pipe';
-import { GroupOldValuesPipe } from '../pipes/group-old-values.pipe';
-import { GroupOperationPipe } from '../pipes/group-operation.pipe';
 import { GroupTimestampPipe } from '../pipes/group-timestamp.pipe';
 import { GroupUserPipe } from '../pipes/group-user.pipe';
-import { ObjectKeysLengthPipe } from '../pipes/object-keys-length.pipe';
 import { OperationLabelPipe } from '../pipes/operation-label.pipe';
 import { OperationSeverityPipe } from '../pipes/operation-severity.pipe';
 import { PrettyJsonPipe } from '../pipes/pretty-json.pipe';
@@ -36,13 +30,8 @@ import { PrettyJsonPipe } from '../pipes/pretty-json.pipe';
     SkeletonModule,
     PrettyJsonPipe,
     GroupTimestampPipe,
-    GroupOperationPipe,
+    GroupTimestampPipe,
     GroupClientInfoPipe,
-    GroupOldValuesPipe,
-    GroupNewValuesPipe,
-    GroupOldRecordPipe,
-    GroupNewRecordPipe,
-    ObjectKeysLengthPipe,
     OperationLabelPipe,
     OperationSeverityPipe,
     GroupUserPipe

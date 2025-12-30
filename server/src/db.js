@@ -2,6 +2,136 @@
 
 import { sequelize } from './config/database.js';
 import { backupDatabase, checkDatabaseVersion, CURRENT_DATABASE_VERSION, getDatabaseVersion, setDatabaseVersion } from './methods/databaseVersionMethods.js';
+import Log from './models/log.model.js'; // Needed for saving logs directly if needed or via service
+import loggingService from './services/logging.service.js';
+
+const setupSequelizeHooks = () => {
+    const AUDIT_EXCLUDE_TABLES = ['T_LOGS'];
+
+    sequelize.addHook('beforeCreate', (instance, options) => {
+        if (AUDIT_EXCLUDE_TABLES.includes(instance.constructor.tableName)) return;
+        // Nothing to do before create, we need the ID which is generated after
+    });
+
+    sequelize.addHook('afterCreate', async (instance, options) => {
+        if (AUDIT_EXCLUDE_TABLES.includes(instance.constructor.tableName)) return;
+        
+        try {
+            const additionalData = options.auditAdditionalData || null;
+            const logData = loggingService.prepareInsertLog(
+                instance.constructor.tableName,
+                instance.id,
+                instance.toJSON(),
+                additionalData
+            );
+            
+            await Log.create(logData, { transaction: options.transaction });
+        } catch (error) {
+            console.error('Audit Log Error (afterCreate):', error);
+        }
+    });
+
+    sequelize.addHook('beforeUpdate', (instance, options) => {
+        if (AUDIT_EXCLUDE_TABLES.includes(instance.constructor.tableName)) return;
+
+        try {
+            const additionalData = options.auditAdditionalData || null;
+            // Get old and new values
+            // _previousDataValues contains the values before the update
+            // dataValues contains the new values
+            const oldRecord = instance._previousDataValues;
+            const newRecord = instance.dataValues;
+
+            const logEntries = loggingService.prepareUpdateLogs(
+                instance.constructor.tableName,
+                instance.id,
+                oldRecord,
+                newRecord,
+                additionalData
+            );
+
+            options.auditLogs = logEntries;
+        } catch (error) {
+            console.error('Audit Log Error (beforeUpdate):', error);
+        }
+    });
+
+    sequelize.addHook('afterUpdate', async (instance, options) => {
+        if (AUDIT_EXCLUDE_TABLES.includes(instance.constructor.tableName)) return;
+
+        if (options.auditLogs && options.auditLogs.length > 0) {
+            try {
+                await Log.bulkCreate(options.auditLogs, { transaction: options.transaction });
+            } catch (error) {
+                console.error('Audit Log Error (afterUpdate):', error);
+            }
+        }
+    });
+
+    sequelize.addHook('beforeDestroy', (instance, options) => {
+        if (AUDIT_EXCLUDE_TABLES.includes(instance.constructor.tableName)) return;
+
+        try {
+            const additionalData = options.auditAdditionalData || null;
+            let logEntry;
+
+            if (instance.constructor.options.paranoid && !options.force) {
+                // Soft delete
+                logEntry = loggingService.prepareSoftDeleteLog(
+                    instance.constructor.tableName,
+                    instance.id,
+                    instance.toJSON(),
+                    additionalData
+                );
+            } else {
+                // Hard delete
+                logEntry = loggingService.prepareDeleteLog(
+                    instance.constructor.tableName,
+                    instance.id,
+                    instance.toJSON(),
+                    additionalData
+                );
+            }
+
+            options.auditLogs = [logEntry];
+        } catch (error) {
+            console.error('Audit Log Error (beforeDestroy):', error);
+        }
+    });
+
+    sequelize.addHook('afterDestroy', async (instance, options) => {
+        if (AUDIT_EXCLUDE_TABLES.includes(instance.constructor.tableName)) return;
+
+        if (options.auditLogs && options.auditLogs.length > 0) {
+            try {
+                await Log.bulkCreate(options.auditLogs, { transaction: options.transaction });
+            } catch (error) {
+                console.error('Audit Log Error (afterDestroy):', error);
+            }
+        }
+    });
+
+    sequelize.addHook('afterRestore', async (instance, options) => {
+        if (AUDIT_EXCLUDE_TABLES.includes(instance.constructor.tableName)) return;
+
+        try {
+            const additionalData = options.auditAdditionalData || null;
+            const logData = loggingService.prepareRestoreLog(
+                instance.constructor.tableName,
+                instance.id,
+                instance.toJSON(),
+                additionalData
+            );
+
+            await Log.create(logData, { transaction: options.transaction });
+        } catch (error) {
+            console.error('Audit Log Error (afterRestore):', error);
+        }
+    });
+};
+
+// Initialize hooks immediately
+setupSequelizeHooks();
 
 const connectToDatabase = async () => {
     try {

@@ -35,11 +35,11 @@ class LoggingService {
     }
 
     /**
-     * Log a database operation
+     * Prepare a log object without saving it
      * @param {Object} options - Logging options
-     * @returns {Promise<Log>} - Created log entry
+     * @returns {Object} - Prepared log data
      */
-    async logOperation(options) {
+    prepareLogData(options) {
         const {
             table_name,
             record_id,
@@ -49,27 +49,35 @@ class LoggingService {
             new_value = null,
             old_record = null,
             new_record = null,
-            additional_data = null,
-            transaction = null
+            additional_data = null
         } = options;
 
-        try {
-            const logData = {
-                table_name,
-                record_id,
-                operation,
-                field_name,
-                old_value: old_value ? String(old_value) : null,
-                new_value: new_value ? String(new_value) : null,
-                old_record: old_record ? JSON.stringify(old_record) : null,
-                new_record: new_record ? JSON.stringify(new_record) : null,
-                user: this.currentContext.user,
-                ip_address: this.currentContext.ip_address,
-                user_agent: this.currentContext.user_agent,
-                additional_data: additional_data ? JSON.stringify(additional_data) : null,
-                group_id: this.currentContext.group_id
-            };
+        return {
+            table_name,
+            record_id,
+            operation,
+            field_name,
+            old_value: old_value ? String(old_value) : null,
+            new_value: new_value ? String(new_value) : null,
+            old_record: old_record ? JSON.stringify(old_record) : null,
+            new_record: new_record ? JSON.stringify(new_record) : null,
+            user: this.currentContext.user,
+            ip_address: this.currentContext.ip_address,
+            user_agent: this.currentContext.user_agent,
+            additional_data: additional_data ? JSON.stringify(additional_data) : null,
+            group_id: this.currentContext.group_id
+        };
+    }
 
+    /**
+     * Log a database operation
+     * @param {Object} options - Logging options
+     * @returns {Promise<Log>} - Created log entry
+     */
+    async logOperation(options) {
+        const { transaction = null } = options;
+        try {
+            const logData = this.prepareLogData(options);
             return await Log.create(logData, { transaction: transaction });
         } catch (error) {
             console.error('Error creating log entry:', error);
@@ -79,12 +87,20 @@ class LoggingService {
     }
 
     /**
+     * Prepare INSERT log data
+     */
+    prepareInsertLog(table_name, record_id, new_record, additional_data = null) {
+        return this.prepareLogData({
+            table_name,
+            record_id,
+            operation: 'INSERT',
+            new_record,
+            additional_data
+        });
+    }
+
+    /**
      * Log an INSERT operation
-     * @param {string} table_name - Name of the table
-     * @param {number} record_id - ID of the inserted record
-     * @param {Object} new_record - Complete new record data
-     * @param {Object} additional_data - Additional context data
-     * @returns {Promise<Log>} - Created log entry
      */
     async logInsert(table_name, record_id, new_record, additional_data = null, transaction = null) {
         return this.logOperation({
@@ -98,42 +114,53 @@ class LoggingService {
     }
 
     /**
-     * Log an UPDATE operation
-     * @param {string} table_name - Name of the table
-     * @param {number} record_id - ID of the updated record
-     * @param {Object} old_record - Complete old record data
-     * @param {Object} new_record - Complete new record data
-     * @param {Object} additional_data - Additional context data
-     * @returns {Promise<Log>} - Created log entry
+     * Prepare UPDATE log data entries
+     * Returns an array of log objects (one per changed field)
      */
-    async logUpdate(table_name, record_id, old_record, new_record, additional_data = null, transaction = null) {
+    prepareUpdateLogs(table_name, record_id, old_record, new_record, additional_data = null) {
         // Find changed fields
         const changedFields = this.getChangedFields(old_record, new_record);
         
         // Create individual log entries for each changed field
-        const logPromises = changedFields.map(field => 
-            this.logOperation({
+        return changedFields.map(field => 
+            this.prepareLogData({
                 table_name,
                 record_id,
                 operation: 'UPDATE',
                 field_name: field.name,
                 old_value: field.old_value,
                 new_value: field.new_value,
-                additional_data,
-                transaction
+                additional_data
             })
         );
+    }
 
+    /**
+     * Log an UPDATE operation
+     */
+    async logUpdate(table_name, record_id, old_record, new_record, additional_data = null, transaction = null) {
+        const logEntries = this.prepareUpdateLogs(table_name, record_id, old_record, new_record, additional_data);
+        const logPromises = logEntries.map(logData => 
+            Log.create(logData, { transaction })
+        );
         return Promise.all(logPromises);
     }
 
     /**
+     * Prepare DELETE log data
+     */
+    prepareDeleteLog(table_name, record_id, old_record, additional_data = null) {
+        return this.prepareLogData({
+            table_name,
+            record_id,
+            operation: 'DELETE',
+            old_record,
+            additional_data
+        });
+    }
+
+    /**
      * Log a DELETE operation
-     * @param {string} table_name - Name of the table
-     * @param {number} record_id - ID of the deleted record
-     * @param {Object} old_record - Complete old record data
-     * @param {Object} additional_data - Additional context data
-     * @returns {Promise<Log>} - Created log entry
      */
     async logDelete(table_name, record_id, old_record, additional_data = null, transaction = null) {
         return this.logOperation({
@@ -147,12 +174,20 @@ class LoggingService {
     }
 
     /**
+     * Prepare SOFT_DELETE log data
+     */
+    prepareSoftDeleteLog(table_name, record_id, old_record, additional_data = null) {
+        return this.prepareLogData({
+            table_name,
+            record_id,
+            operation: 'SOFT_DELETE',
+            old_record,
+            additional_data
+        });
+    }
+
+    /**
      * Log a SOFT_DELETE operation (paranoid delete)
-     * @param {string} table_name - Name of the table
-     * @param {number} record_id - ID of the soft-deleted record
-     * @param {Object} old_record - Complete old record data
-     * @param {Object} additional_data - Additional context data
-     * @returns {Promise<Log>} - Created log entry
      */
     async logSoftDelete(table_name, record_id, old_record, additional_data = null, transaction = null) {
         return this.logOperation({
@@ -166,12 +201,20 @@ class LoggingService {
     }
 
     /**
+     * Prepare RESTORE log data
+     */
+    prepareRestoreLog(table_name, record_id, new_record, additional_data = null) {
+        return this.prepareLogData({
+            table_name,
+            record_id,
+            operation: 'RESTORE',
+            new_record,
+            additional_data
+        });
+    }
+
+    /**
      * Log a RESTORE operation (restore from soft delete)
-     * @param {string} table_name - Name of the table
-     * @param {number} record_id - ID of the restored record
-     * @param {Object} new_record - Complete restored record data
-     * @param {Object} additional_data - Additional context data
-     * @returns {Promise<Log>} - Created log entry
      */
     async logRestore(table_name, record_id, new_record, additional_data = null, transaction = null) {
         return this.logOperation({
@@ -203,9 +246,24 @@ class LoggingService {
             const oldValue = old_record?.[field];
             const newValue = new_record?.[field];
 
-            // Check if both values are dates
-            if (oldValue instanceof Date && newValue instanceof Date) {
-                if (oldValue.getTime() != newValue.getTime()) {
+            // Helper to check if a value is a valid date
+            const isValidDate = (d) => {
+                if (d instanceof Date && !isNaN(d)) return true;
+                if (typeof d === 'string' || typeof d === 'number') {
+                    const date = new Date(d);
+                    return !isNaN(date.getTime());
+                }
+                return false;
+            };
+
+            // Check if both values are potentially dates
+            if (isValidDate(oldValue) && isValidDate(newValue)) {
+                // If they are both dates, compare their timestamps
+                const oldDate = new Date(oldValue);
+                const newDate = new Date(newValue);
+                
+                // Compare timestamps
+                if (oldDate.getTime() !== newDate.getTime()) {
                     changedFields.push({
                         name: field,
                         old_value: oldValue,
@@ -213,7 +271,9 @@ class LoggingService {
                     });
                 }
             }
-            // Compare values (handling null/undefined)
+            // Strict equality check for non-dates
+            // Note: Use loose equality (!=) if typemismatch is expected but value is same (e.g. "1" and 1)
+            // But strict (!==) is safer. Let's stick to loose (!=) as per previous implementation to avoid regression
             else if (oldValue != newValue) {
                 changedFields.push({
                     name: field,
