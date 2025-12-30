@@ -375,34 +375,17 @@ class LogRepository extends BaseRepository {
             return { count: 0, rows: [] };
         }
 
-        // Batch query all related dettagli and basette logs
-        const [allDettagliLogs, allBasettaLogs] = await Promise.all([
-            Log.findAll({
-                where: {
-                    table_name: 'T_VENDITE_DETTAGLI',
-                    group_id: {
-                        [Op.in]: groupIds
-                    }
-                },
-                order: [['createdAt', 'ASC']]
-            }),
-            Log.findAll({
-                where: {
-                    table_name: 'T_BASETTE',
-                    group_id: {
-                        [Op.in]: groupIds
-                    }
-                },
-                order: [['createdAt', 'ASC']]
-            })
-        ]);
+        // Separate main logs (T_VENDITE) from related logs
+        const tVenditeLogs = venditaLogs.rows.filter(log => log.table_name === 'T_VENDITE');
+        const tVenditeDettagliLogs = venditaLogs.rows.filter(log => log.table_name === 'T_VENDITE_DETTAGLI');
+        const tBasettaLogs = venditaLogs.rows.filter(log => log.table_name === 'T_BASETTE');
 
         // Group related logs by group_id for efficient lookup
         const dettagliLogsByGroupId = {};
         const basettaLogsByGroupId = {};
 
         // Group dettagli logs by group_id
-        for (const log of allDettagliLogs) {
+        for (const log of tVenditeDettagliLogs) {
             if (!dettagliLogsByGroupId[log.group_id]) {
                 dettagliLogsByGroupId[log.group_id] = [];
             }
@@ -410,21 +393,15 @@ class LogRepository extends BaseRepository {
         }
 
         // Group basette logs by group_id
-        for (const log of allBasettaLogs) {
+        for (const log of tBasettaLogs) {
              if (!basettaLogsByGroupId[log.group_id]) {
                 basettaLogsByGroupId[log.group_id] = [];
             }
             basettaLogsByGroupId[log.group_id].push(log);
         }
 
-        // For each vendita log, enrich it with related dettagli and basette logs from the SAME group
-        const enrichedLogs = venditaLogs.rows.map((venditaLog) => {
-            // Only enrich the main T_VENDITE logs. Child logs (returned if record_id filter is active) 
-            // should not be enriched with siblings/themselves.
-            if (venditaLog.table_name !== 'T_VENDITE') {
-                return venditaLog.toJSON();
-            }
-
+        // For each Verkauf log, enrich it with related dettagli and basette logs from the SAME group
+        const enrichedLogs = tVenditeLogs.map((venditaLog) => {
             let enrichedLog = { ...venditaLog.toJSON() };
             
             const dettagliLogs = dettagliLogsByGroupId[venditaLog.group_id] || [];
@@ -450,16 +427,22 @@ class LogRepository extends BaseRepository {
                 }
             }
 
-            // We DO NOT enrich old_value/new_value because these are usually specific field values (strings/numbers)
-            // and merging related full-record logs into them corrupts the data structure.
-            // Only old_record and new_record (which are full snapshots) should be enriched.
-
             return enrichedLog;
         });
 
+        // We combine the enriched parent logs with the raw child logs
+        // This ensures that the group contains ALL operations (parent update + child inserts/updates)
+        // allowing the frontend to consolidate them appropriately.
+        let finalRows = [
+            ...enrichedLogs,
+            ...tVenditeDettagliLogs.map(log => log.toJSON()),
+            ...tBasettaLogs.map(log => log.toJSON())
+        ];
+        finalRows = finalRows.sort((a, b) => a.id < b.id ? -1 : 1);
+
         return {
-            count: venditaLogs.count,
-            rows: enrichedLogs
+            count: finalRows.length, 
+            rows: finalRows
         };
     }
 
@@ -476,24 +459,36 @@ class LogRepository extends BaseRepository {
 
         // Add dettagli logs
         if (dettagliLogs.length > 0) {
-            enrichedRecord.dettagli = dettagliLogs.map((log, index) => {
-                const dettaglioData = recordType === 'old' ? 
-                    (log.old_record ? JSON.parse(log.old_record) : {}) :
-                    (log.new_record ? JSON.parse(log.new_record) : {});
-                
-                return dettaglioData;
-            });
+            const relevantDettagli = dettagliLogs.filter(log => 
+                recordType === 'old' ? log.old_record : log.new_record
+            );
+            
+            if (relevantDettagli.length > 0) {
+                enrichedRecord.dettagli = relevantDettagli.map((log) => {
+                    const dettaglioData = recordType === 'old' ? 
+                        (log.old_record ? JSON.parse(log.old_record) : {}) :
+                        (log.new_record ? JSON.parse(log.new_record) : {});
+                    
+                    return dettaglioData;
+                });
+            }
         }
 
         // Add basette logs
         if (basetteLogs.length > 0) {
-            enrichedRecord.basette = basetteLogs.map((log, index) => {
-                const basettaData = recordType === 'old' ? 
-                    (log.old_record ? JSON.parse(log.old_record) : {}) :
-                    (log.new_record ? JSON.parse(log.new_record) : {});
-                
-                return basettaData;
-            });
+            const relevantBasette = basetteLogs.filter(log => 
+                recordType === 'old' ? log.old_record : log.new_record
+            );
+
+            if (relevantBasette.length > 0) {
+                enrichedRecord.basette = relevantBasette.map((log) => {
+                    const basettaData = recordType === 'old' ? 
+                        (log.old_record ? JSON.parse(log.old_record) : {}) :
+                        (log.new_record ? JSON.parse(log.new_record) : {});
+                    
+                    return basettaData;
+                });
+            }
         }
 
         return enrichedRecord;
