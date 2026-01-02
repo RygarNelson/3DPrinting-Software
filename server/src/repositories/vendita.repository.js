@@ -855,14 +855,18 @@ class VenditaRepository extends BaseRepository {
             throw new Error('Vendita non trovata');
         }
 
-        const oldFilePath = vendita.etichetta_spedizione;
         await vendita.update({ etichetta_spedizione: filePath });
 
-        // Log the update
-        await loggingService.logUpdate('T_VENDITE', venditaId, 'etichetta_spedizione', oldFilePath, filePath, {
-            operation: 'UPDATE',
-            reason: 'Etichetta spedizione file upload/update'
-        });
+        return vendita;
+    }
+
+    async updateLinkTracciamento(venditaId, linkTracciamento) {
+        const vendita = await Vendita.findByPk(venditaId);
+        if (!vendita) {
+            throw new Error('Vendita non trovata');
+        }
+
+        await vendita.update({ link_tracciamento: linkTracciamento });
 
         return vendita;
     }

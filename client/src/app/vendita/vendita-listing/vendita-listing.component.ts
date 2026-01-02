@@ -8,6 +8,7 @@ import { ConfirmationService, FilterMetadata, MenuItem, MessageService } from 'p
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { ConfirmDialog, ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DialogModule } from 'primeng/dialog';
 import { DialogService, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
@@ -30,6 +31,7 @@ import { SpesaListingFiltri } from 'src/models/spesa/spesa-listing-filtri';
 import { VenditaListingDettaglioBasettaModel, VenditaListingDettaglioModel, VenditaListingModel, VenditaListingResponse } from 'src/models/vendita/vendita-listing';
 import { VenditaListingFiltri } from 'src/models/vendita/vendita-listing-filtri';
 import { VenditaModificaContoBancarioModel } from 'src/models/vendita/vendita_modifica_conto_bancario';
+import { VenditaModificaLinkTracciamentoModel } from 'src/models/vendita/vendita_modifica_link_tracciamento';
 import { ApplicationStateService } from 'src/services/application-state.service';
 import { SpesaService } from 'src/services/spesa.service';
 import { VenditaService } from 'src/services/vendita.service';
@@ -37,7 +39,9 @@ import { AuditLogComponent } from 'src/shared/audit-log/audit-log.component';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { FormInputRadiobuttonComponent } from 'src/shared/form-input-radiobutton/form-input-radiobutton.component';
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
+import { FormInputTextComponent } from 'src/shared/form-input-text/form-input-text.component';
 import { VenditaDettaglioStatoComponent } from '../vendita-dettaglio-stato/vendita-dettaglio-stato.component';
+import { VenditaEtichettaSpedizioneComponent } from '../vendita-etichetta-spedizione/vendita-etichetta-spedizione.component';
 import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component';
 
 @Component({
@@ -58,13 +62,16 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
     AccordionModule,
     FormInputSelectComponent,
     FormInputRadiobuttonComponent,
+    FormInputTextComponent,
     ClienteLookupDirective,
     ContoBancarioLookupDirective,
     VenditaStatoSpedizioneLookupDirective,
     VenditaDettaglioStatoStampaLookupDirective,
     MenuModule,
     SplitButtonModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    VenditaEtichettaSpedizioneComponent,
+    DialogModule
   ],
   providers: [VenditaService, SpesaService],
   templateUrl: './vendita-listing.component.html',
@@ -103,7 +110,16 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
     conto_bancario_id: 0
   };
 
+  modificaLinkTracciamentoVisible: boolean = false;
+  modificaLinkTracciamentoModel: VenditaModificaLinkTracciamentoModel = {
+    venditaId: 0,
+    linkTracciamento: ''
+  };
+
   venditaHighlight?: number = undefined;
+
+  etichettaSpedizioneDialogVisible: boolean = false;
+  venditaForEtichetta?: VenditaListingModel;
 
   // Delete dialog properties
   deleteDialogVisible: boolean = false;
@@ -572,6 +588,47 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
     });
   }
 
+  openModificaLinkTracciamento(vendita: VenditaListingModel): void {
+    this.modificaLinkTracciamentoModel.venditaId = vendita.id;
+    this.modificaLinkTracciamentoModel.linkTracciamento = '';
+    this.modificaLinkTracciamentoVisible = true;
+  }
+
+  modificaLinkTracciamento(): void {
+    this.venditaService.modificaLinkTracciamento(this.modificaLinkTracciamentoModel).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Link tracciamento modificato con successo'
+        });
+
+        this.loadVendite();
+      },
+      error: (error) => {
+        this.dialogService.open(DialogErrorComponent, {
+          inputValues: {
+            error: error
+          },
+          modal: true
+        });
+      },
+      complete: () => {
+        this.modificaLinkTracciamentoModel = {
+          venditaId: 0,
+          linkTracciamento: ''
+        };
+        this.modificaLinkTracciamentoVisible = false;
+        this.selectedVendite = [];
+      }
+    });
+  }
+
+  openEtichettaSpedizioneDialog(vendita: VenditaListingModel): void {
+    this.venditaForEtichetta = vendita;
+    this.etichettaSpedizioneDialogVisible = true;
+  }
+
   copiaLinkTracciamento(vendita: VenditaListingModel): void {
     if (!vendita.link_tracciamento) {
       return;
@@ -598,88 +655,6 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
           detail: 'Errore durante la copia del link tracciamento'
         });
       });
-  }
-
-  downloadEtichettaSpedizione(vendita: VenditaListingModel): void {
-    if (!vendita.id || vendita.id <= 0) {
-      return;
-    }
-
-    this.loading = true;
-
-    this.venditaService.downloadEtichettaSpedizione(vendita.id).subscribe({
-      next: (blob: Blob) => {
-        window.clearTimeout(this.loadingTimeout);
-        this.loading = false;
-
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `etichetta_spedizione_vendita_${vendita.id}.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Download avviato'
-        });
-      },
-      error: (error: any) => {
-        window.clearTimeout(this.loadingTimeout);
-        this.loading = false;
-
-        let errorMessage = 'Errore durante il download del file';
-        if (error.error && error.error.error) {
-          errorMessage = error.error.error;
-        }
-
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Errore',
-          detail: errorMessage
-        });
-      }
-    });
-  }
-
-  openEtichettaSpedizione(vendita: VenditaListingModel): void {
-    if (!vendita.id || vendita.id <= 0) {
-      return;
-    }
-
-    if (!vendita.etichetta_spedizione) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Attenzione',
-        detail: 'Nessuna etichetta spedizione disponibile'
-      });
-      return;
-    }
-
-    // Open the download URL in a new tab
-    this.venditaService.downloadEtichettaSpedizione(vendita.id).subscribe({
-      next: (blob: Blob) => {
-        const url = window.URL.createObjectURL(blob);
-        window.open(url, '_blank');
-        // Note: We don't revoke the URL immediately to allow the new tab to load it
-        setTimeout(() => window.URL.revokeObjectURL(url), 100);
-      },
-      error: (error: any) => {
-        let errorMessage = "Errore durante l'apertura del file";
-        if (error.error && error.error.error) {
-          errorMessage = error.error.error;
-        }
-
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Errore',
-          detail: errorMessage
-        });
-      }
-    });
   }
 
   // Helper function to get date-only in Rome timezone (for Excel date columns)
