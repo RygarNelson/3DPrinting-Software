@@ -133,4 +133,43 @@ export class AuditLogComponent implements OnInit, OnDestroy {
   close(): void {
     this.ref.close();
   }
+
+  getChanges(log: AuditLog): { key: string; old: any; new: any }[] {
+    if (log.operation !== 'UPDATE') {
+      return [];
+    }
+
+    // Legacy format: field_name is present
+    if (log.field_name) {
+      return [
+        {
+          key: log.field_name,
+          old: log.old_value,
+          new: log.new_value
+        }
+      ];
+    }
+
+    // New aggregated format: parse JSON from old_value and new_value
+    try {
+      const oldValues = log.old_value ? JSON.parse(log.old_value) : {};
+      const newValues = log.new_value ? JSON.parse(log.new_value) : {};
+
+      const keys = new Set([...Object.keys(oldValues), ...Object.keys(newValues)]);
+      const changes: { key: string; old: any; new: any }[] = [];
+
+      keys.forEach((key) => {
+        changes.push({
+          key: key,
+          old: oldValues[key],
+          new: newValues[key]
+        });
+      });
+
+      return changes;
+    } catch (e) {
+      console.error('Error parsing update log values:', e);
+      return [];
+    }
+  }
 }

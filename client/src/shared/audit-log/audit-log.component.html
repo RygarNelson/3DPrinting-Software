@@ -1,177 +1,172 @@
 <p-card>
-    <ng-template pTemplate="header">
-      <div class="flex justify-between items-center pt-6">
-        <h2 class="text-xl font-semibold text-gray-800 header-title">
-          Log di Audit - {{ config.data?.objectName }}
-        </h2>
-        <div class="header-title margin-left-auto">
-          <div class="flex gap-2">
-            <p-button
-              severity="primary"
-              label="Espandi tutto"
-              icon="pi pi-plus"
-              (click)="expandAllGroups()"
-              [style]="{'font-size': '0.75rem'}"
-              pTooltip="Espandi tutti i gruppi">
-            </p-button>
-            <p-button
-              severity="primary"
-              label="Riduci tutto"
-              icon="pi pi-minus"
-              (click)="collapseAllGroups()"
-              [style]="{'font-size': '0.75rem'}"
-              pTooltip="Riduci tutti i gruppi">
-            </p-button>
-            <p-button
-              icon="pi pi-times" 
-              severity="secondary"
-              (click)="close()"
-              pTooltip="Chiudi"
-              tooltipPosition="left">
-              </p-button>
-          </div>
+  <ng-template pTemplate="header">
+    <div class="flex justify-between items-center pt-6">
+      <h2 class="text-xl font-semibold text-gray-800 header-title">Log di Audit - {{ config.data?.objectName }}</h2>
+      <div class="header-title margin-left-auto">
+        <div class="flex gap-2">
+          <p-button severity="primary" label="Espandi tutto" icon="pi pi-plus" (click)="expandAllGroups()" [style]="{ 'font-size': '0.75rem' }" pTooltip="Espandi tutti i gruppi"> </p-button>
+          <p-button severity="primary" label="Riduci tutto" icon="pi pi-minus" (click)="collapseAllGroups()" [style]="{ 'font-size': '0.75rem' }" pTooltip="Riduci tutti i gruppi"> </p-button>
+          <p-button icon="pi pi-times" severity="secondary" (click)="close()" pTooltip="Chiudi" tooltipPosition="left"> </p-button>
         </div>
       </div>
-    </ng-template>
-    
-    <ng-template pTemplate="content">
-      <!-- Grouped Logs Display -->
-      <div class="grouped-logs-container">
-        @if (loading) {
-          <div class="space-y-4">
-            @for (i of [1,2,3]; track i) {
-              <div class="log-group">
-                <div class="group-header">
-                  <p-skeleton height="30px" width="100%" />
-                </div>
-                <div class="group-content">
-                  <p-skeleton height="100px" width="100%" />
-                </div>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="content">
+    <!-- Grouped Logs Display -->
+    <div class="grouped-logs-container">
+      @if (loading) {
+        <div class="space-y-4">
+          @for (i of [1, 2, 3]; track i) {
+            <div class="log-group">
+              <div class="group-header">
+                <p-skeleton height="30px" width="100%" />
               </div>
-            }
-          </div>
-        } @else if (groupedLogKeys.length === 0) {
-          <div class="flex flex-col items-center gap-4 py-12">
-            <i class="pi pi-history text-6xl text-gray-400"></i>
-            <p class="text-gray-500 text-lg">Nessun log di audit trovato</p>
-          </div>
-        } @else {
-          @for (groupId of groupedLogKeys; track groupId) {
-            <div class="log-group mb-6">
-              <!-- Group Header -->
-              <div class="group-header grid md:grid-cols-12 sm:grid-cols-1 bg-gray-100 border border-gray-200 p-4 cursor-pointer hover:bg-gray-50 transition-colors"
-                   [class.rounded-lg]="isGroupCollapsed(groupId)"
-                   [class.rounded-t-lg]="!isGroupCollapsed(groupId)"
-                   (click)="toggleGroup(groupId)">
-                <!-- Group Summary Row -->
-                <div class="flex items-center gap-4 col-span-10 md:col-span-10 sm:col-span-1">
-                  <div class="group-id">
-                    <span class="text-xs text-gray-500">Gruppo</span>
-                    <div class="font-mono text-sm font-semibold text-gray-700">#{{ groupId }}</div>
-                  </div>
-                  <div class="group-timestamp">
-                    <span class="text-xs text-gray-500">Data/Ora</span>
-                    <div class="text-sm font-medium">
-                      {{ groupedLogs[groupId] | groupTimestamp | date:'dd/MM/yyyy HH:mm:ss' }}
-                    </div>
-                  </div>
-                  <!-- Operation removed as per request -->
-                  <div class="group-client">
-                    <div class="text-gray-500 text-sm">
-                      <div><strong>Utente:</strong> {{ (groupedLogs[groupId] | groupUser).name }} {{ (groupedLogs[groupId] | groupUser).surname }} ({{ (groupedLogs[groupId] | groupUser).email }})</div>
-                      <div><strong>IP:</strong> {{ (groupedLogs[groupId] | groupClientInfo).ip_address }}</div>
-                      <div class="break-all"><strong>User agent:</strong> {{ (groupedLogs[groupId] | groupClientInfo).user_agent }}</div>
-                    </div>
-                  </div>
-                </div>
-                                 <div class="group-count margin-left-auto col-span-2 mt-2 flex items-center gap-2">
-                   <span class="text-sm font-medium text-gray-600">
-                     {{ groupedLogs[groupId].length }} {{ groupedLogs[groupId].length === 1 ? 'modifica' : 'modifiche' }}
-                   </span>
-                   <i class="pi transition-transform duration-200"
-                      [class.pi-chevron-down]="isGroupCollapsed(groupId)"
-                      [class.pi-chevron-up]="!isGroupCollapsed(groupId)"
-                      [class.rotate-0]="isGroupCollapsed(groupId)"
-                      [class.rotate-180]="!isGroupCollapsed(groupId)">
-                   </i>
-                 </div>
-              </div>
-
-              <!-- Group Content - Individual Log Entries -->
-              <div class="group-content border border-t-0 border-gray-200 rounded-b-lg p-6 overflow-hidden transition-all duration-300"
-                   [class.hidden]="isGroupCollapsed(groupId)"
-                   [class.animate-slideDown]="!isGroupCollapsed(groupId)"
-                   [class.animate-slideUp]="isGroupCollapsed(groupId)">
-                
-                 <div class="logs-list space-y-4">
-                    @for (log of groupedLogs[groupId]; track log.id) {
-                        <div class="individual-log-entry border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-                            <!-- Log Header -->
-                            <div class="log-header bg-gray-50 px-4 py-2 flex justify-between items-center border-b border-gray-100">
-                                <div class="flex items-center gap-2">
-                                    <span class="font-mono text-sm font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded">
-                                        {{ log.table_name }}
-                                    </span>
-                                    <span class="text-xs text-gray-400">#{{ log.record_id }}</span>
-                                </div>
-                                <p-tag 
-                                    [value]="log.operation | operationLabel" 
-                                    [severity]="log.operation | operationSeverity"
-                                    [style]="{'font-size': '0.7rem', 'padding': '0.1rem 0.4rem'}">
-                                </p-tag>
-                            </div>
-
-                            <!-- Log Body -->
-                            <div class="log-body p-4 bg-white">
-                                <!-- CASE 1: UPDATE (Field Changes) -->
-                                @if (log.operation === 'UPDATE' && log.field_name) {
-                                    <div class="field-change flex flex-col gap-2">
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-sm font-medium text-gray-600">Modifica</span>
-                                            <span class="font-mono text-sm font-bold text-gray-800">{{ log.field_name }}</span>
-                                        </div>
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                                            <div class="value-box old-value p-3 rounded bg-red-50 border border-red-100">
-                                                <div class="text-xs text-red-500 font-semibold mb-1">Valore precedente</div>
-                                                <div class="font-mono text-sm break-all">{{ log.old_value !== null ? log.old_value : 'null' }}</div>
-                                            </div>
-                                            <div class="value-box new-value p-3 rounded bg-green-50 border border-green-100">
-                                                <div class="text-xs text-green-500 font-semibold mb-1">Nuovo valore</div>
-                                                <div class="font-mono text-sm break-all">{{ log.new_value !== null ? log.new_value : 'null' }}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
-
-                                <!-- CASE 2: INSERT/RESTORE (New Record) -->
-                                @if ((log.operation === 'INSERT' || log.operation === 'RESTORE') && log.new_record) {
-                                    <div class="record-view">
-                                        <div class="text-sm font-medium text-gray-600 mb-2">Nuovo record</div>
-                                        <div class="json-container overflow-auto max-h-60 bg-gray-50 rounded border border-gray-200">
-                                           <pre [innerHTML]="log.new_record | prettyJson"></pre>
-                                        </div>
-                                    </div>
-                                }
-
-                                <!-- CASE 3: DELETE (Old Record) -->
-                                @if ((log.operation === 'DELETE' || log.operation === 'SOFT_DELETE') && log.old_record) {
-                                    <div class="record-view">
-                                        <div class="text-sm font-medium text-gray-600 mb-2">Record eliminato</div>
-                                        <div class="json-container overflow-auto max-h-60 bg-gray-50 rounded border border-gray-200">
-                                           <pre [innerHTML]="log.old_record | prettyJson"></pre>
-                                        </div>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    }
-                 </div>
-
+              <div class="group-content">
+                <p-skeleton height="100px" width="100%" />
               </div>
             </div>
           }
-        }
-      </div>
+        </div>
+      } @else if (groupedLogKeys.length === 0) {
+        <div class="flex flex-col items-center gap-4 py-12">
+          <i class="pi pi-history text-6xl text-gray-400"></i>
+          <p class="text-gray-500 text-lg">Nessun log di audit trovato</p>
+        </div>
+      } @else {
+        @for (groupId of groupedLogKeys; track groupId) {
+          <div class="log-group mb-6">
+            <!-- Group Header -->
+            <div
+              class="group-header grid md:grid-cols-12 sm:grid-cols-1 bg-gray-100 border border-gray-200 p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+              [class.rounded-lg]="isGroupCollapsed(groupId)"
+              [class.rounded-t-lg]="!isGroupCollapsed(groupId)"
+              (click)="toggleGroup(groupId)">
+              <!-- Group Summary Row -->
+              <div class="flex items-center gap-4 col-span-10 md:col-span-10 sm:col-span-1">
+                <div class="group-id">
+                  <span class="text-xs text-gray-500">Gruppo</span>
+                  <div class="font-mono text-sm font-semibold text-gray-700">#{{ groupId }}</div>
+                </div>
+                <div class="group-timestamp">
+                  <span class="text-xs text-gray-500">Data/Ora</span>
+                  <div class="text-sm font-medium">
+                    {{ groupedLogs[groupId] | groupTimestamp | date: 'dd/MM/yyyy HH:mm:ss' }}
+                  </div>
+                </div>
+                <!-- Operation removed as per request -->
+                <div class="group-client">
+                  <div class="text-gray-500 text-sm">
+                    <div><strong>Utente:</strong> {{ (groupedLogs[groupId] | groupUser).name }} {{ (groupedLogs[groupId] | groupUser).surname }} ({{ (groupedLogs[groupId] | groupUser).email }})</div>
+                    <div><strong>IP:</strong> {{ (groupedLogs[groupId] | groupClientInfo).ip_address }}</div>
+                    <div class="break-all"><strong>User agent:</strong> {{ (groupedLogs[groupId] | groupClientInfo).user_agent }}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="group-count margin-left-auto col-span-2 mt-2 flex items-center gap-2">
+                <span class="text-sm font-medium text-gray-600"> {{ groupedLogs[groupId].length }} {{ groupedLogs[groupId].length === 1 ? 'modifica' : 'modifiche' }} </span>
+                <i
+                  class="pi transition-transform duration-200"
+                  [class.pi-chevron-down]="isGroupCollapsed(groupId)"
+                  [class.pi-chevron-up]="!isGroupCollapsed(groupId)"
+                  [class.rotate-0]="isGroupCollapsed(groupId)"
+                  [class.rotate-180]="!isGroupCollapsed(groupId)">
+                </i>
+              </div>
+            </div>
 
-    </ng-template>
-  </p-card>
+            <!-- Group Content - Individual Log Entries -->
+            <div
+              class="group-content border border-t-0 border-gray-200 rounded-b-lg p-6 overflow-hidden transition-all duration-300"
+              [class.hidden]="isGroupCollapsed(groupId)"
+              [class.animate-slideDown]="!isGroupCollapsed(groupId)"
+              [class.animate-slideUp]="isGroupCollapsed(groupId)">
+              <div class="logs-list space-y-4">
+                @for (log of groupedLogs[groupId]; track log.id) {
+                  <div class="individual-log-entry border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                    <!-- Log Header -->
+                    <div class="log-header bg-gray-50 px-4 py-2 flex justify-between items-center border-b border-gray-100">
+                      <div class="flex items-center gap-2">
+                        <span class="font-mono text-sm font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded">
+                          {{ log.table_name }}
+                        </span>
+                        <span class="text-xs text-gray-400">#{{ log.record_id }}</span>
+                      </div>
+                      <p-tag [value]="log.operation | operationLabel" [severity]="log.operation | operationSeverity" [style]="{ 'font-size': '0.7rem', padding: '0.1rem 0.4rem' }"> </p-tag>
+                    </div>
+
+                    <!-- Log Body -->
+                    <div class="log-body p-4 bg-white">
+                      <!-- CASE 1: UPDATE (Field Changes) -->
+                      @if (log.operation === 'UPDATE') {
+                        @if (log.field_name) {
+                          <!-- Legacy: Single field change -->
+                          <div class="field-change flex flex-col gap-2">
+                            <div class="flex items-center gap-2">
+                              <span class="text-sm font-medium text-gray-600">Modifica</span>
+                              <span class="font-mono text-sm font-bold text-gray-800">{{ log.field_name }}</span>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                              <div class="value-box old-value p-3 rounded bg-red-50 border border-red-100">
+                                <div class="text-xs text-red-500 font-semibold mb-1">Valore precedente</div>
+                                <div class="font-mono text-sm break-all">{{ log.old_value !== null ? log.old_value : 'null' }}</div>
+                              </div>
+                              <div class="value-box new-value p-3 rounded bg-green-50 border border-green-100">
+                                <div class="text-xs text-green-500 font-semibold mb-1">Nuovo valore</div>
+                                <div class="font-mono text-sm break-all">{{ log.new_value !== null ? log.new_value : 'null' }}</div>
+                              </div>
+                            </div>
+                          </div>
+                        } @else {
+                          <!-- Aggregated: JSON display -->
+                          <div class="field-change flex flex-col gap-2">
+                            <div class="flex items-center gap-2">
+                              <span class="text-sm font-medium text-gray-600">Modifiche</span>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                              <div class="value-box old-value p-3 rounded bg-red-50 border border-red-100 overflow-hidden">
+                                <div class="text-xs text-red-500 font-semibold mb-1">Valore precedente</div>
+                                <div class="json-container overflow-auto max-h-60">
+                                  <pre [innerHTML]="log.old_value | prettyJson"></pre>
+                                </div>
+                              </div>
+                              <div class="value-box new-value p-3 rounded bg-green-50 border border-green-100 overflow-hidden">
+                                <div class="text-xs text-green-500 font-semibold mb-1">Nuovo valore</div>
+                                <div class="json-container overflow-auto max-h-60">
+                                  <pre [innerHTML]="log.new_value | prettyJson"></pre>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        }
+                      }
+                      <!-- CASE 2: INSERT/RESTORE (New Record) -->
+                      @if ((log.operation === 'INSERT' || log.operation === 'RESTORE') && log.new_record) {
+                        <div class="record-view">
+                          <div class="text-sm font-medium text-gray-600 mb-2">Nuovo record</div>
+                          <div class="json-container overflow-auto max-h-60 bg-gray-50 rounded border border-gray-200">
+                            <pre [innerHTML]="log.new_record | prettyJson"></pre>
+                          </div>
+                        </div>
+                      }
+
+                      <!-- CASE 3: DELETE (Old Record) -->
+                      @if ((log.operation === 'DELETE' || log.operation === 'SOFT_DELETE') && log.old_record) {
+                        <div class="record-view">
+                          <div class="text-sm font-medium text-gray-600 mb-2">Record eliminato</div>
+                          <div class="json-container overflow-auto max-h-60 bg-gray-50 rounded border border-gray-200">
+                            <pre [innerHTML]="log.old_record | prettyJson"></pre>
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  </ng-template>
+</p-card>
