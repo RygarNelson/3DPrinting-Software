@@ -11,6 +11,7 @@ import { VenditaManagerModel, VenditaManagerResponse } from 'src/models/vendita/
 import { VenditaRiepilogoModelliResponse } from 'src/models/vendita/vendita-riepilogo-modelli';
 import { VenditaStatoResponse } from 'src/models/vendita/vendita-stato';
 import { VenditaModificaContoBancarioModel } from 'src/models/vendita/vendita_modifica_conto_bancario';
+import { VenditaModificaLinkTracciamentoModel } from 'src/models/vendita/vendita_modifica_link_tracciamento';
 
 @Injectable()
 export class VenditaService {
@@ -82,6 +83,10 @@ export class VenditaService {
 
   modificaContoBancarioVendite(request: VenditaModificaContoBancarioModel): Observable<any> {
     return this.http.post<any>(`${this.api}/conto-bancario/modifica`, request);
+  }
+
+  modificaLinkTracciamento(request: VenditaModificaLinkTracciamentoModel): Observable<any> {
+    return this.http.post<any>(`${this.api}/link-tracciamento/modifica`, request);
   }
 
   uploadEtichettaSpedizione(venditaId: number, file: File): Observable<any> {

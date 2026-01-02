@@ -1,0 +1,41 @@
+<div class="flex flex-col gap-2">
+  <label class="block">Etichetta Spedizione</label>
+  <div class="flex items-center gap-2 flex-wrap">
+    @if (uploadEtichettaSpedizioneLoading) {
+      <p-button icon="pi pi-spinner pi-spin" [disabled]="true" [severity]="'primary'" [size]="'small'" />
+    } @else {
+      <input type="file" accept="application/pdf" (change)="onFileSelected($event)" class="hidden" id="etichetta-spedizione-input-shared" [disabled]="!venditaId || venditaId <= 0" />
+      <label for="etichetta-spedizione-input-shared" class="p-button p-component cursor-pointer p-button-sm" [class.p-disabled]="!venditaId || venditaId <= 0">
+        <i class="pi pi-upload mr-2"></i>
+        PDF
+      </label>
+    }
+
+    @if (etichettaSpedizione) {
+      <!-- Desktop View: Buttons side by side -->
+      <div class="flex items-center gap-2">
+        @if (openEtichettaSpedizioneLoading) {
+          <p-button icon="pi pi-spinner pi-spin" [disabled]="true" [severity]="'info'" [size]="'small'" />
+        } @else {
+          <p-button icon="pi pi-external-link" label="Apri" severity="info" size="small" (click)="openEtichettaSpedizione()" pTooltip="Apri etichetta spedizione in nuova scheda" tooltipPosition="top" />
+        }
+
+        @if (downloadEtichettaSpedizioneLoading) {
+          <p-button icon="pi pi-spinner pi-spin" [disabled]="true" [severity]="'secondary'" [size]="'small'" />
+        } @else {
+          <p-button icon="pi pi-download" label="Scarica" severity="secondary" size="small" (click)="downloadEtichettaSpedizione()" pTooltip="Scarica etichetta spedizione" tooltipPosition="top" />
+        }
+
+        @if (deleteEtichettaSpedizioneLoading) {
+          <p-button icon="pi pi-spinner pi-spin" [disabled]="true" [severity]="'danger'" [size]="'small'" />
+        } @else {
+          <p-button id="delete-etichetta-spedizione-button" icon="pi pi-trash" label="Elimina" severity="danger" size="small" (click)="deleteEtichettaSpedizione($event)" pTooltip="Elimina etichetta spedizione" tooltipPosition="top" />
+        }
+      </div>
+    }
+  </div>
+  <small class="text-gray-500">Dimensione massima: 2MB. Solo file PDF.</small>
+  @if (!venditaId || venditaId <= 0) {
+    <small class="text-orange-500">Salva prima la vendita per caricare l'etichetta spedizione.</small>
+  }
+</div>

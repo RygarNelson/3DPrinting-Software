@@ -1,321 +1,205 @@
 <div class="p-4">
-    <p-card>
-        <ng-template pTemplate="header">
-            <div class="flex items-center flex-wrap header-title">
-                <h2 class="text-xl font-semibold text-gray-800">{{vendita.id ? 'Modifica' : 'Nuova'}} Vendita</h2>
-                <div class="flex items-center gap-2 margin-left-auto">
-                    @if (loading) {
-                    <p-button icon="pi pi-spinner pi-spin" label="Indietro" [disabled]="true"
-                        [severity]="'secondary'" />
-                    <p-button icon="pi pi-spinner pi-spin" label="Salva" [disabled]="true" [severity]="'primary'" />
-                    }
-                    @else {
-                    <p-button icon="pi pi-arrow-left" label="Indietro" (click)="indietro()" [severity]="'secondary'" />
-                    <p-button icon="pi pi-save" label="Salva" (click)="saveVendita()" [severity]="'primary'" />
-                    }
+  <p-card>
+    <ng-template pTemplate="header">
+      <div class="flex items-center flex-wrap header-title">
+        <h2 class="text-xl font-semibold text-gray-800">{{ vendita.id ? 'Modifica' : 'Nuova' }} Vendita</h2>
+        <div class="flex items-center gap-2 margin-left-auto">
+          @if (loading) {
+            <p-button icon="pi pi-spinner pi-spin" label="Indietro" [disabled]="true" [severity]="'secondary'" />
+            <p-button icon="pi pi-spinner pi-spin" label="Salva" [disabled]="true" [severity]="'primary'" />
+          } @else {
+            <p-button icon="pi pi-arrow-left" label="Indietro" (click)="indietro()" [severity]="'secondary'" />
+            <p-button icon="pi pi-save" label="Salva" (click)="saveVendita()" [severity]="'primary'" />
+          }
+        </div>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="content">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <form-input-datetime property="data_vendita" label="Data Vendita" [obligatory]="true" [listaErrori]="listaErrori" [(ngModel)]="vendita.data_vendita" (ngModelChange)="impostaDateScadenze()" />
+        <form-input-datetime property="data_scadenza" label="Data Scadenza" [min]="vendita.data_vendita" [listaErrori]="listaErrori" [(ngModel)]="vendita.data_scadenza" />
+        <form-input-datetime property="data_scadenza_spedizione" label="Data Scadenza Spedizione" [min]="vendita.data_vendita" [listaErrori]="listaErrori" [(ngModel)]="vendita.data_scadenza_spedizione" />
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        <form-input-select cliente-lookup property="cliente_id" label="Cliente" [obligatory]="true" [listaErrori]="listaErrori" [showAdd]="true" (add)="addCliente()" [(ngModel)]="vendita.cliente_id" />
+        <form-input-select conto-bancario-lookup property="conto_bancario_id" label="Conto Bancario" [listaErrori]="listaErrori" [showAdd]="true" (add)="addContoBancario()" [(ngModel)]="vendita.conto_bancario_id" />
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        <form-input-select vendita-stato-spedizione-lookup property="stato_spedizione" label="Stato Spedizione" [obligatory]="true" [filter]="false" [showClear]="false" [listaErrori]="listaErrori" [(ngModel)]="vendita.stato_spedizione">
+          <ng-template #selectedItem let-item>
+            <vendita-stato class="w-full" [stato_spedizione]="vendita.stato_spedizione" [isInSelect]="true" />
+          </ng-template>
+          <ng-template #item let-item>
+            <vendita-stato class="w-full" [stato_spedizione]="item.id" [isInSelect]="true" />
+          </ng-template>
+        </form-input-select>
+        <form-input-text property="link_tracciamento" label="Link Tracciamento" [listaErrori]="listaErrori" [(ngModel)]="vendita.link_tracciamento" />
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        <div class="flex flex-col gap-2">
+          <app-vendita-etichetta-spedizione [venditaId]="vendita.id" [etichettaSpedizione]="vendita.etichetta_spedizione" (onEtichettaChange)="vendita.etichetta_spedizione = $event === null ? undefined : $event"> </app-vendita-etichetta-spedizione>
+        </div>
+      </div>
+    </ng-template>
+  </p-card>
 
-                </div>
-            </div>
-        </ng-template>
-        <ng-template pTemplate="content">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <form-input-datetime property="data_vendita" label="Data Vendita" [obligatory]="true"
-                    [listaErrori]="listaErrori" [(ngModel)]="vendita.data_vendita"
-                    (ngModelChange)="impostaDateScadenze()" />
-                <form-input-datetime property="data_scadenza" label="Data Scadenza" [min]="vendita.data_vendita"
-                    [listaErrori]="listaErrori" [(ngModel)]="vendita.data_scadenza" />
-                <form-input-datetime property="data_scadenza_spedizione" label="Data Scadenza Spedizione"
-                    [min]="vendita.data_vendita" [listaErrori]="listaErrori"
-                    [(ngModel)]="vendita.data_scadenza_spedizione" />
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <form-input-select cliente-lookup property="cliente_id" label="Cliente" [obligatory]="true"
-                    [listaErrori]="listaErrori" [showAdd]="true" (add)="addCliente()"
-                    [(ngModel)]="vendita.cliente_id" />
-                <form-input-select conto-bancario-lookup property="conto_bancario_id" label="Conto Bancario"
-                    [listaErrori]="listaErrori" [showAdd]="true" (add)="addContoBancario()"
-                    [(ngModel)]="vendita.conto_bancario_id" />
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <form-input-select vendita-stato-spedizione-lookup property="stato_spedizione" label="Stato Spedizione"
-                    [obligatory]="true" [filter]="false" [showClear]="false" [listaErrori]="listaErrori"
-                    [(ngModel)]="vendita.stato_spedizione">
+  <div class="mt-4">
+    <p-card>
+      <ng-template pTemplate="header">
+        <div class="flex items-center flex-wrap header-title">
+          <h2 class="text-xl font-semibold text-gray-800">Dettagli</h2>
+          <div class="flex items-center gap-2 margin-left-auto">
+            @if (loading) {
+              <p-button icon="pi pi-spinner pi-spin" label="Aggiungi Dettaglio" severity="success" [disabled]="true" />
+            } @else {
+              <p-button icon="pi pi-plus" label="Aggiungi Dettaglio" severity="success" (click)="addDettaglio()" pTooltip="Aggiungi nuovo dettaglio" tooltipPosition="top" />
+            }
+          </div>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="content">
+        <p-table [value]="vendita.dettagli" [paginator]="true" [rows]="10" [totalRecords]="vendita.dettagli.length">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Modello / Descrizione</th>
+              <th>Stampante</th>
+              <th style="width: 50px">Quantità</th>
+              <th style="width: 200px">
+                Prezzo
+                <i class="pi pi-info-circle info-icon" pTooltip="Il prezzo è il prezzo totale del dettaglio, NON UNITARIO"></i>
+              </th>
+              <th style="width: 300px">Stato Stampa</th>
+              <th style="width: 100px"></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-dettaglio let-rowIndex="rowIndex">
+            <tr>
+              <td>
+                <div class="flex flex-col items-center gap-2">
+                  <form-input-select
+                    modello-lookup
+                    class="w-full"
+                    property="modello_id"
+                    [label]="'Modello'"
+                    [listaErrori]="listaErrori"
+                    [parent]="'dettagli'"
+                    [index]="rowIndex"
+                    [showAdd]="true"
+                    (add)="addModello(rowIndex)"
+                    [(ngModel)]="dettaglio.modello_id"
+                    (selected)="impostaDettaglioBasetta($event, rowIndex)">
                     <ng-template #selectedItem let-item>
-                        <vendita-stato class="w-full" [stato_spedizione]="vendita.stato_spedizione"
-                            [isInSelect]="true" />
+                      <modello-tipo class="w-full" [tipo]="item.altriDati.tipo" [descrizioneModello]="item.etichetta" [isInSelect]="true" />
                     </ng-template>
                     <ng-template #item let-item>
-                        <vendita-stato class="w-full" [stato_spedizione]="item.id" [isInSelect]="true" />
+                      <modello-tipo class="w-full" [tipo]="item.altriDati.tipo" [descrizioneModello]="item.etichetta" [isInSelect]="true" />
                     </ng-template>
+                  </form-input-select>
+                  <form-input-text property="descrizione" label="Descrizione" class="w-full" [listaErrori]="listaErrori" [parent]="'dettagli'" [index]="rowIndex" [(ngModel)]="dettaglio.descrizione" />
+                  <form-input-checkbox
+                    property="stampa_is_pezzo_singolo"
+                    label="Stampa pezzo singolo"
+                    class="w-full"
+                    [listaErrori]="listaErrori"
+                    [parent]="'dettagli'"
+                    [index]="rowIndex"
+                    [(ngModel)]="dettaglio.stampa_is_pezzo_singolo"
+                    (ngModelChange)="checkDettaglio(dettaglio)" />
+                  <form-input-checkbox
+                    property="stampa_is_parziale"
+                    label="Stampa parziale"
+                    class="w-full"
+                    [listaErrori]="listaErrori"
+                    [parent]="'dettagli'"
+                    [index]="rowIndex"
+                    [(ngModel)]="dettaglio.stampa_is_parziale"
+                    (ngModelChange)="checkDettaglio(dettaglio)" />
+                </div>
+              </td>
+              <td>
+                <form-input-select stampante-lookup property="stampante_id" [listaErrori]="listaErrori" [parent]="'dettagli'" [index]="rowIndex" [showAdd]="true" (add)="addStampante(rowIndex)" [(ngModel)]="dettaglio.stampante_id" />
+              </td>
+              <td>
+                <div class="flex flex-col items-center gap-2">
+                  {{ dettaglio.quantita | number: '0.0-4' }}
+                </div>
+              </td>
+              <td>
+                <form-input-number
+                  property="prezzo"
+                  [min]="0"
+                  [step]="1"
+                  [mode]="'decimal'"
+                  [minFractionDigits]="5"
+                  [maxFractionDigits]="5"
+                  [suffix]="'€'"
+                  [showButtons]="true"
+                  [listaErrori]="listaErrori"
+                  [parent]="'dettagli'"
+                  [index]="rowIndex"
+                  [(ngModel)]="dettaglio.prezzo" />
+              </td>
+              <td>
+                <form-input-select vendita-dettaglio-stato-stampa-lookup property="stato_stampa" [filter]="false" [showClear]="false" [listaErrori]="listaErrori" [parent]="'dettagli'" [index]="rowIndex" [(ngModel)]="dettaglio.stato_stampa">
+                  <ng-template #selectedItem let-item>
+                    <vendita-dettaglio-stato class="w-full" [stato_stampa]="dettaglio.stato_stampa" [isInSelect]="true" />
+                  </ng-template>
+                  <ng-template #item let-item>
+                    <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id" [isInSelect]="true" />
+                  </ng-template>
                 </form-input-select>
-                <form-input-text property="link_tracciamento" label="Link Tracciamento" [listaErrori]="listaErrori"
-                    [(ngModel)]="vendita.link_tracciamento" />
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <div class="flex flex-col gap-2">
-                    <label class="block">Etichetta Spedizione</label>
-                    <div class="flex items-center gap-2">
-                        @if (uploadEtichettaSpedizioneLoading) {
-                            <p-button icon="pi pi-spinner pi-spin" [disabled]="true" [severity]="'primary'" [size]="'small'" />
-                        }
-                        @else {
-                            <input 
-                                type="file" 
-                                accept="application/pdf"
-                                (change)="onFileSelected($event)"
-                                class="hidden"
-                                id="etichetta-spedizione-input"
-                                [disabled]="!vendita.id || vendita.id <= 0" />
-                            <label 
-                                for="etichetta-spedizione-input"
-                                class="p-button p-component cursor-pointer"
-                                [class.p-disabled]="!vendita.id || vendita.id <= 0">
-                                <i class="pi pi-upload mr-2"></i>
-                                PDF
-                            </label>
-                        }
-                        @if (vendita.etichetta_spedizione && !applicationStateService.isMobile() && !applicationStateService.isTablet()) {
-                            @if (openEtichettaSpedizioneLoading) {
-                                <p-button icon="pi pi-spinner pi-spin" [disabled]="true" [severity]="'info'" [size]="'small'" />
-                            }
-                            @else {
-                                <p-button 
-                                    icon="pi pi-external-link" 
-                                    label="Apri" 
-                                    severity="info"
-                                    size="small"
-                                    (click)="openEtichettaSpedizione()"
-                                    pTooltip="Apri etichetta spedizione in nuova scheda"
-                                    tooltipPosition="top" />
-                            }
-                            @if (downloadEtichettaSpedizioneLoading) {
-                                <p-button icon="pi pi-spinner pi-spin" [disabled]="true" [severity]="'secondary'" [size]="'small'" />
-                            }
-                            @else {
-                                <p-button 
-                                    icon="pi pi-download" 
-                                    label="Scarica" 
-                                    severity="secondary"
-                                    size="small"
-                                    (click)="downloadEtichettaSpedizione()"
-                                    pTooltip="Scarica etichetta spedizione"
-                                    tooltipPosition="top" />
-                            }
-                            @if (deleteEtichettaSpedizioneLoading) {
-                                <p-button icon="pi pi-spinner pi-spin" [disabled]="true" [severity]="'danger'" [size]="'small'" />
-                            }
-                            @else {
-                                <p-button 
-                                    icon="pi pi-trash" 
-                                    label="Elimina" 
-                                    severity="danger"
-                                    size="small"
-                                    id="delete-etichetta-spedizione-button"
-                                    (click)="deleteEtichettaSpedizione()"
-                                    pTooltip="Elimina etichetta spedizione"
-                                    tooltipPosition="top" />
-                            }
-                        }
-                    </div>
-                    <small class="text-gray-500">Dimensione massima: 2MB. Solo file PDF.</small>
-                    @if (!vendita.id || vendita.id <= 0) {
-                        <small class="text-orange-500">Salva prima la vendita per caricare l'etichetta spedizione.</small>
-                    }
-                    @if (vendita.etichetta_spedizione && (applicationStateService.isMobile() || applicationStateService.isTablet())) {
-                        <p-button 
-                            icon="pi pi-external-link" 
-                            label="Apri" 
-                            severity="info"
-                            size="small"
-                            (click)="openEtichettaSpedizione()"
-                            pTooltip="Apri etichetta spedizione in nuova scheda"
-                            tooltipPosition="top" />
-                        <p-button 
-                            icon="pi pi-download" 
-                            label="Scarica" 
-                            severity="secondary"
-                            size="small"
-                            (click)="downloadEtichettaSpedizione()"
-                            pTooltip="Scarica etichetta spedizione"
-                            tooltipPosition="top" />
-                        <p-button 
-                            icon="pi pi-trash" 
-                            label="Elimina" 
-                            severity="danger"
-                            size="small"
-                            id="delete-etichetta-spedizione-button"
-                            (click)="deleteEtichettaSpedizione()"
-                            pTooltip="Elimina etichetta spedizione"
-                            tooltipPosition="top" />
-                    }
-                </div>
-            </div>
-        </ng-template>
+              </td>
+              <td>
+                <p-button icon="pi pi-clone" severity="primary" size="small" pTooltip="Clona dettaglio" tooltipPosition="top" class="mr-2" (click)="cloneDettaglio(dettaglio)" />
+                <p-button icon="pi pi-trash" severity="danger" size="small" pTooltip="Elimina dettaglio" tooltipPosition="top" (click)="confirmDeleteDettaglio($event, dettaglio, rowIndex)" />
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </ng-template>
     </p-card>
+  </div>
 
-    <div class="mt-4">
-        <p-card>
-            <ng-template pTemplate="header">
-                <div class="flex items-center flex-wrap header-title">
-                    <h2 class="text-xl font-semibold text-gray-800">Dettagli</h2>
-                    <div class="flex items-center gap-2 margin-left-auto">
-                        @if (loading) {
-                        <p-button icon="pi pi-spinner pi-spin" label="Aggiungi Dettaglio" severity="success"
-                            [disabled]="true" />
-                        }
-                        @else {
-                        <p-button icon="pi pi-plus" label="Aggiungi Dettaglio" severity="success"
-                            (click)="addDettaglio()" pTooltip="Aggiungi nuovo dettaglio" tooltipPosition="top" />
-                        }
-
-                    </div>
+  <div class="mt-4">
+    <p-card>
+      <ng-template pTemplate="header">
+        <div class="flex items-center flex-wrap header-title">
+          <h2 class="text-xl font-semibold text-gray-800">Basette</h2>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="content">
+        <p-table [value]="vendita.basette" [paginator]="true" [rows]="10" [totalRecords]="vendita.basette.length">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Dimensione</th>
+              <th>Quantità</th>
+              <th>Stato Stampa</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-basetta let-rowIndex="rowIndex">
+            <tr>
+              <td>
+                <div class="flex flex-col items-center gap-2">
+                  {{ basetta?.dimensione }}
                 </div>
-            </ng-template>
-            <ng-template pTemplate="content">
-                <p-table [value]="vendita.dettagli" [paginator]="true" [rows]="10"
-                    [totalRecords]="vendita.dettagli.length">
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th>Modello / Descrizione</th>
-                            <th>Stampante</th>
-                            <th style="width: 50px;">Quantità</th>
-                            <th style="width: 200px;">
-                                Prezzo
-                                <i class="pi pi-info-circle info-icon"
-                                    pTooltip="Il prezzo è il prezzo totale del dettaglio, NON UNITARIO"></i>
-                            </th>
-                            <th style="width: 300px;">Stato Stampa</th>
-                            <th style="width: 100px;"></th>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-dettaglio let-rowIndex="rowIndex">
-                        <tr>
-                            <td>
-                                <div class="flex flex-col items-center gap-2">
-                                    <form-input-select
-                                        modello-lookup
-                                        class="w-full"
-                                        property="modello_id"
-                                        [label]="'Modello'"
-                                        [listaErrori]="listaErrori"
-                                        [parent]="'dettagli'"
-                                        [index]="rowIndex"
-                                        [showAdd]="true"
-                                        (add)="addModello(rowIndex)"
-                                        [(ngModel)]="dettaglio.modello_id"
-                                        (selected)="impostaDettaglioBasetta($event, rowIndex)">
-                                        <ng-template #selectedItem let-item>
-                                            <modello-tipo class="w-full" [tipo]="item.altriDati.tipo"
-                                                [descrizioneModello]="item.etichetta" [isInSelect]="true" />
-                                        </ng-template>
-                                        <ng-template #item let-item>
-                                            <modello-tipo class="w-full" [tipo]="item.altriDati.tipo"
-                                                [descrizioneModello]="item.etichetta" [isInSelect]="true" />
-                                        </ng-template>
-                                    </form-input-select>
-                                    <form-input-text property="descrizione" label="Descrizione" class="w-full"
-                                        [listaErrori]="listaErrori" [parent]="'dettagli'" [index]="rowIndex"
-                                        [(ngModel)]="dettaglio.descrizione" />
-                                    <form-input-checkbox property="stampa_is_pezzo_singolo" label="Stampa pezzo singolo"
-                                        class="w-full" [listaErrori]="listaErrori" [parent]="'dettagli'"
-                                        [index]="rowIndex" [(ngModel)]="dettaglio.stampa_is_pezzo_singolo"
-                                        (ngModelChange)="checkDettaglio(dettaglio)" />
-                                    <form-input-checkbox property="stampa_is_parziale" label="Stampa parziale"
-                                        class="w-full" [listaErrori]="listaErrori" [parent]="'dettagli'"
-                                        [index]="rowIndex" [(ngModel)]="dettaglio.stampa_is_parziale"
-                                        (ngModelChange)="checkDettaglio(dettaglio)" />
-                                </div>
-                            </td>
-                            <td>
-                                <form-input-select stampante-lookup property="stampante_id" [listaErrori]="listaErrori"
-                                    [parent]="'dettagli'" [index]="rowIndex" [showAdd]="true"
-                                    (add)="addStampante(rowIndex)" [(ngModel)]="dettaglio.stampante_id" />
-                            </td>
-                            <td>
-                                <div class="flex flex-col items-center gap-2">
-                                    {{ dettaglio.quantita | number:'0.0-4' }}
-                                </div>
-
-                            </td>
-                            <td>
-                                <form-input-number property="prezzo" [min]="0" [step]="1" [mode]="'decimal'"
-                                    [minFractionDigits]="5" [maxFractionDigits]="5" [suffix]="'€'" [showButtons]="true"
-                                    [listaErrori]="listaErrori" [parent]="'dettagli'" [index]="rowIndex"
-                                    [(ngModel)]="dettaglio.prezzo" />
-                            </td>
-                            <td>
-                                <form-input-select vendita-dettaglio-stato-stampa-lookup property="stato_stampa"
-                                    [filter]="false" [showClear]="false" [listaErrori]="listaErrori"
-                                    [parent]="'dettagli'" [index]="rowIndex" [(ngModel)]="dettaglio.stato_stampa">
-                                    <ng-template #selectedItem let-item>
-                                        <vendita-dettaglio-stato class="w-full" [stato_stampa]="dettaglio.stato_stampa"
-                                            [isInSelect]="true" />
-                                    </ng-template>
-                                    <ng-template #item let-item>
-                                        <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id"
-                                            [isInSelect]="true" />
-                                    </ng-template>
-                                </form-input-select>
-                            </td>
-                            <td>
-                                <p-button icon="pi pi-clone" severity="primary" size="small" pTooltip="Clona dettaglio"
-                                    tooltipPosition="top" class="mr-2" (click)="cloneDettaglio(dettaglio)" />
-                                <p-button icon="pi pi-trash" severity="danger" size="small" pTooltip="Elimina dettaglio"
-                                    tooltipPosition="top"
-                                    (click)="confirmDeleteDettaglio($event, dettaglio, rowIndex)" />
-                            </td>
-                        </tr>
-                    </ng-template>
-                </p-table>
-            </ng-template>
-        </p-card>
-    </div>
-
-    <div class="mt-4">
-        <p-card>
-            <ng-template pTemplate="header">
-                <div class="flex items-center flex-wrap header-title">
-                    <h2 class="text-xl font-semibold text-gray-800">Basette</h2>
-                </div>
-            </ng-template>
-            <ng-template pTemplate="content">
-                <p-table [value]="vendita.basette" [paginator]="true" [rows]="10"
-                    [totalRecords]="vendita.basette.length">
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th>Dimensione</th>
-                            <th>Quantità</th>
-                            <th>Stato Stampa</th>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-basetta let-rowIndex="rowIndex">
-                        <tr>
-                            <td>
-                                <div class="flex flex-col items-center gap-2">
-                                    {{ basetta?.dimensione }}
-                                </div>
-                            </td>
-                            <td>
-                                {{ basetta?.quantita }}
-                            </td>
-                            <td>
-                                <form-input-select vendita-dettaglio-stato-stampa-lookup property="stato_stampa"
-                                    [filter]="false" [showClear]="false" [listaErrori]="listaErrori"
-                                    [parent]="'basette'" [index]="rowIndex" [(ngModel)]="basetta.stato_stampa">
-                                    <ng-template #selectedItem let-item>
-                                        <vendita-dettaglio-stato class="w-full" [stato_stampa]="basetta.stato_stampa"
-                                            [isInSelect]="true" />
-                                    </ng-template>
-                                    <ng-template #item let-item>
-                                        <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id"
-                                            [isInSelect]="true" />
-                                    </ng-template>
-                                </form-input-select>
-                            </td>
-                        </tr>
-                    </ng-template>
-                </p-table>
-            </ng-template>
-        </p-card>
-    </div>
+              </td>
+              <td>
+                {{ basetta?.quantita }}
+              </td>
+              <td>
+                <form-input-select vendita-dettaglio-stato-stampa-lookup property="stato_stampa" [filter]="false" [showClear]="false" [listaErrori]="listaErrori" [parent]="'basette'" [index]="rowIndex" [(ngModel)]="basetta.stato_stampa">
+                  <ng-template #selectedItem let-item>
+                    <vendita-dettaglio-stato class="w-full" [stato_stampa]="basetta.stato_stampa" [isInSelect]="true" />
+                  </ng-template>
+                  <ng-template #item let-item>
+                    <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id" [isInSelect]="true" />
+                  </ng-template>
+                </form-input-select>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </ng-template>
+    </p-card>
+  </div>
 </div>
