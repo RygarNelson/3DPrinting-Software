@@ -327,7 +327,7 @@
     </ng-template>
   </p-card>
 
-  <p-confirmDialog #confirmDialogModificaLinkTracciamento [visible]="modificaLinkTracciamentoVisible" [dismissableMask]="true" (onHide)="modificaLinkTracciamentoVisible = false">
+  <p-confirmDialog #confirmDialogModificaLinkTracciamento key="modificaLinkTracciamentoDialog" [visible]="modificaLinkTracciamentoVisible" [dismissableMask]="true" (onHide)="modificaLinkTracciamentoVisible = false">
     <ng-template #headless let-message>
       <div class="p-4">
         <div class="flex flex-col items-center gap-2">
@@ -342,7 +342,7 @@
     </ng-template>
   </p-confirmDialog>
 
-  <p-confirmDialog #confirmDialogModificaContoBancario [visible]="modificaContoBancarioVisible" [dismissableMask]="true" (onHide)="modificaContoBancarioVisible = false">
+  <p-confirmDialog #confirmDialogModificaContoBancario key="modificaContoBancarioDialog" [visible]="modificaContoBancarioVisible" [dismissableMask]="true" (onHide)="modificaContoBancarioVisible = false">
     <ng-template #headless let-message>
       <div class="p-4">
         <div class="flex flex-col items-center gap-2">
@@ -357,7 +357,7 @@
     </ng-template>
   </p-confirmDialog>
 
-  <p-confirmDialog #confirmDialogDelete [visible]="deleteDialogVisible" [dismissableMask]="true" (onHide)="deleteDialogVisible = false">
+  <p-confirmDialog #confirmDialogDelete key="deleteVenditaDialog" [visible]="deleteDialogVisible" [dismissableMask]="true" (onHide)="deleteDialogVisible = false">
     <ng-template #headless let-message>
       <div class="p-4">
         <div class="flex flex-col items-center gap-2">
