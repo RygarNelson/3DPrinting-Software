@@ -172,4 +172,9 @@ export class AuditLogComponent implements OnInit, OnDestroy {
       return [];
     }
   }
+
+  getSingleChange(log: AuditLog): { key: string; old: any; new: any } | null {
+    const changes = this.getChanges(log);
+    return changes.length === 1 ? changes[0] : null;
+  }
 }

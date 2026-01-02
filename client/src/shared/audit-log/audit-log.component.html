@@ -99,29 +99,30 @@
                     <div class="log-body p-4 bg-white">
                       <!-- CASE 1: UPDATE (Field Changes) -->
                       @if (log.operation === 'UPDATE') {
-                        @if (log.field_name) {
-                          <!-- Legacy: Single field change -->
+                        @if (getSingleChange(log); as change) {
+                          <!-- Single field change (Legacy or Aggregated 1-field) -->
                           <div class="field-change flex flex-col gap-2">
                             <div class="flex items-center gap-2">
                               <span class="text-sm font-medium text-gray-600">Modifica</span>
-                              <span class="font-mono text-sm font-bold text-gray-800">{{ log.field_name }}</span>
+                              <span class="font-mono text-sm font-bold text-gray-800">{{ change.key }}</span>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                               <div class="value-box old-value p-3 rounded bg-red-50 border border-red-100">
                                 <div class="text-xs text-red-500 font-semibold mb-1">Valore precedente</div>
-                                <div class="font-mono text-sm break-all">{{ log.old_value !== null ? log.old_value : 'null' }}</div>
+                                <div class="font-mono text-sm break-all">{{ change.old !== null ? change.old : 'null' }}</div>
                               </div>
                               <div class="value-box new-value p-3 rounded bg-green-50 border border-green-100">
                                 <div class="text-xs text-green-500 font-semibold mb-1">Nuovo valore</div>
-                                <div class="font-mono text-sm break-all">{{ log.new_value !== null ? log.new_value : 'null' }}</div>
+                                <div class="font-mono text-sm break-all">{{ change.new !== null ? change.new : 'null' }}</div>
                               </div>
                             </div>
                           </div>
                         } @else {
-                          <!-- Aggregated: JSON display -->
+                          <!-- Multiple changes: JSON display -->
                           <div class="field-change flex flex-col gap-2">
                             <div class="flex items-center gap-2">
-                              <span class="text-sm font-medium text-gray-600">Modifiche</span>
+                              <span class="text-sm font-medium text-gray-600">Modifiche multiple</span>
+                              <span class="text-xs text-gray-400">({{ getChanges(log).length }} campi)</span>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                               <div class="value-box old-value p-3 rounded bg-red-50 border border-red-100 overflow-hidden">
