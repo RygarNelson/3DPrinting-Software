@@ -371,6 +371,15 @@
       </div>
     </ng-template>
   </p-confirmDialog>
+
+  <p-dialog header="Gestione Etichetta Spedizione" [(visible)]="etichettaSpedizioneDialogVisible" [modal]="true" [style]="{ width: '500px' }" [draggable]="false" [resizable]="false" [dismissableMask]="true" (onHide)="venditaForEtichetta = undefined">
+    @if (venditaForEtichetta) {
+      <div class="flex flex-col gap-4">
+        <app-vendita-etichetta-spedizione [venditaId]="venditaForEtichetta.id" [etichettaSpedizione]="venditaForEtichetta.etichetta_spedizione" (onEtichettaChange)="venditaForEtichetta.etichetta_spedizione = $event === null ? undefined : $event">
+        </app-vendita-etichetta-spedizione>
+      </div>
+    }
+  </p-dialog>
 </div>
 
 <ng-template #venditaActionButtons let-vendita="vendita">
@@ -381,15 +390,7 @@
       <p-button icon="pi pi-receipt" severity="success" size="small" [disabled]="vendita.link_tracciamento" (click)="openModificaLinkTracciamento(vendita)" pTooltip="Aggiungi link tracciamento" tooltipPosition="top" [loading]="loading" />
     }
 
-    <p-button
-      icon="pi pi-file-pdf"
-      severity="warn"
-      size="small"
-      (click)="downloadEtichettaSpedizione(vendita)"
-      pTooltip="Etichetta spedizione"
-      tooltipPosition="top"
-      [disabled]="!vendita.etichetta_spedizione || (vendita.etichetta_spedizione && vendita.etichetta_spedizione.trim() === '')"
-      [loading]="loading" />
+    <p-button icon="pi pi-file-pdf" severity="warn" size="small" (click)="openEtichettaSpedizioneDialog(vendita)" pTooltip="Gestione Etichetta Spedizione" tooltipPosition="top" [loading]="loading" />
     <p-button icon="pi pi-history" severity="secondary" size="small" (click)="viewAuditLog(vendita)" pTooltip="Visualizza log di audit" tooltipPosition="top" [loading]="loading" />
     <p-button icon="pi pi-pencil" severity="info" size="small" (click)="editVendita(vendita)" pTooltip="Modifica vendita" tooltipPosition="top" [loading]="loading" />
     <p-button icon="pi pi-trash" severity="danger" size="small" (click)="confirmDelete($event, vendita)" pTooltip="Elimina vendita" tooltipPosition="top" [loading]="loading" />

@@ -38,6 +38,7 @@ import { FormInputNumberComponent } from 'src/shared/form-input-number/form-inpu
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
 import { FormInputTextComponent } from 'src/shared/form-input-text/form-input-text.component';
 import { VenditaDettaglioStatoComponent } from '../vendita-dettaglio-stato/vendita-dettaglio-stato.component';
+import { VenditaEtichettaSpedizioneComponent } from '../vendita-etichetta-spedizione/vendita-etichetta-spedizione.component';
 import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component';
 
 @Component({
@@ -62,14 +63,12 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
     VenditaDettaglioStatoStampaLookupDirective,
     VenditaDettaglioStatoComponent,
     VenditaStatoComponent,
+    VenditaEtichettaSpedizioneComponent,
     ModelloTipoComponent,
     TooltipModule,
     ContoBancarioLookupDirective
   ],
-  providers: [
-    VenditaService,
-    ClienteService,
-  ],
+  providers: [VenditaService, ClienteService],
   templateUrl: './vendita-manager.component.html',
   styleUrl: './vendita-manager.component.scss'
 })
@@ -89,10 +88,7 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
   protected override readonly LOCAL_STORAGE_KEY: string = 'vendita-manager';
   protected ModelloTipoEnum = ModelloTipoEnum;
 
-  uploadEtichettaSpedizioneLoading: boolean = false;
-  downloadEtichettaSpedizioneLoading: boolean = false;
-  openEtichettaSpedizioneLoading: boolean = false;
-  deleteEtichettaSpedizioneLoading: boolean = false;
+  // REMOVED loading variables for shipping label as they are now in the shared component
 
   constructor(
     private venditaService: VenditaService,
@@ -103,8 +99,8 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
     private confirmationService: ConfirmationService,
     private clienteService: ClienteService,
     private localStorageService: LocalstorageService,
-    public applicationStateService: ApplicationStateService,
-  ){
+    public applicationStateService: ApplicationStateService
+  ) {
     super();
 
     this.clienteSubscription = this.applicationStateService.newCliente.subscribe({
@@ -113,7 +109,7 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
           this.vendita.cliente_id = event.id;
           this.applicationStateService.clienteLookupUpdate.next();
         }
-  
+
         this.clienteRef?.close();
       }
     });
@@ -124,7 +120,7 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
           this.vendita.dettagli[event.index].modello_id = event.id;
           this.applicationStateService.modelloLookupUpdate.next();
         }
-  
+
         this.modelloRef?.close();
       }
     });
@@ -135,7 +131,7 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
           this.vendita.dettagli[event.index].stampante_id = event.id;
           this.applicationStateService.stampanteLookupUpdate.next();
         }
-  
+
         this.stampanteRef?.close();
       }
     });
@@ -146,7 +142,7 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
           this.vendita.conto_bancario_id = event.id;
           this.applicationStateService.contoBancarioLookupUpdate.next();
         }
-  
+
         this.contoBancarioRef?.close();
       }
     });
@@ -210,7 +206,7 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
             },
             modal: true
           });
-          
+
           console.error(result);
         }
       },
@@ -274,8 +270,7 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
 
           this.listaErrori = error.error.technical_data;
           console.error(this.listaErrori);
-        }
-        else {
+        } else {
           this.dialogService.open(DialogErrorComponent, {
             inputValues: {
               error: error
@@ -429,7 +424,7 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
 
   ricalcolaBasette(): void {
     // First take all dettagli which have basetta_dimensione and basetta_quantita and quantita
-    const dettagliCalcolabili = this.vendita.dettagli.filter(d => d.basetta_dimensione != null && d.basetta_quantita != null && d.quantita != null);
+    const dettagliCalcolabili = this.vendita.dettagli.filter((d) => d.basetta_dimensione != null && d.basetta_quantita != null && d.quantita != null);
 
     if (dettagliCalcolabili != null && dettagliCalcolabili.length > 0) {
       // Second, create a record for each dimension with the total quantity which is the multiplication of basetta_quantita and quantita
@@ -447,17 +442,17 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
       // Third, manipulate basette based on the record
       // If it doesn't have any entry, remove all basette which stato_stampa is not da_stampare
       if (Object.keys(basette).length === 0) {
-        this.vendita.basette = this.vendita.basette.filter(b => b.stato_stampa != VenditaDettaglioStatoStampaEnum.DaStampare);
+        this.vendita.basette = this.vendita.basette.filter((b) => b.stato_stampa != VenditaDettaglioStatoStampaEnum.DaStampare);
       } else {
         // Fourth, remove all basette which stato_stampa is not da_stampare that are not in the record
-        this.vendita.basette = this.vendita.basette.filter(b => {
+        this.vendita.basette = this.vendita.basette.filter((b) => {
           return basette[b.dimensione] != null || (basette[b.dimensione] == null && b.stato_stampa != VenditaDettaglioStatoStampaEnum.DaStampare);
         });
 
         // Fifth, for each entry in the record, for loop
         Object.entries(basette).forEach(([dimensione, quantita]) => {
           // Check if the basetta already exists
-          const basetta = this.vendita.basette.find(b => b.dimensione == dimensione);
+          const basetta = this.vendita.basette.find((b) => b.dimensione == dimensione);
           if (basetta != null && basetta.quantita != quantita) {
             // If it exists, update the quantity if the quantity is different
             basetta.quantita = quantita;
@@ -480,247 +475,5 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
 
   indietro(): void {
     this.router.navigate(['/vendita']);
-  }
-
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-      
-      // Validate file type
-      if (file.type !== 'application/pdf') {
-        this.MessageService.add({
-          severity: 'error',
-          summary: 'Errore',
-          detail: 'Solo file PDF sono consentiti'
-        });
-        input.value = '';
-        return;
-      }
-
-      // Validate file size (2MB = 2 * 1024 * 1024 bytes)
-      const maxSize = 2 * 1024 * 1024;
-      if (file.size > maxSize) {
-        this.MessageService.add({
-          severity: 'error',
-          summary: 'Errore',
-          detail: 'Il file non può superare i 2MB'
-        });
-        input.value = '';
-        return;
-      }
-
-      // Upload file if vendita has an ID
-      if (this.vendita.id && this.vendita.id > 0) {
-        this.uploadFile(file);
-      } else {
-        this.MessageService.add({
-          severity: 'warn',
-          summary: 'Attenzione',
-          detail: 'Salva prima la vendita per caricare l\'etichetta spedizione'
-        });
-        input.value = '';
-      }
-    }
-  }
-
-  uploadFile(file: File): void {
-    this.uploadEtichettaSpedizioneLoading = true;
-    this.setLoadingTimeout();
-
-    this.venditaService.uploadEtichettaSpedizione(this.vendita.id, file).subscribe({
-      next: (result) => {
-        this.uploadEtichettaSpedizioneLoading = false;
-        this.clearLoadingTimeout();
-
-        if (result.success) {
-          this.vendita.etichetta_spedizione = result.data.path;
-          
-          this.MessageService.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Etichetta spedizione caricata con successo'
-          });
-        } else {
-          this.MessageService.add({
-            severity: 'error',
-            summary: 'Errore',
-            detail: result.error || 'Errore durante il caricamento del file'
-          });
-        }
-      },
-      error: (error: any) => {
-        this.uploadEtichettaSpedizioneLoading = false;
-        this.clearLoadingTimeout();
-
-        let errorMessage = 'Errore durante il caricamento del file';
-        if (error.error && error.error.error) {
-          errorMessage = error.error.error;
-        }
-
-        this.MessageService.add({
-          severity: 'error',
-          summary: 'Errore',
-          detail: errorMessage
-        });
-      }
-    });
-  }
-
-  downloadEtichettaSpedizione(): void {
-    if (!this.vendita.id || this.vendita.id <= 0) {
-      this.MessageService.add({
-        severity: 'warn',
-        summary: 'Attenzione',
-        detail: 'Vendita non salvata'
-      });
-      return;
-    }
-
-    this.downloadEtichettaSpedizioneLoading = true;
-    this.setLoadingTimeout();
-
-    this.venditaService.downloadEtichettaSpedizione(this.vendita.id).subscribe({
-      next: (blob: Blob) => {
-        this.downloadEtichettaSpedizioneLoading = false;
-        this.clearLoadingTimeout();
-
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `etichetta_spedizione_vendita_${this.vendita.id}.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-
-        this.MessageService.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Download avviato'
-        });
-      },
-      error: (error: any) => {
-        this.downloadEtichettaSpedizioneLoading = false;
-        this.clearLoadingTimeout();
-
-        let errorMessage = 'Errore durante il download del file';
-        if (error.error && error.error.error) {
-          errorMessage = error.error.error;
-        }
-
-        this.MessageService.add({
-          severity: 'error',
-          summary: 'Errore',
-          detail: errorMessage
-        });
-      }
-    });
-  }
-
-  openEtichettaSpedizione(): void {
-    if (!this.vendita.id || this.vendita.id <= 0) {
-      this.MessageService.add({
-        severity: 'warn',
-        summary: 'Attenzione',
-        detail: 'Vendita non salvata'
-      });
-      return;
-    }
-
-    if (!this.vendita.etichetta_spedizione) {
-      this.MessageService.add({
-        severity: 'warn',
-        summary: 'Attenzione',
-        detail: 'Nessuna etichetta spedizione disponibile'
-      });
-      return;
-    }
-
-    this.openEtichettaSpedizioneLoading = true;
-    // Open the download URL in a new tab
-    this.venditaService.downloadEtichettaSpedizione(this.vendita.id).subscribe({
-      next: (blob: Blob) => {
-        this.openEtichettaSpedizioneLoading = false;
-        const url = window.URL.createObjectURL(blob);
-        window.open(url, '_blank');
-        // Note: We don't revoke the URL immediately to allow the new tab to load it
-        setTimeout(() => window.URL.revokeObjectURL(url), 100);
-      },
-      error: (error: any) => {
-        this.openEtichettaSpedizioneLoading = false;
-        let errorMessage = 'Errore durante l\'apertura del file';
-        if (error.error && error.error.error) {
-          errorMessage = error.error.error;
-        }
-
-        this.MessageService.add({
-          severity: 'error',
-          summary: 'Errore',
-          detail: errorMessage
-        });
-      }
-    });
-  }
-
-  deleteEtichettaSpedizione(): void {
-    if (!this.vendita.id || this.vendita.id <= 0) {
-      this.MessageService.add({
-        severity: 'warn',
-        summary: 'Attenzione',
-        detail: 'Vendita non salvata'
-      });
-      return;
-    }
-
-    this.confirmationService.confirm({
-      message: 'Sei sicuro di voler eliminare l\'etichetta spedizione?',
-      icon: 'pi pi-exclamation-triangle',
-      target: document.getElementById('delete-etichetta-spedizione-button') as EventTarget,
-      acceptLabel: 'Si',
-      rejectLabel: 'No',
-      accept: () => {
-        this.deleteEtichettaSpedizioneLoading = true;
-        this.setLoadingTimeout();
-
-        this.venditaService.deleteEtichettaSpedizione(this.vendita.id).subscribe({
-          next: (result) => {
-            this.deleteEtichettaSpedizioneLoading = false;
-            this.clearLoadingTimeout();
-
-            if (result.success) {
-              this.vendita.etichetta_spedizione = undefined;
-
-              this.MessageService.add({
-                severity: 'success',
-                summary: 'Success',
-                detail: 'Etichetta spedizione eliminata con successo'
-              });
-            } else {
-              this.MessageService.add({
-                severity: 'error',
-                summary: 'Errore',
-                detail: result.error || 'Errore durante l\'eliminazione del file'
-              });
-            }
-          },
-          error: (error: any) => {
-            this.deleteEtichettaSpedizioneLoading = false;
-            this.clearLoadingTimeout();
-
-            let errorMessage = 'Errore durante l\'eliminazione del file';
-            if (error.error && error.error.error) {
-              errorMessage = error.error.error;
-            }
-
-            this.MessageService.add({
-              severity: 'error',
-              summary: 'Errore',
-              detail: errorMessage
-            });
-          }
-        });
-      }
-    });
   }
 }

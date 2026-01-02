@@ -8,6 +8,7 @@ import { ConfirmationService, FilterMetadata, MenuItem, MessageService } from 'p
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { ConfirmDialog, ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DialogModule } from 'primeng/dialog';
 import { DialogService, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
@@ -40,6 +41,7 @@ import { FormInputRadiobuttonComponent } from 'src/shared/form-input-radiobutton
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
 import { FormInputTextComponent } from 'src/shared/form-input-text/form-input-text.component';
 import { VenditaDettaglioStatoComponent } from '../vendita-dettaglio-stato/vendita-dettaglio-stato.component';
+import { VenditaEtichettaSpedizioneComponent } from '../vendita-etichetta-spedizione/vendita-etichetta-spedizione.component';
 import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component';
 
 @Component({
@@ -67,7 +69,9 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
     VenditaDettaglioStatoStampaLookupDirective,
     MenuModule,
     SplitButtonModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    VenditaEtichettaSpedizioneComponent,
+    DialogModule
   ],
   providers: [VenditaService, SpesaService],
   templateUrl: './vendita-listing.component.html',
@@ -113,6 +117,9 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
   };
 
   venditaHighlight?: number = undefined;
+
+  etichettaSpedizioneDialogVisible: boolean = false;
+  venditaForEtichetta?: VenditaListingModel;
 
   // Delete dialog properties
   deleteDialogVisible: boolean = false;
@@ -617,6 +624,11 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
     });
   }
 
+  openEtichettaSpedizioneDialog(vendita: VenditaListingModel): void {
+    this.venditaForEtichetta = vendita;
+    this.etichettaSpedizioneDialogVisible = true;
+  }
+
   copiaLinkTracciamento(vendita: VenditaListingModel): void {
     if (!vendita.link_tracciamento) {
       return;
@@ -643,88 +655,6 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
           detail: 'Errore durante la copia del link tracciamento'
         });
       });
-  }
-
-  downloadEtichettaSpedizione(vendita: VenditaListingModel): void {
-    if (!vendita.id || vendita.id <= 0) {
-      return;
-    }
-
-    this.loading = true;
-
-    this.venditaService.downloadEtichettaSpedizione(vendita.id).subscribe({
-      next: (blob: Blob) => {
-        window.clearTimeout(this.loadingTimeout);
-        this.loading = false;
-
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `etichetta_spedizione_vendita_${vendita.id}.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Download avviato'
-        });
-      },
-      error: (error: any) => {
-        window.clearTimeout(this.loadingTimeout);
-        this.loading = false;
-
-        let errorMessage = 'Errore durante il download del file';
-        if (error.error && error.error.error) {
-          errorMessage = error.error.error;
-        }
-
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Errore',
-          detail: errorMessage
-        });
-      }
-    });
-  }
-
-  openEtichettaSpedizione(vendita: VenditaListingModel): void {
-    if (!vendita.id || vendita.id <= 0) {
-      return;
-    }
-
-    if (!vendita.etichetta_spedizione) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Attenzione',
-        detail: 'Nessuna etichetta spedizione disponibile'
-      });
-      return;
-    }
-
-    // Open the download URL in a new tab
-    this.venditaService.downloadEtichettaSpedizione(vendita.id).subscribe({
-      next: (blob: Blob) => {
-        const url = window.URL.createObjectURL(blob);
-        window.open(url, '_blank');
-        // Note: We don't revoke the URL immediately to allow the new tab to load it
-        setTimeout(() => window.URL.revokeObjectURL(url), 100);
-      },
-      error: (error: any) => {
-        let errorMessage = "Errore durante l'apertura del file";
-        if (error.error && error.error.error) {
-          errorMessage = error.error.error;
-        }
-
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Errore',
-          detail: errorMessage
-        });
-      }
-    });
   }
 
   // Helper function to get date-only in Rome timezone (for Excel date columns)
