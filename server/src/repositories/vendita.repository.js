@@ -858,12 +858,6 @@ class VenditaRepository extends BaseRepository {
         const oldFilePath = vendita.etichetta_spedizione;
         await vendita.update({ etichetta_spedizione: filePath });
 
-        // Log the update
-        await loggingService.logUpdate('T_VENDITE', venditaId, 'etichetta_spedizione', oldFilePath, filePath, {
-            operation: 'UPDATE',
-            reason: 'Etichetta spedizione file upload/update'
-        });
-
         return vendita;
     }
 }
