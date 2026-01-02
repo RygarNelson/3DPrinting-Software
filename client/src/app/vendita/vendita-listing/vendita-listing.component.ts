@@ -30,6 +30,7 @@ import { SpesaListingFiltri } from 'src/models/spesa/spesa-listing-filtri';
 import { VenditaListingDettaglioBasettaModel, VenditaListingDettaglioModel, VenditaListingModel, VenditaListingResponse } from 'src/models/vendita/vendita-listing';
 import { VenditaListingFiltri } from 'src/models/vendita/vendita-listing-filtri';
 import { VenditaModificaContoBancarioModel } from 'src/models/vendita/vendita_modifica_conto_bancario';
+import { VenditaModificaLinkTracciamentoModel } from 'src/models/vendita/vendita_modifica_link_tracciamento';
 import { ApplicationStateService } from 'src/services/application-state.service';
 import { SpesaService } from 'src/services/spesa.service';
 import { VenditaService } from 'src/services/vendita.service';
@@ -37,6 +38,7 @@ import { AuditLogComponent } from 'src/shared/audit-log/audit-log.component';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { FormInputRadiobuttonComponent } from 'src/shared/form-input-radiobutton/form-input-radiobutton.component';
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
+import { FormInputTextComponent } from 'src/shared/form-input-text/form-input-text.component';
 import { VenditaDettaglioStatoComponent } from '../vendita-dettaglio-stato/vendita-dettaglio-stato.component';
 import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component';
 
@@ -58,6 +60,7 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
     AccordionModule,
     FormInputSelectComponent,
     FormInputRadiobuttonComponent,
+    FormInputTextComponent,
     ClienteLookupDirective,
     ContoBancarioLookupDirective,
     VenditaStatoSpedizioneLookupDirective,
@@ -101,6 +104,12 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
   modificaContoBancarioModel: VenditaModificaContoBancarioModel = {
     vendite_ids: [],
     conto_bancario_id: 0
+  };
+
+  modificaLinkTracciamentoVisible: boolean = false;
+  modificaLinkTracciamentoModel: VenditaModificaLinkTracciamentoModel = {
+    venditaId: 0,
+    linkTracciamento: ''
   };
 
   venditaHighlight?: number = undefined;
@@ -567,6 +576,42 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
           conto_bancario_id: 0
         };
         this.modificaContoBancarioVisible = false;
+        this.selectedVendite = [];
+      }
+    });
+  }
+
+  openModificaLinkTracciamento(vendita: VenditaListingModel): void {
+    this.modificaLinkTracciamentoModel.venditaId = vendita.id;
+    this.modificaLinkTracciamentoModel.linkTracciamento = '';
+    this.modificaLinkTracciamentoVisible = true;
+  }
+
+  modificaLinkTracciamento(): void {
+    this.venditaService.modificaLinkTracciamento(this.modificaLinkTracciamentoModel).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Link tracciamento modificato con successo'
+        });
+
+        this.loadVendite();
+      },
+      error: (error) => {
+        this.dialogService.open(DialogErrorComponent, {
+          inputValues: {
+            error: error
+          },
+          modal: true
+        });
+      },
+      complete: () => {
+        this.modificaLinkTracciamentoModel = {
+          venditaId: 0,
+          linkTracciamento: ''
+        };
+        this.modificaLinkTracciamentoVisible = false;
         this.selectedVendite = [];
       }
     });

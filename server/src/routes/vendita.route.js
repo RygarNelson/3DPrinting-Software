@@ -885,6 +885,20 @@ router.post(
   })
 );
 
+router.post(
+  "/link-tracciamento/modifica",
+  asyncHandler(async (req, res) => {
+    await VenditaRepository.updateLinkTracciamento(
+      req.body.venditaId,
+      req.body.linkTracciamento
+    );
+    return res.status(200).json({
+      success: true,
+      data: "Link tracciamento aggiornato con successo!",
+    });
+  })
+);
+
 // File upload route for etichetta spedizione
 router.post(
   "/:id/etichetta-spedizione/upload",
