@@ -19,7 +19,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MenuModule } from 'primeng/menu';
 import { SkeletonModule } from 'primeng/skeleton';
 import { SplitButtonModule } from 'primeng/splitbutton';
-import { TableLazyLoadEvent, TableModule } from 'primeng/table';
+import { Table, TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import { Subscription, forkJoin } from 'rxjs';
 import { ClienteLookupDirective } from 'src/directives/cliente/cliente-lookup.directive';
@@ -106,8 +106,34 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
 
   multipleAzioni: MenuItem[] = [
     {
+      label: 'Sincronizza / Aggiorna',
+      icon: 'pi pi-refresh',
+      command: () => {
+        this.refreshTable();
+      }
+    },
+    {
+      label: 'Pulisci filtri',
+      icon: 'pi pi-filter-slash',
+      command: () => {
+        this.dataTable?.clear();
+        this.pulisciFiltri();
+      }
+    },
+    {
+      separator: true
+    },
+    {
+      label: 'Esporta Excel',
+      icon: 'pi pi-file-excel',
+      command: () => {
+        this.exportToExcel();
+      }
+    },
+    {
       label: 'Modifica conto bancario',
       icon: 'pi pi-credit-card',
+      disabled: this.selectedVendite.length === 0,
       command: () => {
         this.modificaContoBancarioVisible = true;
       }
@@ -137,6 +163,7 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
 
   @ViewChild('confirmDialogModificaContoBancario') confirmDialogModificaContoBancario?: ConfirmDialog;
   @ViewChild('confirmDialogDelete') confirmDialogDelete?: ConfirmDialog;
+  @ViewChild('dataTable') dataTable?: Table;
 
   private venditeSubscription?: Subscription;
   private venditaDeleteSubscription?: Subscription;

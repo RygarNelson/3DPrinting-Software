@@ -21,8 +21,12 @@
             </h5>
           } @else {
             <h5 class="text-lg font-semibold">Ultimi 3 mesi</h5>
-            <h5 class="text-lg font-semibold">Saldo: {{ ultimiTreMesi | currency: 'EUR' }}</h5>
-            <h5 class="text-lg font-semibold">In Sospeso: {{ ultimiTreMesiSospese | currency: 'EUR' }}</h5>
+            <h5 class="text-lg font-semibold">
+              Saldo: {{ ultimiTreMesi | currency: 'EUR' }} <i class="pi pi-info-circle info-icon" tooltipPosition="bottom" [pTooltip]="'Il saldo viene calcolato come la somma delle vendite meno le spese, senza considerare le vendite in sospeso'"></i>
+            </h5>
+            <h5 class="text-lg font-semibold">
+              In Sospeso: {{ ultimiTreMesiSospese | currency: 'EUR' }} <i class="pi pi-info-circle info-icon" tooltipPosition="bottom" [pTooltip]="'Il totale delle vendite in sospeso, senza considerare le spese'"></i>
+            </h5>
           }
         </div>
       </div>
@@ -57,48 +61,17 @@
                 </p-inputicon>
                 <input #searchInput pInputText type="text" placeholder="Cerca vendite..." class="w-full" [(ngModel)]="filtri.search" (ngModelChange)="dataTable.filterGlobal($event, 'contains')" />
               </p-iconfield>
-              <div class="flex gap-2 w-full">
-                @if (applicationState.isMobile()) {
-                  <button pButton label="Filtri" class="p-button-outlined flex-1" icon="pi pi-filter" (click)="toggleSidebarFilters()"></button>
-                }
-                <button
-                  pButton
-                  label="Pulisci"
-                  class="p-button-outlined flex-1 sm:flex-initial"
-                  [ngClass]="{ 'w-full': !applicationState.isMobile() && !applicationState.isTablet() }"
-                  icon="pi pi-filter-slash"
-                  (click)="dataTable.clear(); pulisciFiltri()"></button>
-              </div>
+              @if (applicationState.isMobile()) {
+                <button pButton label="Filtri" class="p-button-outlined w-full" icon="pi pi-filter" (click)="toggleSidebarFilters()"></button>
+              }
             </div>
 
             <!-- Action Buttons Section -->
-            @if (!applicationState.isMobile() && !applicationState.isTablet()) {
-              <div class="flex items-center gap-2 justify-end sm:justify-start">
-                <p-menu #menu appendTo="body" [model]="multipleAzioni" [popup]="true"></p-menu>
-                <p-button icon="pi pi-file-excel" label="Esporta Excel" severity="success" [loading]="loading" (click)="exportToExcel()" pTooltip="Esporta in Excel" tooltipPosition="top"> </p-button>
-                <p-button
-                  [label]="'Azioni'"
-                  [loading]="loading"
-                  [icon]="menu.visible ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
-                  [disabled]="selectedVendite == null || (selectedVendite != null && selectedVendite.length == 0)"
-                  (onClick)="menu.toggle($event)" />
-                <p-button icon="pi pi-plus" [loading]="loading" label="Nuova Vendita" severity="success" (click)="addNewVendita()" pTooltip="Aggiungi nuova vendita" tooltipPosition="top"> </p-button>
-                <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()" pTooltip="Aggiorna tabella" tooltipPosition="top" />
-              </div>
-            } @else {
-              <div class="grid grid-cols-1 items-center gap-2 justify-end sm:justify-start">
-                <p-menu #menu appendTo="body" [model]="multipleAzioni" [popup]="true"></p-menu>
-                <p-button icon="pi pi-file-excel" severity="success" [loading]="loading" (click)="exportToExcel()" pTooltip="Esporta in Excel" tooltipPosition="top"> </p-button>
-                <p-button
-                  [label]="'Azioni'"
-                  [loading]="loading"
-                  [icon]="menu.visible ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
-                  [disabled]="selectedVendite == null || (selectedVendite != null && selectedVendite.length == 0)"
-                  (onClick)="menu.toggle($event)" />
-                <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()" pTooltip="Aggiorna tabella" tooltipPosition="top"> </p-button>
-                <p-button icon="pi pi-plus" label="Nuova Vendita" severity="success" [loading]="loading" (click)="addNewVendita()" pTooltip="Aggiungi nuova vendita" tooltipPosition="top"> </p-button>
-              </div>
-            }
+            <div class="flex items-center gap-2 justify-end sm:justify-start w-full sm:w-auto">
+              <p-menu #menu appendTo="body" [model]="multipleAzioni" [popup]="true"></p-menu>
+              <p-button label="Azioni" [loading]="loading" [icon]="menu.visible ? 'pi pi-chevron-up' : 'pi pi-chevron-down'" (onClick)="menu.toggle($event)" class="flex-1 sm:flex-none" />
+              <p-button icon="pi pi-plus" label="Nuova Vendita" [loading]="loading" severity="success" (click)="addNewVendita()" pTooltip="Aggiungi nuova vendita" tooltipPosition="top" class="flex-1 sm:flex-none" />
+            </div>
           </div>
         </ng-template>
 
