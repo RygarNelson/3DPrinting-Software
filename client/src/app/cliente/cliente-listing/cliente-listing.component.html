@@ -19,7 +19,7 @@
         [lazy]="true"
         (onLazyLoad)="loadData($event)">
         <ng-template pTemplate="caption">
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mt-4">
             <!-- Search Section -->
             <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
               <p-iconfield iconPosition="left" class="w-full sm:w-auto">
@@ -28,13 +28,15 @@
                 </p-inputicon>
                 <input #searchInput pInputText type="text" placeholder="Cerca clienti..." class="w-full" [(ngModel)]="filtri.search" (ngModelChange)="dataTable.filterGlobal($event, 'contains')" />
               </p-iconfield>
-              <button pButton label="Pulisci" class="p-button-outlined w-full sm:w-auto" icon="pi pi-filter-slash" (click)="dataTable.clear()"></button>
             </div>
 
             <!-- Action Buttons Section -->
-            <div class="flex items-center gap-2 justify-end sm:justify-start">
-              <p-button icon="pi pi-plus" label="Nuovo Cliente" [loading]="loading" severity="success" (click)="addNewCliente()" pTooltip="Aggiungi nuovo cliente" tooltipPosition="top" />
-              <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()" pTooltip="Aggiorna tabella" tooltipPosition="top" />
+            <div class="flex items-center gap-2 justify-end sm:justify-start w-full sm:w-auto">
+              <p-menu #menu appendTo="body" [model]="multipleAzioni" [popup]="true"></p-menu>
+
+              <p-button label="Azioni" [loading]="loading" [icon]="menu.visible ? 'pi pi-chevron-up' : 'pi pi-chevron-down'" (onClick)="menu.toggle($event)" class="flex-1 sm:flex-none" />
+
+              <p-button icon="pi pi-plus" label="Nuovo Cliente" [loading]="loading" severity="success" (click)="addNewCliente()" pTooltip="Aggiungi nuovo cliente" tooltipPosition="top" class="flex-1 sm:flex-none" />
             </div>
           </div>
         </ng-template>
@@ -55,15 +57,30 @@
             @if (applicationState.isMobile()) {
               <td>
                 <div class="bg-white border border-gray-200 rounded-lg p-4 w-full hover:shadow-md transition-shadow">
-                  <div class="flex flex-col gap-2">
-                    <div class="font-semibold text-gray-800">{{ cliente.etichetta }}</div>
-                    <div class="grid grid-cols-2 gap-x-3 gap-y-1 text-sm text-gray-700">
-                      <div class="text-gray-500">Email</div>
-                      <div class="break-all">{{ cliente.email }}</div>
-                      <div class="text-gray-500">Telefono</div>
-                      <div>{{ cliente.telefono }}</div>
+                  <div class="flex flex-col gap-3">
+                    <div class="flex items-center justify-between border-b border-gray-100 pb-2">
+                      <span class="font-bold text-gray-800">{{ cliente.etichetta }}</span>
                     </div>
-                    <ng-container *ngTemplateOutlet="clienteActionButtons; context: { cliente: cliente }"></ng-container>
+
+                    <div class="flex items-start gap-2">
+                      <i class="pi pi-envelope text-gray-400 mt-1"></i>
+                      <div class="flex flex-col">
+                        <span class="text-[10px] text-gray-500 uppercase font-medium">Email</span>
+                        <span class="text-sm text-gray-700 break-all">{{ cliente.email || 'N/A' }}</span>
+                      </div>
+                    </div>
+
+                    <div class="flex items-start gap-2">
+                      <i class="pi pi-phone text-gray-400 mt-1"></i>
+                      <div class="flex flex-col">
+                        <span class="text-[10px] text-gray-500 uppercase font-medium">Telefono</span>
+                        <span class="text-sm text-gray-700">{{ cliente.telefono || 'N/A' }}</span>
+                      </div>
+                    </div>
+
+                    <div class="flex justify-end gap-1 mt-1 pt-2 border-t border-gray-100 pb-2">
+                      <ng-container *ngTemplateOutlet="clienteActionButtons; context: { cliente: cliente }"></ng-container>
+                    </div>
                   </div>
                 </div>
               </td>
