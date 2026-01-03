@@ -51,17 +51,23 @@
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mt-4">
             <!-- Search Section -->
             <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
-              <p-iconfield iconPosition="left" class="w-full sm:w-auto">
+              <p-iconfield iconPosition="left" class="w-full">
                 <p-inputicon>
                   <i class="pi pi-search"></i>
                 </p-inputicon>
                 <input #searchInput pInputText type="text" placeholder="Cerca vendite..." class="w-full" [(ngModel)]="filtri.search" (ngModelChange)="dataTable.filterGlobal($event, 'contains')" />
               </p-iconfield>
-              <div class="flex gap-2 w-full sm:w-auto">
+              <div class="flex gap-2 w-full">
                 @if (applicationState.isMobile()) {
                   <button pButton label="Filtri" class="p-button-outlined flex-1" icon="pi pi-filter" (click)="toggleSidebarFilters()"></button>
                 }
-                <button pButton label="Pulisci" class="p-button-outlined flex-1 sm:flex-initial" icon="pi pi-filter-slash" (click)="dataTable.clear(); pulisciFiltri()"></button>
+                <button
+                  pButton
+                  label="Pulisci"
+                  class="p-button-outlined flex-1 sm:flex-initial"
+                  [ngClass]="{ 'w-full': !applicationState.isMobile() && !applicationState.isTablet() }"
+                  icon="pi pi-filter-slash"
+                  (click)="dataTable.clear(); pulisciFiltri()"></button>
               </div>
             </div>
 
