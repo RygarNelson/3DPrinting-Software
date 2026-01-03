@@ -21,7 +21,7 @@
         [lazy]="true"
         (onLazyLoad)="loadData($event)">
         <ng-template pTemplate="caption">
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mt-4">
             <!-- Search Section -->
             <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
               <p-iconfield iconPosition="left" class="w-full sm:w-auto">
@@ -30,13 +30,15 @@
                 </p-inputicon>
                 <input #searchInput pInputText type="text" placeholder="Cerca stampanti..." class="w-full" [(ngModel)]="filtri.search" (ngModelChange)="dataTable.filterGlobal($event, 'contains')" />
               </p-iconfield>
-              <button pButton label="Pulisci" class="p-button-outlined w-full sm:w-auto" icon="pi pi-filter-slash" [loading]="loading" (click)="dataTable.clear()"></button>
             </div>
 
             <!-- Action Buttons Section -->
-            <div class="flex items-center gap-2 justify-end sm:justify-start">
-              <p-button icon="pi pi-plus" label="Nuova Stampante" [loading]="loading" severity="success" (click)="addNewStampante()" pTooltip="Aggiungi nuova stampante" tooltipPosition="top" />
-              <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()" pTooltip="Aggiorna tabella" tooltipPosition="top" />
+            <div class="flex items-center gap-2 justify-end sm:justify-start w-full sm:w-auto">
+              <p-menu #menu appendTo="body" [model]="multipleAzioni" [popup]="true"></p-menu>
+
+              <p-button label="Azioni" [loading]="loading" [icon]="menu.visible ? 'pi pi-chevron-up' : 'pi pi-chevron-down'" (onClick)="menu.toggle($event)" class="flex-1 sm:flex-none" />
+
+              <p-button icon="pi pi-plus" label="Nuova Stampante" [loading]="loading" severity="success" (click)="addNewStampante()" pTooltip="Aggiungi nuova stampante" tooltipPosition="top" class="flex-1 sm:flex-none" />
             </div>
           </div>
         </ng-template>
@@ -60,14 +62,23 @@
             @if (applicationState.isMobile()) {
               <td>
                 <div class="bg-white border border-gray-200 rounded-lg p-4 w-full hover:shadow-md transition-shadow">
-                  <div class="flex flex-col gap-2">
-                    <div class="flex items-center justify-between">
-                      <span class="font-semibold text-gray-800">{{ stampante.nome }}</span>
+                  <div class="flex flex-col gap-3">
+                    <div class="flex items-center justify-between border-b border-gray-100 pb-2">
+                      <span class="font-bold text-gray-800">{{ stampante.nome }}</span>
+                      <span class="text-xs font-semibold text-gray-400">#{{ stampante.id }}</span>
                     </div>
-                    <div class="text-sm text-gray-700">
-                      {{ stampante.descrizione || '—' }}
+
+                    <div class="flex items-start gap-2">
+                      <i class="pi pi-align-left text-gray-400 mt-1"></i>
+                      <div class="flex flex-col">
+                        <span class="text-[10px] text-gray-500 uppercase font-medium">Descrizione</span>
+                        <span class="text-sm text-gray-700 break-words">{{ stampante.descrizione || 'Nessuna descrizione' }}</span>
+                      </div>
                     </div>
-                    <ng-container *ngTemplateOutlet="stampanteActionButtons; context: { stampante: stampante }"></ng-container>
+
+                    <div class="flex justify-end gap-1 mt-1 pt-2 border-t border-gray-100 pb-2">
+                      <ng-container *ngTemplateOutlet="stampanteActionButtons; context: { stampante: stampante }"></ng-container>
+                    </div>
                   </div>
                 </div>
               </td>
@@ -98,7 +109,7 @@
 </div>
 
 <ng-template #stampanteActionButtons let-stampante="stampante">
-  <div class="flex justify-end gap-2 mt-2">
+  <div class="flex justify-end gap-2">
     <p-button icon="pi pi-history" severity="secondary" [loading]="loading" size="small" (click)="viewAuditLog(stampante)" pTooltip="Visualizza log di audit" tooltipPosition="top" />
     <p-button icon="pi pi-pencil" severity="info" [loading]="loading" size="small" (click)="editStampante(stampante)" pTooltip="Modifica stampante" tooltipPosition="top" />
     <p-button icon="pi pi-trash" severity="danger" [loading]="loading" size="small" [disabled]="stampante.isUsed" (click)="confirmDelete($event, stampante)" [pTooltip]="stampante.isUsed | stampanteListingEliminaMessaggio" tooltipPosition="top" />

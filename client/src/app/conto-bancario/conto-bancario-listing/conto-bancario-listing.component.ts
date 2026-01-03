@@ -1,16 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DialogService, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
+import { MenuModule } from 'primeng/menu';
 import { SkeletonModule } from 'primeng/skeleton';
-import { TableLazyLoadEvent, TableModule } from 'primeng/table';
+import { Table, TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import { Subscription } from 'rxjs';
 import { ContoBancarioListingModel, ContoBancarioListingResponse } from 'src/models/conto-bancario/conto-bancario-listing';
@@ -23,7 +24,7 @@ import { ContoBancarioListingEliminaMessaggioPipe } from '../pipes/conto-bancari
 
 @Component({
   selector: 'app-conto-bancario-listing',
-  imports: [CommonModule, FormsModule, CardModule, ButtonModule, TableModule, InputTextModule, IconFieldModule, InputIconModule, SkeletonModule, TooltipModule, ContoBancarioListingEliminaMessaggioPipe],
+  imports: [CommonModule, FormsModule, CardModule, ButtonModule, TableModule, InputTextModule, IconFieldModule, InputIconModule, SkeletonModule, TooltipModule, ContoBancarioListingEliminaMessaggioPipe, MenuModule],
   providers: [ContoBancarioService],
   templateUrl: './conto-bancario-listing.component.html',
   styleUrl: './conto-bancario-listing.component.scss'
@@ -40,6 +41,26 @@ export class ContoBancarioListingComponent {
     limit: 100,
     search: ''
   };
+  sidebarVisible: boolean = false;
+  multipleAzioni: MenuItem[] = [
+    {
+      label: 'Sincronizza / Aggiorna',
+      icon: 'pi pi-refresh',
+      command: () => {
+        this.refreshTable();
+      }
+    },
+    {
+      label: 'Pulisci filtri',
+      icon: 'pi pi-filter-slash',
+      command: () => {
+        this.dataTable?.clear();
+        this.pulisciFiltri();
+      }
+    }
+  ];
+
+  @ViewChild('dataTable') dataTable?: Table;
 
   private contoBancarioSubscription?: Subscription;
   private contoBancarioDeleteSubscription?: Subscription;

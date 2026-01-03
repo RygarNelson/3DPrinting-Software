@@ -21,7 +21,7 @@
         [lazy]="true"
         (onLazyLoad)="loadData($event)">
         <ng-template pTemplate="caption">
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mt-4">
             <!-- Search Section -->
             <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
               <p-iconfield iconPosition="left" class="w-full sm:w-auto">
@@ -30,13 +30,15 @@
                 </p-inputicon>
                 <input #searchInput pInputText type="text" placeholder="Cerca conti bancari..." class="w-full" [(ngModel)]="filtri.search" (ngModelChange)="dataTable.filterGlobal($event, 'contains')" />
               </p-iconfield>
-              <button pButton label="Pulisci" class="p-button-outlined w-full sm:w-auto" icon="pi pi-filter-slash" [loading]="loading" (click)="dataTable.clear(); pulisciFiltri()"></button>
             </div>
 
             <!-- Action Buttons Section -->
-            <div class="flex items-center gap-2 justify-end sm:justify-start">
-              <p-button icon="pi pi-plus" label="Nuovo Conto Bancario" [loading]="loading" severity="success" (click)="addNewContoBancario()" pTooltip="Aggiungi nuovo conto bancario" tooltipPosition="top" />
-              <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()" pTooltip="Aggiorna tabella" tooltipPosition="top" />
+            <div class="flex items-center gap-2 justify-end sm:justify-start w-full sm:w-auto">
+              <p-menu #menu appendTo="body" [model]="multipleAzioni" [popup]="true"></p-menu>
+
+              <p-button label="Azioni" [loading]="loading" [icon]="menu.visible ? 'pi pi-chevron-up' : 'pi pi-chevron-down'" (onClick)="menu.toggle($event)" class="flex-1 sm:flex-none" />
+
+              <p-button icon="pi pi-plus" label="Nuovo Conto Bancario" [loading]="loading" severity="success" (click)="addNewContoBancario()" pTooltip="Aggiungi nuovo conto bancario" tooltipPosition="top" class="flex-1 sm:flex-none" />
             </div>
           </div>
         </ng-template>
@@ -61,16 +63,31 @@
             @if (applicationState.isMobile()) {
               <td>
                 <div class="bg-white border border-gray-200 rounded-lg p-4 w-full hover:shadow-md transition-shadow">
-                  <div class="flex flex-col gap-2">
-                    <div class="text-sm text-gray-700 grid grid-cols-2 gap-y-1 gap-x-3">
-                      <div class="text-gray-500">IBAN</div>
-                      <div class="font-medium break-all">{{ conto_bancario.iban }}</div>
-                      <div class="text-gray-500">Nome</div>
-                      <div>{{ conto_bancario.nome_proprietario }}</div>
-                      <div class="text-gray-500">Cognome</div>
-                      <div>{{ conto_bancario.cognome_proprietario }}</div>
+                  <div class="flex flex-col gap-3">
+                    <div class="flex items-center justify-between border-b border-gray-100 pb-2">
+                      <span class="text-xs font-bold text-primary bg-primary-100 px-2 py-0.5 rounded">CONTO</span>
+                      <span class="text-sm font-semibold text-gray-800">#{{ conto_bancario.id }}</span>
                     </div>
-                    <ng-container *ngTemplateOutlet="contoBancarioActionButtons; context: { conto_bancario: conto_bancario }"></ng-container>
+
+                    <div class="flex items-start gap-2">
+                      <i class="pi pi-credit-card text-gray-400 mt-1"></i>
+                      <div class="flex flex-col">
+                        <span class="text-[10px] text-gray-500 uppercase font-medium">IBAN</span>
+                        <span class="text-xs text-gray-700 break-all font-mono">{{ conto_bancario.iban }}</span>
+                      </div>
+                    </div>
+
+                    <div class="flex items-start gap-2">
+                      <i class="pi pi-user text-gray-400 mt-1"></i>
+                      <div class="flex flex-col">
+                        <span class="text-[10px] text-gray-500 uppercase font-medium">Proprietario</span>
+                        <span class="text-sm text-gray-700 font-medium">{{ conto_bancario.nome_proprietario }} {{ conto_bancario.cognome_proprietario }}</span>
+                      </div>
+                    </div>
+
+                    <div class="flex justify-end gap-1 mt-1 pt-2 border-t border-gray-100 pb-2">
+                      <ng-container *ngTemplateOutlet="contoBancarioActionButtons; context: { conto_bancario: conto_bancario }" />
+                    </div>
                   </div>
                 </div>
               </td>

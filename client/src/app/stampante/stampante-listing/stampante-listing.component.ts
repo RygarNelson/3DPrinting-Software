@@ -1,16 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DialogService, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
+import { MenuModule } from 'primeng/menu';
 import { SkeletonModule } from 'primeng/skeleton';
-import { TableLazyLoadEvent, TableModule } from 'primeng/table';
+import { Table, TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import { Subscription } from 'rxjs';
 import { ApplicationStateService } from 'src/services/application-state.service';
@@ -23,7 +24,7 @@ import { StampanteListingEliminaMessaggioPipe } from '../pipes/stampante-listing
 
 @Component({
   selector: 'app-stampante-listing',
-  imports: [CommonModule, FormsModule, CardModule, ButtonModule, TableModule, InputTextModule, IconFieldModule, InputIconModule, SkeletonModule, TooltipModule, StampanteListingEliminaMessaggioPipe],
+  imports: [CommonModule, FormsModule, CardModule, ButtonModule, TableModule, InputTextModule, IconFieldModule, InputIconModule, SkeletonModule, TooltipModule, StampanteListingEliminaMessaggioPipe, MenuModule],
   templateUrl: './stampante-listing.component.html',
   styleUrl: './stampante-listing.component.scss',
   providers: [StampanteService]
@@ -40,6 +41,26 @@ export class StampanteListingComponent implements OnDestroy {
     limit: 100,
     search: ''
   };
+  sidebarVisible: boolean = false;
+  multipleAzioni: MenuItem[] = [
+    {
+      label: 'Sincronizza / Aggiorna',
+      icon: 'pi pi-refresh',
+      command: () => {
+        this.refreshTable();
+      }
+    },
+    {
+      label: 'Pulisci filtri',
+      icon: 'pi pi-filter-slash',
+      command: () => {
+        this.dataTable?.clear();
+        this.pulisciFiltri();
+      }
+    }
+  ];
+
+  @ViewChild('dataTable') dataTable?: Table;
 
   private stampantiSubscription?: Subscription;
   private stampanteDeleteSubscription?: Subscription;
@@ -102,6 +123,20 @@ export class StampanteListingComponent implements OnDestroy {
     }
 
     this.loadStampanti();
+  }
+
+  pulisciFiltri(): void {
+    this.filtri = {
+      offset: 0,
+      limit: 100,
+      search: ''
+    };
+
+    this.loadData({
+      first: 0,
+      rows: 100,
+      globalFilter: ''
+    });
   }
 
   refreshTable(): void {

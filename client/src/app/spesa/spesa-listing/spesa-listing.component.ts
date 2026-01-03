@@ -1,16 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ConfirmationService, FilterMetadata, MessageService } from 'primeng/api';
+import { ConfirmationService, FilterMetadata, MenuItem, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
+import { CheckboxModule } from 'primeng/checkbox';
+import { DatePickerModule } from 'primeng/datepicker';
+import { DrawerModule } from 'primeng/drawer';
 import { DialogService, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
+import { MenuModule } from 'primeng/menu';
 import { SkeletonModule } from 'primeng/skeleton';
-import { TableLazyLoadEvent, TableModule } from 'primeng/table';
+import { Table, TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import { Subscription } from 'rxjs';
 import { SpesaTipoLookupDirective } from 'src/directives/spesa/spesa-tipo-lookup.directive';
@@ -38,6 +42,10 @@ import { SpesaUnitaMisuraPipe } from '../spesa-unita-misura.pipe';
     InputIconModule,
     SkeletonModule,
     TooltipModule,
+    DrawerModule,
+    DatePickerModule,
+    MenuModule,
+    CheckboxModule,
     SpesaTipoPipe,
     SpesaUnitaMisuraPipe,
     SpesaTipoLookupDirective,
@@ -58,8 +66,31 @@ export class SpesaListingComponent {
   filtri: SpesaListingFiltri = {
     offset: 0,
     limit: 100,
-    search: ''
+    search: '',
+    data_spesa: { value: undefined, operator: 'dateIs' },
+    totale_spesa: { value: undefined, operator: 'equals' },
+    quantita: { value: undefined, operator: 'equals' }
   };
+  sidebarVisible: boolean = false;
+  multipleAzioni: MenuItem[] = [
+    {
+      label: 'Sincronizza / Aggiorna',
+      icon: 'pi pi-refresh',
+      command: () => {
+        this.refreshTable();
+      }
+    },
+    {
+      label: 'Pulisci filtri',
+      icon: 'pi pi-filter-slash',
+      command: () => {
+        this.dataTable?.clear();
+        this.pulisciFiltri();
+      }
+    }
+  ];
+
+  @ViewChild('dataTable') dataTable?: Table;
 
   private speseSubscription?: Subscription;
   private spesaDeleteSubscription?: Subscription;
@@ -140,10 +171,10 @@ export class SpesaListingComponent {
           operator: operator
         };
       } else {
-        this.filtri.data_spesa = undefined;
+        this.filtri.data_spesa = { value: undefined, operator: 'dateIs' };
       }
     } else {
-      this.filtri.data_spesa = undefined;
+      this.filtri.data_spesa = { value: undefined, operator: 'dateIs' };
     }
 
     const totaleSpesaFilter: FilterMetadata | FilterMetadata[] | undefined = event.filters?.['totale_spesa'];
@@ -165,10 +196,10 @@ export class SpesaListingComponent {
           operator: operator
         };
       } else {
-        this.filtri.totale_spesa = undefined;
+        this.filtri.totale_spesa = { value: undefined, operator: 'equals' };
       }
     } else {
-      this.filtri.totale_spesa = undefined;
+      this.filtri.totale_spesa = { value: undefined, operator: 'equals' };
     }
 
     const quantitaFilter: FilterMetadata | FilterMetadata[] | undefined = event.filters?.['quantita'];
@@ -190,10 +221,10 @@ export class SpesaListingComponent {
           operator: operator
         };
       } else {
-        this.filtri.quantita = undefined;
+        this.filtri.quantita = { value: undefined, operator: 'equals' };
       }
     } else {
-      this.filtri.quantita = undefined;
+      this.filtri.quantita = { value: undefined, operator: 'equals' };
     }
 
     this.loadSpese();
@@ -203,7 +234,10 @@ export class SpesaListingComponent {
     this.filtri = {
       offset: 0,
       limit: 100,
-      search: ''
+      search: '',
+      data_spesa: { value: undefined, operator: 'dateIs' },
+      totale_spesa: { value: undefined, operator: 'equals' },
+      quantita: { value: undefined, operator: 'equals' }
     };
 
     this.loadData({
@@ -299,5 +333,19 @@ export class SpesaListingComponent {
         console.error('Error deleting spesa:', error);
       }
     });
+  }
+
+  toggleSidebarFilters(): void {
+    this.sidebarVisible = !this.sidebarVisible;
+  }
+
+  applicaSidebarFiltri(): void {
+    this.sidebarVisible = false;
+    this.loadSpese();
+  }
+
+  resetSidebarFiltri(): void {
+    this.pulisciFiltri();
+    this.sidebarVisible = false;
   }
 }

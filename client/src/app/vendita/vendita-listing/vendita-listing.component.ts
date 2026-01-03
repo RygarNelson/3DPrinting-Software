@@ -7,8 +7,11 @@ import { AccordionModule } from 'primeng/accordion';
 import { ConfirmationService, FilterMetadata, MenuItem, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
+import { CheckboxModule } from 'primeng/checkbox';
 import { ConfirmDialog, ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DatePickerModule } from 'primeng/datepicker';
 import { DialogModule } from 'primeng/dialog';
+import { DrawerModule } from 'primeng/drawer';
 import { DialogService, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
@@ -16,7 +19,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MenuModule } from 'primeng/menu';
 import { SkeletonModule } from 'primeng/skeleton';
 import { SplitButtonModule } from 'primeng/splitbutton';
-import { TableLazyLoadEvent, TableModule } from 'primeng/table';
+import { Table, TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import { Subscription, forkJoin } from 'rxjs';
 import { ClienteLookupDirective } from 'src/directives/cliente/cliente-lookup.directive';
@@ -71,7 +74,10 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
     SplitButtonModule,
     ConfirmDialogModule,
     VenditaEtichettaSpedizioneComponent,
-    DialogModule
+    DialogModule,
+    DrawerModule,
+    DatePickerModule,
+    CheckboxModule
   ],
   providers: [VenditaService, SpesaService],
   templateUrl: './vendita-listing.component.html',
@@ -91,13 +97,43 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
   filtri: VenditaListingFiltri = {
     offset: 0,
     limit: 100,
-    search: ''
+    search: '',
+    data_vendita: { value: undefined, operator: 'dateIs' },
+    data_scadenza: { value: undefined, operator: 'dateIs' },
+    data_scadenza_spedizione: { value: undefined, operator: 'dateIs' }
   };
+  sidebarVisible: boolean = false;
 
   multipleAzioni: MenuItem[] = [
     {
+      label: 'Sincronizza / Aggiorna',
+      icon: 'pi pi-refresh',
+      command: () => {
+        this.refreshTable();
+      }
+    },
+    {
+      label: 'Pulisci filtri',
+      icon: 'pi pi-filter-slash',
+      command: () => {
+        this.dataTable?.clear();
+        this.pulisciFiltri();
+      }
+    },
+    {
+      separator: true
+    },
+    {
+      label: 'Esporta Excel',
+      icon: 'pi pi-file-excel',
+      command: () => {
+        this.exportToExcel();
+      }
+    },
+    {
       label: 'Modifica conto bancario',
       icon: 'pi pi-credit-card',
+      disabled: this.selectedVendite.length === 0,
       command: () => {
         this.modificaContoBancarioVisible = true;
       }
@@ -127,6 +163,7 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
 
   @ViewChild('confirmDialogModificaContoBancario') confirmDialogModificaContoBancario?: ConfirmDialog;
   @ViewChild('confirmDialogDelete') confirmDialogDelete?: ConfirmDialog;
+  @ViewChild('dataTable') dataTable?: Table;
 
   private venditeSubscription?: Subscription;
   private venditaDeleteSubscription?: Subscription;
@@ -216,6 +253,20 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
     this.loadVendite();
   }
 
+  toggleSidebarFilters(): void {
+    this.sidebarVisible = !this.sidebarVisible;
+  }
+
+  applicaSidebarFiltri(): void {
+    this.sidebarVisible = false;
+    this.loadVendite();
+  }
+
+  resetSidebarFiltri(): void {
+    this.pulisciFiltri();
+    this.sidebarVisible = false;
+  }
+
   loadData(event: TableLazyLoadEvent): void {
     this.filtri.offset = event.first;
     this.filtri.limit = event.rows ?? 100;
@@ -283,10 +334,10 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
           operator: operator
         };
       } else {
-        this.filtri.data_vendita = undefined;
+        this.filtri.data_vendita = { value: undefined, operator: 'dateIs' };
       }
     } else {
-      this.filtri.data_vendita = undefined;
+      this.filtri.data_vendita = { value: undefined, operator: 'dateIs' };
     }
 
     const dataScadenzaFilter: FilterMetadata | FilterMetadata[] | undefined = event.filters?.['data_scadenza'];
@@ -308,10 +359,10 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
           operator: operator
         };
       } else {
-        this.filtri.data_scadenza = undefined;
+        this.filtri.data_scadenza = { value: undefined, operator: 'dateIs' };
       }
     } else {
-      this.filtri.data_scadenza = undefined;
+      this.filtri.data_scadenza = { value: undefined, operator: 'dateIs' };
     }
 
     const dataScadenzaSpedizioneFilter: FilterMetadata | FilterMetadata[] | undefined = event.filters?.['data_scadenza_spedizione'];
@@ -333,10 +384,10 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
           operator: operator
         };
       } else {
-        this.filtri.data_scadenza_spedizione = undefined;
+        this.filtri.data_scadenza_spedizione = { value: undefined, operator: 'dateIs' };
       }
     } else {
-      this.filtri.data_scadenza_spedizione = undefined;
+      this.filtri.data_scadenza_spedizione = { value: undefined, operator: 'dateIs' };
     }
 
     const totaleVenditaFilter: FilterMetadata | FilterMetadata[] | undefined = event.filters?.['totale_vendita'];
@@ -379,7 +430,10 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
     this.filtri = {
       offset: 0,
       limit: 100,
-      search: ''
+      search: '',
+      data_vendita: { value: undefined, operator: 'dateIs' },
+      data_scadenza: { value: undefined, operator: 'dateIs' },
+      data_scadenza_spedizione: { value: undefined, operator: 'dateIs' }
     };
 
     this.loadData({
