@@ -23,7 +23,7 @@
         [loading]="loading"
         (onLazyLoad)="loadData($event)">
         <ng-template pTemplate="caption">
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mt-4">
             <!-- Search Section -->
             <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
               <p-iconfield iconPosition="left" class="w-full sm:w-auto">
@@ -32,13 +32,17 @@
                 </p-inputicon>
                 <input #searchInput pInputText type="text" placeholder="Cerca spese..." class="w-full" [(ngModel)]="filtri.search" (ngModelChange)="dataTable.filterGlobal($event, 'contains')" />
               </p-iconfield>
-              <button pButton label="Pulisci" class="p-button-outlined w-full sm:w-auto" icon="pi pi-filter-slash" [loading]="loading" (click)="dataTable.clear(); pulisciFiltri()"></button>
+
+              @if (applicationState.isMobile()) {
+                <button pButton label="Filtri" class="p-button-outlined w-full" icon="pi pi-filter" (click)="toggleSidebarFilters()"></button>
+              }
             </div>
 
             <!-- Action Buttons Section -->
-            <div class="flex items-center gap-2 justify-end sm:justify-start">
-              <p-button icon="pi pi-plus" label="Nuova Spesa" [loading]="loading" severity="success" (click)="addNewSpesa()" pTooltip="Aggiungi nuova spesa" tooltipPosition="top" />
-              <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()" pTooltip="Aggiorna tabella" tooltipPosition="top" />
+            <div class="flex items-center gap-2 justify-end sm:justify-start w-full sm:w-auto">
+              <p-menu #menu appendTo="body" [model]="multipleAzioni" [popup]="true"></p-menu>
+              <p-button label="Azioni" [loading]="loading" [icon]="menu.visible ? 'pi pi-chevron-up' : 'pi pi-chevron-down'" (onClick)="menu.toggle($event)" class="flex-1 sm:flex-none" />
+              <p-button icon="pi pi-plus" label="Nuova Spesa" [loading]="loading" severity="success" (click)="addNewSpesa()" pTooltip="Aggiungi nuova spesa" tooltipPosition="top" class="flex-1 sm:flex-none" />
             </div>
           </div>
         </ng-template>
@@ -49,19 +53,19 @@
             @if (applicationState.isMobile()) {
               <th></th>
             } @else {
-              <th>Numero</th>
-              <th pSortableColumn="data_spesa">
+              <th style="width: 120px">Numero</th>
+              <th pSortableColumn="data_spesa" style="width: 150px">
                 Data
                 <p-sortIcon field="data_spesa" />
                 <p-columnFilter field="data_spesa" [type]="'date'" display="menu" [showMatchModes]="true" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
               </th>
               <th>Descrizione</th>
-              <th pSortableColumn="quantita">
+              <th pSortableColumn="quantita" style="width: 150px">
                 Quantità
                 <p-sortIcon field="quantita" />
                 <p-columnFilter field="quantita" [type]="'numeric'" display="menu" minFractionDigits="4" maxFractionDigits="4" [showMatchModes]="true" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
               </th>
-              <th pSortableColumn="tipo_spesa">
+              <th pSortableColumn="tipo_spesa" style="width: 180px">
                 Tipo
                 <p-sortIcon field="tipo_spesa" />
                 <p-columnFilter field="tipo_spesa" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false">
@@ -70,8 +74,8 @@
                   </ng-template>
                 </p-columnFilter>
               </th>
-              <th pSortableColumn="unita_misura">
-                Unità di Misura
+              <th pSortableColumn="unita_misura" style="width: 180px">
+                Unità
                 <p-sortIcon field="unita_misura" />
                 <p-columnFilter field="unita_misura" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false">
                   <ng-template #filter let-value let-filter="filterCallback">
@@ -79,7 +83,7 @@
                   </ng-template>
                 </p-columnFilter>
               </th>
-              <th pSortableColumn="totale_spesa" style="width: 200px">
+              <th pSortableColumn="totale_spesa" style="width: 160px">
                 Totale
                 <p-sortIcon field="totale_spesa" />
                 <p-columnFilter
@@ -106,23 +110,40 @@
             @if (applicationState.isMobile()) {
               <td>
                 <div class="bg-white border border-gray-200 rounded-lg p-4 w-full hover:shadow-md transition-shadow">
-                  <div class="flex flex-col gap-2">
-                    <div class="flex items-center justify-between">
-                      <span class="font-semibold text-gray-800">Spesa #{{ spesa.id }}</span>
-                      <span class="text-sm text-gray-600">{{ spesa.data_spesa | date: 'dd/MM/yyyy' }}</span>
+                  <div class="flex flex-col gap-3">
+                    <div class="flex items-center justify-between border-b border-gray-100 pb-2">
+                      <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-primary bg-primary-100 px-2 py-0.5 rounded">#{{ spesa.id }}</span>
+                        <span class="text-sm font-semibold text-gray-800">{{ spesa.data_spesa | date: 'dd/MM/yyyy' }}</span>
+                      </div>
                     </div>
-                    <div class="text-sm text-gray-700">{{ spesa.descrizione }}</div>
-                    <div class="grid grid-cols-2 gap-x-3 gap-y-1 text-sm text-gray-700">
-                      <div class="text-gray-500">Quantità</div>
-                      <div>{{ spesa.quantita | number: '0.4-4' }}</div>
-                      <div class="text-gray-500">Tipo</div>
-                      <div>{{ spesa.tipo_spesa | spesaTipo }}</div>
-                      <div class="text-gray-500">Unità</div>
-                      <div>{{ spesa.unita_misura | spesaUnitaMisura }}</div>
+
+                    <div class="flex items-start gap-2">
+                      <i class="pi pi-align-left text-gray-400 mt-1"></i>
+                      <div class="flex flex-col">
+                        <span class="text-[10px] text-gray-500 uppercase font-medium">Descrizione</span>
+                        <span class="text-sm text-gray-700">{{ spesa.descrizione }}</span>
+                      </div>
                     </div>
-                    <div class="flex items-center justify-between mt-2">
-                      <div class="text-sm font-semibold">{{ spesa.totale_spesa | currency: 'EUR' }}</div>
-                      <ng-container *ngTemplateOutlet="spesaActionButtons; context: { spesa: spesa }"></ng-container>
+
+                    <div class="grid grid-cols-2 gap-3">
+                      <div class="flex flex-col bg-gray-50 p-2 rounded">
+                        <span class="text-[10px] text-gray-500 uppercase">Quantità</span>
+                        <span class="text-xs font-semibold">{{ spesa.quantita | number: '0.4-4' }} {{ spesa.unita_misura | spesaUnitaMisura }}</span>
+                      </div>
+                      <div class="flex flex-col bg-gray-50 p-2 rounded">
+                        <span class="text-[10px] text-gray-500 uppercase">Tipo</span>
+                        <span class="text-xs font-semibold">{{ spesa.tipo_spesa | spesaTipo }}</span>
+                      </div>
+                    </div>
+
+                    <div class="flex items-center justify-between mt-1 pt-2 border-t border-gray-100">
+                      <span class="text-[10px] text-gray-500 uppercase font-bold tracking-tight">Totale</span>
+                      <span class="text-lg font-bold text-gray-900 leading-none">{{ spesa.totale_spesa | currency: 'EUR' }}</span>
+                    </div>
+
+                    <div class="flex justify-end gap-1 mt-1 pb-2">
+                      <ng-container *ngTemplateOutlet="spesaActionButtons; context: { spesa: spesa }" />
                     </div>
                   </div>
                 </div>
@@ -145,7 +166,7 @@
         <!-- Empty State -->
         <ng-template pTemplate="emptymessage">
           <tr>
-            <td colspan="7" class="text-center py-8">
+            <td colspan="8" class="text-center py-8">
               <div class="flex flex-col items-center gap-2">
                 <i class="pi pi-inbox text-4xl text-gray-400"></i>
                 <p class="text-gray-500">Nessuna spesa trovata</p>
@@ -156,10 +177,38 @@
       </p-table>
     </ng-template>
   </p-card>
+
+  <!-- Filter Drawer -->
+  <p-drawer [(visible)]="sidebarVisible" position="right" [style]="{ width: '100%', maxWidth: '350px' }">
+    <ng-template pTemplate="header">
+      <h3 class="text-xl font-bold m-0 text-gray-800">Filtri Avanzati</h3>
+    </ng-template>
+    <div class="flex flex-col gap-4 p-fluid mt-4">
+      <div class="field">
+        <label class="font-semibold text-sm mb-1 block">Tipo Spesa</label>
+        <form-input-select spesa-tipo-lookup property="tipo_spesa" [filter]="false" [(ngModel)]="filtri.tipo_spesa" />
+      </div>
+
+      <div class="field">
+        <label class="font-semibold text-sm mb-1 block">Unità di Misura</label>
+        <form-input-select spesa-unita-misura-lookup property="unita_misura" [filter]="false" [(ngModel)]="filtri.unita_misura" />
+      </div>
+
+      <div class="field">
+        <label class="font-semibold text-sm mb-1 block">Data Spesa</label>
+        <p-datepicker [(ngModel)]="filtri.data_spesa!.value" dateFormat="dd/mm/yy" appendTo="body" [showIcon]="true" (onSelect)="filtri.data_spesa!.operator = 'dateIs'" />
+      </div>
+
+      <div class="flex gap-2 mt-6">
+        <p-button label="Applica" class="flex-1" icon="pi pi-check" (onClick)="applicaSidebarFiltri()" />
+        <p-button label="Reset" class="flex-1 p-button-outlined p-button-secondary" icon="pi pi-refresh" (onClick)="resetSidebarFiltri()" />
+      </div>
+    </div>
+  </p-drawer>
 </div>
 
 <ng-template #spesaActionButtons let-spesa="spesa">
-  <div class="flex justify-end gap-2">
+  <div class="flex justify-end gap-2 pb-1">
     <p-button icon="pi pi-history" severity="secondary" [loading]="loading" size="small" (click)="viewAuditLog(spesa)" pTooltip="Visualizza log di audit" tooltipPosition="top"> </p-button>
     <p-button icon="pi pi-pencil" severity="info" [loading]="loading" size="small" (click)="editSpesa(spesa)" pTooltip="Modifica spesa" tooltipPosition="top"> </p-button>
     <p-button icon="pi pi-trash" severity="danger" [loading]="loading" size="small" (click)="confirmDelete($event, spesa)" pTooltip="Elimina spesa" tooltipPosition="top"> </p-button>

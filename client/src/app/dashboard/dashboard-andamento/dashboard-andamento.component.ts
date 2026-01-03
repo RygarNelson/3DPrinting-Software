@@ -12,21 +12,12 @@ import { VenditaService } from 'src/services/vendita.service';
 
 @Component({
   selector: 'dashboard-andamento',
-  imports: [
-    CommonModule,
-    FormsModule,
-    CardModule,
-    ChartModule,
-    SkeletonModule,
-  ],
-  providers: [
-    VenditaService
-  ],
+  imports: [CommonModule, FormsModule, CardModule, ChartModule, SkeletonModule],
+  providers: [VenditaService],
   templateUrl: './dashboard-andamento.component.html',
   styleUrl: './dashboard-andamento.component.scss'
 })
 export class DashboardAndamentoComponent implements OnInit, OnDestroy, OnChanges {
-  
   @Input() anno: number = 0;
 
   loading: boolean = false;
@@ -59,27 +50,31 @@ export class DashboardAndamentoComponent implements OnInit, OnDestroy, OnChanges
   }
 
   preparaGrafico(): void {
-
     if (this.anno != null && this.anno != 0) {
       if (this.loadingTimeout == null) {
-        this.loadingTimeout = window.setTimeout(() => { this.loading = true; }, 500);
+        this.loadingTimeout = window.setTimeout(() => {
+          this.loading = true;
+        }, 500);
       }
-  
+
       this.andamentoSubscription = this.venditaService.getAndamentoVendite(this.anno).subscribe({
         next: (response: VenditaAndamentoResponse) => {
           if (response.success) {
             this.graph = response.data;
+            if (this.graph.options) {
+              this.graph.options.maintainAspectRatio = false;
+            }
             this.totaleVendite = response.totaleVendite;
             this.totaleSpese = response.totaleSpese;
             this.totaleSospese = response.totaleSospese;
           }
-  
+
           window.clearTimeout(this.loadingTimeout);
           this.loading = false;
         },
         error: (error) => {
           console.error('Error loading graph:', error);
-  
+
           window.clearTimeout(this.loadingTimeout);
           this.loading = false;
         }

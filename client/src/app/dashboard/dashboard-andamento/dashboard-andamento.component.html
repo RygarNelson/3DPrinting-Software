@@ -1,33 +1,36 @@
 <div class="p-4">
-    <p-card>
-        <ng-template pTemplate="header">
-            <div class="flex items-center" [ngClass]="{
-                'flex-col': applicationState.isMobile(),
-                'w-full': applicationState.isMobile(),
-                'justify-between': !applicationState.isMobile()
+  <p-card>
+    <ng-template pTemplate="header">
+      <div
+        class="flex items-center"
+        [ngClass]="{
+          'flex-col': applicationState.isMobile(),
+          'w-full': applicationState.isMobile(),
+          'justify-between': !applicationState.isMobile()
+        }">
+        <h2 class="text-xl font-semibold text-gray-800 pt-6 header-title">Andamento</h2>
+        @if (loading) {
+          <p-skeleton height="30px" width="100px" />
+        } @else {
+          <div
+            class="flex items-center gap-2 margin-left-auto header-title"
+            [ngClass]="{
+              'flex-col': applicationState.isMobile(),
+              'w-full': applicationState.isMobile()
             }">
-                <h2 class="text-xl font-semibold text-gray-800 pt-6 header-title">Andamento</h2>
-                @if (loading) {
-                    <p-skeleton height="30px" width="100px" />
-                } @else {
-                    <div class="flex items-center gap-2 margin-left-auto header-title" [ngClass]="{
-                        'flex-col': applicationState.isMobile(),
-                        'w-full': applicationState.isMobile()
-                    }">
-                        <h5 class="text-lg font-semibold mr-3">In Sospeso: {{ totaleSospese | currency:'EUR' }}</h5>
-                        <h5 class="text-lg font-semibold mr-3">Vendite: {{ totaleVendite | currency:'EUR' }}</h5>
-                        <h5 class="text-lg font-semibold mr-3">Spese: {{ totaleSpese | currency:'EUR' }}</h5>
-                    </div>
-                    
-                }
-            </div>
-        </ng-template>
-        <ng-template pTemplate="content">
-            @if (loading) {
-                <p-skeleton height="300px" width="100%" />
-            } @else {
-                <p-chart type="line" [data]="graph.data" [options]="graph.options"/>
-            }
-        </ng-template>
-    </p-card>
+            <h5 class="text-lg font-semibold mr-3">In Sospeso: {{ totaleSospese | currency: 'EUR' }}</h5>
+            <h5 class="text-lg font-semibold mr-3">Vendite: {{ totaleVendite | currency: 'EUR' }}</h5>
+            <h5 class="text-lg font-semibold mr-3">Spese: {{ totaleSpese | currency: 'EUR' }}</h5>
+          </div>
+        }
+      </div>
+    </ng-template>
+    <ng-template pTemplate="content">
+      @if (loading) {
+        <p-skeleton [height]="applicationState.isMobile() ? '500px' : '300px'" width="100%" />
+      } @else {
+        <p-chart type="line" [data]="graph.data" [options]="graph.options" [height]="applicationState.isMobile() ? '500px' : '600px'" />
+      }
+    </ng-template>
+  </p-card>
 </div>

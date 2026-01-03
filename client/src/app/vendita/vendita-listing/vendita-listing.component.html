@@ -21,8 +21,12 @@
             </h5>
           } @else {
             <h5 class="text-lg font-semibold">Ultimi 3 mesi</h5>
-            <h5 class="text-lg font-semibold">Saldo: {{ ultimiTreMesi | currency: 'EUR' }}</h5>
-            <h5 class="text-lg font-semibold">In Sospeso: {{ ultimiTreMesiSospese | currency: 'EUR' }}</h5>
+            <h5 class="text-lg font-semibold">
+              Saldo: {{ ultimiTreMesi | currency: 'EUR' }} <i class="pi pi-info-circle info-icon" tooltipPosition="bottom" [pTooltip]="'Il saldo viene calcolato come la somma delle vendite meno le spese, senza considerare le vendite in sospeso'"></i>
+            </h5>
+            <h5 class="text-lg font-semibold">
+              In Sospeso: {{ ultimiTreMesiSospese | currency: 'EUR' }} <i class="pi pi-info-circle info-icon" tooltipPosition="bottom" [pTooltip]="'Il totale delle vendite in sospeso, senza considerare le spese'"></i>
+            </h5>
           }
         </div>
       </div>
@@ -51,43 +55,23 @@
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mt-4">
             <!-- Search Section -->
             <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
-              <p-iconfield iconPosition="left" class="w-full sm:w-auto">
+              <p-iconfield iconPosition="left" class="w-full">
                 <p-inputicon>
                   <i class="pi pi-search"></i>
                 </p-inputicon>
                 <input #searchInput pInputText type="text" placeholder="Cerca vendite..." class="w-full" [(ngModel)]="filtri.search" (ngModelChange)="dataTable.filterGlobal($event, 'contains')" />
               </p-iconfield>
-              <button pButton label="Pulisci" class="p-button-outlined w-full sm:w-auto" icon="pi pi-filter-slash" (click)="dataTable.clear(); pulisciFiltri()"></button>
+              @if (applicationState.isMobile()) {
+                <button pButton label="Filtri" class="p-button-outlined w-full" icon="pi pi-filter" (click)="toggleSidebarFilters()"></button>
+              }
             </div>
 
             <!-- Action Buttons Section -->
-            @if (!applicationState.isMobile() && !applicationState.isTablet()) {
-              <div class="flex items-center gap-2 justify-end sm:justify-start">
-                <p-menu #menu appendTo="body" [model]="multipleAzioni" [popup]="true"></p-menu>
-                <p-button icon="pi pi-file-excel" label="Esporta Excel" severity="success" [loading]="loading" (click)="exportToExcel()" pTooltip="Esporta in Excel" tooltipPosition="top"> </p-button>
-                <p-button
-                  [label]="'Azioni'"
-                  [loading]="loading"
-                  [icon]="menu.visible ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
-                  [disabled]="selectedVendite == null || (selectedVendite != null && selectedVendite.length == 0)"
-                  (onClick)="menu.toggle($event)" />
-                <p-button icon="pi pi-plus" [loading]="loading" label="Nuova Vendita" severity="success" (click)="addNewVendita()" pTooltip="Aggiungi nuova vendita" tooltipPosition="top"> </p-button>
-                <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()" pTooltip="Aggiorna tabella" tooltipPosition="top" />
-              </div>
-            } @else {
-              <div class="grid grid-cols-1 items-center gap-2 justify-end sm:justify-start">
-                <p-menu #menu appendTo="body" [model]="multipleAzioni" [popup]="true"></p-menu>
-                <p-button icon="pi pi-file-excel" severity="success" [loading]="loading" (click)="exportToExcel()" pTooltip="Esporta in Excel" tooltipPosition="top"> </p-button>
-                <p-button
-                  [label]="'Azioni'"
-                  [loading]="loading"
-                  [icon]="menu.visible ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
-                  [disabled]="selectedVendite == null || (selectedVendite != null && selectedVendite.length == 0)"
-                  (onClick)="menu.toggle($event)" />
-                <p-button icon="pi pi-refresh" severity="warn" [loading]="loading" (click)="refreshTable()" pTooltip="Aggiorna tabella" tooltipPosition="top"> </p-button>
-                <p-button icon="pi pi-plus" label="Nuova Vendita" severity="success" [loading]="loading" (click)="addNewVendita()" pTooltip="Aggiungi nuova vendita" tooltipPosition="top"> </p-button>
-              </div>
-            }
+            <div class="flex items-center gap-2 justify-end sm:justify-start w-full sm:w-auto">
+              <p-menu #menu appendTo="body" [model]="multipleAzioni" [popup]="true"></p-menu>
+              <p-button label="Azioni" [loading]="loading" [icon]="menu.visible ? 'pi pi-chevron-up' : 'pi pi-chevron-down'" (onClick)="menu.toggle($event)" class="flex-1 sm:flex-none" />
+              <p-button icon="pi pi-plus" label="Nuova Vendita" [loading]="loading" severity="success" (click)="addNewVendita()" pTooltip="Aggiungi nuova vendita" tooltipPosition="top" class="flex-1 sm:flex-none" />
+            </div>
           </div>
         </ng-template>
 
@@ -196,72 +180,87 @@
             }
             @if (applicationState.isMobile()) {
               <td>
-                <div class="flex flex-col gap-2">
-                  <div class="flex items-center justify-between">
+                <div class="flex flex-col gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100 shadow-sm">
+                  <div class="flex items-center justify-between border-b border-gray-200 pb-2">
                     <div class="flex items-center gap-2">
-                      <span class="font-semibold">#{{ vendita.id }}</span>
+                      <span class="text-xs font-bold text-primary bg-primary-100 px-2 py-0.5 rounded">#{{ vendita.id }}</span>
+                      <span class="text-sm font-semibold text-gray-800">{{ vendita.data_vendita | date: 'dd/MM/yyyy' }}</span>
                     </div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-1">
                       @if (vendita.isInScadenza) {
-                        <span class="text-xs px-2 py-1 rounded bg-amber-100 text-amber-700">In scadenza</span>
+                        <span class="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-200">In scadenza</span>
                       }
                       @if (vendita.isScaduto) {
-                        <span class="text-xs px-2 py-1 rounded bg-red-100 text-red-700">Scaduto</span>
+                        <span class="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-700 border border-red-200">Scaduto</span>
                       }
                     </div>
                   </div>
 
-                  <div class="text-sm text-gray-700 grid grid-cols-2 gap-y-1 gap-x-3">
-                    <div class="text-gray-500">Vendita</div>
-                    <div class="font-medium">{{ vendita.data_vendita | date: 'dd/MM/yyyy' }}</div>
-                    <div class="text-gray-500">Scadenza</div>
-                    <div>{{ vendita.data_scadenza | date: 'dd/MM/yyyy' }}</div>
-                    <div class="text-gray-500">Spedizione</div>
-                    <div>{{ vendita.data_scadenza_spedizione | date: 'dd/MM/yyyy' }}</div>
-                    <div class="text-gray-500">Cliente</div>
-                    <div>{{ vendita.cliente?.etichetta }}</div>
-                    <div class="text-gray-500">Conto</div>
-                    <div>{{ vendita.conto_bancario?.iban }}</div>
+                  <div class="grid grid-cols-1 gap-2">
+                    <div class="flex items-start gap-2">
+                      <i class="pi pi-user text-gray-400 mt-1"></i>
+                      <div class="flex flex-col">
+                        <span class="text-[10px] text-gray-500 uppercase font-medium">Cliente</span>
+                        <span class="text-sm font-medium text-gray-700">{{ vendita.cliente?.etichetta || 'N/A' }}</span>
+                      </div>
+                    </div>
+
+                    <div class="flex items-start gap-2">
+                      <i class="pi pi-credit-card text-gray-400 mt-1"></i>
+                      <div class="flex flex-col">
+                        <span class="text-[10px] text-gray-500 uppercase font-medium">Conto</span>
+                        <span class="text-xs text-gray-600 truncate max-w-[200px]">{{ vendita.conto_bancario?.iban || 'N/A' }}</span>
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 mt-1">
+                      <div class="flex flex-col bg-white p-2 rounded border border-gray-100">
+                        <span class="text-[10px] text-gray-500 uppercase">Scadenza</span>
+                        <span class="text-xs font-medium">{{ vendita.data_scadenza | date: 'dd/MM/yyyy' }}</span>
+                      </div>
+                      <div class="flex flex-col bg-white p-2 rounded border border-gray-100">
+                        <span class="text-[10px] text-gray-500 uppercase">Spedizione</span>
+                        <span class="text-xs font-medium">{{ vendita.data_scadenza_spedizione | date: 'dd/MM/yyyy' }}</span>
+                      </div>
+                    </div>
                   </div>
 
-                  <div class="mt-2">
+                  <div class="bg-blue-50/50 p-2 rounded-md">
+                    <div class="text-[10px] text-blue-600 uppercase font-bold mb-1 flex items-center gap-1"><i class="pi pi-list text-[10px]"></i> Articoli</div>
                     @if (vendita.dettagli && vendita.dettagli.length > 0) {
-                      <ul class="list-disc pl-5 text-sm text-gray-700">
+                      <div class="flex flex-wrap gap-1">
                         @for (dettaglio of vendita.dettagli; track dettaglio.id) {
-                          @if (dettaglio.modello) {
-                            <li>
-                              {{ dettaglio.modello?.nome }} {{ dettaglio.stampa_is_pezzo_singolo ? '(Pezzo singolo)' : '' }}
-                              {{ dettaglio.stampa_is_parziale ? '(Parziale)' : '' }}
-                            </li>
-                          } @else {
-                            <li>
-                              {{ dettaglio.descrizione }} {{ dettaglio.stampa_is_pezzo_singolo ? '(Pezzo singolo)' : '' }}
-                              {{ dettaglio.stampa_is_parziale ? '(Parziale)' : '' }}
-                            </li>
-                          }
+                          <span class="text-[11px] bg-white border border-blue-100 text-gray-700 px-2 py-0.5 rounded-sm">
+                            {{ dettaglio.modello?.nome || dettaglio.descrizione }}
+                            <span class="text-blue-500 font-bold">x{{ dettaglio.quantita }}</span>
+                          </span>
                         }
-                      </ul>
+                      </div>
                     } @else {
-                      <p class="text-sm text-gray-500">Nessun dettaglio</p>
+                      <span class="text-[11px] text-gray-400 italic">Nessun dettaglio</span>
                     }
                   </div>
 
-                  <div class="flex items-center justify-between mt-2">
-                    <div class="text-sm font-semibold">{{ vendita.totale_vendita | currency: 'EUR' }}</div>
+                  <div class="flex flex-col gap-2 mt-1 pt-2 border-t border-gray-200">
+                    <div class="flex items-center justify-between">
+                      <span class="text-[10px] text-gray-500 uppercase font-bold tracking-tight">Totale</span>
+                      <span class="text-lg font-bold text-gray-900 leading-none">{{ vendita.totale_vendita | currency: 'EUR' }}</span>
+                    </div>
+                    <div>
+                      <form-input-select vendita-stato-spedizione-lookup property="stato_spedizione" [filter]="false" [showClear]="false" [(ngModel)]="vendita.stato_spedizione" (ngModelChange)="modificaStatoVendita(vendita)">
+                        <ng-template #selectedItem let-item>
+                          <vendita-stato class="w-full" [stato_spedizione]="vendita.stato_spedizione" [isInSelect]="true" />
+                        </ng-template>
+                        <ng-template #item let-item>
+                          <vendita-stato class="w-full" [stato_spedizione]="item.id" [isInSelect]="true" />
+                        </ng-template>
+                      </form-input-select>
+                    </div>
                   </div>
 
-                  <div class="mt-2 w-full">
-                    <form-input-select vendita-stato-spedizione-lookup property="stato_spedizione" [filter]="false" [showClear]="false" [(ngModel)]="vendita.stato_spedizione" (ngModelChange)="modificaStatoVendita(vendita)">
-                      <ng-template #selectedItem let-item>
-                        <vendita-stato class="w-full" [stato_spedizione]="vendita.stato_spedizione" [isInSelect]="true" />
-                      </ng-template>
-                      <ng-template #item let-item>
-                        <vendita-stato class="w-full" [stato_spedizione]="item.id" [isInSelect]="true" />
-                      </ng-template>
-                    </form-input-select>
+                  <div class="flex justify-end gap-1 mt-1 pb-2">
+                    <ng-container *ngTemplateOutlet="venditaActionButtons; context: { vendita: vendita }" />
                   </div>
-
-                  <ng-container *ngTemplateOutlet="venditaActionButtons; context: { vendita: vendita }" />
                 </div>
               </td>
             } @else {
@@ -380,6 +379,68 @@
       </div>
     }
   </p-dialog>
+
+  <p-drawer [(visible)]="sidebarVisible" position="right" [style]="{ width: '100%', maxWidth: '350px' }">
+    <ng-template pTemplate="header">
+      <h3 class="text-xl font-bold m-0 text-gray-800">Filtri Avanzati</h3>
+    </ng-template>
+    <div class="flex flex-col gap-4 p-fluid mt-4">
+      <div class="field">
+        <label class="font-semibold text-sm mb-1 block">Cliente</label>
+        <form-input-select cliente-lookup property="cliente_id" [(ngModel)]="filtri.cliente_id" />
+      </div>
+
+      <div class="field">
+        <label class="font-semibold text-sm mb-1 block">Conto Bancario</label>
+        <form-input-select conto-bancario-lookup property="conto_bancario_id" [(ngModel)]="filtri.conto_bancario_id" />
+      </div>
+
+      <div class="field">
+        <label class="font-semibold text-sm mb-1 block">Stato Spedizione</label>
+        <form-input-select vendita-stato-spedizione-lookup property="stato_spedizione" [filter]="false" [(ngModel)]="filtri.stato_spedizione">
+          <ng-template #selectedItem let-item>
+            <vendita-stato class="w-full" [stato_spedizione]="filtri.stato_spedizione" [isInSelect]="true" />
+          </ng-template>
+          <ng-template #item let-item>
+            <vendita-stato class="w-full" [stato_spedizione]="item.id" [isInSelect]="true" />
+          </ng-template>
+        </form-input-select>
+      </div>
+
+      <div class="field">
+        <label class="font-semibold text-sm mb-1 block">Stato Stampa</label>
+        <form-input-select vendita-dettaglio-stato-stampa-lookup property="stato_stampa" [filter]="false" [(ngModel)]="filtri.stato_stampa">
+          <ng-template #selectedItem let-item>
+            <vendita-dettaglio-stato class="w-full" [stato_stampa]="filtri.stato_stampa" [isInSelect]="true" />
+          </ng-template>
+          <ng-template #item let-item>
+            <vendita-dettaglio-stato class="w-full" [stato_stampa]="item.id" [isInSelect]="true" />
+          </ng-template>
+        </form-input-select>
+      </div>
+
+      <div class="field">
+        <label class="font-semibold text-sm mb-1 block">Data Vendita</label>
+        <p-datepicker [(ngModel)]="filtri.data_vendita!.value" dateFormat="dd/mm/yy" appendTo="body" [showIcon]="true" (onSelect)="filtri.data_vendita!.operator = 'dateIs'" />
+      </div>
+
+      <div class="flex flex-col gap-3 mt-2">
+        <div class="flex items-center gap-2">
+          <p-checkbox [(ngModel)]="filtri.isInScadenza" [binary]="true" inputId="in_scadenza" />
+          <label for="in_scadenza" class="text-sm">In Scadenza</label>
+        </div>
+        <div class="flex items-center gap-2">
+          <p-checkbox [(ngModel)]="filtri.isScaduto" [binary]="true" inputId="scaduto" />
+          <label for="scaduto" class="text-sm">Scaduto</label>
+        </div>
+      </div>
+
+      <div class="flex gap-2 mt-6">
+        <p-button label="Applica" class="flex-1" icon="pi pi-check" (onClick)="applicaSidebarFiltri()" />
+        <p-button label="Reset" class="flex-1 p-button-outlined p-button-secondary" icon="pi pi-refresh" (onClick)="resetSidebarFiltri()" />
+      </div>
+    </div>
+  </p-drawer>
 </div>
 
 <ng-template #venditaActionButtons let-vendita="vendita">
