@@ -138,11 +138,12 @@
                     </div>
 
                     <div class="flex items-center justify-between mt-1 pt-2 border-t border-gray-100">
-                      <div class="flex flex-col">
-                        <span class="text-[10px] text-gray-500 uppercase font-bold tracking-tight">Totale</span>
-                        <span class="text-lg font-bold text-gray-900 leading-none">{{ spesa.totale_spesa | currency: 'EUR' }}</span>
-                      </div>
-                      <ng-container *ngTemplateOutlet="spesaActionButtons; context: { spesa: spesa }"></ng-container>
+                      <span class="text-[10px] text-gray-500 uppercase font-bold tracking-tight">Totale</span>
+                      <span class="text-lg font-bold text-gray-900 leading-none">{{ spesa.totale_spesa | currency: 'EUR' }}</span>
+                    </div>
+
+                    <div class="flex justify-end gap-1 mt-1 pb-2">
+                      <ng-container *ngTemplateOutlet="spesaActionButtons; context: { spesa: spesa }" />
                     </div>
                   </div>
                 </div>
