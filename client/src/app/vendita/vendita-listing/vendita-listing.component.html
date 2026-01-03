@@ -241,12 +241,12 @@
                     }
                   </div>
 
-                  <div class="flex items-center justify-between mt-1 pt-2 border-t border-gray-200">
-                    <div class="flex flex-col">
-                      <span class="text-[10px] text-gray-500 uppercase">Totale</span>
-                      <span class="text-lg font-bold text-gray-900">{{ vendita.totale_vendita | currency: 'EUR' }}</span>
+                  <div class="flex flex-col gap-2 mt-1 pt-2 border-t border-gray-200">
+                    <div class="flex items-center justify-between">
+                      <span class="text-[10px] text-gray-500 uppercase font-bold tracking-tight">Totale</span>
+                      <span class="text-lg font-bold text-gray-900 leading-none">{{ vendita.totale_vendita | currency: 'EUR' }}</span>
                     </div>
-                    <div class="w-1/2">
+                    <div>
                       <form-input-select vendita-stato-spedizione-lookup property="stato_spedizione" [filter]="false" [showClear]="false" [(ngModel)]="vendita.stato_spedizione" (ngModelChange)="modificaStatoVendita(vendita)">
                         <ng-template #selectedItem let-item>
                           <vendita-stato class="w-full" [stato_spedizione]="vendita.stato_spedizione" [isInSelect]="true" />
@@ -258,7 +258,7 @@
                     </div>
                   </div>
 
-                  <div class="flex justify-end gap-1 mt-1">
+                  <div class="flex justify-end gap-1 mt-1 pb-2">
                     <ng-container *ngTemplateOutlet="venditaActionButtons; context: { vendita: vendita }" />
                   </div>
                 </div>
