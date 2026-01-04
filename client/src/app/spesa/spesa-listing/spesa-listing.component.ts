@@ -26,6 +26,7 @@ import { SpesaService } from 'src/services/spesa.service';
 import { AuditLogComponent } from 'src/shared/audit-log/audit-log.component';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
+import { MobileCardItemComponent } from 'src/shared/mobile-card-item/mobile-card-item.component';
 import { SpesaTipoPipe } from '../spesa-tipo.pipe';
 import { SpesaUnitaMisuraPipe } from '../spesa-unita-misura.pipe';
 
@@ -50,7 +51,8 @@ import { SpesaUnitaMisuraPipe } from '../spesa-unita-misura.pipe';
     SpesaUnitaMisuraPipe,
     SpesaTipoLookupDirective,
     SpesaUnitaMisuraLookupDirective,
-    FormInputSelectComponent
+    FormInputSelectComponent,
+    MobileCardItemComponent
   ],
   providers: [SpesaService],
   templateUrl: './spesa-listing.component.html',

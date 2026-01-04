@@ -182,12 +182,12 @@
               <td>
                 <div class="flex flex-col gap-3 p-3">
                   <div class="grid grid-cols-1 gap-2">
-                    <ng-container *ngTemplateOutlet="mobileCardItem; context: { icon: 'pi-hashtag', label: 'Numero', value: vendita.id }" />
-                    <ng-container *ngTemplateOutlet="mobileCardItem; context: { icon: 'pi-calendar', label: 'Data', value: vendita.data_vendita | date: 'dd/MM/yyyy' }" />
-                    <ng-container *ngTemplateOutlet="mobileCardItem; context: { icon: 'pi-user', label: 'Cliente', value: vendita.cliente?.etichetta }" />
-                    <ng-container *ngTemplateOutlet="mobileCardItem; context: { icon: 'pi-credit-card', label: 'Conto', value: vendita.conto_bancario?.iban, valueClass: 'truncate max-w-[200px]' }" />
-                    <ng-container *ngTemplateOutlet="mobileCardItem; context: { icon: 'pi-calendar', label: 'Scadenza', value: vendita.data_scadenza | date: 'dd/MM/yyyy' }" />
-                    <ng-container *ngTemplateOutlet="mobileCardItem; context: { icon: 'pi-send', label: 'Scadenza Spedizione', value: vendita.data_scadenza_spedizione | date: 'dd/MM/yyyy' }" />
+                    <mobile-card-item icon="pi-hashtag" label="Numero" [value]="vendita.id" />
+                    <mobile-card-item icon="pi-calendar" label="Data" [value]="vendita.data_vendita | date: 'dd/MM/yyyy'" />
+                    <mobile-card-item icon="pi-user" label="Cliente" [value]="vendita.cliente?.etichetta" />
+                    <mobile-card-item icon="pi-credit-card" label="Conto" [value]="vendita.conto_bancario?.iban" [valueClass]="'truncate max-w-[200px]'" />
+                    <mobile-card-item icon="pi-calendar" label="Scadenza" [value]="vendita.data_scadenza | date: 'dd/MM/yyyy'" />
+                    <mobile-card-item icon="pi-send" label="Scadenza Spedizione" [value]="vendita.data_scadenza_spedizione | date: 'dd/MM/yyyy'" />
                   </div>
 
                   <div class="bg-blue-50/50 p-2 rounded-md">
@@ -206,7 +206,7 @@
                     }
                   </div>
 
-                  <div class="flex flex-col gap-2 mt-1 pt-2 border-t border-gray-200">
+                  <div class="flex flex-col gap-2 mt-1 pt-2">
                     <div class="flex items-center justify-between">
                       <span class="text-[10px] text-gray-500 uppercase font-bold tracking-tight">Totale</span>
                       <span class="text-lg font-bold text-gray-900 leading-none">{{ vendita.totale_vendita | currency: 'EUR' }}</span>
@@ -594,15 +594,5 @@
         </ng-template>
       </p-table>
     }
-  </div>
-</ng-template>
-
-<ng-template #mobileCardItem let-icon="icon" let-label="label" let-value="value" let-valueClass="valueClass">
-  <div class="flex items-start gap-2">
-    <i [class]="'pi ' + icon + ' text-gray-400 mt-1'"></i>
-    <div class="flex flex-col">
-      <span class="text-[10px] text-blue-600 uppercase font-bold">{{ label }}</span>
-      <span [class]="valueClass || 'text-sm font-medium text-gray-700'">{{ value || 'N/A' }}</span>
-    </div>
   </div>
 </ng-template>

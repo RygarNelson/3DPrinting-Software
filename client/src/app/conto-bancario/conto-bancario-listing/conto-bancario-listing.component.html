@@ -62,32 +62,15 @@
           <tr>
             @if (applicationState.isMobile()) {
               <td>
-                <div class="bg-white border border-gray-200 rounded-lg p-4 w-full hover:shadow-md transition-shadow">
-                  <div class="flex flex-col gap-3">
-                    <div class="flex items-center justify-between border-b border-gray-100 pb-2">
-                      <span class="text-xs font-bold text-primary bg-primary-100 px-2 py-0.5 rounded">CONTO</span>
-                      <span class="text-sm font-semibold text-gray-800">#{{ conto_bancario.id }}</span>
-                    </div>
+                <div class="flex flex-col gap-3">
+                  <div class="grid grid-cols-1 gap-2">
+                    <mobile-card-item icon="pi-hashtag" label="Numero" [value]="conto_bancario.id" />
+                    <mobile-card-item icon="pi-user" label="Proprietario" [value]="conto_bancario.nome_proprietario + ' ' + conto_bancario.cognome_proprietario" />
+                    <mobile-card-item icon="pi-credit-card" label="IBAN" [value]="conto_bancario.iban" />
+                  </div>
 
-                    <div class="flex items-start gap-2">
-                      <i class="pi pi-credit-card text-gray-400 mt-1"></i>
-                      <div class="flex flex-col">
-                        <span class="text-[10px] text-gray-500 uppercase font-medium">IBAN</span>
-                        <span class="text-xs text-gray-700 break-all font-mono">{{ conto_bancario.iban }}</span>
-                      </div>
-                    </div>
-
-                    <div class="flex items-start gap-2">
-                      <i class="pi pi-user text-gray-400 mt-1"></i>
-                      <div class="flex flex-col">
-                        <span class="text-[10px] text-gray-500 uppercase font-medium">Proprietario</span>
-                        <span class="text-sm text-gray-700 font-medium">{{ conto_bancario.nome_proprietario }} {{ conto_bancario.cognome_proprietario }}</span>
-                      </div>
-                    </div>
-
-                    <div class="flex justify-end gap-1 mt-1 pt-2 border-t border-gray-100 pb-2">
-                      <ng-container *ngTemplateOutlet="contoBancarioActionButtons; context: { conto_bancario: conto_bancario }" />
-                    </div>
+                  <div class="flex justify-end gap-1 mt-1 pt-2 border-t border-gray-100 pb-2">
+                    <ng-container *ngTemplateOutlet="contoBancarioActionButtons; context: { conto_bancario: conto_bancario }" />
                   </div>
                 </div>
               </td>

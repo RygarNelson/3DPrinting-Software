@@ -20,11 +20,12 @@ import { ApplicationStateService } from 'src/services/application-state.service'
 import { ContoBancarioService } from 'src/services/conto-bancario.service';
 import { AuditLogComponent } from 'src/shared/audit-log/audit-log.component';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
+import { MobileCardItemComponent } from 'src/shared/mobile-card-item/mobile-card-item.component';
 import { ContoBancarioListingEliminaMessaggioPipe } from '../pipes/conto-bancario-listing-elimina-messaggio.pipe';
 
 @Component({
   selector: 'app-conto-bancario-listing',
-  imports: [CommonModule, FormsModule, CardModule, ButtonModule, TableModule, InputTextModule, IconFieldModule, InputIconModule, SkeletonModule, TooltipModule, ContoBancarioListingEliminaMessaggioPipe, MenuModule],
+  imports: [CommonModule, FormsModule, CardModule, ButtonModule, TableModule, InputTextModule, IconFieldModule, InputIconModule, SkeletonModule, TooltipModule, ContoBancarioListingEliminaMessaggioPipe, MenuModule, MobileCardItemComponent],
   providers: [ContoBancarioService],
   templateUrl: './conto-bancario-listing.component.html',
   styleUrl: './conto-bancario-listing.component.scss'

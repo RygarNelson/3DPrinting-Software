@@ -61,24 +61,15 @@
           <tr>
             @if (applicationState.isMobile()) {
               <td>
-                <div class="bg-white border border-gray-200 rounded-lg p-4 w-full hover:shadow-md transition-shadow">
-                  <div class="flex flex-col gap-3">
-                    <div class="flex items-center justify-between border-b border-gray-100 pb-2">
-                      <span class="font-bold text-gray-800">{{ stampante.nome }}</span>
-                      <span class="text-xs font-semibold text-gray-400">#{{ stampante.id }}</span>
-                    </div>
+                <div class="flex flex-col gap-3">
+                  <div class="grid grid-cols-1 gap-2">
+                    <mobile-card-item icon="pi-hashtag" label="Numero" [value]="stampante.id" />
+                    <mobile-card-item icon="pi-print" label="Nome" [value]="stampante.nome" />
+                    <mobile-card-item icon="pi-align-left" label="Descrizione" [value]="stampante.descrizione || 'Nessuna descrizione'" />
+                  </div>
 
-                    <div class="flex items-start gap-2">
-                      <i class="pi pi-align-left text-gray-400 mt-1"></i>
-                      <div class="flex flex-col">
-                        <span class="text-[10px] text-gray-500 uppercase font-medium">Descrizione</span>
-                        <span class="text-sm text-gray-700 break-words">{{ stampante.descrizione || 'Nessuna descrizione' }}</span>
-                      </div>
-                    </div>
-
-                    <div class="flex justify-end gap-1 mt-1 pt-2 border-t border-gray-100 pb-2">
-                      <ng-container *ngTemplateOutlet="stampanteActionButtons; context: { stampante: stampante }"></ng-container>
-                    </div>
+                  <div class="flex justify-end gap-1 mt-1 pt-2 pb-2">
+                    <ng-container *ngTemplateOutlet="stampanteActionButtons; context: { stampante: stampante }"></ng-container>
                   </div>
                 </div>
               </td>
