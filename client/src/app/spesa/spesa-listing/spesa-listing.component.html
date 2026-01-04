@@ -109,42 +109,25 @@
           <tr>
             @if (applicationState.isMobile()) {
               <td>
-                <div class="bg-white border border-gray-200 rounded-lg p-4 w-full hover:shadow-md transition-shadow">
-                  <div class="flex flex-col gap-3">
-                    <div class="flex items-center justify-between border-b border-gray-100 pb-2">
-                      <div class="flex items-center gap-2">
-                        <span class="text-xs font-bold text-primary bg-primary-100 px-2 py-0.5 rounded">#{{ spesa.id }}</span>
-                        <span class="text-sm font-semibold text-gray-800">{{ spesa.data_spesa | date: 'dd/MM/yyyy' }}</span>
-                      </div>
-                    </div>
+                <div class="flex flex-col gap-3 p-3">
+                  <div class="grid grid-cols-1 gap-2">
+                    <mobile-card-item icon="pi-hashtag" label="Numero" [value]="spesa.id" />
+                    <mobile-card-item icon="pi-calendar" label="Data" [value]="spesa.data_spesa | date: 'dd/MM/yyyy'" />
+                    <mobile-card-item icon="pi-align-left" label="Descrizione" [value]="spesa.descrizione" />
+                    <mobile-card-item icon="pi-equals" label="Quantità" [value]="spesa.quantita | number: '0.4-4'" />
+                    <mobile-card-item icon="pi-wrench" label="Tipo" [value]="spesa.tipo_spesa | spesaTipo" />
+                    <mobile-card-item icon="pi-box" label="Unità di Misura" [value]="spesa.unita_misura | spesaUnitaMisura" />
+                  </div>
 
-                    <div class="flex items-start gap-2">
-                      <i class="pi pi-align-left text-gray-400 mt-1"></i>
-                      <div class="flex flex-col">
-                        <span class="text-[10px] text-gray-500 uppercase font-medium">Descrizione</span>
-                        <span class="text-sm text-gray-700">{{ spesa.descrizione }}</span>
-                      </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3">
-                      <div class="flex flex-col bg-gray-50 p-2 rounded">
-                        <span class="text-[10px] text-gray-500 uppercase">Quantità</span>
-                        <span class="text-xs font-semibold">{{ spesa.quantita | number: '0.4-4' }} {{ spesa.unita_misura | spesaUnitaMisura }}</span>
-                      </div>
-                      <div class="flex flex-col bg-gray-50 p-2 rounded">
-                        <span class="text-[10px] text-gray-500 uppercase">Tipo</span>
-                        <span class="text-xs font-semibold">{{ spesa.tipo_spesa | spesaTipo }}</span>
-                      </div>
-                    </div>
-
-                    <div class="flex items-center justify-between mt-1 pt-2 border-t border-gray-100">
+                  <div class="flex flex-col gap-2 mt-1 pt-2">
+                    <div class="flex items-center justify-between">
                       <span class="text-[10px] text-gray-500 uppercase font-bold tracking-tight">Totale</span>
                       <span class="text-lg font-bold text-gray-900 leading-none">{{ spesa.totale_spesa | currency: 'EUR' }}</span>
                     </div>
+                  </div>
 
-                    <div class="flex justify-end gap-1 mt-1 pb-2">
-                      <ng-container *ngTemplateOutlet="spesaActionButtons; context: { spesa: spesa }" />
-                    </div>
+                  <div class="flex justify-end gap-1 mt-1 pb-2">
+                    <ng-container *ngTemplateOutlet="spesaActionButtons; context: { spesa: spesa }" />
                   </div>
                 </div>
               </td>

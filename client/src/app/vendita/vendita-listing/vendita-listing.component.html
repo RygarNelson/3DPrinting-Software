@@ -180,53 +180,18 @@
             }
             @if (applicationState.isMobile()) {
               <td>
-                <div class="flex flex-col gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100 shadow-sm">
-                  <div class="flex items-center justify-between border-b border-gray-200 pb-2">
-                    <div class="flex items-center gap-2">
-                      <span class="text-xs font-bold text-primary bg-primary-100 px-2 py-0.5 rounded">#{{ vendita.id }}</span>
-                      <span class="text-sm font-semibold text-gray-800">{{ vendita.data_vendita | date: 'dd/MM/yyyy' }}</span>
-                    </div>
-                    <div class="flex items-center gap-1">
-                      @if (vendita.isInScadenza) {
-                        <span class="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-200">In scadenza</span>
-                      }
-                      @if (vendita.isScaduto) {
-                        <span class="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-700 border border-red-200">Scaduto</span>
-                      }
-                    </div>
-                  </div>
-
+                <div class="flex flex-col gap-3 p-3">
                   <div class="grid grid-cols-1 gap-2">
-                    <div class="flex items-start gap-2">
-                      <i class="pi pi-user text-gray-400 mt-1"></i>
-                      <div class="flex flex-col">
-                        <span class="text-[10px] text-gray-500 uppercase font-medium">Cliente</span>
-                        <span class="text-sm font-medium text-gray-700">{{ vendita.cliente?.etichetta || 'N/A' }}</span>
-                      </div>
-                    </div>
-
-                    <div class="flex items-start gap-2">
-                      <i class="pi pi-credit-card text-gray-400 mt-1"></i>
-                      <div class="flex flex-col">
-                        <span class="text-[10px] text-gray-500 uppercase font-medium">Conto</span>
-                        <span class="text-xs text-gray-600 truncate max-w-[200px]">{{ vendita.conto_bancario?.iban || 'N/A' }}</span>
-                      </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2 mt-1">
-                      <div class="flex flex-col bg-white p-2 rounded border border-gray-100">
-                        <span class="text-[10px] text-gray-500 uppercase">Scadenza</span>
-                        <span class="text-xs font-medium">{{ vendita.data_scadenza | date: 'dd/MM/yyyy' }}</span>
-                      </div>
-                      <div class="flex flex-col bg-white p-2 rounded border border-gray-100">
-                        <span class="text-[10px] text-gray-500 uppercase">Spedizione</span>
-                        <span class="text-xs font-medium">{{ vendita.data_scadenza_spedizione | date: 'dd/MM/yyyy' }}</span>
-                      </div>
-                    </div>
+                    <mobile-card-item icon="pi-hashtag" label="Numero" [value]="vendita.id" />
+                    <mobile-card-item icon="pi-calendar" label="Data" [value]="vendita.data_vendita | date: 'dd/MM/yyyy'" />
+                    <mobile-card-item icon="pi-user" label="Cliente" [value]="vendita.cliente?.etichetta" />
+                    <mobile-card-item icon="pi-credit-card" label="Conto" [value]="vendita.conto_bancario?.iban" [valueClass]="'truncate max-w-[200px]'" />
+                    <mobile-card-item icon="pi-calendar" label="Scadenza" [value]="vendita.data_scadenza | date: 'dd/MM/yyyy'" />
+                    <mobile-card-item icon="pi-send" label="Scadenza Spedizione" [value]="vendita.data_scadenza_spedizione | date: 'dd/MM/yyyy'" />
                   </div>
 
                   <div class="bg-blue-50/50 p-2 rounded-md">
-                    <div class="text-[10px] text-blue-600 uppercase font-bold mb-1 flex items-center gap-1"><i class="pi pi-list text-[10px]"></i> Articoli</div>
+                    <div class="text-[10px] text-blue-600 uppercase font-bold mb-1 flex items-center gap-1"><i class="pi pi-list text-[10px] mr-1"></i> Articoli</div>
                     @if (vendita.dettagli && vendita.dettagli.length > 0) {
                       <div class="flex flex-wrap gap-1">
                         @for (dettaglio of vendita.dettagli; track dettaglio.id) {
@@ -241,7 +206,7 @@
                     }
                   </div>
 
-                  <div class="flex flex-col gap-2 mt-1 pt-2 border-t border-gray-200">
+                  <div class="flex flex-col gap-2 mt-1 pt-2">
                     <div class="flex items-center justify-between">
                       <span class="text-[10px] text-gray-500 uppercase font-bold tracking-tight">Totale</span>
                       <span class="text-lg font-bold text-gray-900 leading-none">{{ vendita.totale_vendita | currency: 'EUR' }}</span>

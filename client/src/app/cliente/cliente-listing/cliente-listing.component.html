@@ -56,31 +56,16 @@
           <tr>
             @if (applicationState.isMobile()) {
               <td>
-                <div class="bg-white border border-gray-200 rounded-lg p-4 w-full hover:shadow-md transition-shadow">
-                  <div class="flex flex-col gap-3">
-                    <div class="flex items-center justify-between border-b border-gray-100 pb-2">
-                      <span class="font-bold text-gray-800">{{ cliente.etichetta }}</span>
-                    </div>
+                <div class="flex flex-col gap-3">
+                  <div class="grid grid-cols-1 gap-2">
+                    <mobile-card-item icon="pi-hashtag" label="Numero" [value]="cliente.id" />
+                    <mobile-card-item icon="pi-user" label="Etichetta" [value]="cliente.etichetta" />
+                    <mobile-card-item icon="pi-envelope" label="Email" [value]="cliente.email || 'N/A'" />
+                    <mobile-card-item icon="pi-phone" label="Telefono" [value]="cliente.telefono || 'N/A'" />
+                  </div>
 
-                    <div class="flex items-start gap-2">
-                      <i class="pi pi-envelope text-gray-400 mt-1"></i>
-                      <div class="flex flex-col">
-                        <span class="text-[10px] text-gray-500 uppercase font-medium">Email</span>
-                        <span class="text-sm text-gray-700 break-all">{{ cliente.email || 'N/A' }}</span>
-                      </div>
-                    </div>
-
-                    <div class="flex items-start gap-2">
-                      <i class="pi pi-phone text-gray-400 mt-1"></i>
-                      <div class="flex flex-col">
-                        <span class="text-[10px] text-gray-500 uppercase font-medium">Telefono</span>
-                        <span class="text-sm text-gray-700">{{ cliente.telefono || 'N/A' }}</span>
-                      </div>
-                    </div>
-
-                    <div class="flex justify-end gap-1 mt-1 pt-2 border-t border-gray-100 pb-2">
-                      <ng-container *ngTemplateOutlet="clienteActionButtons; context: { cliente: cliente }"></ng-container>
-                    </div>
+                  <div class="flex justify-end gap-1 mt-1 pt-2 border-t border-gray-100 pb-2">
+                    <ng-container *ngTemplateOutlet="clienteActionButtons; context: { cliente: cliente }"></ng-container>
                   </div>
                 </div>
               </td>

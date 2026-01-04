@@ -17,6 +17,7 @@ import { Subscription } from 'rxjs';
 import { ApplicationStateService } from 'src/services/application-state.service';
 import { AuditLogComponent } from 'src/shared/audit-log/audit-log.component';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
+import { MobileCardItemComponent } from 'src/shared/mobile-card-item/mobile-card-item.component';
 import { StampanteListingModel, StampanteListingResponse } from '../../../models/stampante/stampante-listing';
 import { StampanteListingFiltri } from '../../../models/stampante/stampante-listing-filtri';
 import { StampanteService } from '../../../services/stampante.service';
@@ -24,7 +25,7 @@ import { StampanteListingEliminaMessaggioPipe } from '../pipes/stampante-listing
 
 @Component({
   selector: 'app-stampante-listing',
-  imports: [CommonModule, FormsModule, CardModule, ButtonModule, TableModule, InputTextModule, IconFieldModule, InputIconModule, SkeletonModule, TooltipModule, StampanteListingEliminaMessaggioPipe, MenuModule],
+  imports: [CommonModule, FormsModule, CardModule, ButtonModule, TableModule, InputTextModule, IconFieldModule, InputIconModule, SkeletonModule, TooltipModule, StampanteListingEliminaMessaggioPipe, MenuModule, MobileCardItemComponent],
   templateUrl: './stampante-listing.component.html',
   styleUrl: './stampante-listing.component.scss',
   providers: [StampanteService]

@@ -1,209 +1,221 @@
 .stato-section {
-    margin-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
 
-    &:last-child {
-        margin-bottom: 0;
-    }
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .section-title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid #e5e7eb;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e5e7eb;
 }
 
 .stato-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    padding: 1rem 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  padding: 1rem 0;
 }
 
 .stato-box {
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 0.5rem;
-    text-align: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    min-height: 60px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    cursor: pointer;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.5rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
 
-    &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        border-color: #cbd5e1;
-    }
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #cbd5e1;
+  }
 }
 
 .stato-name {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #475569;
-    margin-bottom: 0.5rem;
-    line-height: 1.2;
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .stato-value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #1e293b;
-    margin-top: auto;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-top: auto;
 }
 
 // Stato Stampa colors (from vendita-dettaglio-stato.component.ts)
-.da-stampare {
-    background: linear-gradient(135deg, rgba(255, 193, 7, 0.25) 0%, rgba(255, 193, 7, 0.15) 100%);
-    border-color: rgba(255, 193, 7, 0.3);
-    
-    &:hover {
-        border-color: rgba(255, 193, 7, 0.5);
-        box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2);
-    }
+.piatto-da-preparare {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.25) 0%, rgba(255, 193, 7, 0.15) 100%);
+  border-color: rgba(255, 193, 7, 0.3);
+
+  &:hover {
+    border-color: rgba(255, 193, 7, 0.5);
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2);
+  }
 }
 
-.stampa-in-corso, .da-controllare {
-    background: linear-gradient(135deg, rgba(33, 150, 243, 0.25) 0%, rgba(33, 150, 243, 0.15) 100%);
-    border-color: rgba(33, 150, 243, 0.3);
-    
-    &:hover {
-        border-color: rgba(33, 150, 243, 0.5);
-        box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
-    }
+.da-stampare {
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.25) 0%, rgba(255, 193, 7, 0.15) 100%);
+  border-color: rgba(255, 193, 7, 0.3);
+
+  &:hover {
+    border-color: rgba(255, 193, 7, 0.5);
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2);
+  }
+}
+
+.stampa-in-corso,
+.da-controllare {
+  background: linear-gradient(135deg, rgba(33, 150, 243, 0.25) 0%, rgba(33, 150, 243, 0.15) 100%);
+  border-color: rgba(33, 150, 243, 0.3);
+
+  &:hover {
+    border-color: rgba(33, 150, 243, 0.5);
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+  }
 }
 
 .terminato-senza-difetti {
-    background: linear-gradient(135deg, rgba(76, 175, 80, 0.25) 0%, rgba(76, 175, 80, 0.15) 100%);
-    border-color: rgba(76, 175, 80, 0.3);
-    
-    &:hover {
-        border-color: rgba(76, 175, 80, 0.5);
-        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
-    }
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.25) 0%, rgba(76, 175, 80, 0.15) 100%);
+  border-color: rgba(76, 175, 80, 0.3);
+
+  &:hover {
+    border-color: rgba(76, 175, 80, 0.5);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+  }
 }
 
 .terminato-con-difetti {
-    background: linear-gradient(135deg, rgba(255, 152, 0, 0.25) 0%, rgba(255, 152, 0, 0.15) 100%);
-    border-color: rgba(255, 152, 0, 0.3);
-    
-    &:hover {
-        border-color: rgba(255, 152, 0, 0.5);
-        box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);
-    }
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.25) 0%, rgba(255, 152, 0, 0.15) 100%);
+  border-color: rgba(255, 152, 0, 0.3);
+
+  &:hover {
+    border-color: rgba(255, 152, 0, 0.5);
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);
+  }
 }
 
 .fallito {
-    background: linear-gradient(135deg, rgba(244, 67, 54, 0.25) 0%, rgba(244, 67, 54, 0.15) 100%);
-    border-color: rgba(244, 67, 54, 0.3);
-    
-    &:hover {
-        border-color: rgba(244, 67, 54, 0.5);
-        box-shadow: 0 4px 12px rgba(244, 67, 54, 0.2);
-    }
+  background: linear-gradient(135deg, rgba(244, 67, 54, 0.25) 0%, rgba(244, 67, 54, 0.15) 100%);
+  border-color: rgba(244, 67, 54, 0.3);
+
+  &:hover {
+    border-color: rgba(244, 67, 54, 0.5);
+    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.2);
+  }
 }
 
 // Stato Spedizione colors (from vendita-stato.component.ts)
 .da-spedire {
-    background: linear-gradient(135deg, rgba(255, 193, 7, 0.25) 0%, rgba(255, 193, 7, 0.15) 100%);
-    border-color: rgba(255, 193, 7, 0.3);
-    
-    &:hover {
-        border-color: rgba(255, 193, 7, 0.5);
-        box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2);
-    }
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.25) 0%, rgba(255, 193, 7, 0.15) 100%);
+  border-color: rgba(255, 193, 7, 0.3);
+
+  &:hover {
+    border-color: rgba(255, 193, 7, 0.5);
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2);
+  }
 }
 
-.spedizione-in-corso, .spedizione-terminata-parzialmente {
-    background: linear-gradient(135deg, rgba(33, 150, 243, 0.25) 0%, rgba(33, 150, 243, 0.15) 100%);
-    border-color: rgba(33, 150, 243, 0.3);
-    
-    &:hover {
-        border-color: rgba(33, 150, 243, 0.5);
-        box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
-    }
+.spedizione-in-corso,
+.spedizione-terminata-parzialmente {
+  background: linear-gradient(135deg, rgba(33, 150, 243, 0.25) 0%, rgba(33, 150, 243, 0.15) 100%);
+  border-color: rgba(33, 150, 243, 0.3);
+
+  &:hover {
+    border-color: rgba(33, 150, 243, 0.5);
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+  }
 }
 
 .spedizione-terminata-completamente {
-    background: linear-gradient(135deg, rgba(76, 175, 80, 0.25) 0%, rgba(76, 175, 80, 0.15) 100%);
-    border-color: rgba(76, 175, 80, 0.3);
-    
-    &:hover {
-        border-color: rgba(76, 175, 80, 0.5);
-        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
-    }
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.25) 0%, rgba(76, 175, 80, 0.15) 100%);
+  border-color: rgba(76, 175, 80, 0.3);
+
+  &:hover {
+    border-color: rgba(76, 175, 80, 0.5);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+  }
 }
 
 .spedizione-fallita {
-    background: linear-gradient(135deg, rgba(244, 67, 54, 0.25) 0%, rgba(244, 67, 54, 0.15) 100%);
-    border-color: rgba(244, 67, 54, 0.3);
-    
-    &:hover {
-        border-color: rgba(244, 67, 54, 0.5);
-        box-shadow: 0 4px 12px rgba(244, 67, 54, 0.2);
-    }
+  background: linear-gradient(135deg, rgba(244, 67, 54, 0.25) 0%, rgba(244, 67, 54, 0.15) 100%);
+  border-color: rgba(244, 67, 54, 0.3);
+
+  &:hover {
+    border-color: rgba(244, 67, 54, 0.5);
+    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.2);
+  }
 }
 
 // Special styling for scadenza row
 .scadenza-row {
-    grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .in-scadenza {
-    background: linear-gradient(135deg, rgba(255, 152, 0, 0.25) 0%, rgba(255, 152, 0, 0.15) 100%);
-    border-color: rgba(255, 152, 0, 0.3);
-    
-    &:hover {
-        border-color: rgba(255, 152, 0, 0.5);
-        box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);
-    }
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.25) 0%, rgba(255, 152, 0, 0.15) 100%);
+  border-color: rgba(255, 152, 0, 0.3);
+
+  &:hover {
+    border-color: rgba(255, 152, 0, 0.5);
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);
+  }
 }
 
 .scadute {
-    background: linear-gradient(135deg, rgba(255, 0, 0, 0.25) 0%, rgba(255, 0, 0, 0.15) 100%);
-    border-color: rgba(255, 0, 0, 0.3);
-    
-    &:hover {
-        border-color: rgba(255, 0, 0, 0.5);
-        box-shadow: 0 4px 12px rgba(255, 0, 0, 0.2);
-    }
+  background: linear-gradient(135deg, rgba(255, 0, 0, 0.25) 0%, rgba(255, 0, 0, 0.15) 100%);
+  border-color: rgba(255, 0, 0, 0.3);
+
+  &:hover {
+    border-color: rgba(255, 0, 0, 0.5);
+    box-shadow: 0 4px 12px rgba(255, 0, 0, 0.2);
+  }
 }
 
 // Responsive adjustments
 @media (max-width: 768px) {
-    .stato-section {
-        margin-bottom: 1.5rem;
-    }
+  .stato-section {
+    margin-bottom: 1.5rem;
+  }
 
-    .section-title {
-        font-size: 1rem;
-        margin-bottom: 0.75rem;
-    }
+  .section-title {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+  }
 
-    .stato-grid {
-        grid-template-columns: 1fr;
-    }
+  .stato-grid {
+    grid-template-columns: 1fr;
+  }
 
-    .stato-box {
-        padding: 1rem;
-        min-height: 60px;
-    }
+  .stato-box {
+    padding: 1rem;
+    min-height: 60px;
+  }
 
-    .stato-name {
-        font-size: 0.75rem;
-    }
+  .stato-name {
+    font-size: 0.75rem;
+  }
 
-    .stato-value {
-        font-size: 1.5rem;
-    }
+  .stato-value {
+    font-size: 1.5rem;
+  }
 }

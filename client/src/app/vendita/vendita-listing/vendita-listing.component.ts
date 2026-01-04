@@ -43,6 +43,7 @@ import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.compo
 import { FormInputRadiobuttonComponent } from 'src/shared/form-input-radiobutton/form-input-radiobutton.component';
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
 import { FormInputTextComponent } from 'src/shared/form-input-text/form-input-text.component';
+import { MobileCardItemComponent } from 'src/shared/mobile-card-item/mobile-card-item.component';
 import { VenditaDettaglioStatoComponent } from '../vendita-dettaglio-stato/vendita-dettaglio-stato.component';
 import { VenditaEtichettaSpedizioneComponent } from '../vendita-etichetta-spedizione/vendita-etichetta-spedizione.component';
 import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component';
@@ -77,7 +78,8 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
     DialogModule,
     DrawerModule,
     DatePickerModule,
-    CheckboxModule
+    CheckboxModule,
+    MobileCardItemComponent
   ],
   providers: [VenditaService, SpesaService],
   templateUrl: './vendita-listing.component.html',

@@ -17,6 +17,7 @@ import { Subscription } from 'rxjs';
 import { ApplicationStateService } from 'src/services/application-state.service';
 import { AuditLogComponent } from 'src/shared/audit-log/audit-log.component';
 import { DialogErrorComponent } from 'src/shared/dialog-error/dialog-error.component';
+import { MobileCardItemComponent } from 'src/shared/mobile-card-item/mobile-card-item.component';
 import { ClienteListingModel, ClienteListingResponse } from '../../../models/cliente/cliente-listing';
 import { ClienteListingFiltri } from '../../../models/cliente/cliente-listing-filtri';
 import { ClienteService } from '../../../services/cliente.service';
@@ -24,7 +25,7 @@ import { ClienteListingEliminaMessaggioPipe } from '../pipes/cliente-listing-eli
 
 @Component({
   selector: 'app-cliente-listing',
-  imports: [CommonModule, FormsModule, CardModule, ButtonModule, TableModule, InputTextModule, IconFieldModule, InputIconModule, SkeletonModule, TooltipModule, ClienteListingEliminaMessaggioPipe, MenuModule],
+  imports: [CommonModule, FormsModule, CardModule, ButtonModule, TableModule, InputTextModule, IconFieldModule, InputIconModule, SkeletonModule, TooltipModule, ClienteListingEliminaMessaggioPipe, MenuModule, MobileCardItemComponent],
   templateUrl: './cliente-listing.component.html',
   providers: [ClienteService]
 })
