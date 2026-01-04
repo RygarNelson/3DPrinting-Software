@@ -232,13 +232,20 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
       this.vendita.data_scadenza = new Date(this.vendita.data_vendita);
       this.vendita.data_scadenza_spedizione = new Date(this.vendita.data_vendita);
 
-      // 8 giorni per la scadenza
-      this.vendita.data_scadenza.setDate(this.vendita.data_vendita.getDate() + 8);
-      // 10 giorni per la spedizione
-      this.vendita.data_scadenza_spedizione.setDate(this.vendita.data_vendita.getDate() + 10);
+      // 7 giorni per la scadenza
+      this.vendita.data_scadenza.setDate(this.vendita.data_vendita.getDate() + 7);
+      // 11 giorni per la spedizione
+      this.vendita.data_scadenza_spedizione.setDate(this.vendita.data_vendita.getDate() + 11);
     } else {
       this.vendita.data_scadenza = undefined;
       this.vendita.data_scadenza_spedizione = undefined;
+    }
+  }
+
+  impostaDataScadenzaSpedizione(): void {
+    if (this.vendita.data_scadenza) {
+      this.vendita.data_scadenza_spedizione = new Date(this.vendita.data_scadenza);
+      this.vendita.data_scadenza_spedizione.setDate(this.vendita.data_scadenza.getDate() + 4);
     }
   }
 
@@ -440,13 +447,13 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
       });
 
       // Third, manipulate basette based on the record
-      // If it doesn't have any entry, remove all basette which stato_stampa is not da_stampare
+      // If it doesn't have any entry, remove all basette which stato_stampa is not da_stampare or piatto da preparare
       if (Object.keys(basette).length === 0) {
-        this.vendita.basette = this.vendita.basette.filter((b) => b.stato_stampa != VenditaDettaglioStatoStampaEnum.DaStampare);
+        this.vendita.basette = this.vendita.basette.filter((b) => b.stato_stampa != VenditaDettaglioStatoStampaEnum.DaStampare && b.stato_stampa != VenditaDettaglioStatoStampaEnum.PiattoDaPreparare);
       } else {
         // Fourth, remove all basette which stato_stampa is not da_stampare that are not in the record
         this.vendita.basette = this.vendita.basette.filter((b) => {
-          return basette[b.dimensione] != null || (basette[b.dimensione] == null && b.stato_stampa != VenditaDettaglioStatoStampaEnum.DaStampare);
+          return basette[b.dimensione] != null || (basette[b.dimensione] == null && b.stato_stampa != VenditaDettaglioStatoStampaEnum.DaStampare && b.stato_stampa != VenditaDettaglioStatoStampaEnum.PiattoDaPreparare);
         });
 
         // Fifth, for each entry in the record, for loop
@@ -456,7 +463,7 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
           if (basetta != null && basetta.quantita != quantita) {
             // If it exists, update the quantity if the quantity is different
             basetta.quantita = quantita;
-            basetta.stato_stampa = VenditaDettaglioStatoStampaEnum.DaStampare;
+            basetta.stato_stampa = basetta.stato_stampa;
           } else if (basetta == null) {
             // If it doesn't exist, create a new basetta
             this.vendita.basette.push({

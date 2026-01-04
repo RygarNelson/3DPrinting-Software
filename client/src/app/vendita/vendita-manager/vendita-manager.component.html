@@ -17,7 +17,7 @@
     <ng-template pTemplate="content">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <form-input-datetime property="data_vendita" label="Data Vendita" [obligatory]="true" [listaErrori]="listaErrori" [(ngModel)]="vendita.data_vendita" (ngModelChange)="impostaDateScadenze()" />
-        <form-input-datetime property="data_scadenza" label="Data Scadenza" [min]="vendita.data_vendita" [listaErrori]="listaErrori" [(ngModel)]="vendita.data_scadenza" />
+        <form-input-datetime property="data_scadenza" label="Data Scadenza" [min]="vendita.data_vendita" [listaErrori]="listaErrori" [(ngModel)]="vendita.data_scadenza" (ngModelChange)="impostaDataScadenzaSpedizione()" />
         <form-input-datetime property="data_scadenza_spedizione" label="Data Scadenza Spedizione" [min]="vendita.data_vendita" [listaErrori]="listaErrori" [(ngModel)]="vendita.data_scadenza_spedizione" />
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
