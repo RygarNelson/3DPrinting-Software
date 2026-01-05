@@ -8,7 +8,7 @@ export class VenditaDettaglioStatoStampaTextPipe implements PipeTransform {
   private readonly VenditaDettaglioStatoStampaEnumRecord = VenditaDettaglioStatoStampaEnumRecord;
 
   transform(value: VenditaDettaglioStatoStampaEnum | undefined): string {
-    if (!value) {
+    if (value == null) {
       return '';
     }
     return this.VenditaDettaglioStatoStampaEnumRecord[value];

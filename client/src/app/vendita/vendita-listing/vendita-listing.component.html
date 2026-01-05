@@ -240,7 +240,9 @@
                   <ul class="flex flex-col gap-1">
                     @for (dettaglio of vendita.dettagli; track dettaglio.id) {
                       <li class="flex items-center gap-2">
-                        <div class="status-rectangle" [style.background-color]="dettaglio.stato_stampa | venditaDettaglioStatoStampaColor" [pTooltip]="dettaglio.stato_stampa | venditaDettaglioStatoStampaText" tooltipPosition="top"></div>
+                        <div class="status-rectangle" [style.background-color]="dettaglio.stato_stampa | venditaDettaglioStatoStampaColor" [pTooltip]="dettaglio.stato_stampa | venditaDettaglioStatoStampaText" tooltipPosition="top">
+                          <i class="status-rectangle-icon" [ngClass]="dettaglio.stato_stampa | venditaDettaglioStatoStampaIcon"> </i>
+                        </div>
                         <span class="text-sm">
                           @if (dettaglio.modello) {
                             {{ dettaglio.modello?.nome }} {{ dettaglio.stampa_is_pezzo_singolo ? '(Pezzo singolo)' : '' }} {{ dettaglio.stampa_is_parziale ? '(Parziale)' : '' }}
