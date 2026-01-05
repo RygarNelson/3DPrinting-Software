@@ -195,10 +195,15 @@
                     @if (vendita.dettagli && vendita.dettagli.length > 0) {
                       <div class="flex flex-wrap gap-1">
                         @for (dettaglio of vendita.dettagli; track dettaglio.id) {
-                          <span class="text-[11px] bg-white border border-blue-100 text-gray-700 px-2 py-0.5 rounded-sm">
-                            {{ dettaglio.modello?.nome || dettaglio.descrizione }}
-                            <span class="text-blue-500 font-bold">x{{ dettaglio.quantita }}</span>
-                          </span>
+                          <div class="flex items-center gap-1 bg-white border border-blue-100 px-2 py-1 rounded-sm shadow-sm">
+                            <div class="status-rectangle mr-1" [style.background-color]="dettaglio.stato_stampa | venditaDettaglioStatoStampaColor" [pTooltip]="dettaglio.stato_stampa | venditaDettaglioStatoStampaText" tooltipPosition="top">
+                              <i class="status-rectangle-icon" [ngClass]="dettaglio.stato_stampa | venditaDettaglioStatoStampaIcon"> </i>
+                            </div>
+                            <span class="text-[11px] text-gray-700">
+                              {{ dettaglio.modello?.nome || dettaglio.descrizione }}
+                              <span class="text-blue-500 font-bold">x{{ dettaglio.quantita }}</span>
+                            </span>
+                          </div>
                         }
                       </div>
                     } @else {
@@ -237,13 +242,20 @@
               <td>{{ vendita.conto_bancario?.iban }}</td>
               <td>
                 @if (vendita.dettagli && vendita.dettagli.length > 0) {
-                  <ul class="pl-4" style="list-style: disc">
+                  <ul class="flex flex-col gap-1">
                     @for (dettaglio of vendita.dettagli; track dettaglio.id) {
-                      @if (dettaglio.modello) {
-                        <li>{{ dettaglio.modello?.nome }} {{ dettaglio.stampa_is_pezzo_singolo ? '(Pezzo singolo)' : '' }} {{ dettaglio.stampa_is_parziale ? '(Parziale)' : '' }}</li>
-                      } @else {
-                        <li>{{ dettaglio.descrizione }} {{ dettaglio.stampa_is_pezzo_singolo ? '(Pezzo singolo)' : '' }} {{ dettaglio.stampa_is_parziale ? '(Parziale)' : '' }}</li>
-                      }
+                      <li class="flex items-center gap-2">
+                        <div class="status-rectangle" [style.background-color]="dettaglio.stato_stampa | venditaDettaglioStatoStampaColor" [pTooltip]="dettaglio.stato_stampa | venditaDettaglioStatoStampaText" tooltipPosition="top">
+                          <i class="status-rectangle-icon" [ngClass]="dettaglio.stato_stampa | venditaDettaglioStatoStampaIcon"> </i>
+                        </div>
+                        <span class="text-sm">
+                          @if (dettaglio.modello) {
+                            {{ dettaglio.modello?.nome }} {{ dettaglio.stampa_is_pezzo_singolo ? '(Pezzo singolo)' : '' }} {{ dettaglio.stampa_is_parziale ? '(Parziale)' : '' }}
+                          } @else {
+                            {{ dettaglio.descrizione }} {{ dettaglio.stampa_is_pezzo_singolo ? '(Pezzo singolo)' : '' }} {{ dettaglio.stampa_is_parziale ? '(Parziale)' : '' }}
+                          }
+                        </span>
+                      </li>
                     }
                   </ul>
                 } @else {

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ChipModule } from 'primeng/chip';
-import { VenditaDettaglioStatoStampaEnum, VenditaDettaglioStatoStampaEnumRecord } from 'src/enums/VenditaDettaglioStatoStampaEnum';
+import { VenditaDettaglioStatoStampaColorRecord, VenditaDettaglioStatoStampaEnum, VenditaDettaglioStatoStampaEnumRecord, VenditaDettaglioStatoStampaIconRecord } from 'src/enums/VenditaDettaglioStatoStampaEnum';
 
 @Component({
   selector: 'vendita-dettaglio-stato',
@@ -15,6 +15,8 @@ export class VenditaDettaglioStatoComponent implements OnChanges {
 
   protected readonly VenditaDettaglioStatoStampaEnum: typeof VenditaDettaglioStatoStampaEnum = VenditaDettaglioStatoStampaEnum;
   protected readonly VenditaDettaglioStatoStampaEnumRecord: typeof VenditaDettaglioStatoStampaEnumRecord = VenditaDettaglioStatoStampaEnumRecord;
+  protected readonly VenditaDettaglioStatoStampaColorRecord = VenditaDettaglioStatoStampaColorRecord;
+  protected readonly VenditaDettaglioStatoStampaIconRecord = VenditaDettaglioStatoStampaIconRecord;
 
   protected icon: string = '';
   protected descrizione: string = '';
@@ -23,39 +25,12 @@ export class VenditaDettaglioStatoComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (this.stato_stampa != null) {
       this.descrizione = this.VenditaDettaglioStatoStampaEnumRecord[this.stato_stampa];
-    }
-
-    switch (this.stato_stampa) {
-      case VenditaDettaglioStatoStampaEnum.PiattoDaPreparare: {
-        this.icon = 'pi pi-folder';
-        this.color = '#FFC107';
-        break;
-      }
-      case VenditaDettaglioStatoStampaEnum.DaStampare: {
-        this.icon = 'pi pi-clock';
-        this.color = '#FFC107';
-        break;
-      }
-      case VenditaDettaglioStatoStampaEnum.StampaInCorso: {
-        this.icon = 'pi pi-print';
-        this.color = '#2196F3';
-        break;
-      }
-      case VenditaDettaglioStatoStampaEnum.DaControllare: {
-        this.icon = 'pi pi-camera';
-        this.color = '#2196F3';
-        break;
-      }
-      case VenditaDettaglioStatoStampaEnum.TerminatoConDifetti: {
-        this.icon = 'pi pi-exclamation-triangle';
-        this.color = '#FF9800';
-        break;
-      }
-      case VenditaDettaglioStatoStampaEnum.TerminatoSenzaDifetti: {
-        this.icon = 'pi pi-check-circle';
-        this.color = '#4CAF50';
-        break;
-      }
+      this.icon = this.VenditaDettaglioStatoStampaIconRecord[this.stato_stampa] || '';
+      this.color = this.VenditaDettaglioStatoStampaColorRecord[this.stato_stampa] || '#9E9E9E';
+    } else {
+      this.descrizione = '';
+      this.icon = '';
+      this.color = '#9E9E9E';
     }
   }
 }
