@@ -44,6 +44,8 @@ import { FormInputRadiobuttonComponent } from 'src/shared/form-input-radiobutton
 import { FormInputSelectComponent } from 'src/shared/form-input-select/form-input-select.component';
 import { FormInputTextComponent } from 'src/shared/form-input-text/form-input-text.component';
 import { MobileCardItemComponent } from 'src/shared/mobile-card-item/mobile-card-item.component';
+import { VenditaDettaglioStatoStampaColorPipe } from '../pipes/vendita-dettaglio-stato-stampa-color.pipe';
+import { VenditaDettaglioStatoStampaTextPipe } from '../pipes/vendita-dettaglio-stato-stampa-text.pipe';
 import { VenditaDettaglioStatoComponent } from '../vendita-dettaglio-stato/vendita-dettaglio-stato.component';
 import { VenditaEtichettaSpedizioneComponent } from '../vendita-etichetta-spedizione/vendita-etichetta-spedizione.component';
 import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component';
@@ -79,7 +81,9 @@ import { VenditaStatoComponent } from '../vendita-stato/vendita-stato.component'
     DrawerModule,
     DatePickerModule,
     CheckboxModule,
-    MobileCardItemComponent
+    MobileCardItemComponent,
+    VenditaDettaglioStatoStampaColorPipe,
+    VenditaDettaglioStatoStampaTextPipe
   ],
   providers: [VenditaService, SpesaService],
   templateUrl: './vendita-listing.component.html',

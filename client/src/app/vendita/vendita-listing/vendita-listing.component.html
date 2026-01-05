@@ -237,13 +237,18 @@
               <td>{{ vendita.conto_bancario?.iban }}</td>
               <td>
                 @if (vendita.dettagli && vendita.dettagli.length > 0) {
-                  <ul class="pl-4" style="list-style: disc">
+                  <ul class="flex flex-col gap-1">
                     @for (dettaglio of vendita.dettagli; track dettaglio.id) {
-                      @if (dettaglio.modello) {
-                        <li>{{ dettaglio.modello?.nome }} {{ dettaglio.stampa_is_pezzo_singolo ? '(Pezzo singolo)' : '' }} {{ dettaglio.stampa_is_parziale ? '(Parziale)' : '' }}</li>
-                      } @else {
-                        <li>{{ dettaglio.descrizione }} {{ dettaglio.stampa_is_pezzo_singolo ? '(Pezzo singolo)' : '' }} {{ dettaglio.stampa_is_parziale ? '(Parziale)' : '' }}</li>
-                      }
+                      <li class="flex items-center gap-2">
+                        <div class="status-rectangle" [style.background-color]="dettaglio.stato_stampa | venditaDettaglioStatoStampaColor" [pTooltip]="dettaglio.stato_stampa | venditaDettaglioStatoStampaText" tooltipPosition="top"></div>
+                        <span class="text-sm">
+                          @if (dettaglio.modello) {
+                            {{ dettaglio.modello?.nome }} {{ dettaglio.stampa_is_pezzo_singolo ? '(Pezzo singolo)' : '' }} {{ dettaglio.stampa_is_parziale ? '(Parziale)' : '' }}
+                          } @else {
+                            {{ dettaglio.descrizione }} {{ dettaglio.stampa_is_pezzo_singolo ? '(Pezzo singolo)' : '' }} {{ dettaglio.stampa_is_parziale ? '(Parziale)' : '' }}
+                          }
+                        </span>
+                      </li>
                     }
                   </ul>
                 } @else {
