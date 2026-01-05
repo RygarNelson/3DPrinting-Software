@@ -20,6 +20,24 @@ export const VenditaDettaglioStatoStampaEnumRecord: Record<VenditaDettaglioStato
   [VenditaDettaglioStatoStampaEnum.PiattoDaPreparare]: 'Piatto Da Preparare'
 };
 
+export const VenditaDettaglioStatoStampaColorRecord: Record<VenditaDettaglioStatoStampaEnum, string> = {
+  [VenditaDettaglioStatoStampaEnum.PiattoDaPreparare]: '#FFC107',
+  [VenditaDettaglioStatoStampaEnum.DaStampare]: '#FFC107',
+  [VenditaDettaglioStatoStampaEnum.StampaInCorso]: '#2196F3',
+  [VenditaDettaglioStatoStampaEnum.DaControllare]: '#2196F3',
+  [VenditaDettaglioStatoStampaEnum.TerminatoConDifetti]: '#FF9800',
+  [VenditaDettaglioStatoStampaEnum.TerminatoSenzaDifetti]: '#4CAF50'
+};
+
+export const VenditaDettaglioStatoStampaIconRecord: Record<VenditaDettaglioStatoStampaEnum, string> = {
+  [VenditaDettaglioStatoStampaEnum.PiattoDaPreparare]: 'pi pi-folder',
+  [VenditaDettaglioStatoStampaEnum.DaStampare]: 'pi pi-clock',
+  [VenditaDettaglioStatoStampaEnum.StampaInCorso]: 'pi pi-print',
+  [VenditaDettaglioStatoStampaEnum.DaControllare]: 'pi pi-camera',
+  [VenditaDettaglioStatoStampaEnum.TerminatoConDifetti]: 'pi pi-exclamation-triangle',
+  [VenditaDettaglioStatoStampaEnum.TerminatoSenzaDifetti]: 'pi pi-check-circle'
+};
+
 export const VenditaDettaglioStatoStampaEnumOrder: VenditaDettaglioStatoStampaEnum[] = [
   VenditaDettaglioStatoStampaEnum.PiattoDaPreparare,
   VenditaDettaglioStatoStampaEnum.DaStampare,
