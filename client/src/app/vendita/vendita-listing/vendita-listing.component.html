@@ -191,7 +191,7 @@
                   </div>
 
                   <div class="bg-blue-50/50 p-2 rounded-md">
-                    <div class="text-[10px] text-blue-600 uppercase font-bold mb-1 flex items-center gap-1"><i class="pi pi-list text-[10px] mr-1"></i> Articoli</div>
+                    <div class="text-[10px] uppercase font-bold mb-1 flex items-center gap-1"><i class="pi pi-list text-[10px] mr-1"></i> Articoli</div>
                     @if (vendita.dettagli && vendita.dettagli.length > 0) {
                       <div class="flex flex-wrap gap-1">
                         @for (dettaglio of vendita.dettagli; track dettaglio.id) {
@@ -201,7 +201,7 @@
                             </div>
                             <span class="text-[11px] text-gray-700">
                               {{ dettaglio.modello?.nome || dettaglio.descrizione }}
-                              <span class="text-blue-500 font-bold">x{{ dettaglio.quantita }}</span>
+                              <span class="font-bold">x{{ dettaglio.quantita }}</span>
                             </span>
                           </div>
                         }
