@@ -13,30 +13,18 @@ import { ShowErrorPipe } from '../pipes/show-error.pipe';
 
 @Component({
   selector: 'form-input-select',
-  imports: [
-    CommonModule,
-    FormsModule,
-    SelectModule,
-    TooltipModule,
-    ShowErrorPipe,
-    ErrorMessagesPipe,
-    InputGroupModule,
-    InputGroupAddonModule,
-    ButtonModule,
-    TooltipModule
-  ],
+  imports: [CommonModule, FormsModule, SelectModule, TooltipModule, ShowErrorPipe, ErrorMessagesPipe, InputGroupModule, InputGroupAddonModule, ButtonModule, TooltipModule],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => FormInputSelectComponent),
-      multi: true,
+      multi: true
     }
   ],
   templateUrl: './form-input-select.component.html',
   styleUrl: './form-input-select.component.scss'
 })
 export class FormInputSelectComponent extends FormInputGeneralComponent implements ControlValueAccessor {
-
   private innerValue: number | null = null;
 
   @Input() data: LookupInterface[] = [];
@@ -46,7 +34,7 @@ export class FormInputSelectComponent extends FormInputGeneralComponent implemen
   @Input() filter: boolean = true;
   @Input() filterBy: string = 'etichetta';
   @Input() showClear: boolean = true;
-  @Input() virtualScroll: boolean = true;
+  @Input() virtualScroll: boolean = false;
   @Input() virtualScrollItemSize: number = 50;
   @Input() showAdd: boolean = false;
 
@@ -92,7 +80,7 @@ export class FormInputSelectComponent extends FormInputGeneralComponent implemen
 
   onSelect() {
     if (this.value != null) {
-      this.selected.emit(this.data.find(d => d.id == this.value));
+      this.selected.emit(this.data.find((d) => d.id == this.value));
     } else {
       this.selected.emit(null);
     }
