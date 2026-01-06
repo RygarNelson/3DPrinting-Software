@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -10,7 +10,7 @@ import { VenditaService } from 'src/services/vendita.service';
 @Component({
   selector: 'app-vendita-etichetta-spedizione',
   standalone: true,
-  imports: [CommonModule, ButtonModule, TooltipModule],
+  imports: [ButtonModule, TooltipModule],
   templateUrl: './vendita-etichetta-spedizione.component.html',
   styleUrl: './vendita-etichetta-spedizione.component.scss'
 })
