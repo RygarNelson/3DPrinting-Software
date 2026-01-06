@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -24,7 +24,6 @@ import { FormInputTextareaComponent } from 'src/shared/form-input-textarea/form-
 @Component({
   selector: 'app-modello-manager',
   imports: [
-    CommonModule,
     FormsModule,
     FormInputTextComponent,
     FormInputTextareaComponent,
@@ -35,7 +34,7 @@ import { FormInputTextareaComponent } from 'src/shared/form-input-textarea/form-
     ButtonModule,
     ModelloBasettaDimensioneDirective,
     FormInputCheckboxComponent
-  ],
+],
   providers: [
     ModelloService
   ],
