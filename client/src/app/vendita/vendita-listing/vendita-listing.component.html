@@ -190,8 +190,8 @@
                     <mobile-card-item icon="pi-send" label="Scadenza Spedizione" [value]="vendita.data_scadenza_spedizione | date: 'dd/MM/yyyy'" />
                   </div>
 
-                  <div class="bg-blue-50/50 p-2 rounded-md">
-                    <div class="text-[10px] uppercase font-bold mb-1 flex items-center gap-1"><i class="pi pi-list text-[10px] mr-1"></i> Articoli</div>
+                  <div class="p-2 rounded-md">
+                    <div class="uppercase font-bold mb-1 flex items-center gap-1"><i class="pi pi-list text-gray-400 mr-1"></i> Articoli</div>
                     @if (vendita.dettagli && vendita.dettagli.length > 0) {
                       <div class="flex flex-wrap gap-1">
                         @for (dettaglio of vendita.dettagli; track dettaglio.id) {
@@ -213,7 +213,7 @@
 
                   <div class="flex flex-col gap-2 mt-1 pt-2">
                     <div class="flex items-center justify-between">
-                      <span class="text-[10px] text-gray-500 uppercase font-bold tracking-tight">Totale</span>
+                      <span class="uppercase font-bold tracking-tight">Totale</span>
                       <span class="text-lg font-bold text-gray-900 leading-none">{{ vendita.totale_vendita | currency: 'EUR' }}</span>
                     </div>
                     <div>
@@ -412,9 +412,9 @@
         </div>
       </div>
 
-      <div class="flex gap-2 mt-6">
-        <p-button label="Applica" class="flex-1" icon="pi pi-check" (onClick)="applicaSidebarFiltri()" />
-        <p-button label="Reset" class="flex-1 p-button-outlined p-button-secondary" icon="pi pi-refresh" (onClick)="resetSidebarFiltri()" />
+      <div class="flex justify-between gap-2 mt-6">
+        <p-button label="Applica" [outlined]="true" [severity]="'primary'" icon="pi pi-check" (onClick)="applicaSidebarFiltri()" />
+        <p-button label="Reset" [outlined]="true" [severity]="'secondary'" icon="pi pi-refresh" (onClick)="resetSidebarFiltri()" />
       </div>
     </div>
   </p-drawer>

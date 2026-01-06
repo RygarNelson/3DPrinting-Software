@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "npm run tailwind:build && ng serve",
-    "build": "npm run tailwind:build && ng build",
+    "build": "npm run tailwind:build && ng build --configuration production",
     "tailwind:build": "tailwindcss -i src/tailwind.css -o src/assets/tailwind-built.css",
     "watch": "ng build --watch --configuration development",
     "format": "prettier --write \"**/*.{js,mjs,ts,mts,d.ts,html}\" --cache",

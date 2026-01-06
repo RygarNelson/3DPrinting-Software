@@ -525,12 +525,6 @@
   .border-surface-200 {
     border-color: var(--p-surface-200);
   }
-  .bg-blue-50\/50 {
-    background-color: color-mix(in srgb, oklch(97% 0.014 254.604) 50%, transparent);
-    @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in oklab, var(--color-blue-50) 50%, transparent);
-    }
-  }
   .bg-gray-50 {
     background-color: var(--color-gray-50);
   }
@@ -649,9 +643,6 @@
     font-size: var(--text-xs);
     line-height: var(--tw-leading, var(--text-xs--line-height));
   }
-  .text-\[10px\] {
-    font-size: 10px;
-  }
   .text-\[11px\] {
     font-size: 11px;
   }
@@ -681,12 +672,6 @@
   }
   .break-all {
     word-break: break-all;
-  }
-  .text-blue-500 {
-    color: var(--color-blue-500);
-  }
-  .text-blue-600 {
-    color: var(--color-blue-600);
   }
   .text-gray-400 {
     color: var(--color-gray-400);
@@ -917,11 +902,6 @@
   .dark\:border-surface-700 {
     @media (prefers-color-scheme: dark) {
       border-color: var(--p-surface-700);
-    }
-  }
-  .dark\:bg-surface-900 {
-    @media (prefers-color-scheme: dark) {
-      background-color: var(--p-surface-900);
     }
   }
   .dark\:text-surface-0 {

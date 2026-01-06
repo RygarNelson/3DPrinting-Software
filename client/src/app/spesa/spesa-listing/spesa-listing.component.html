@@ -121,7 +121,7 @@
 
                   <div class="flex flex-col gap-2 mt-1 pt-2">
                     <div class="flex items-center justify-between">
-                      <span class="text-[10px] text-gray-500 uppercase font-bold tracking-tight">Totale</span>
+                      <span class="uppercase font-bold tracking-tight">Totale</span>
                       <span class="text-lg font-bold text-gray-900 leading-none">{{ spesa.totale_spesa | currency: 'EUR' }}</span>
                     </div>
                   </div>
@@ -182,9 +182,9 @@
         <p-datepicker [(ngModel)]="filtri.data_spesa!.value" dateFormat="dd/mm/yy" appendTo="body" [showIcon]="true" (onSelect)="filtri.data_spesa!.operator = 'dateIs'" />
       </div>
 
-      <div class="flex gap-2 mt-6">
-        <p-button label="Applica" class="flex-1" icon="pi pi-check" (onClick)="applicaSidebarFiltri()" />
-        <p-button label="Reset" class="flex-1 p-button-outlined p-button-secondary" icon="pi pi-refresh" (onClick)="resetSidebarFiltri()" />
+      <div class="flex justify-between gap-2 mt-6">
+        <p-button label="Applica" [outlined]="true" [severity]="'primary'" icon="pi pi-check" (onClick)="applicaSidebarFiltri()" />
+        <p-button label="Reset" [outlined]="true" [severity]="'secondary'" icon="pi pi-refresh" (onClick)="resetSidebarFiltri()" />
       </div>
     </div>
   </p-drawer>
