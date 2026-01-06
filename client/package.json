@@ -1,6 +1,6 @@
 {
   "name": "backoffice-forge-by-orbitstudios-client",
-  "version": "1.17.0",
+  "version": "1.18.0",
   "scripts": {
     "ng": "ng",
     "start": "npm run tailwind:build && ng serve",
