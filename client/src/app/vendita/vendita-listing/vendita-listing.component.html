@@ -83,10 +83,10 @@
               <th></th>
             } @else {
               <th></th>
-              <th pSortableColumn="id" style="width: 150px">
+              <th pSortableColumn="numero_vendita" style="width: 150px">
                 Numero
-                <p-sortIcon field="id" />
-                <p-columnFilter field="id" [type]="'numeric'" display="menu" [showMatchModes]="true" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
+                <p-sortIcon field="numero_vendita" />
+                <p-columnFilter field="numero_vendita" [type]="'text'" display="menu" [showMatchModes]="true" [showOperator]="false" [showAddButton]="false" [showApplyButton]="false" showClearButton="false" />
               </th>
               <th pSortableColumn="data_vendita" style="width: 160px">
                 Data
@@ -182,7 +182,7 @@
               <td>
                 <div class="flex flex-col gap-3 p-3">
                   <div class="grid grid-cols-1 gap-2">
-                    <mobile-card-item icon="pi-hashtag" label="Numero" [value]="vendita.id" />
+                    <mobile-card-item icon="pi-hashtag" label="Numero" [value]="vendita.numero_vendita" />
                     <mobile-card-item icon="pi-calendar" label="Data" [value]="vendita.data_vendita | date: 'dd/MM/yyyy'" />
                     <mobile-card-item icon="pi-user" label="Cliente" [value]="vendita.cliente?.etichetta" />
                     <mobile-card-item icon="pi-credit-card" label="Conto" [value]="vendita.conto_bancario?.iban" [valueClass]="'truncate max-w-[200px]'" />
@@ -234,7 +234,7 @@
                 </div>
               </td>
             } @else {
-              <td class="font-medium">{{ vendita.id }}</td>
+              <td class="font-medium">{{ vendita.numero_vendita }}</td>
               <td class="font-medium">{{ vendita.data_vendita | date: 'dd/MM/yyyy' }}</td>
               <td>{{ vendita.data_scadenza | date: 'dd/MM/yyyy' }}</td>
               <td>{{ vendita.data_scadenza_spedizione | date: 'dd/MM/yyyy' }}</td>

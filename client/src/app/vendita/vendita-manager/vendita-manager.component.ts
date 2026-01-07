@@ -166,6 +166,7 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
           this.vendita = this.localStorageService.getObject(this.LOCAL_STORAGE_KEY);
         } else {
           this.getClienteVintedId();
+          this.getNextNumero();
         }
       }
     });
@@ -223,6 +224,16 @@ export class VenditaManagerComponent extends BaseManager implements OnInit, OnDe
       next: (result) => {
         this.vendita.cliente_id = result.data;
         this.applicationStateService.clienteLookupUpdate.next();
+      }
+    });
+  }
+
+  private getNextNumero(): void {
+    this.venditaService.getNextNumero().subscribe({
+      next: (result) => {
+        if (result.success) {
+          this.vendita.numero_vendita = result.data;
+        }
       }
     });
   }

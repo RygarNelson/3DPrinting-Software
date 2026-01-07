@@ -63,6 +63,7 @@ class VenditaRepository extends BaseRepository {
         basette,
         conto_bancario_id,
         etichetta_spedizione,
+        numero_vendita,
       } = req.body;
 
       const data = {
@@ -74,6 +75,7 @@ class VenditaRepository extends BaseRepository {
         cliente_id,
         conto_bancario_id,
         etichetta_spedizione,
+        numero_vendita,
       };
 
       const additionalData = {
@@ -190,6 +192,7 @@ class VenditaRepository extends BaseRepository {
         basette,
         conto_bancario_id,
         etichetta_spedizione,
+        numero_vendita,
       } = req.body;
 
       const vendita = await Vendita.findByPk(id, {
@@ -217,6 +220,7 @@ class VenditaRepository extends BaseRepository {
           cliente_id,
           conto_bancario_id,
           etichetta_spedizione,
+          numero_vendita,
         },
         {
           transaction: transaction,
@@ -1062,6 +1066,22 @@ class VenditaRepository extends BaseRepository {
     await vendita.update({ link_tracciamento: linkTracciamento });
 
     return vendita;
+  }
+
+  async getNextNumero() {
+    const maxResult = await Vendita.findOne({
+      attributes: [
+        [
+          fn("MAX", sequelize.cast(col("numero_vendita"), "INTEGER")),
+          "max_numero",
+        ],
+      ],
+    });
+    const maxNumero =
+      maxResult && maxResult.get("max_numero")
+        ? parseInt(maxResult.get("max_numero"))
+        : 0;
+    return (maxNumero + 1).toString();
   }
 }
 
