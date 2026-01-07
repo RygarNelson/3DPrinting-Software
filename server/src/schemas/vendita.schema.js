@@ -88,21 +88,6 @@ const validationSchema = {
             "Il percorso etichetta spedizione non può superare i 500 caratteri",
         },
       },
-      dettagli: {
-        optional: false,
-        isArray: {
-          errorMessage: "I dettagli non sono validi",
-        },
-        custom: {
-          options: (value) => {
-            if (value != null) {
-              if (value.length == 0) {
-                throw new Error("I dettagli non possono essere vuoti");
-              }
-            }
-          },
-        },
-      },
       "dettagli.*.modello_id": {
         optional: true,
         isInt: {
