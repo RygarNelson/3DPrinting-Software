@@ -295,6 +295,10 @@ const updateDatabase = async (
           await updateDatabaseToVersion18();
           break;
         }
+        case 18: {
+          await updateDatabaseToVersion19();
+          break;
+        }
         default: {
           console.log("Update to version", version + 1, "not implemented");
           process.exit(1);
@@ -589,6 +593,24 @@ const updateDatabaseToVersion18 = async () => {
     );
   } catch (error) {
     console.log("Cannot update database to version 18");
+  }
+};
+
+const updateDatabaseToVersion19 = async () => {
+  try {
+    console.log("Updating database to version 19");
+
+    await sequelize.query(
+      "ALTER TABLE T_VENDITE ADD COLUMN numero_vendita VARCHAR(100) NULL"
+    );
+
+    await sequelize.query(
+      "UPDATE T_VENDITE SET numero_vendita = CAST(id as CHAR)"
+    );
+  } catch (error) {
+    console.log("Cannot update database to version 19");
+    console.error(error);
+    process.exit(1);
   }
 };
 

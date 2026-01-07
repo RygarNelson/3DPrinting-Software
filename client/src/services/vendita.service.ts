@@ -15,12 +15,11 @@ import { VenditaModificaLinkTracciamentoModel } from 'src/models/vendita/vendita
 
 @Injectable()
 export class VenditaService {
-
   private api: string = '';
 
   constructor(private http: HttpClient) {
     const url: URL = new URL(`api/vendita`, environment.baseApi);
-        
+
     this.api = url.toString();
   }
 
@@ -93,7 +92,7 @@ export class VenditaService {
     const formData = new FormData();
     formData.append('etichetta_spedizione', file);
     formData.append('vendita_id', venditaId.toString());
-    
+
     return this.http.post<any>(`${this.api}/${venditaId}/etichetta-spedizione/upload`, formData);
   }
 
@@ -105,5 +104,9 @@ export class VenditaService {
 
   deleteEtichettaSpedizione(venditaId: number): Observable<any> {
     return this.http.delete<any>(`${this.api}/${venditaId}/etichetta-spedizione`);
+  }
+
+  getNextNumero(): Observable<any> {
+    return this.http.get<any>(`${this.api}/next-numero`);
   }
 }

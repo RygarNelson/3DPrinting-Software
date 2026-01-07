@@ -4,6 +4,7 @@ import { ResponseInterface } from 'src/interfaces/response.interface';
 
 export class VenditaManagerModel {
   id: number = 0;
+  numero_vendita?: string;
   data_vendita?: Date;
   data_scadenza?: Date;
   data_scadenza_spedizione?: Date;

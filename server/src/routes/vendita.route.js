@@ -31,6 +31,7 @@ router.get(
   asyncHandler(async (req, res) => {
     const projection = [
       "id",
+      "numero_vendita",
       "data_vendita",
       "data_scadenza",
       "data_scadenza_spedizione",
@@ -401,31 +402,53 @@ router.post(
         }
       }
 
-      // Id
-      if (req.body.id && req.body.id.value && req.body.id.operator) {
-        switch (req.body.id.operator) {
+      // numero_vendita
+      if (
+        req.body.numero_vendita &&
+        req.body.numero_vendita.value &&
+        req.body.numero_vendita.operator
+      ) {
+        switch (req.body.numero_vendita.operator) {
+          //startsWith
+          case "startsWith": {
+            whereOptions.numero_vendita = {
+              [Op.like]: `${req.body.numero_vendita.value}%`,
+            };
+            break;
+          }
+          //contains
+          case "contains": {
+            whereOptions.numero_vendita = {
+              [Op.like]: `%${req.body.numero_vendita.value}%`,
+            };
+            break;
+          }
+          //notContains
+          case "notContains": {
+            whereOptions.numero_vendita = {
+              [Op.notLike]: `%${req.body.numero_vendita.value}%`,
+            };
+            break;
+          }
+          //endsWith
+          case "endsWith": {
+            whereOptions.numero_vendita = {
+              [Op.like]: `%${req.body.numero_vendita.value}`,
+            };
+            break;
+          }
+          //equals
           case "equals": {
-            whereOptions.id = { [Op.eq]: req.body.id.value };
+            whereOptions.numero_vendita = {
+              [Op.eq]: req.body.numero_vendita.value,
+            };
             break;
           }
+          //notEquals
           case "notEquals": {
-            whereOptions.id = { [Op.ne]: req.body.id.value };
-            break;
-          }
-          case "lt": {
-            whereOptions.id = { [Op.lt]: req.body.id.value };
-            break;
-          }
-          case "lte": {
-            whereOptions.id = { [Op.lte]: req.body.id.value };
-            break;
-          }
-          case "gt": {
-            whereOptions.id = { [Op.gt]: req.body.id.value };
-            break;
-          }
-          case "gte": {
-            whereOptions.id = { [Op.gte]: req.body.id.value };
+            whereOptions.numero_vendita = {
+              [Op.ne]: req.body.numero_vendita.value,
+            };
             break;
           }
         }
@@ -564,6 +587,7 @@ router.post(
       // --- Custom RANK for stato_spedizione ---
       const projection = [
         "id",
+        "numero_vendita",
         "data_vendita",
         "data_scadenza",
         "data_scadenza_spedizione",
@@ -615,7 +639,7 @@ router.post(
       // Default order: by rank, then by id
       let order = [
         [literal("rank"), "ASC"],
-        ["id", "DESC"],
+        ["numero_vendita", "DESC"],
       ];
       if (
         req.body.order &&
@@ -1052,6 +1076,17 @@ router.delete(
     return res.status(200).json({
       success: true,
       data: "Etichetta spedizione eliminata con successo",
+    });
+  })
+);
+
+router.get(
+  "/next-numero",
+  asyncHandler(async (req, res) => {
+    const nextNumero = await VenditaRepository.getNextNumero();
+    return res.status(200).json({
+      success: true,
+      data: nextNumero,
     });
   })
 );
