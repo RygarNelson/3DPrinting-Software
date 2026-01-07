@@ -63,7 +63,16 @@ class VenditaRepository extends BaseRepository {
         basette,
         conto_bancario_id,
         etichetta_spedizione,
+        numero_vendita,
       } = req.body;
+
+      // Uniqueness check for numero_vendita
+      if (numero_vendita) {
+        const existing = await Vendita.findOne({ where: { numero_vendita } });
+        if (existing) {
+          throw new Error("Esiste un'altra vendita con lo stesso numero");
+        }
+      }
 
       const data = {
         data_vendita,
@@ -74,6 +83,7 @@ class VenditaRepository extends BaseRepository {
         cliente_id,
         conto_bancario_id,
         etichetta_spedizione,
+        numero_vendita,
       };
 
       const additionalData = {
@@ -190,6 +200,7 @@ class VenditaRepository extends BaseRepository {
         basette,
         conto_bancario_id,
         etichetta_spedizione,
+        numero_vendita,
       } = req.body;
 
       const vendita = await Vendita.findByPk(id, {
@@ -207,6 +218,18 @@ class VenditaRepository extends BaseRepository {
         method: req.method,
       };
 
+      if (numero_vendita && numero_vendita !== vendita.numero_vendita) {
+        const existing = await Vendita.findOne({
+          where: {
+            numero_vendita: numero_vendita,
+            id: { [Op.ne]: id },
+          },
+        });
+        if (existing) {
+          throw new Error("Esiste un'altra vendita con lo stesso numero");
+        }
+      }
+
       await vendita.update(
         {
           data_vendita,
@@ -217,6 +240,7 @@ class VenditaRepository extends BaseRepository {
           cliente_id,
           conto_bancario_id,
           etichetta_spedizione,
+          numero_vendita,
         },
         {
           transaction: transaction,
@@ -1062,6 +1086,22 @@ class VenditaRepository extends BaseRepository {
     await vendita.update({ link_tracciamento: linkTracciamento });
 
     return vendita;
+  }
+
+  async getNextNumero() {
+    const maxResult = await Vendita.findOne({
+      attributes: [
+        [
+          fn("MAX", sequelize.cast(col("numero_vendita"), "INTEGER")),
+          "max_numero",
+        ],
+      ],
+    });
+    const maxNumero =
+      maxResult && maxResult.get("max_numero")
+        ? parseInt(maxResult.get("max_numero"))
+        : 0;
+    return (maxNumero + 1).toString();
   }
 }
 

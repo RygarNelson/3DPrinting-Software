@@ -296,30 +296,30 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
       this.filtri.order = undefined;
     }
 
-    // Filtro id
-    const idFilter: FilterMetadata | FilterMetadata[] | undefined = event.filters?.['id'];
-    if (idFilter) {
+    // Filtro numero vendita
+    const numeroVenditaFilter: FilterMetadata | FilterMetadata[] | undefined = event.filters?.['numero_vendita'];
+    if (numeroVenditaFilter) {
       let value = null;
       let operator = null;
 
-      if (idFilter instanceof Array) {
-        value = idFilter[0].value;
-        operator = idFilter[0].matchMode;
+      if (numeroVenditaFilter instanceof Array) {
+        value = numeroVenditaFilter[0].value;
+        operator = numeroVenditaFilter[0].matchMode;
       } else {
-        value = idFilter.value;
-        operator = idFilter.matchMode;
+        value = numeroVenditaFilter.value;
+        operator = numeroVenditaFilter.matchMode;
       }
 
       if (value && operator) {
-        this.filtri.id = {
+        this.filtri.numero_vendita = {
           value: value,
           operator: operator
         };
       } else {
-        this.filtri.id = undefined;
+        this.filtri.numero_vendita = undefined;
       }
     } else {
-      this.filtri.id = undefined;
+      this.filtri.numero_vendita = undefined;
     }
 
     // Date filters
@@ -448,7 +448,7 @@ export class VenditaListingComponent implements OnInit, OnDestroy {
       first: 0,
       rows: 100,
       globalFilter: '',
-      sortField: 'data_vendita',
+      sortField: 'numero_vendita',
       sortOrder: -1
     });
   }
