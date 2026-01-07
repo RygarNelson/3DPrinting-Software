@@ -66,14 +66,6 @@ class VenditaRepository extends BaseRepository {
         numero_vendita,
       } = req.body;
 
-      // Uniqueness check for numero_vendita
-      if (numero_vendita) {
-        const existing = await Vendita.findOne({ where: { numero_vendita } });
-        if (existing) {
-          throw new Error("Esiste un'altra vendita con lo stesso numero");
-        }
-      }
-
       const data = {
         data_vendita,
         data_scadenza,
@@ -217,18 +209,6 @@ class VenditaRepository extends BaseRepository {
         endpoint: req.originalUrl,
         method: req.method,
       };
-
-      if (numero_vendita && numero_vendita !== vendita.numero_vendita) {
-        const existing = await Vendita.findOne({
-          where: {
-            numero_vendita: numero_vendita,
-            id: { [Op.ne]: id },
-          },
-        });
-        if (existing) {
-          throw new Error("Esiste un'altra vendita con lo stesso numero");
-        }
-      }
 
       await vendita.update(
         {
